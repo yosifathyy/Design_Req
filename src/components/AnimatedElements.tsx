@@ -159,18 +159,15 @@ export const WiggleIcon = ({ children, className = "" }: any) => {
   );
 };
 
-// 3D Tilt Card
+// Simple Tilt Card without 3D transforms
 export const TiltCard = ({ children, className = "" }: any) => {
   return (
     <motion.div
       whileHover={{
-        rotateX: 5,
-        rotateY: 5,
         scale: 1.02,
         transition: { duration: 0.2 },
       }}
       whileTap={{ scale: 0.98 }}
-      style={{ transformStyle: "preserve-3d" }}
       className={className}
     >
       {children}
