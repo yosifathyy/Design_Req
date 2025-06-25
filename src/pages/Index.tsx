@@ -244,7 +244,7 @@ const Index = () => {
       {/* Our Services Section */}
       <section
         id="services"
-        className="px-6 py-20 bg-white/20 backdrop-blur-sm relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-white/20 backdrop-blur-sm relative"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -261,7 +261,7 @@ const Index = () => {
               },
             }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
             <motion.div
               animate={{
@@ -273,14 +273,14 @@ const Index = () => {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="inline-block mb-6"
+              className="inline-block mb-4 sm:mb-6"
             >
-              <Wand2 className="w-16 h-16 text-retro-purple mx-auto" />
+              <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
             </motion.div>
-            <h2 className="font-display text-4xl lg:text-5xl text-retro-purple mb-4">
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
               Our Magic Services ✨
             </h2>
-            <p className="text-xl text-retro-purple/80 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
               Professional design solutions that'll make your competitors
               jealous!
             </p>
