@@ -18,7 +18,22 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: ["Fredoka One", "cursive"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+      },
       colors: {
+        // Retro playful color palette
+        retro: {
+          purple: "hsl(var(--retro-purple))",
+          teal: "hsl(var(--retro-teal))",
+          peach: "hsl(var(--retro-peach))",
+          cream: "hsl(var(--retro-cream))",
+          lavender: "hsl(var(--retro-lavender))",
+          orange: "hsl(var(--retro-orange))",
+          mint: "hsl(var(--retro-mint))",
+          pink: "hsl(var(--retro-pink))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
