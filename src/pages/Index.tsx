@@ -296,7 +296,7 @@ const Index = () => {
                   delay={0.2}
                   className="w-full"
                 >
-                  <div className="p-4 sm:p-6 lg:p-8 h-full">
+                  <div className="p-4 sm:p-6 lg:pl-8 lg:pr-7 lg:py-8 h-full">
                     <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8 h-full">
                       {/* Left content */}
                       <div className="flex-1">
