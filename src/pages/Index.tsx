@@ -287,167 +287,203 @@ const Index = () => {
           </motion.div>
 
           <StaggerContainer>
-            <BentoGrid>
-              {/* Large Photoshop Card */}
+            <div className="space-y-6">
+              {/* Large Photoshop Card - Full Width on Mobile */}
               <StaggerChild>
                 <BentoCard
                   size="lg"
                   gradient="from-retro-purple/20 via-retro-teal/20 to-retro-purple/20"
                   delay={0.2}
+                  className="w-full"
                 >
-                  <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
-                    <motion.div
-                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-retro-purple to-retro-teal rounded-2xl lg:rounded-3xl flex items-center justify-center mb-4 sm:mb-6"
-                      whileHover={{
-                        rotate: 360,
-                        scale: 1.1,
-                        transition: { duration: 0.6 },
-                      }}
-                    >
-                      <Palette className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
-                    </motion.div>
-                    <h3 className="font-bold text-xl sm:text-2xl lg:text-3xl text-retro-purple mb-3 sm:mb-4">
-                      Photoshop Design 🎨
-                    </h3>
-                    <p className="text-retro-purple/80 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg">
-                      Photo editing, compositing, and digital art creation
-                      that'll blow your mind!
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
-                      {[
-                        "Photo Retouching",
-                        "Digital Compositing",
-                        "Graphic Design",
-                        "Social Media Assets",
-                      ].map((feature, index) => (
+                  <div className="p-4 sm:p-6 lg:p-8 h-full">
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8 h-full">
+                      {/* Left content */}
+                      <div className="flex-1">
                         <motion.div
-                          key={index}
-                          className="flex items-center text-retro-purple/70"
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
+                          className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-retro-purple to-retro-teal rounded-2xl lg:rounded-3xl flex items-center justify-center mb-4 sm:mb-6"
+                          whileHover={{
+                            rotate: 360,
+                            scale: 1.1,
+                            transition: { duration: 0.6 },
+                          }}
                         >
-                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-retro-teal mr-2 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">{feature}</span>
+                          <Palette className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
                         </motion.div>
-                      ))}
+                        <h3 className="font-bold text-xl sm:text-2xl lg:text-3xl text-retro-purple mb-3 sm:mb-4">
+                          Photoshop Design 🎨
+                        </h3>
+                        <p className="text-retro-purple/80 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg">
+                          Photo editing, compositing, and digital art creation
+                          that'll blow your mind!
+                        </p>
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="lg:hidden"
+                        >
+                          <Button
+                            asChild
+                            className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold text-sm sm:text-base"
+                          >
+                            <Link to="/start-project">
+                              <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                              Start Photoshop Project
+                            </Link>
+                          </Button>
+                        </motion.div>
+                      </div>
+
+                      {/* Right content - Features */}
+                      <div className="lg:w-1/2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                          {[
+                            "Photo Retouching",
+                            "Digital Compositing",
+                            "Graphic Design",
+                            "Social Media Assets",
+                          ].map((feature, index) => (
+                            <motion.div
+                              key={index}
+                              className="flex items-center text-retro-purple/70"
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                            >
+                              <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-retro-teal mr-2 flex-shrink-0" />
+                              <span className="text-xs sm:text-sm">
+                                {feature}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </div>
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="hidden lg:block"
+                        >
+                          <Button
+                            asChild
+                            className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold"
+                          >
+                            <Link to="/start-project">
+                              <Camera className="w-4 h-4 mr-2" />
+                              Start Photoshop Project
+                            </Link>
+                          </Button>
+                        </motion.div>
+                      </div>
                     </div>
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="mt-auto"
-                    >
+                  </div>
+                </BentoCard>
+              </StaggerChild>
+
+              {/* Other Services Grid */}
+              <BentoGrid>
+                {/* 3D Design Card */}
+                <StaggerChild>
+                  <BentoCard
+                    size="md"
+                    gradient="from-retro-teal/20 to-retro-mint/20"
+                    delay={0.3}
+                  >
+                    <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                      <motion.div
+                        className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-teal to-retro-mint rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                        animate={{
+                          rotateY: [0, 180, 360],
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        <Layers className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                      </motion.div>
+                      <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                        3D Design 🎯
+                      </h3>
+                      <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                        Mind-blowing 3D modeling and visualization!
+                      </p>
+                      <div className="space-y-2 mb-4 flex-1">
+                        {[
+                          "3D Modeling",
+                          "Product Visualization",
+                          "Architectural Renders",
+                        ].map((feature, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center text-xs sm:text-sm"
+                          >
+                            <Sparkles className="w-3 h-3 text-retro-teal mr-2 flex-shrink-0" />
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
                       <Button
                         asChild
-                        className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold text-sm sm:text-base"
+                        variant="outline"
+                        className="w-full border-retro-teal text-retro-teal hover:bg-retro-teal hover:text-white mt-auto text-sm"
                       >
-                        <Link to="/start-project">
-                          <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                          Start Photoshop Project
-                        </Link>
+                        <Link to="/start-project">Start 3D Project</Link>
                       </Button>
-                    </motion.div>
-                  </div>
-                </BentoCard>
-              </StaggerChild>
-
-              {/* 3D Design Card */}
-              <StaggerChild>
-                <BentoCard
-                  size="md"
-                  gradient="from-retro-teal/20 to-retro-mint/20"
-                  delay={0.3}
-                >
-                  <div className="p-6 h-full flex flex-col">
-                    <motion.div
-                      className="w-16 h-16 bg-gradient-to-br from-retro-teal to-retro-mint rounded-2xl flex items-center justify-center mb-4"
-                      animate={{
-                        rotateY: [0, 180, 360],
-                      }}
-                      transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    >
-                      <Layers className="w-8 h-8 text-white" />
-                    </motion.div>
-                    <h3 className="font-bold text-xl text-retro-purple mb-3">
-                      3D Design 🎯
-                    </h3>
-                    <p className="text-retro-purple/80 mb-4">
-                      Mind-blowing 3D modeling and visualization!
-                    </p>
-                    <div className="space-y-2 mb-4">
-                      {[
-                        "3D Modeling",
-                        "Product Visualization",
-                        "Architectural Renders",
-                      ].map((feature, index) => (
-                        <div key={index} className="flex items-center text-sm">
-                          <Sparkles className="w-3 h-3 text-retro-teal mr-2" />
-                          {feature}
-                        </div>
-                      ))}
                     </div>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full border-retro-teal text-retro-teal hover:bg-retro-teal hover:text-white mt-auto"
-                    >
-                      <Link to="/start-project">Start 3D Project</Link>
-                    </Button>
-                  </div>
-                </BentoCard>
-              </StaggerChild>
+                  </BentoCard>
+                </StaggerChild>
 
-              {/* Logo Design Card */}
-              <StaggerChild>
-                <BentoCard
-                  size="md"
-                  gradient="from-retro-orange/20 to-retro-peach/20"
-                  delay={0.4}
-                >
-                  <div className="p-6 h-full flex flex-col">
-                    <motion.div
-                      className="w-16 h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-2xl flex items-center justify-center mb-4"
-                      whileHover={{
-                        rotate: [0, -10, 10, -10, 0],
-                        scale: 1.1,
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <Brush className="w-8 h-8 text-white" />
-                    </motion.div>
-                    <h3 className="font-bold text-xl text-retro-purple mb-3">
-                      Logo Design 🚀
-                    </h3>
-                    <p className="text-retro-purple/80 mb-4">
-                      Brand identity that stands out from the crowd!
-                    </p>
-                    <div className="space-y-2 mb-4">
-                      {[
-                        "Logo Creation",
-                        "Brand Guidelines",
-                        "Business Cards",
-                      ].map((feature, index) => (
-                        <div key={index} className="flex items-center text-sm">
-                          <Star className="w-3 h-3 text-retro-orange mr-2" />
-                          {feature}
-                        </div>
-                      ))}
+                {/* Logo Design Card */}
+                <StaggerChild>
+                  <BentoCard
+                    size="md"
+                    gradient="from-retro-orange/20 to-retro-peach/20"
+                    delay={0.4}
+                  >
+                    <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                      <motion.div
+                        className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                        whileHover={{
+                          rotate: [0, -10, 10, -10, 0],
+                          scale: 1.1,
+                        }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Brush className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                      </motion.div>
+                      <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                        Logo Design 🚀
+                      </h3>
+                      <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                        Brand identity that stands out from the crowd!
+                      </p>
+                      <div className="space-y-2 mb-4 flex-1">
+                        {[
+                          "Logo Creation",
+                          "Brand Guidelines",
+                          "Business Cards",
+                        ].map((feature, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center text-xs sm:text-sm"
+                          >
+                            <Star className="w-3 h-3 text-retro-orange mr-2 flex-shrink-0" />
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="w-full border-retro-orange text-retro-orange hover:bg-retro-orange hover:text-white mt-auto text-sm"
+                      >
+                        <Link to="/start-project">Start Logo Project</Link>
+                      </Button>
                     </div>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full border-retro-orange text-retro-orange hover:bg-retro-orange hover:text-white mt-auto"
-                    >
-                      <Link to="/start-project">Start Logo Project</Link>
-                    </Button>
-                  </div>
-                </BentoCard>
-              </StaggerChild>
-            </BentoGrid>
+                  </BentoCard>
+                </StaggerChild>
+              </BentoGrid>
+            </div>
           </StaggerContainer>
         </div>
       </section>
