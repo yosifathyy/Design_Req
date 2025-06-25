@@ -19,10 +19,14 @@ export const BentoCard = ({
   delay = 0,
 }: BentoCardProps) => {
   const sizeClasses = {
+    // Small cards - 1 column on all sizes
     sm: "col-span-1 row-span-1 min-h-[180px] sm:min-h-[200px] lg:min-h-[220px]",
-    md: "col-span-1 sm:col-span-2 lg:col-span-2 row-span-1 min-h-[200px] sm:min-h-[250px] lg:min-h-[280px]",
-    lg: "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 row-span-2 min-h-[320px] sm:min-h-[380px] lg:min-h-[420px]",
-    xl: "col-span-1 sm:col-span-2 lg:col-span-4 xl:col-span-6 row-span-2 min-h-[350px] sm:min-h-[400px] lg:min-h-[450px]",
+    // Medium cards - 1 col mobile, 1 col tablet, 2 cols desktop
+    md: "col-span-1 sm:col-span-1 lg:col-span-2 row-span-1 min-h-[200px] sm:min-h-[250px] lg:min-h-[280px]",
+    // Large cards - 1 col mobile, 2 cols tablet, 4 cols desktop
+    lg: "col-span-1 sm:col-span-2 lg:col-span-4 row-span-1 lg:row-span-2 min-h-[280px] sm:min-h-[320px] lg:min-h-[400px]",
+    // Extra large cards - full width on all sizes
+    xl: "col-span-1 sm:col-span-2 lg:col-span-4 row-span-1 lg:row-span-2 min-h-[320px] sm:min-h-[380px] lg:min-h-[450px]",
   };
 
   return (
@@ -60,7 +64,7 @@ export const BentoCard = ({
         {/* Animated background elements */}
         <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-300">
           <motion.div
-            className="absolute top-2 right-2 sm:top-4 sm:right-4 w-4 h-4 sm:w-8 sm:h-8 bg-retro-orange/30 rounded-full"
+            className="absolute top-2 right-2 sm:top-4 sm:right-4 w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-retro-orange/30 rounded-full"
             animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 180, 360],
@@ -72,7 +76,7 @@ export const BentoCard = ({
             }}
           />
           <motion.div
-            className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 w-3 h-3 sm:w-6 sm:h-6 bg-retro-teal/30 rounded-full"
+            className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 bg-retro-teal/30 rounded-full"
             animate={{
               scale: [1, 0.8, 1],
               y: [0, -10, 0],
@@ -105,7 +109,8 @@ export const BentoGrid = ({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 auto-rows-min w-full",
+        // Responsive grid: 1 col mobile, 2 cols tablet, 4 cols desktop
+        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 auto-rows-min w-full",
         className,
       )}
     >
