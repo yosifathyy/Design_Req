@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Navigation from "@/components/Navigation";
-import CartoonyCursor from "@/components/CartoonyCursor";
 import { BentoGrid, BentoCard } from "@/components/BentoCards";
 import {
   FadeInUp,
