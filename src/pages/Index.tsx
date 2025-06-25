@@ -917,15 +917,15 @@ const Index = () => {
               {/* Contact Form */}
               <StaggerChild>
                 <BentoCard size="lg" delay={0.4}>
-                  <div className="p-8 h-full">
+                  <div className="p-4 sm:p-6 lg:p-8 h-full">
                     <motion.div
-                      className="flex items-center space-x-4 mb-6"
+                      className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
                       initial={{ opacity: 0, x: -50 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6 }}
                     >
                       <motion.div
-                        className="w-12 h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
+                        className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
                         animate={{
                           rotate: [0, 360],
                         }}
@@ -935,15 +935,15 @@ const Index = () => {
                           ease: "linear",
                         }}
                       >
-                        <Send className="w-6 h-6 text-white" />
+                        <Send className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </motion.div>
-                      <h3 className="font-display text-2xl text-retro-purple">
+                      <h3 className="font-display text-lg sm:text-xl lg:text-2xl text-retro-purple">
                         Send us a Message! 💌
                       </h3>
                     </motion.div>
 
-                    <form className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <form className="space-y-4 sm:space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <div>
                           <Label
                             htmlFor="name"
