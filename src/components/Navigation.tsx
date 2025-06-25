@@ -51,19 +51,26 @@ const Navigation = () => {
 
         <div className="flex items-center space-x-8">
           {navItems.map(({ href, label, icon: Icon }) => (
-            <Link
+            <motion.div
               key={href}
-              to={href}
-              className={cn(
-                "flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-all duration-200",
-                isActive(href)
-                  ? "bg-retro-purple text-white shadow-lg"
-                  : "text-retro-purple/80 hover:text-retro-purple hover:bg-retro-purple/10",
-              )}
+              whileHover={{ y: -3, scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Icon className="w-4 h-4" />
-              <span>{label}</span>
-            </Link>
+              <Link
+                to={href}
+                className={cn(
+                  "flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-all duration-200",
+                  isActive(href)
+                    ? "bg-retro-purple text-white shadow-lg animate-pulse-glow"
+                    : "text-retro-purple/80 hover:text-retro-purple hover:bg-retro-purple/10",
+                )}
+              >
+                <WiggleIcon>
+                  <Icon className="w-4 h-4" />
+                </WiggleIcon>
+                <span>{label}</span>
+              </Link>
+            </motion.div>
           ))}
 
           <Button
