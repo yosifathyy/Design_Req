@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, X, Sparkles, Palette, Users, Phone } from "lucide-react";
+import { motion } from "framer-motion";
+import { WiggleIcon } from "@/components/AnimatedElements";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
