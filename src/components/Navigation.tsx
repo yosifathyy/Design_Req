@@ -24,17 +24,29 @@ const Navigation = () => {
       {/* Desktop Navigation */}
       <nav className="hidden lg:flex items-center justify-between p-6 bg-retro-cream/80 backdrop-blur-sm border-b-2 border-retro-purple/20">
         <Link to="/" className="flex items-center space-x-3 group">
-          <div className="w-12 h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform duration-200">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
-          <div>
+          <motion.div
+            className="w-12 h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
+            whileHover={{
+              scale: 1.1,
+              rotate: 360,
+            }}
+            transition={{ duration: 0.6 }}
+          >
+            <WiggleIcon>
+              <Sparkles className="w-6 h-6 text-white" />
+            </WiggleIcon>
+          </motion.div>
+          <motion.div
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", damping: 15 }}
+          >
             <h1 className="font-display text-2xl text-retro-purple">
               design requests
             </h1>
             <p className="text-xs text-retro-purple/70 font-medium">
-              Expert Design Studio
+              Expert Design Studio ✨
             </p>
-          </div>
+          </motion.div>
         </Link>
 
         <div className="flex items-center space-x-8">
