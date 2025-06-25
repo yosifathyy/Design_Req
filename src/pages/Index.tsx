@@ -828,7 +828,7 @@ const Index = () => {
                   </div>
                 </BentoCard>
               </StaggerChild>
-            </BentoGrid>
+            </div>
           </StaggerContainer>
         </div>
       </section>
