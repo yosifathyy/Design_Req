@@ -936,8 +936,8 @@ const Index = () => {
 
               {/* Contact Form */}
               <StaggerChild>
-                <BentoCard size="lg" delay={0.4}>
-                  <div className="p-4 sm:p-6 lg:p-8 h-full">
+                <BentoCard size="lg" delay={0.4} className="col-span-4 row-span-2 min-h-[400px]">
+                  <div className="p-4 sm:p-6 lg:pl-32 lg:pr-22 lg:py-8 h-full ml-2">
                     <motion.div
                       className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
                       initial={{ opacity: 0, x: -50 }}
@@ -1038,7 +1038,7 @@ const Index = () => {
                   </div>
                 </BentoCard>
               </StaggerChild>
-            </BentoGrid>
+            </div>
           </StaggerContainer>
 
           {/* CTA Section */}
