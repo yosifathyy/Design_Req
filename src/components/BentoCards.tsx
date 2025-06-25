@@ -27,12 +27,11 @@ export const BentoCard = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, scale: 0.9, rotateX: -10 }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
       whileInView={{
         opacity: 1,
         y: 0,
         scale: 1,
-        rotateX: 0,
         transition: {
           type: "spring",
           damping: 20,
@@ -43,14 +42,11 @@ export const BentoCard = ({
       whileHover={{
         y: -5,
         scale: 1.02,
-        rotateX: 2,
-        rotateY: 2,
         transition: { type: "spring", damping: 20, stiffness: 300 },
       }}
       whileTap={{ scale: 0.98 }}
       viewport={{ once: true, margin: "-50px" }}
       className={cn(sizeClasses[size], className)}
-      style={{ transformStyle: "preserve-3d" }}
     >
       <Card
         className={cn(
@@ -93,10 +89,7 @@ export const BentoCard = ({
         <div className="relative z-10 h-full">{children}</div>
 
         {/* Hover glow effect */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-retro-purple/10 via-retro-teal/10 to-retro-orange/10 opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-retro-purple/10 via-retro-teal/10 to-retro-orange/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Card>
     </motion.div>
   );
