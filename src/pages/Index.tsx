@@ -876,8 +876,8 @@ const Index = () => {
           </motion.div>
 
           <StaggerContainer className="flex flex-col">
-            <div className="flex flex-row justify-start gap-6 text-left">
-              {/* Contact Methods */}
+            {/* Contact Methods Row */}
+            <div className="flex flex-row justify-start gap-6 text-left mb-8">
               {[
                 {
                   icon: MessageCircle,
@@ -933,112 +933,112 @@ const Index = () => {
                   </BentoCard>
                 </StaggerChild>
               ))}
+            </div>
 
-              {/* Contact Form */}
-              <StaggerChild>
-                <BentoCard size="lg" delay={0.4} className="col-span-4 row-span-2 min-h-[400px]">
-                  <div className="p-4 sm:p-6 lg:pl-32 lg:pr-22 lg:py-8 h-full ml-2">
+            {/* Contact Form */}
+            <StaggerChild>
+              <BentoCard size="lg" delay={0.4} className="col-span-4 row-span-2 min-h-[400px]">
+                <div className="p-4 sm:p-6 lg:pl-32 lg:pr-22 lg:py-8 h-full ml-2">
+                  <motion.div
+                    className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                  >
                     <motion.div
-                      className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
-                      initial={{ opacity: 0, x: -50 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.6 }}
+                      className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
+                      animate={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 6,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                     >
-                      <motion.div
-                        className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
-                        animate={{
-                          rotate: [0, 360],
-                        }}
-                        transition={{
-                          duration: 6,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                      >
-                        <Send className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </motion.div>
-                      <h3 className="font-display text-lg sm:text-xl lg:text-2xl text-retro-purple">
-                        Send us a Message! 💌
-                      </h3>
+                      <Send className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </motion.div>
+                    <h3 className="font-display text-lg sm:text-xl lg:text-2xl text-retro-purple">
+                      Send us a Message! 💌
+                    </h3>
+                  </motion.div>
 
-                    <form className="space-y-4 sm:space-y-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <div>
-                          <Label
-                            htmlFor="name"
-                            className="text-retro-purple font-medium"
-                          >
-                            Full Name ✨
-                          </Label>
-                          <Input
-                            id="name"
-                            placeholder="Your awesome name"
-                            className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
-                          />
-                        </div>
-                        <div>
-                          <Label
-                            htmlFor="email"
-                            className="text-retro-purple font-medium"
-                          >
-                            Email Address 📧
-                          </Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="your@awesome-email.com"
-                            className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
-                          />
-                        </div>
-                      </div>
+                  <form className="space-y-4 sm:space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       <div>
                         <Label
-                          htmlFor="subject"
+                          htmlFor="name"
                           className="text-retro-purple font-medium"
                         >
-                          Subject 🎯
+                          Full Name ✨
                         </Label>
                         <Input
-                          id="subject"
-                          placeholder="What's this magical message about?"
+                          id="name"
+                          placeholder="Your awesome name"
                           className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
                         />
                       </div>
                       <div>
                         <Label
-                          htmlFor="message"
+                          htmlFor="email"
                           className="text-retro-purple font-medium"
                         >
-                          Message 💭
+                          Email Address 📧
                         </Label>
-                        <Textarea
-                          id="message"
-                          placeholder="Tell us about your amazing project ideas, questions, or just say hi! We love hearing from creative minds..."
-                          rows={5}
-                          className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none"
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="your@awesome-email.com"
+                          className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
                         />
                       </div>
-                      <motion.div
-                        className="text-center"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="subject"
+                        className="text-retro-purple font-medium"
                       >
-                        <Button
-                          type="submit"
-                          size="lg"
-                          className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                        >
-                          <Send className="w-5 h-5 mr-2" />
-                          Send Magic Message ✨
-                          <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
-                      </motion.div>
-                    </form>
-                  </div>
-                </BentoCard>
-              </StaggerChild>
-            </div>
+                        Subject 🎯
+                      </Label>
+                      <Input
+                        id="subject"
+                        placeholder="What's this magical message about?"
+                        className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="message"
+                        className="text-retro-purple font-medium"
+                      >
+                        Message 💭
+                      </Label>
+                      <Textarea
+                        id="message"
+                        placeholder="Tell us about your amazing project ideas, questions, or just say hi! We love hearing from creative minds..."
+                        rows={5}
+                        className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none"
+                      />
+                    </div>
+                    <motion.div
+                      className="text-center"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                      >
+                        <Send className="w-5 h-5 mr-2" />
+                        Send Magic Message ✨
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    </motion.div>
+                  </form>
+                </div>
+              </BentoCard>
+            </StaggerChild>
           </StaggerContainer>
 
           {/* CTA Section */}
