@@ -1,23 +1,16 @@
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
 
 const CartoonyCursor = () => {
+  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
   const [isVisible, setIsVisible] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       setIsVisible(true);
-      cursorX.set(e.clientX - 16);
-      cursorY.set(e.clientY - 16);
+      setMousePosition({ x: e.clientX - 16, y: e.clientY - 16 });
     };
 
     const handleMouseDown = () => setIsClicking(true);
@@ -64,7 +57,9 @@ const CartoonyCursor = () => {
       document.removeEventListener("mouseout", handleMouseLeave);
       document.removeEventListener("mouseleave", handleMouseOut);
     };
-  }, [cursorX, cursorY]);
+  }, []);
+
+  if (!isVisible) return null;
 
   return (
     <>
@@ -75,13 +70,14 @@ const CartoonyCursor = () => {
       `}</style>
 
       <motion.div
-        className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] mix-blend-difference ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
+        className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] mix-blend-difference"
         style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
+          left: mousePosition.x,
+          top: mousePosition.y,
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.1 }}
       >
         {/* Main cursor */}
         <motion.div
@@ -107,11 +103,6 @@ const CartoonyCursor = () => {
             className="absolute top-1/2 left-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-retro-orange"
             animate={{
               scale: isClicking ? 2 : isHovering ? 1.5 : 1,
-              backgroundColor: isClicking
-                ? "#ff6b6b"
-                : isHovering
-                  ? "#4ecdc4"
-                  : "#ff8c69",
             }}
             transition={{ type: "spring", damping: 15, stiffness: 300 }}
           />
@@ -153,20 +144,6 @@ const CartoonyCursor = () => {
             />
           )}
         </motion.div>
-
-        {/* Trailing particles */}
-        <motion.div
-          className="absolute top-1/2 left-1/2 w-1 h-1 bg-retro-teal rounded-full -translate-x-1/2 -translate-y-1/2"
-          animate={{
-            scale: [1, 0],
-            opacity: [0.8, 0],
-          }}
-          transition={{
-            duration: 0.5,
-            repeat: Infinity,
-            ease: "easeOut",
-          }}
-        />
       </motion.div>
     </>
   );
