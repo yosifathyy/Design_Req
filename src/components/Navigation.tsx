@@ -73,12 +73,17 @@ const Navigation = () => {
             </motion.div>
           ))}
 
-          <Button
-            asChild
-            className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+          <motion.div
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Link to="/start-project">Start Your Project</Link>
-          </Button>
+            <Button
+              asChild
+              className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 animate-pulse-glow"
+            >
+              <Link to="/start-project">🚀 Start Your Project</Link>
+            </Button>
+          </motion.div>
         </div>
       </nav>
 
