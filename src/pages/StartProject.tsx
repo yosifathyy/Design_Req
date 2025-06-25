@@ -199,14 +199,15 @@ const StartProject = () => {
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
+                        onClick={() => setProjectType(type.id)}
+                        className="cursor-pointer"
                       >
                         <TiltCard
-                          className={`cursor-pointer transition-all duration-300 border-3 hover:shadow-xl ${
+                          className={`transition-all duration-300 border-3 hover:shadow-xl ${
                             projectType === type.id
                               ? "border-retro-purple bg-retro-purple/10 shadow-2xl"
                               : "border-retro-purple/30 hover:border-retro-purple/60"
                           }`}
-                          onClick={() => setProjectType(type.id)}
                         >
                           <Card className="border-0 bg-transparent">
                             <CardContent className="p-6 text-center">
