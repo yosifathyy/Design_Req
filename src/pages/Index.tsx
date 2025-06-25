@@ -122,7 +122,7 @@ const Index = () => {
                 </FadeInUp>
 
                 <motion.div
-                  className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.9, type: "spring", damping: 15 }}
@@ -133,15 +133,14 @@ const Index = () => {
                   >
                     <Button
                       asChild
-                      size="lg"
-                      className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 text-lg animate-pulse-glow"
+                      className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 text-sm sm:text-base lg:text-lg animate-pulse-glow w-full sm:w-auto"
                     >
                       <Link to="/start-project">
                         <WiggleIcon>
-                          <Rocket className="w-5 h-5 mr-2" />
+                          <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                         </WiggleIcon>
                         Start Your Project
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2" />
                       </Link>
                     </Button>
                   </motion.div>
@@ -152,15 +151,14 @@ const Index = () => {
                   >
                     <Button
                       variant="outline"
-                      size="lg"
-                      className="border-2 border-retro-purple text-retro-purple hover:bg-retro-purple hover:text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300"
+                      className="border-2 border-retro-purple text-retro-purple hover:bg-retro-purple hover:text-white font-semibold px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 rounded-2xl transition-all duration-300 text-sm sm:text-base lg:text-lg w-full sm:w-auto"
                       onClick={() =>
                         document.getElementById("portfolio")?.scrollIntoView({
                           behavior: "smooth",
                         })
                       }
                     >
-                      <Play className="w-5 h-5 mr-2" />
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                       Watch Demo
                     </Button>
                   </motion.div>
