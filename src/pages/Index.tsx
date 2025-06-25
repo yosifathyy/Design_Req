@@ -94,9 +94,9 @@ const Index = () => {
           <BentoGrid className="mb-12 sm:mb-16">
             {/* Main Hero Card */}
             <HeroBentoCard delay={0.3}>
-              <div className="p-8 h-full flex flex-col justify-center text-center">
+              <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col justify-center text-center">
                 <motion.h1
-                  className="font-display text-4xl lg:text-6xl text-retro-purple mb-6 leading-tight"
+                  className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-retro-purple mb-4 sm:mb-6 leading-tight"
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
@@ -113,8 +113,8 @@ const Index = () => {
                   </motion.span>
                 </motion.h1>
 
-                <FadeInUp delay={0.7} className="mb-8">
-                  <p className="text-lg lg:text-xl text-retro-purple/80 max-w-2xl mx-auto leading-relaxed">
+                <FadeInUp delay={0.7} className="mb-6 sm:mb-8">
+                  <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
                     Connect with our curated team of expert designers. From
                     Photoshop magic to 3D masterpieces and memorable logos - we
                     bring your vision to life!
