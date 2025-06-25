@@ -19,10 +19,10 @@ export const BentoCard = ({
   delay = 0,
 }: BentoCardProps) => {
   const sizeClasses = {
-    sm: "col-span-1 row-span-1 min-h-[200px]",
-    md: "col-span-1 md:col-span-2 row-span-1 min-h-[250px]",
-    lg: "col-span-1 md:col-span-2 lg:col-span-3 row-span-2 min-h-[350px]",
-    xl: "col-span-1 md:col-span-2 lg:col-span-4 row-span-2 min-h-[400px]",
+    sm: "col-span-1 row-span-1 min-h-[180px] sm:min-h-[200px] lg:min-h-[220px]",
+    md: "col-span-1 sm:col-span-2 lg:col-span-2 row-span-1 min-h-[200px] sm:min-h-[250px] lg:min-h-[280px]",
+    lg: "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 row-span-2 min-h-[320px] sm:min-h-[380px] lg:min-h-[420px]",
+    xl: "col-span-1 sm:col-span-2 lg:col-span-4 xl:col-span-6 row-span-2 min-h-[350px] sm:min-h-[400px] lg:min-h-[450px]",
   };
 
   return (
@@ -60,7 +60,7 @@ export const BentoCard = ({
         {/* Animated background elements */}
         <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-300">
           <motion.div
-            className="absolute top-4 right-4 w-8 h-8 bg-retro-orange/30 rounded-full"
+            className="absolute top-2 right-2 sm:top-4 sm:right-4 w-4 h-4 sm:w-8 sm:h-8 bg-retro-orange/30 rounded-full"
             animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 180, 360],
@@ -72,7 +72,7 @@ export const BentoCard = ({
             }}
           />
           <motion.div
-            className="absolute bottom-4 left-4 w-6 h-6 bg-retro-teal/30 rounded-full"
+            className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 w-3 h-3 sm:w-6 sm:h-6 bg-retro-teal/30 rounded-full"
             animate={{
               scale: [1, 0.8, 1],
               y: [0, -10, 0],
@@ -105,7 +105,7 @@ export const BentoGrid = ({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 auto-rows-min",
+        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 auto-rows-min w-full",
         className,
       )}
     >
@@ -128,16 +128,16 @@ export const StatBentoCard = ({
 }) => {
   return (
     <BentoCard size="sm" delay={delay}>
-      <div className="p-6 h-full flex flex-col justify-center items-center text-center">
+      <div className="p-3 sm:p-4 lg:p-6 h-full flex flex-col justify-center items-center text-center">
         <motion.div
-          className="w-12 h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-2xl flex items-center justify-center mb-4"
+          className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center mb-2 sm:mb-3 lg:mb-4"
           whileHover={{ rotate: 360, scale: 1.1 }}
           transition={{ duration: 0.5 }}
         >
-          <Icon className="w-6 h-6 text-white" />
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
         </motion.div>
         <motion.div
-          className="font-display text-3xl text-retro-purple mb-2"
+          className="font-display text-xl sm:text-2xl lg:text-3xl text-retro-purple mb-1 sm:mb-2"
           initial={{ scale: 0 }}
           whileInView={{ scale: 1 }}
           transition={{
@@ -149,7 +149,9 @@ export const StatBentoCard = ({
         >
           {stat}
         </motion.div>
-        <div className="text-sm text-retro-purple/70 font-medium">{label}</div>
+        <div className="text-xs sm:text-sm text-retro-purple/70 font-medium text-center leading-tight">
+          {label}
+        </div>
       </div>
     </BentoCard>
   );
@@ -170,19 +172,23 @@ export const FeatureBentoCard = ({
 }) => {
   return (
     <BentoCard size="md" gradient={gradient} delay={delay}>
-      <div className="p-6 h-full flex flex-col">
+      <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
         <motion.div
-          className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4"
+          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-sm rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
           whileHover={{
             rotate: [0, -10, 10, 0],
             scale: 1.1,
           }}
           transition={{ duration: 0.5 }}
         >
-          <Icon className="w-8 h-8 text-white" />
+          <Icon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
         </motion.div>
-        <h3 className="font-bold text-xl text-white mb-3">{title}</h3>
-        <p className="text-white/80 flex-1">{description}</p>
+        <h3 className="font-bold text-lg sm:text-xl text-white mb-2 sm:mb-3">
+          {title}
+        </h3>
+        <p className="text-white/80 flex-1 text-sm sm:text-base leading-relaxed">
+          {description}
+        </p>
       </div>
     </BentoCard>
   );
