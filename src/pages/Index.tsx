@@ -295,25 +295,25 @@ const Index = () => {
                   gradient="from-retro-purple/20 via-retro-teal/20 to-retro-purple/20"
                   delay={0.2}
                 >
-                  <div className="p-8 h-full flex flex-col">
+                  <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
                     <motion.div
-                      className="w-20 h-20 bg-gradient-to-br from-retro-purple to-retro-teal rounded-3xl flex items-center justify-center mb-6"
+                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-retro-purple to-retro-teal rounded-2xl lg:rounded-3xl flex items-center justify-center mb-4 sm:mb-6"
                       whileHover={{
                         rotate: 360,
                         scale: 1.1,
                         transition: { duration: 0.6 },
                       }}
                     >
-                      <Palette className="w-10 h-10 text-white" />
+                      <Palette className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
                     </motion.div>
-                    <h3 className="font-bold text-3xl text-retro-purple mb-4">
+                    <h3 className="font-bold text-xl sm:text-2xl lg:text-3xl text-retro-purple mb-3 sm:mb-4">
                       Photoshop Design 🎨
                     </h3>
-                    <p className="text-retro-purple/80 mb-6 text-lg">
+                    <p className="text-retro-purple/80 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg">
                       Photo editing, compositing, and digital art creation
                       that'll blow your mind!
                     </p>
-                    <div className="grid grid-cols-2 gap-3 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
                       {[
                         "Photo Retouching",
                         "Digital Compositing",
@@ -327,8 +327,8 @@ const Index = () => {
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <CheckCircle className="w-4 h-4 text-retro-teal mr-2" />
-                          <span className="text-sm">{feature}</span>
+                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-retro-teal mr-2 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm">{feature}</span>
                         </motion.div>
                       ))}
                     </div>
@@ -339,10 +339,10 @@ const Index = () => {
                     >
                       <Button
                         asChild
-                        className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold"
+                        className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold text-sm sm:text-base"
                       >
                         <Link to="/start-project">
-                          <Camera className="w-4 h-4 mr-2" />
+                          <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                           Start Photoshop Project
                         </Link>
                       </Button>
