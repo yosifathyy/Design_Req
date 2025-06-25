@@ -71,7 +71,10 @@ const Index = () => {
       <Navigation />
 
       {/* Hero Section */}
-      <section id="home" className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10">
+      <section
+        id="home"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10"
+      >
         <div className="max-w-7xl mx-auto">
           <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
             <motion.div
@@ -348,7 +351,9 @@ const Index = () => {
                               transition={{ delay: index * 0.1 }}
                             >
                               <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-retro-teal mr-2 flex-shrink-0" />
-                              <span className="text-xs sm:text-sm">{feature}</span>
+                              <span className="text-xs sm:text-sm">
+                                {feature}
+                              </span>
                             </motion.div>
                           ))}
                         </div>
@@ -408,7 +413,10 @@ const Index = () => {
                           "Product Visualization",
                           "Architectural Renders",
                         ].map((feature, index) => (
-                          <div key={index} className="flex items-center text-xs sm:text-sm">
+                          <div
+                            key={index}
+                            className="flex items-center text-xs sm:text-sm"
+                          >
                             <Sparkles className="w-3 h-3 text-retro-teal mr-2 flex-shrink-0" />
                             {feature}
                           </div>
@@ -455,7 +463,10 @@ const Index = () => {
                           "Brand Guidelines",
                           "Business Cards",
                         ].map((feature, index) => (
-                          <div key={index} className="flex items-center text-xs sm:text-sm">
+                          <div
+                            key={index}
+                            className="flex items-center text-xs sm:text-sm"
+                          >
                             <Star className="w-3 h-3 text-retro-orange mr-2 flex-shrink-0" />
                             {feature}
                           </div>
@@ -478,7 +489,10 @@ const Index = () => {
       </section>
 
       {/* Portfolio Section */}
-      <section id="portfolio" className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
+      <section
+        id="portfolio"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative"
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
@@ -828,13 +842,16 @@ const Index = () => {
                   </div>
                 </BentoCard>
               </StaggerChild>
-            </div>
+            </BentoGrid>
           </StaggerContainer>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative mx-auto">
+      <section
+        id="contact"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative mx-auto"
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.5, rotateY: -45 }}
@@ -937,7 +954,11 @@ const Index = () => {
 
             {/* Contact Form */}
             <StaggerChild>
-              <BentoCard size="lg" delay={0.4} className="col-span-4 row-span-2 min-h-[400px]">
+              <BentoCard
+                size="lg"
+                delay={0.4}
+                className="col-span-4 row-span-2 min-h-[400px]"
+              >
                 <div className="p-4 sm:p-6 lg:pl-32 lg:pr-22 lg:py-8 h-full ml-2">
                   <motion.div
                     className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
