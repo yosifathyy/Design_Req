@@ -1057,9 +1057,9 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-retro-purple/90 text-white px-6 py-12 relative overflow-hidden">
+      <footer className="bg-retro-purple/90 text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
             <div>
               <motion.div
                 className="flex items-center space-x-3 mb-4"
