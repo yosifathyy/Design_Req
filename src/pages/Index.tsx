@@ -196,13 +196,13 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="px-6 py-20 relative">
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
         <div className="max-w-7xl mx-auto">
-          <FadeInUp className="text-center mb-16">
-            <h2 className="font-display text-4xl lg:text-5xl text-retro-purple mb-4">
+          <FadeInUp className="text-center mb-12 sm:mb-16">
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
               How It Works
             </h2>
-            <p className="text-xl text-retro-purple/80 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
               Our streamlined process makes getting professional design work
               effortless and fun!
             </p>
