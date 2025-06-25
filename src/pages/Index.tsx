@@ -583,7 +583,7 @@ const Index = () => {
                       </div>
                     </motion.div>
                     <p className="text-sm text-retro-purple/70">
-                      Hover to see the magic happen! ��
+                      Hover to see the magic happen! ✨
                     </p>
                   </div>
                 </BentoCard>
@@ -812,7 +812,10 @@ const Index = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="px-6 py-20 relative">
+      <section
+        id="contact"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative"
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.5, rotateY: -45 }}
@@ -828,7 +831,7 @@ const Index = () => {
               },
             }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
             <motion.div
               animate={{
@@ -840,14 +843,14 @@ const Index = () => {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="inline-block mb-6"
+              className="inline-block mb-4 sm:mb-6"
             >
-              <MessageCircle className="w-16 h-16 text-retro-purple mx-auto" />
+              <MessageCircle className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
             </motion.div>
-            <h2 className="font-display text-4xl lg:text-5xl text-retro-purple mb-4">
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
               Get In Touch! 📞
             </h2>
-            <p className="text-xl text-retro-purple/80 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
               Have questions about our services? Need help with your project?
               We're here to help make magic happen! ✨
             </p>
