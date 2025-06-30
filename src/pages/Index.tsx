@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Navigation from "@/components/Navigation";
 import FAQ from "@/components/FAQ";
+import Testimonials from "@/components/Testimonials";
 import {
   BentoGrid,
   BentoCard,
