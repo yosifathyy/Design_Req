@@ -17,6 +17,7 @@ import {
   HeroBentoCard,
 } from "@/components/BentoCards";
 import RetroCards from "@/components/RetroCards";
+import RetroHowItWorks from "@/components/RetroHowItWorks";
 import {
   FadeInUp,
   BounceIn,
