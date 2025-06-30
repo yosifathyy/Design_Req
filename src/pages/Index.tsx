@@ -1553,6 +1553,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <FAQ />
+
       {/* Footer */}
       <footer className="bg-retro-purple/90 text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
