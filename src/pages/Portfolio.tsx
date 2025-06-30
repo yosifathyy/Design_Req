@@ -78,16 +78,14 @@ const Portfolio = () => {
       if (!ref.current) return;
 
       const element = ref.current;
-      const chars = text.split("");
+      const chars = text.split('');
 
       element.innerHTML = chars
-        .map(
-          (char, i) =>
-            `<span style="display: inline-block; transform: translateY(100px); opacity: 0;">${char}</span>`,
-        )
-        .join("");
+        .map((char, i) =>
+          `<span style="display: inline-block; transform: translateY(100px); opacity: 0;">${char}</span>`
+        ).join('');
 
-      const spans = element.querySelectorAll("span");
+      const spans = element.querySelectorAll('span');
 
       ScrollTrigger.create({
         trigger: element,
@@ -197,28 +195,87 @@ const Portfolio = () => {
     "Development",
   ];
 
+  const smoothHeroRef = useStaggeredText("smooooth");
+  const scrollingTextRef = useStaggeredText("scrolling", 0.05);
+
+  const speedBar1 = useSpeedControl(0.8);
+  const speedBar2 = useSpeedControl(0.9);
+  const speedBar3 = useSpeedControl(1.0);
+  const speedBar4 = useSpeedControl(1.1);
+  const speedBar5 = useSpeedControl(1.2);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-festival-black via-gray-900 to-festival-black relative overflow-hidden">
-      {/* Retro background elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-festival-orange to-festival-pink rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-festival-yellow to-festival-magenta rounded-full blur-3xl"></div>
-      </div>
+    <div ref={wrapperRef} className="relative overflow-hidden">
+      <div ref={contentRef} className="min-h-screen bg-gradient-to-br from-festival-black via-gray-900 to-festival-black relative">
 
-      {/* Geometric shapes */}
-      <GSAPParallax
-        speed={0.3}
-        className="absolute inset-0 pointer-events-none"
-      >
-        <div className="absolute top-20 left-10 w-20 h-20 border-4 border-festival-orange rotate-45 opacity-20"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-festival-pink rounded-full opacity-20"></div>
-        <div className="absolute bottom-40 left-20 w-24 h-24 border-4 border-festival-yellow opacity-20"></div>
-        <div className="absolute bottom-20 right-40 w-12 h-12 bg-festival-magenta transform rotate-45 opacity-20"></div>
-      </GSAPParallax>
+        {/* Smooth scrolling hero text */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+          <div
+            ref={smoothHeroRef}
+            className="font-display text-6xl lg:text-8xl text-transparent"
+            style={{
+              WebkitTextStroke: '2px #ff6b35',
+              textStroke: '2px #ff6b35'
+            }}
+          />
+          <div className="relative mt-4">
+            <div
+              ref={scrollingTextRef}
+              className="font-display text-8xl lg:text-[12rem] text-white opacity-90"
+            />
+            {/* Layered scrolling text with different speeds */}
+            <div className="absolute inset-0">
+              {[0.95, 0.9, 0.85, 0.8, 0.75, 0.7].map((speed, index) => {
+                const SpeedText = ({ speed }: { speed: number }) => {
+                  const ref = useSpeedControl(speed);
+                  return (
+                    <div
+                      ref={ref}
+                      className="absolute inset-0 font-display text-8xl lg:text-[12rem] text-transparent pointer-events-none"
+                      style={{
+                        WebkitTextStroke: '1px rgba(255, 107, 53, 0.3)',
+                        textStroke: '1px rgba(255, 107, 53, 0.3)'
+                      }}
+                    >
+                      scrolling
+                    </div>
+                  );
+                };
+                return <SpeedText key={index} speed={speed} />;
+              })}
+            </div>
+          </div>
+        </div>
 
-      <Navigation />
+        {/* Retro background elements with speed control */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-festival-orange to-festival-pink rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-festival-yellow to-festival-magenta rounded-full blur-3xl"></div>
+        </div>
 
-      <div className="px-6 py-20 relative z-10">
+        {/* Speed-controlled geometric shapes */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            ref={speedBar1}
+            className="absolute top-20 left-10 w-20 h-20 border-4 border-festival-orange rotate-45 opacity-20"
+          ></div>
+          <div
+            ref={speedBar2}
+            className="absolute top-40 right-20 w-16 h-16 bg-festival-pink rounded-full opacity-20"
+          ></div>
+          <div
+            ref={speedBar3}
+            className="absolute bottom-40 left-20 w-24 h-24 border-4 border-festival-yellow opacity-20"
+          ></div>
+          <div
+            ref={speedBar4}
+            className="absolute bottom-20 right-40 w-12 h-12 bg-festival-magenta transform rotate-45 opacity-20"
+          ></div>
+        </div>
+
+        <Navigation />
+
+        <div className="px-6 py-20 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-20">
