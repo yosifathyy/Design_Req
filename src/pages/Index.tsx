@@ -126,15 +126,15 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
             <motion.div
-              className="inline-flex items-center space-x-2 bg-retro-purple/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-6 sm:mb-8"
+              className="inline-flex items-center space-x-2 bg-festival-orange px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 sm:mb-8 border-2 border-festival-black"
               whileHover={{ scale: 1.05, rotate: 2 }}
               whileTap={{ scale: 0.95 }}
             >
               <WiggleIcon>
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-retro-purple" />
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </WiggleIcon>
-              <span className="text-xs sm:text-sm font-medium text-retro-purple">
-                Expert Design Studio Platform
+              <span className="text-sm sm:text-base font-bold text-white tracking-wide">
+                EXPERT DESIGN STUDIO
               </span>
             </motion.div>
           </BounceIn>
@@ -144,70 +144,72 @@ const Index = () => {
             <HeroBentoCard delay={0.3}>
               <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col justify-center text-center">
                 <motion.h1
-                  className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-retro-purple mb-4 sm:mb-6 leading-tight"
+                  className="font-sans font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-festival-black mb-4 sm:mb-6 leading-tight tracking-tight"
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
                 >
-                  Transform Your Ideas Into
+                  Creative vibes,{" "}
                   <motion.span
-                    className="bg-gradient-to-r from-retro-orange to-retro-peach bg-clip-text text-transparent block"
+                    className="bg-gradient-to-r from-festival-orange via-festival-pink to-festival-yellow bg-clip-text text-transparent inline-block"
                     animate={{
                       backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                     }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    Stunning Designs
+                    festival energy.
                   </motion.span>
+                  <br />
+                  <span className="text-festival-orange">Good designs.</span>
                 </motion.h1>
 
                 <FadeInUp delay={0.7} className="mb-6 sm:mb-8">
-                  <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
-                    Connect with our curated team of expert designers. From
-                    Photoshop magic to 3D masterpieces and memorable logos - we
-                    bring your vision to life!
+                  <p className="text-base sm:text-lg lg:text-xl text-festival-black/80 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0 font-medium">
+                    Connect with our curated team of creative wizards. From wild
+                    Photoshop edits to 3D masterpieces and unforgettable brand
+                    identities!
                   </p>
                 </FadeInUp>
 
                 <motion.div
-                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center"
+                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.9, type: "spring", damping: 15 }}
                 >
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.05, rotate: -1 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button
                       asChild
-                      className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 text-sm sm:text-base lg:text-lg animate-pulse-glow w-full sm:w-auto"
+                      className="bg-festival-orange border-2 border-festival-black text-white font-black px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
                     >
                       <Link to="/start-project">
                         <WiggleIcon>
-                          <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                          <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         </WiggleIcon>
-                        Start Your Project
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2" />
+                        Get Started
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                       </Link>
                     </Button>
                   </motion.div>
 
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.05, rotate: 1 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button
                       variant="outline"
-                      className="border-2 border-retro-purple text-retro-purple hover:bg-retro-purple hover:text-white font-semibold px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 rounded-2xl transition-all duration-300 text-sm sm:text-base lg:text-lg w-full sm:w-auto"
+                      className="border-2 border-festival-black text-festival-black hover:bg-festival-pink hover:text-white font-bold px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
                       onClick={() =>
                         document.getElementById("portfolio")?.scrollIntoView({
                           behavior: "smooth",
                         })
                       }
                     >
-                      <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                      Watch Demo
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      See Work
                     </Button>
                   </motion.div>
                 </motion.div>
