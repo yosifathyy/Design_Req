@@ -137,8 +137,14 @@ const StepCard: React.FC<StepCardProps> = ({
 
   return (
     <div ref={cardRef} className="relative group cursor-pointer">
-      {/* Main Card */}
-      <div
+      {/* Main Card with Hero Button Hover Animation */}
+      <motion.div
+        whileHover={{
+          scale: 1.05,
+          rotate: 2,
+        }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
         className={cn(
           "relative overflow-hidden rounded-3xl border-4 border-black",
           "bg-gradient-to-br p-8 min-h-[320px]",
