@@ -353,8 +353,11 @@ const Testimonials: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Testimonial Cards Container - Extra height for scroll stacking */}
-        <div style={{ height: `${testimonialsData.length * 100}vh` }}>
+        {/* Testimonial Cards Container - Height for smooth stacking */}
+        <div
+          style={{ height: `${testimonialsData.length * 80}vh` }}
+          className="relative"
+        >
           {testimonialsData.map((testimonial, index) => (
             <TestimonialCard
               key={testimonial.id}
@@ -366,7 +369,7 @@ const Testimonials: React.FC = () => {
         </div>
 
         {/* Final spacing */}
-        <div className="h-screen"></div>
+        <div className="h-96"></div>
       </div>
     </section>
   );
