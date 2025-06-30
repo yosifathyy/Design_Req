@@ -41,6 +41,7 @@ import {
   GSAPMagneticButton,
   GSAPRevealText,
 } from "@/components/GSAPAnimatedElements";
+import GSAPInteractiveBackground from "@/components/GSAPInteractiveBackground";
 import {
   Sparkles,
   Palette,
