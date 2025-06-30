@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface FAQItem {
   question: string;
