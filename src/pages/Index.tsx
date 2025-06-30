@@ -188,10 +188,13 @@ const Index = () => {
                   </p>
                 </FadeInUp>
 
-                <GSAPFadeIn delay={0.9} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+                <GSAPFadeIn
+                  delay={0.9}
+                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
+                >
                   <GSAPMagneticButton
                     className="bg-festival-orange border-2 border-festival-black text-white font-black px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
-                    onClick={() => window.location.href = "/start-project"}
+                    onClick={() => (window.location.href = "/start-project")}
                   >
                     <WiggleIcon>
                       <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
@@ -214,8 +217,8 @@ const Index = () => {
                       <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       See Work
                     </Button>
-                  </motion.div>
-                </motion.div>
+                  </GSAPHover>
+                </GSAPFadeIn>
               </div>
             </HeroBentoCard>
 
