@@ -81,7 +81,11 @@ import {
   Briefcase,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Index = () => {
   // State for image shuffle
