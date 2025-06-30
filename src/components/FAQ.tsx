@@ -197,17 +197,12 @@ const FAQ: React.FC = () => {
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: 0.3 }}
                                 >
-                                  <Button
-                                    asChild
-                                    className="bg-festival-pink hover:bg-festival-magenta text-white border-4 border-black rounded-full px-8 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-1 transition-all duration-200"
+                                  <a
+                                    href={item.buttonLink}
+                                    className="inline-flex items-center justify-center bg-festival-pink hover:bg-festival-magenta text-white border-4 border-black rounded-full px-8 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-1 transition-all duration-200 cursor-pointer"
                                   >
-                                    <a
-                                      href={item.buttonLink}
-                                      className="cursor-pointer"
-                                    >
-                                      {item.buttonText}
-                                    </a>
-                                  </Button>
+                                    {item.buttonText}
+                                  </a>
                                 </motion.div>
                               )}
                             </div>
