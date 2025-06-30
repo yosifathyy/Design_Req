@@ -441,240 +441,261 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Portfolio Section - Smooth Scrolling Showcase */}
+      {/* Portfolio Section - Retro Animated Showcase */}
       <section
         id="portfolio"
-        className="relative min-h-screen bg-gray-900 text-white overflow-hidden"
+        className="px-4 sm:px-6 py-16 sm:py-20 lg:py-24 relative bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
+        {/* Floating retro shapes with speed control */}
+        <div className="absolute inset-0 pointer-events-none opacity-30">
+          <div
+            ref={useSpeedControl(0.8)}
+            className="absolute top-20 left-10 w-20 h-20 border-4 border-retro-orange rotate-45 animate-pulse"
+          ></div>
+          <div
+            ref={useSpeedControl(1.2)}
+            className="absolute top-40 right-20 w-16 h-16 bg-retro-pink rounded-full animate-bounce"
+          ></div>
+          <div
+            ref={useSpeedControl(0.9)}
+            className="absolute bottom-40 left-20 w-24 h-24 border-4 border-retro-teal rotate-12"
+          ></div>
+          <div
+            ref={useSpeedControl(1.1)}
+            className="absolute bottom-20 right-40 w-12 h-12 bg-retro-purple transform rotate-45 animate-spin"
+            style={{ animationDuration: "8s" }}
+          ></div>
+        </div>
 
-        {/* Wrapper for smooth scrolling content */}
-        <div className="relative w-full">
-          <div className="px-3 relative">
-            {/* Heading Section - Layered Text Effect */}
-            <div
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-100 z-20"
-              style={{ transform: "translateX(-50%) translateY(-150%)" }}
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Header with staggered animation */}
+          <div className="text-center mb-16 lg:mb-20">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <p
-                className="font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0"
-                style={{
-                  fontSize: "clamp(60px, 15.5vw, 250px)",
-                  color: "#111",
-                  WebkitTextStroke: "2px white",
-                  zIndex: -10,
-                }}
-              >
-                smooooth
-              </p>
+              <div
+                ref={useStaggeredText("Portfolio")}
+                className="font-display text-5xl sm:text-6xl lg:text-8xl xl:text-9xl mb-4 text-retro-purple"
+              />
+              <div
+                ref={useStaggeredText("Showcase", 0.05)}
+                className="font-display text-3xl sm:text-4xl lg:text-6xl xl:text-7xl mb-6 bg-gradient-to-r from-retro-orange to-retro-peach bg-clip-text text-transparent"
+              />
+            </motion.div>
 
-              {/* Text Container with Multiple Layers */}
-              <div className="relative">
-                <p
-                  className="font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0 text-white"
-                  style={{ fontSize: "clamp(60px, 15.5vw, 250px)" }}
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="text-lg sm:text-xl lg:text-2xl text-retro-purple/80 max-w-3xl mx-auto leading-relaxed"
+            >
+              Groovy designs that'll blow your mind! Check out our radical
+              portfolio of creative projects 🚀
+            </motion.p>
+          </div>
+
+          {/* Animated Portfolio Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
+            {[
+              {
+                title: "Retro Brand Identity",
+                category: "Branding",
+                description: "Far-out brand identity with psychedelic vibes",
+                color: "from-retro-orange to-retro-peach",
+                icon: "🎨",
+                delay: 0.1,
+              },
+              {
+                title: "Groovy Web App",
+                category: "Web Design",
+                description: "Totally radical web application design",
+                color: "from-retro-purple to-retro-teal",
+                icon: "💻",
+                delay: 0.2,
+              },
+              {
+                title: "Funky Mobile App",
+                category: "App Design",
+                description: "Smooth mobile experience with retro flair",
+                color: "from-retro-mint to-retro-lavender",
+                icon: "📱",
+                delay: 0.3,
+              },
+              {
+                title: "Electric Poster Series",
+                category: "Print Design",
+                description: "Mind-blowing poster designs that pop",
+                color: "from-retro-peach to-retro-pink",
+                icon: "🎭",
+                delay: 0.4,
+              },
+              {
+                title: "Cosmic Logo Design",
+                category: "Logo Design",
+                description: "Out-of-this-world logo concepts",
+                color: "from-retro-teal to-retro-orange",
+                icon: "⭐",
+                delay: 0.5,
+              },
+              {
+                title: "Disco Package Design",
+                category: "Packaging",
+                description: "Packaging that makes products dance",
+                color: "from-retro-lavender to-retro-purple",
+                icon: "📦",
+                delay: 0.6,
+              },
+            ].map((project, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50, rotateX: -10 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: project.delay,
+                  duration: 0.8,
+                  ease: "easeOut",
+                }}
+                whileHover={{
+                  y: -10,
+                  scale: 1.02,
+                  rotateY: 5,
+                  transition: { duration: 0.3 },
+                }}
+                className="group cursor-pointer"
+              >
+                <div
+                  ref={useSpeedControl(0.95 + index * 0.05)}
+                  className="bg-white/80 backdrop-blur-sm border-3 border-retro-purple/20 rounded-3xl p-6 lg:p-8 h-full hover:border-retro-orange/50 transition-all duration-500 hover:shadow-2xl hover:shadow-retro-orange/20"
                 >
-                  scrolling
+                  {/* Project Image Placeholder */}
+                  <div
+                    className={`relative h-48 lg:h-56 rounded-2xl bg-gradient-to-br ${project.color} mb-6 overflow-hidden group-hover:scale-105 transition-transform duration-500`}
+                  >
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-6xl lg:text-7xl opacity-60 group-hover:scale-110 transition-transform duration-500">
+                        {project.icon}
+                      </span>
+                    </div>
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        whileHover={{ scale: 1 }}
+                        className="flex gap-3"
+                      >
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-white text-white hover:bg-white hover:text-black"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-retro-orange hover:bg-retro-peach text-white"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Live
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Project Details */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`px-3 py-1 text-sm font-bold rounded-full bg-gradient-to-r ${project.color} text-white`}
+                      >
+                        {project.category}
+                      </span>
+                      <Star className="w-5 h-5 text-retro-orange group-hover:fill-retro-orange transition-all duration-300" />
+                    </div>
+
+                    <h3 className="font-display text-xl lg:text-2xl text-retro-purple group-hover:text-retro-orange transition-colors duration-300">
+                      {project.title}
+                    </h3>
+
+                    <p className="text-retro-purple/70 leading-relaxed">
+                      {project.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Call to Action with Magnetic Effect */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="text-center"
+          >
+            <div className="bg-white/60 backdrop-blur-sm border-3 border-retro-purple/30 rounded-3xl p-8 lg:p-12 max-w-4xl mx-auto relative overflow-hidden">
+              {/* Background pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="grid grid-cols-8 grid-rows-6 h-full w-full">
+                  {Array.from({ length: 48 }).map((_, i) => (
+                    <div key={i} className="border border-retro-orange"></div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative z-10">
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-r from-retro-orange to-retro-pink rounded-full flex items-center justify-center mx-auto mb-6"
+                >
+                  <Rocket className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+                </motion.div>
+
+                <h3 className="font-display text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-4">
+                  Ready to Get{" "}
+                  <span className="bg-gradient-to-r from-retro-orange to-retro-peach bg-clip-text text-transparent">
+                    Groovy?
+                  </span>
+                </h3>
+
+                <p className="text-lg lg:text-xl text-retro-purple/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+                  Let's create something totally radical together! Our team of
+                  design wizards is ready to bring your wildest ideas to life.
                 </p>
 
-                {/* Layered scrolling text at different speeds */}
-                {[
-                  { speed: 0.95, ref: useSpeedControl(0.95) },
-                  { speed: 0.9, ref: useSpeedControl(0.9) },
-                  { speed: 0.85, ref: useSpeedControl(0.85) },
-                  { speed: 0.8, ref: useSpeedControl(0.8) },
-                  { speed: 0.75, ref: useSpeedControl(0.75) },
-                  { speed: 0.7, ref: useSpeedControl(0.7) },
-                ].map(({ speed, ref }) => (
-                  <div
-                    key={speed}
-                    ref={ref}
-                    className="absolute top-0 left-0 right-0 z-50 font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0 pointer-events-none"
-                    style={{
-                      fontSize: "clamp(60px, 15.5vw, 250px)",
-                      color: "transparent",
-                      WebkitTextStroke: "1px rgba(255, 255, 255, 0.3)",
-                    }}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    asChild
+                    size="lg"
+                    className="bg-gradient-to-r from-retro-purple via-retro-teal to-retro-orange text-white font-bold px-8 lg:px-12 py-4 lg:py-6 rounded-2xl shadow-2xl text-lg lg:text-xl hover:shadow-retro-orange/30 transition-all duration-500 border-3 border-retro-purple/30"
                   >
-                    scrolling
-                  </div>
-                ))}
+                    <Link to="/start-project">
+                      Start Your Project
+                      <ArrowRight className="w-6 h-6 ml-3" />
+                    </Link>
+                  </Button>
+                </motion.div>
               </div>
             </div>
-
-            {/* Image Grid Section */}
-            <section className="relative max-w-6xl mx-auto pt-[40vh] -z-10">
-              <div className="grid grid-cols-3 grid-rows-3 gap-1 w-[70vw] mx-auto">
-                {/* Image 1 */}
-                <div
-                  ref={useSpeedControl(1.0)}
-                  className="relative aspect-square overflow-hidden col-start-1 row-start-1"
-                >
-                  <img
-                    ref={useSpeedControl(1.2)}
-                    src="https://images.unsplash.com/photo-1556856425-366d6618905d?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fG5lb258ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60"
-                    alt="Portfolio showcase"
-                    className="absolute top-0 w-full h-[150%] object-cover"
-                  />
-                </div>
-
-                {/* Image 2 */}
-                <div
-                  ref={useSpeedControl(1.7)}
-                  className="relative aspect-square overflow-hidden col-start-3 row-start-2"
-                >
-                  <img
-                    ref={useSpeedControl(1.2)}
-                    src="https://images.unsplash.com/photo-1520271348391-049dd132bb7c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-                    alt="Portfolio showcase"
-                    className="absolute top-0 w-full h-[150%] object-cover"
-                  />
-                </div>
-
-                {/* Image 3 */}
-                <div
-                  ref={useSpeedControl(1.5)}
-                  className="relative aspect-square overflow-hidden col-start-2 row-start-3"
-                >
-                  <img
-                    ref={useSpeedControl(1.2)}
-                    src="https://images.unsplash.com/photo-1609166214994-502d326bafee?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-                    alt="Portfolio showcase"
-                    className="absolute top-0 w-full h-[150%] object-cover"
-                  />
-                </div>
-              </div>
-            </section>
-
-            {/* Title Section */}
-            <section className="max-w-6xl mx-auto text-center flex items-center justify-center flex-col min-h-[50vh] py-20">
-              <h1
-                className="font-display text-4xl sm:text-6xl lg:text-8xl text-center leading-tight m-0 mb-6"
-                style={{ fontSize: "clamp(40px, 8vw, 100px)" }}
-              >
-                <span
-                  className="text-2xl sm:text-3xl lg:text-4xl font-normal"
-                  style={{ fontSize: "clamp(20px, 3vw, 40px)" }}
-                >
-                  with{" "}
-                </span>
-                GSAP scrolling
-              </h1>
-              <p className="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed">
-                Seamlessly integrated with GSAP and ScrollTrigger. Leveraging
-                native scrolling - no "fake" scrollbars or event hijacking.
-              </p>
-            </section>
-
-            {/* Speed Control Bars Section */}
-            <section className="max-w-6xl mx-auto flex flex-wrap gap-16 py-20">
-              <div className="flex-1 min-w-[300px] flex flex-col items-start justify-center">
-                <div className="border-l border-white pl-8">
-                  <h2 className="text-xl sm:text-2xl font-medium mb-4">
-                    Speed Control
-                  </h2>
-                  <p className="leading-relaxed">
-                    Animate elements along at different speeds, slow them down
-                    or make them whizz past.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex-1 min-w-[500px] flex w-full h-[60vh] items-end">
-                {[
-                  { speed: 0.8, ref: useSpeedControl(0.8) },
-                  { speed: 0.9, ref: useSpeedControl(0.9) },
-                  { speed: 1.0, ref: useSpeedControl(1.0) },
-                  { speed: 1.1, ref: useSpeedControl(1.1) },
-                  { speed: 1.2, ref: useSpeedControl(1.2) },
-                ].map(({ speed, ref }, index) => (
-                  <div
-                    key={speed}
-                    ref={ref}
-                    className="rounded-lg mx-4 text-center flex-1 font-display text-2xl sm:text-3xl bg-gradient-to-t from-retro-orange to-retro-pink text-white flex items-end justify-center pb-4"
-                    style={{
-                      height: `${20 + index * 15}%`,
-                      fontSize: "clamp(16px, 3vw, 36px)",
-                    }}
-                  >
-                    {speed}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Parallax Slab Section */}
-            <section className="flex items-center min-h-screen py-20">
-              <div className="relative h-[500px] w-full max-h-[500px] overflow-hidden">
-                <img
-                  ref={useSpeedControl(1.3)}
-                  src="https://assets.codepen.io/756881/smoothscroller-1.jpg"
-                  alt="Parallax showcase"
-                  className="absolute bottom-0 w-full h-[180%] object-cover"
-                />
-              </div>
-            </section>
-
-            {/* Staggered Text Section */}
-            <section className="max-w-6xl mx-auto flex items-center flex-wrap gap-16 py-20">
-              <div className="flex-1 min-w-[300px]">
-                <div className="border-l border-white pl-8">
-                  <h2 className="text-xl sm:text-2xl font-medium mb-4">
-                    Add some lag (the good kind!)
-                  </h2>
-                  <p className="leading-relaxed">
-                    loosen the connection to the scroll to give a feeling of
-                    'follow through.'
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex-1 min-w-[500px] flex items-center justify-center">
-                <h3
-                  ref={useStaggeredText("stagger...", 0.1)}
-                  className="font-display text-4xl sm:text-6xl lg:text-8xl font-normal tracking-wide"
-                  style={{ fontSize: "clamp(40px, 6vw, 80px)" }}
-                >
-                  {/* Text will be populated by useStaggeredText hook */}
-                </h3>
-              </div>
-            </section>
-
-            {/* Parallax Images Section */}
-            <section className="mt-[10vh] px-4 py-40 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-20 items-center justify-items-center max-w-6xl mx-auto">
-              <div className="border-l border-white pl-8 lg:col-start-2 lg:row-start-1">
-                <h2 className="text-xl sm:text-2xl font-medium mb-4">
-                  Easy parallax image effects
-                </h2>
-                <p className="leading-relaxed">
-                  Pop your images in a container with overflow hidden, size them
-                  a little larger than the container and set data-speed to auto.
-                  GSAP does the rest.
-                </p>
-              </div>
-
-              <div className="relative h-[80vh] overflow-hidden w-full lg:col-start-1 lg:row-start-1">
-                <img
-                  ref={useSpeedControl(1.4)}
-                  src="https://assets.codepen.io/756881/neon3.jpg"
-                  alt="Parallax effect"
-                  className="absolute bottom-0 h-[140%] w-full object-cover"
-                />
-              </div>
-
-              <div className="relative h-[80vh] overflow-hidden w-full lg:col-start-2 lg:row-start-2">
-                <img
-                  ref={useSpeedControl(1.2)}
-                  src="https://assets.codepen.io/756881/neon2.jpg"
-                  alt="Parallax effect"
-                  className="absolute bottom-0 h-[140%] w-full object-cover"
-                />
-              </div>
-            </section>
-
-            {/* Spacer */}
-            <div className="h-[10vh]"></div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
