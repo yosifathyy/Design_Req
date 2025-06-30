@@ -387,6 +387,16 @@ const Index = () => {
             </p>
           </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="mt-8 mb-12"
+          >
+            <RevealImageList />
+          </motion.div>
+
           <StaggerContainer>
             <BentoGrid>
               {/* Photoshop Design Card */}
