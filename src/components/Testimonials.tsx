@@ -156,7 +156,8 @@ const TestimonialCard: React.FC<{
         ref={cardRef}
         className="relative w-full max-w-3xl"
         style={{
-          transformOrigin: "center center",
+          transformOrigin: "center bottom",
+          willChange: "transform, opacity, filter",
         }}
       >
         <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
