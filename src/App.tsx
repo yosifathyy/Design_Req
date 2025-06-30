@@ -38,6 +38,7 @@ const AppContent = () => {
   return (
     <>
       {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
+      {!isLoading && <GSAPScrollProgress />}
       <GSAPCursor enabled={!isLoading} />
       <GSAPPageTransition>
         <Routes>
