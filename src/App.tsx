@@ -24,13 +24,20 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     initializeGSAP();
   }, []);
 
+  const handleLoadComplete = () => {
+    setIsLoading(false);
+  };
+
   return (
     <>
-      <GSAPCursor enabled={true} />
+      {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
+      <GSAPCursor enabled={!isLoading} />
       <GSAPPageTransition>
         <Routes>
           <Route path="/" element={<Index />} />
