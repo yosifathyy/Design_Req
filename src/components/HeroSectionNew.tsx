@@ -424,7 +424,7 @@ const HeroSectionNew: React.FC = () => {
         </div>
 
         {/* Floating stats */}
-        <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 flex gap-8">
+        <div className="mt-16 flex flex-wrap justify-center gap-4 md:gap-8">
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
             { label: "Projects", value: "1.2K+", icon: Wand2 },
@@ -432,7 +432,7 @@ const HeroSectionNew: React.FC = () => {
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
-              className="bg-white border-4 border-black rounded-2xl p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-w-[120px]"
+              className="bg-white border-4 border-black rounded-2xl p-4 md:p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-w-[100px] md:min-w-[120px]"
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.5 + i * 0.2, duration: 0.8 }}
@@ -445,7 +445,6 @@ const HeroSectionNew: React.FC = () => {
               <motion.div
                 animate={{
                   y: [0, -5, 0],
-                  rotate: [0, 10, -10, 0],
                 }}
                 transition={{
                   duration: 3,
@@ -455,11 +454,11 @@ const HeroSectionNew: React.FC = () => {
                 }}
                 className="flex flex-col items-center"
               >
-                <stat.icon className="w-8 h-8 text-festival-orange mb-2" />
-                <div className="text-2xl font-black text-black">
+                <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-festival-orange mb-2" />
+                <div className="text-xl md:text-2xl font-black text-black">
                   {stat.value}
                 </div>
-                <div className="text-sm font-bold text-black/70">
+                <div className="text-xs md:text-sm font-bold text-black/70">
                   {stat.label}
                 </div>
               </motion.div>
