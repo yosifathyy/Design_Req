@@ -40,22 +40,20 @@ const AppContent = () => {
       {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
       <GSAPCursor enabled={!isLoading} />
-      <GSAPPageTransition>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/start-project" element={<StartProject />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/disputes" element={<Disputes />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </GSAPPageTransition>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/start-project" element={<StartProject />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/disputes" element={<Disputes />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </>
   );
 };
