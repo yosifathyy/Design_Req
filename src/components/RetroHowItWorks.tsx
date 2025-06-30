@@ -200,7 +200,7 @@ const StepCard: React.FC<StepCardProps> = ({
         {/* Decorative elements */}
         <div className="absolute bottom-4 left-4 w-8 h-8 border-4 border-white/30 rounded-full" />
         <div className="absolute top-1/2 left-0 w-4 h-16 bg-white/10 transform -translate-y-1/2" />
-      </div>
+      </motion.div>
     </div>
   );
 };
