@@ -216,20 +216,28 @@ const HeroSectionNew: React.FC = () => {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream"
+      style={{ zIndex: 1 }}
     >
       {/* Mouse follower */}
       <div
         ref={mouseFollowerRef}
-        className="fixed w-24 h-24 pointer-events-none z-50 mix-blend-difference"
-        style={{ transform: "translate(-50%, -50%)" }}
+        className="fixed w-24 h-24 pointer-events-none mix-blend-difference"
+        style={{
+          transform: "translate(-50%, -50%)",
+          zIndex: 40,
+        }}
       >
         <div className="w-full h-full bg-festival-orange rounded-full opacity-20 animate-pulse"></div>
       </div>
 
       {/* Background shapes */}
-      <div ref={shapesRef} className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+      <div
+        ref={shapesRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 1 }}
+      >
+        {[...Array(15)].map((_, i) => (
           <div
             key={i}
             className={`bg-shape absolute rounded-xl ${
@@ -241,26 +249,26 @@ const HeroSectionNew: React.FC = () => {
                     ? "bg-festival-yellow/10"
                     : "bg-festival-coral/10"
             } ${
-              i % 3 === 0
-                ? "w-16 h-16"
-                : i % 3 === 1
-                  ? "w-12 h-12"
-                  : "w-20 h-20"
-            } ${i < 10 ? "parallax-slow" : "parallax-fast"}`}
+              i % 3 === 0 ? "w-12 h-12" : i % 3 === 1 ? "w-8 h-8" : "w-16 h-16"
+            } ${i < 8 ? "parallax-slow" : "parallax-fast"}`}
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${10 + Math.random() * 80}%`,
+              top: `${5 + Math.random() * 90}%`,
             }}
           />
         ))}
       </div>
 
       {/* Floating orbs */}
-      <div ref={orbsRef} className="absolute inset-0 pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+      <div
+        ref={orbsRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 2 }}
+      >
+        {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className={`floating-orb absolute w-32 h-32 rounded-full border-4 border-black ${
+            className={`floating-orb absolute w-24 h-24 rounded-full border-4 border-black ${
               i % 4 === 0
                 ? "bg-gradient-to-br from-festival-orange to-festival-pink"
                 : i % 4 === 1
@@ -270,22 +278,25 @@ const HeroSectionNew: React.FC = () => {
                     : "bg-gradient-to-br from-festival-coral to-festival-magenta"
             } shadow-2xl`}
             style={{
-              left: `${15 + Math.random() * 70}%`,
-              top: `${10 + Math.random() * 80}%`,
+              left: `${20 + Math.random() * 60}%`,
+              top: `${15 + Math.random() * 70}%`,
             }}
           >
-            <div className="absolute inset-4 bg-white/30 rounded-full backdrop-blur-sm flex items-center justify-center">
-              {i % 4 === 0 && <Sparkles className="w-8 h-8 text-white" />}
-              {i % 4 === 1 && <Zap className="w-8 h-8 text-white" />}
-              {i % 4 === 2 && <Star className="w-8 h-8 text-white" />}
-              {i % 4 === 3 && <Heart className="w-8 h-8 text-white" />}
+            <div className="absolute inset-3 bg-white/30 rounded-full backdrop-blur-sm flex items-center justify-center">
+              {i % 4 === 0 && <Sparkles className="w-6 h-6 text-white" />}
+              {i % 4 === 1 && <Zap className="w-6 h-6 text-white" />}
+              {i % 4 === 2 && <Star className="w-6 h-6 text-white" />}
+              {i % 4 === 3 && <Heart className="w-6 h-6 text-white" />}
             </div>
           </div>
         ))}
       </div>
 
       {/* Main content */}
-      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 text-center">
+      <div
+        className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center"
+        style={{ zIndex: 10 }}
+      >
         {/* Badge */}
         <motion.div
           className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full mb-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
