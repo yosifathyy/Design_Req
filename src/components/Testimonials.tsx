@@ -319,21 +319,16 @@ const Testimonials: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
-
-    // Create a smooth scrolling trigger for the entire section
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top bottom",
-      end: "bottom top",
-      onUpdate: () => {
-        // This ensures smooth scrolling behavior for the stacking effect
-      },
-    });
+    // Refresh ScrollTrigger when component mounts
+    ScrollTrigger.refresh();
 
     return () => {
+      // Clean up any remaining triggers
       ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.trigger === sectionRef.current) {
+        if (
+          trigger.trigger &&
+          sectionRef.current?.contains(trigger.trigger as Node)
+        ) {
           trigger.kill();
         }
       });
