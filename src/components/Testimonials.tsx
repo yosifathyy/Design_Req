@@ -338,11 +338,11 @@ const Testimonials: React.FC = () => {
   return (
     <section ref={sectionRef} className="bg-festival-cream relative">
       <div className="max-w-7xl mx-auto px-4 md:px-20">
-        {/* Sticky Header */}
-        <div className="sticky top-0 flex items-center justify-center pt-32 w-full z-10">
-          <div className="absolute">
+        {/* Header Section */}
+        <div className="h-screen flex items-center justify-center relative">
+          <div className="text-center">
             <motion.h2
-              className="flex items-center gap-8 md:gap-16 font-display font-black text-[8rem] md:text-[15rem] leading-none"
+              className="flex items-center gap-8 md:gap-16 font-display font-black text-[6rem] md:text-[12rem] leading-none mb-8"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
@@ -357,59 +357,75 @@ const Testimonials: React.FC = () => {
                 Love
               </motion.span>
             </motion.h2>
-          </div>
 
-          {/* Header Image Container - Hidden on scroll */}
+            <motion.div
+              className="bg-white border-4 border-black rounded-3xl shadow-lg overflow-hidden relative w-full max-w-2xl mx-auto aspect-[3/2] transform rotate-1"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-festival-orange/20 via-festival-pink/20 to-festival-yellow/20"></div>
+              <div className="absolute inset-8 border-2 border-black/20 rounded-2xl bg-white/80"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-festival-orange to-festival-pink rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-black">
+                    <svg
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="text-white"
+                    >
+                      <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.99887 7.05 2.99887C5.59096 2.99887 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.54887 7.04097 1.54887 8.5C1.54887 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+                    Client Love Stories
+                  </h3>
+                  <p className="text-sm md:text-base text-black/70 font-medium px-4">
+                    Scroll to see cards stack on each other
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Testimonial Cards - Each card gets its own screen */}
+        {testimonialsData.map((testimonial, index) => (
+          <TestimonialCard
+            key={testimonial.id}
+            testimonial={testimonial}
+            index={index}
+            totalCards={testimonialsData.length}
+          />
+        ))}
+
+        {/* Final section to ensure smooth scroll end */}
+        <div className="h-screen bg-festival-cream flex items-center justify-center">
           <motion.div
-            className="bg-white border-4 border-black rounded-3xl shadow-lg overflow-hidden relative w-full max-w-3xl aspect-[3/2] transform rotate-1"
+            className="text-center"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-festival-orange/20 via-festival-pink/20 to-festival-yellow/20"></div>
-            <div className="absolute inset-8 border-2 border-black/20 rounded-2xl bg-white/80"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-festival-orange to-festival-pink rounded-full mx-auto mb-4 md:mb-6 flex items-center justify-center border-4 border-black">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="text-white md:w-12 md:h-12"
-                  >
-                    <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.99887 7.05 2.99887C5.59096 2.99887 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.54887 7.04097 1.54887 8.5C1.54887 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-black mb-2">
-                  Client Love Stories
-                </h3>
-                <p className="text-base md:text-lg text-black/70 font-medium px-4">
-                  Watch testimonials stack as you scroll
-                </p>
-              </div>
-            </div>
+            <h3 className="text-4xl md:text-6xl font-black text-black mb-4">
+              Ready to create your own love story?
+            </h3>
+            <p className="text-lg md:text-xl text-black/70 mb-8">
+              Join hundreds of satisfied clients who chose our design expertise
+            </p>
+            <motion.button
+              className="bg-festival-orange border-4 border-black text-white font-black px-8 py-4 rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300"
+              whileHover={{ scale: 1.05, rotate: -1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start Your Project Today
+            </motion.button>
           </motion.div>
         </div>
-
-        {/* Testimonial Cards Container - Height for smooth stacking */}
-        <div
-          style={{ height: `${testimonialsData.length * 80}vh` }}
-          className="relative"
-        >
-          {testimonialsData.map((testimonial, index) => (
-            <TestimonialCard
-              key={testimonial.id}
-              testimonial={testimonial}
-              index={index}
-              totalCards={testimonialsData.length}
-            />
-          ))}
-        </div>
-
-        {/* Final spacing */}
-        <div className="h-96"></div>
       </div>
     </section>
   );
