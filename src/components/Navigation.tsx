@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { WiggleIcon } from "@/components/AnimatedElements";
+import {
+  GSAPHover,
+  GSAPMagneticButton,
+} from "@/components/GSAPAnimatedElements";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
