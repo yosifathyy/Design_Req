@@ -8,6 +8,7 @@ import CartoonyCursor from "@/components/CartoonyCursor";
 import GSAPCursor from "@/components/GSAPCursor";
 import GSAPPageTransition from "@/components/GSAPPageTransition";
 import GSAPLoader from "@/components/GSAPLoader";
+import GSAPScrollProgress from "@/components/GSAPScrollProgress";
 import { initializeGSAP } from "@/lib/gsap-animations";
 import Index from "./pages/Index";
 import StartProject from "./pages/StartProject";
