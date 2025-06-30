@@ -300,4 +300,41 @@
       hsl(var(--retro-peach))
     );
   }
+
+  /* GSAP Animation Utilities */
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .gsap-fade-in {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  .gsap-slide-in-left {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+
+  .gsap-slide-in-right {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+
+  .gsap-scale-in {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+
+  .gsap-bounce-in {
+    opacity: 0;
+    transform: scale(0.3) translateY(100px) rotate(15deg);
+  }
+
+  /* Performance optimizations for GSAP */
+  .gsap-optimized {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
 }
