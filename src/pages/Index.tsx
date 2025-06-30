@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
+import { RevealImageList } from "@/components/ui/reveal-images";
 import Navigation from "@/components/Navigation";
 import FAQ from "@/components/FAQ";
 import Testimonials from "@/components/Testimonials";
@@ -110,7 +112,7 @@ const Index = () => {
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10"
       >
         {/* Hero background area */}
-        <div className="absolute inset-x-4 top-32 bottom-4 bg-gradient-to-b from-festival-pink/30 to-festival-pink/20 rounded-[2rem] sm:rounded-[3rem]"></div>
+        <div className="absolute inset-x-4 top-32 bottom-4 bg-gray-900 rounded-[2rem] sm:rounded-[3rem]"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
@@ -245,15 +247,12 @@ const Index = () => {
       {/* How It Works */}
       <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative bg-gray-100">
         <div className="max-w-7xl mx-auto">
-          <FadeInUp className="text-center mb-12 sm:mb-16">
-            <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
-              How It Works
-            </h2>
-            <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
-              Our streamlined process makes getting epic design work effortless
-              and super fun! 🎨
-            </p>
-          </FadeInUp>
+          <div className="text-center mb-12 sm:mb-16">
+            <HandWrittenTitle
+              title="How It Works"
+              subtitle="Our streamlined process makes getting epic design work effortless and super fun! 🎨"
+            />
+          </div>
 
           <BentoGrid>
             <StaggerChild>
@@ -386,6 +385,16 @@ const Index = () => {
               Professional design solutions that'll make your competitors
               absolutely jealous! 🔥
             </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="mt-8 mb-12"
+          >
+            <RevealImageList />
           </motion.div>
 
           <StaggerContainer>
