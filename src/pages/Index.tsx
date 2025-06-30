@@ -442,32 +442,38 @@ const Index = () => {
       </section>
 
       {/* Portfolio Section - Smooth Scrolling Showcase */}
-      <section id="portfolio" className="relative min-h-screen bg-gray-900 text-white overflow-hidden">
+      <section
+        id="portfolio"
+        className="relative min-h-screen bg-gray-900 text-white overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
 
         {/* Wrapper for smooth scrolling content */}
         <div className="relative w-full">
           <div className="px-3 relative">
-
             {/* Heading Section - Layered Text Effect */}
             <div
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-100 z-20"
-              style={{ transform: 'translateX(-50%) translateY(-150%)' }}
+              style={{ transform: "translateX(-50%) translateY(-150%)" }}
             >
-              <p className="font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0"
-                 style={{
-                   fontSize: 'clamp(60px, 15.5vw, 250px)',
-                   color: '#111',
-                   WebkitTextStroke: '2px white',
-                   zIndex: -10
-                 }}>
+              <p
+                className="font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0"
+                style={{
+                  fontSize: "clamp(60px, 15.5vw, 250px)",
+                  color: "#111",
+                  WebkitTextStroke: "2px white",
+                  zIndex: -10,
+                }}
+              >
                 smooooth
               </p>
 
               {/* Text Container with Multiple Layers */}
               <div className="relative">
-                <p className="font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0 text-white"
-                   style={{ fontSize: 'clamp(60px, 15.5vw, 250px)' }}>
+                <p
+                  className="font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0 text-white"
+                  style={{ fontSize: "clamp(60px, 15.5vw, 250px)" }}
+                >
                   scrolling
                 </p>
 
@@ -478,16 +484,16 @@ const Index = () => {
                   { speed: 0.85, ref: useSpeedControl(0.85) },
                   { speed: 0.8, ref: useSpeedControl(0.8) },
                   { speed: 0.75, ref: useSpeedControl(0.75) },
-                  { speed: 0.7, ref: useSpeedControl(0.7) }
+                  { speed: 0.7, ref: useSpeedControl(0.7) },
                 ].map(({ speed, ref }) => (
                   <div
                     key={speed}
                     ref={ref}
                     className="absolute top-0 left-0 right-0 z-50 font-display text-6xl sm:text-8xl lg:text-[12rem] text-center leading-none m-0 pointer-events-none"
                     style={{
-                      fontSize: 'clamp(60px, 15.5vw, 250px)',
-                      color: 'transparent',
-                      WebkitTextStroke: '1px rgba(255, 255, 255, 0.3)'
+                      fontSize: "clamp(60px, 15.5vw, 250px)",
+                      color: "transparent",
+                      WebkitTextStroke: "1px rgba(255, 255, 255, 0.3)",
                     }}
                   >
                     scrolling
@@ -499,7 +505,6 @@ const Index = () => {
             {/* Image Grid Section */}
             <section className="relative max-w-6xl mx-auto pt-[40vh] -z-10">
               <div className="grid grid-cols-3 grid-rows-3 gap-1 w-[70vw] mx-auto">
-
                 {/* Image 1 */}
                 <div
                   ref={useSpeedControl(1.0)}
@@ -543,16 +548,21 @@ const Index = () => {
 
             {/* Title Section */}
             <section className="max-w-6xl mx-auto text-center flex items-center justify-center flex-col min-h-[50vh] py-20">
-              <h1 className="font-display text-4xl sm:text-6xl lg:text-8xl text-center leading-tight m-0 mb-6"
-                  style={{ fontSize: 'clamp(40px, 8vw, 100px)' }}>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-normal"
-                      style={{ fontSize: 'clamp(20px, 3vw, 40px)' }}>
-                  with{' '}
+              <h1
+                className="font-display text-4xl sm:text-6xl lg:text-8xl text-center leading-tight m-0 mb-6"
+                style={{ fontSize: "clamp(40px, 8vw, 100px)" }}
+              >
+                <span
+                  className="text-2xl sm:text-3xl lg:text-4xl font-normal"
+                  style={{ fontSize: "clamp(20px, 3vw, 40px)" }}
+                >
+                  with{" "}
                 </span>
                 GSAP scrolling
               </h1>
               <p className="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed">
-                Seamlessly integrated with GSAP and ScrollTrigger. Leveraging native scrolling - no "fake" scrollbars or event hijacking.
+                Seamlessly integrated with GSAP and ScrollTrigger. Leveraging
+                native scrolling - no "fake" scrollbars or event hijacking.
               </p>
             </section>
 
@@ -560,9 +570,12 @@ const Index = () => {
             <section className="max-w-6xl mx-auto flex flex-wrap gap-16 py-20">
               <div className="flex-1 min-w-[300px] flex flex-col items-start justify-center">
                 <div className="border-l border-white pl-8">
-                  <h2 className="text-xl sm:text-2xl font-medium mb-4">Speed Control</h2>
+                  <h2 className="text-xl sm:text-2xl font-medium mb-4">
+                    Speed Control
+                  </h2>
                   <p className="leading-relaxed">
-                    Animate elements along at different speeds, slow them down or make them whizz past.
+                    Animate elements along at different speeds, slow them down
+                    or make them whizz past.
                   </p>
                 </div>
               </div>
@@ -573,7 +586,7 @@ const Index = () => {
                   { speed: 0.9, ref: useSpeedControl(0.9) },
                   { speed: 1.0, ref: useSpeedControl(1.0) },
                   { speed: 1.1, ref: useSpeedControl(1.1) },
-                  { speed: 1.2, ref: useSpeedControl(1.2) }
+                  { speed: 1.2, ref: useSpeedControl(1.2) },
                 ].map(({ speed, ref }, index) => (
                   <div
                     key={speed}
@@ -581,7 +594,7 @@ const Index = () => {
                     className="rounded-lg mx-4 text-center flex-1 font-display text-2xl sm:text-3xl bg-gradient-to-t from-retro-orange to-retro-pink text-white flex items-end justify-center pb-4"
                     style={{
                       height: `${20 + index * 15}%`,
-                      fontSize: 'clamp(16px, 3vw, 36px)'
+                      fontSize: "clamp(16px, 3vw, 36px)",
                     }}
                   >
                     {speed}
@@ -606,9 +619,12 @@ const Index = () => {
             <section className="max-w-6xl mx-auto flex items-center flex-wrap gap-16 py-20">
               <div className="flex-1 min-w-[300px]">
                 <div className="border-l border-white pl-8">
-                  <h2 className="text-xl sm:text-2xl font-medium mb-4">Add some lag (the good kind!)</h2>
+                  <h2 className="text-xl sm:text-2xl font-medium mb-4">
+                    Add some lag (the good kind!)
+                  </h2>
                   <p className="leading-relaxed">
-                    loosen the connection to the scroll to give a feeling of 'follow through.'
+                    loosen the connection to the scroll to give a feeling of
+                    'follow through.'
                   </p>
                 </div>
               </div>
@@ -617,7 +633,7 @@ const Index = () => {
                 <h3
                   ref={useStaggeredText("stagger...", 0.1)}
                   className="font-display text-4xl sm:text-6xl lg:text-8xl font-normal tracking-wide"
-                  style={{ fontSize: 'clamp(40px, 6vw, 80px)' }}
+                  style={{ fontSize: "clamp(40px, 6vw, 80px)" }}
                 >
                   {/* Text will be populated by useStaggeredText hook */}
                 </h3>
@@ -627,9 +643,13 @@ const Index = () => {
             {/* Parallax Images Section */}
             <section className="mt-[10vh] px-4 py-40 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-20 items-center justify-items-center max-w-6xl mx-auto">
               <div className="border-l border-white pl-8 lg:col-start-2 lg:row-start-1">
-                <h2 className="text-xl sm:text-2xl font-medium mb-4">Easy parallax image effects</h2>
+                <h2 className="text-xl sm:text-2xl font-medium mb-4">
+                  Easy parallax image effects
+                </h2>
                 <p className="leading-relaxed">
-                  Pop your images in a container with overflow hidden, size them a little larger than the container and set data-speed to auto. GSAP does the rest.
+                  Pop your images in a container with overflow hidden, size them
+                  a little larger than the container and set data-speed to auto.
+                  GSAP does the rest.
                 </p>
               </div>
 
@@ -656,6 +676,33 @@ const Index = () => {
             <div className="h-[10vh]"></div>
           </div>
         </div>
+      </section>
+
+      {/* Original Portfolio Cards Section */}
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="inline-block mb-4 sm:mb-6"
+            >
+              <Eye className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
+            </motion.div>
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
+              Portfolio Gallery ✨
+            </h2>
+            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
+              Explore our amazing portfolio cards below!
+            </p>
+          </div>
 
           <StaggerContainer>
             <BentoGrid>
