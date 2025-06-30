@@ -49,87 +49,97 @@ const StepCard: React.FC<StepCardProps> = ({
         y: 30,
       });
 
-      // Scroll-triggered entrance animation
+      // Enhanced scroll-triggered entrance animation
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: cardRef.current,
-          start: "top 85%",
-          end: "top 50%",
+          start: "top 90%",
+          end: "top 60%",
           toggleActions: "play none none none",
+          scrub: 0.5, // Add scrub for smoother entrance
         },
       });
 
-      // Card entrance
+      // Card entrance with more dynamic effect
       tl.to(cardRef.current, {
         opacity: 1,
         y: 0,
         scale: 1,
         rotationY: 0,
-        duration: 1.2,
-        ease: "back.out(1.7)",
+        duration: 1.5,
+        ease: "elastic.out(1, 0.8)",
         delay: delay,
       })
-        // Number pop-in
+        // Number dramatic pop-in
         .to(
           numberRef.current,
           {
             scale: 1,
             rotation: 0,
-            duration: 0.8,
-            ease: "elastic.out(1, 0.5)",
+            duration: 1,
+            ease: "bounce.out",
           },
-          "-=0.8",
+          "-=1.2",
         )
-        // Icon pop-in
+        // Icon bouncy entrance
         .to(
           iconRef.current,
           {
             scale: 1,
             rotation: 0,
-            duration: 0.8,
-            ease: "elastic.out(1, 0.5)",
+            duration: 1,
+            ease: "elastic.out(1, 0.6)",
           },
-          "-=0.6",
+          "-=0.8",
         )
-        // Title slide-in
+        // Title reveal with slight bounce
         .to(
           titleRef.current,
           {
             opacity: 1,
             y: 0,
-            duration: 0.6,
-            ease: "power2.out",
+            duration: 0.8,
+            ease: "back.out(1.7)",
           },
-          "-=0.4",
+          "-=0.6",
         )
-        // Description slide-in
+        // Description smooth slide
         .to(
           descRef.current,
           {
             opacity: 1,
             y: 0,
-            duration: 0.6,
+            duration: 0.8,
             ease: "power2.out",
           },
-          "-=0.3",
+          "-=0.4",
         );
 
-      // Hover effects
+      // Smooth animated shadow hover effects
       const hoverTl = gsap.timeline({ paused: true });
       hoverTl
         .to(cardRef.current, {
-          y: -10,
-          scale: 1.02,
-          boxShadow: "16px 16px 0px 0px rgba(0,0,0,0.4)",
-          duration: 0.3,
+          y: -8,
+          scale: 1.01,
+          duration: 0.4,
           ease: "power2.out",
         })
+        .to(
+          cardRef.current,
+          {
+            boxShadow: "18px 18px 0px 0px rgba(0,0,0,0.4)",
+            duration: 0.4,
+            ease: "power2.out",
+          },
+          0,
+        )
         .to(
           iconRef.current,
           {
             scale: 1.1,
-            rotation: 10,
-            duration: 0.3,
+            rotation: 5,
+            duration: 0.4,
+            ease: "elastic.out(1, 0.5)",
           },
           0,
         );
