@@ -139,10 +139,11 @@ const TestimonialCard: React.FC<{
       },
     });
 
-    // Add a subtle hover effect
+    // Add a subtle hover effect that works with the stacking
     card.addEventListener("mouseenter", () => {
       gsap.to(card, {
-        scale: (1 - index * 0.03) * 1.02,
+        scale: 1.02,
+        y: "+=5",
         duration: 0.3,
         ease: "power2.out",
       });
@@ -150,7 +151,8 @@ const TestimonialCard: React.FC<{
 
     card.addEventListener("mouseleave", () => {
       gsap.to(card, {
-        scale: 1 - index * 0.03,
+        scale: 1,
+        y: "-=5",
         duration: 0.3,
         ease: "power2.out",
       });
