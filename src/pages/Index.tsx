@@ -59,8 +59,40 @@ import {
   Briefcase,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const Index = () => {
+  // State for image shuffle
+  const [imageOrder, setImageOrder] = useState([0, 1, 2, 3]);
+  const [isShuffling, setIsShuffling] = useState(false);
+
+  const images = [
+    "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd793e76751328121_event-image-1.avif",
+    "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd92bb1ada35b5840_event-image-2.avif",
+    "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aadd1a93d98874d5b679_event-image-3.avif",
+    "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddb9d81bad24595e36_event-image-4.avif",
+  ];
+
+  const shuffleImages = () => {
+    if (isShuffling) return;
+
+    setIsShuffling(true);
+
+    // Create a new shuffled order
+    const newOrder = [...imageOrder];
+    for (let i = newOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+    }
+
+    setImageOrder(newOrder);
+
+    // Reset shuffling state after animation completes
+    setTimeout(() => {
+      setIsShuffling(false);
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden flex flex-col">
       {/* Floating background elements */}
@@ -1312,95 +1344,72 @@ const Index = () => {
           >
             {/* Image Stack Container */}
             <div className="relative w-full aspect-[4/5] mb-6">
-              {/* Image 1 - Front */}
-              <motion.div
-                className="absolute inset-0 z-30"
-                animate={{
-                  rotate: [3, -3, 3],
-                  scale: [1, 1.02, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <div className="w-full h-full border-2 border-black rounded-3xl shadow-xl overflow-hidden bg-white">
-                  <img
-                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd793e76751328121_event-image-1.avif"
-                    alt="Portfolio showcase 1"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </motion.div>
+              {imageOrder.map((imageIndex, stackIndex) => {
+                const zIndexes = [30, 20, 10, 0];
+                const shadows = [
+                  "shadow-xl",
+                  "shadow-lg",
+                  "shadow-md",
+                  "shadow-sm",
+                ];
+                const rotations = [
+                  [3, -3, 3],
+                  [-2, 2, -2],
+                  [2, -2, 2],
+                  [-1, 1, -1],
+                ];
+                const scales = [
+                  [1, 1.02, 1],
+                  [1, 1.01, 1],
+                  [1, 1.01, 1],
+                  [1, 1, 1],
+                ];
 
-              {/* Image 2 - Second */}
-              <motion.div
-                className="absolute inset-0 z-20"
-                animate={{
-                  rotate: [-2, 2, -2],
-                  scale: [1, 1.01, 1],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-              >
-                <div className="w-full h-full border-2 border-black rounded-3xl shadow-lg overflow-hidden bg-white">
-                  <img
-                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd92bb1ada35b5840_event-image-2.avif"
-                    alt="Portfolio showcase 2"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </motion.div>
-
-              {/* Image 3 - Third */}
-              <motion.div
-                className="absolute inset-0 z-10"
-                animate={{
-                  rotate: [2, -2, 2],
-                  scale: [1, 1.01, 1],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 2,
-                }}
-              >
-                <div className="w-full h-full border-2 border-black rounded-3xl shadow-md overflow-hidden bg-white">
-                  <img
-                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aadd1a93d98874d5b679_event-image-3.avif"
-                    alt="Portfolio showcase 3"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </motion.div>
-
-              {/* Image 4 - Fourth */}
-              <motion.div
-                className="absolute inset-0 z-0"
-                animate={{
-                  rotate: [-1, 1, -1],
-                }}
-                transition={{
-                  duration: 7,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 3,
-                }}
-              >
-                <div className="w-full h-full border-2 border-black rounded-3xl shadow-sm overflow-hidden bg-white">
-                  <img
-                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddb9d81bad24595e36_event-image-4.avif"
-                    alt="Portfolio showcase 4"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </motion.div>
+                return (
+                  <motion.div
+                    key={`image-${imageIndex}`}
+                    className={`absolute inset-0 z-${zIndexes[stackIndex]}`}
+                    style={{ zIndex: zIndexes[stackIndex] }}
+                    animate={
+                      isShuffling
+                        ? {
+                            rotate: [0, 360, 0],
+                            scale: [1, 1.3, 1],
+                            x: [0, Math.random() * 100 - 50, 0],
+                            y: [0, Math.random() * 100 - 50, 0],
+                          }
+                        : {
+                            rotate: rotations[stackIndex],
+                            scale: scales[stackIndex],
+                          }
+                    }
+                    transition={
+                      isShuffling
+                        ? {
+                            duration: 1,
+                            ease: "easeInOut",
+                            delay: stackIndex * 0.1,
+                          }
+                        : {
+                            duration: 4 + stackIndex,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: stackIndex,
+                          }
+                    }
+                  >
+                    <div
+                      className={`w-full h-full border-2 border-black rounded-3xl ${shadows[stackIndex]} overflow-hidden bg-white`}
+                    >
+                      <img
+                        src={images[imageIndex]}
+                        alt={`Portfolio showcase ${imageIndex + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Shuffle Button */}
@@ -1408,7 +1417,7 @@ const Index = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center bg-retro-cream border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50"
+                className={`flex items-center justify-center ${isShuffling ? "bg-retro-orange" : "bg-retro-cream"} border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50 ${isShuffling ? "opacity-75" : ""}`}
                 style={{
                   pointerEvents: "auto",
                   touchAction: "manipulation",
@@ -1417,8 +1426,7 @@ const Index = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log("Shuffle clicked!");
-                  alert("Shuffle button clicked! 🎲");
+                  shuffleImages();
                 }}
                 onMouseDown={(e) => {
                   e.preventDefault();
@@ -1426,12 +1434,28 @@ const Index = () => {
                 }}
               >
                 <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
+                  animate={
+                    isShuffling
+                      ? {
+                          rotate: [0, 720],
+                          scale: [1, 1.3, 1],
+                        }
+                      : {
+                          rotate: [0, 360],
+                        }
+                  }
+                  transition={
+                    isShuffling
+                      ? {
+                          duration: 1,
+                          ease: "easeInOut",
+                        }
+                      : {
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }
+                  }
                   className="mr-2 pointer-events-none"
                 >
                   <svg
@@ -1460,7 +1484,7 @@ const Index = () => {
                   </svg>
                 </motion.div>
                 <span className="font-bold tracking-tight pointer-events-none">
-                  Shuffle
+                  {isShuffling ? "Shuffling..." : "Shuffle"}
                 </span>
               </motion.button>
             </div>
