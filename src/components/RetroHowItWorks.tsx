@@ -182,7 +182,6 @@ const StepCard: React.FC<StepCardProps> = ({
           "relative overflow-hidden rounded-3xl border-4 border-black",
           "bg-gradient-to-br p-8 min-h-[320px]",
           "shadow-[12px_12px_0px_0px_rgba(0,0,0,0.3)]",
-          "transition-all duration-300",
           getCardColor(),
         )}
       >
