@@ -1,9 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { motion, useInView, useAnimation } from "framer-motion";
 
 interface TestimonialData {
   id: string;
@@ -11,7 +7,7 @@ interface TestimonialData {
   handle: string;
   content: string;
   avatar: string;
-  rotation: number;
+  color: string;
 }
 
 const testimonialsData: TestimonialData[] = [
@@ -22,7 +18,7 @@ const testimonialsData: TestimonialData[] = [
     content:
       "Working with design requests was absolutely incredible! They transformed our brand identity completely. The attention to detail and creative vision exceeded all our expectations. Can't wait for our next project!",
     avatar: "SC",
-    rotation: 2.5,
+    color: "from-festival-orange to-festival-pink",
   },
   {
     id: "2",
@@ -31,7 +27,7 @@ const testimonialsData: TestimonialData[] = [
     content:
       "The UI/UX design for our mobile app is phenomenal. The team understood our vision perfectly and delivered something even better than we imagined. Professional, creative, and always on time!",
     avatar: "MR",
-    rotation: 1.2,
+    color: "from-festival-pink to-festival-amber",
   },
   {
     id: "3",
@@ -40,7 +36,7 @@ const testimonialsData: TestimonialData[] = [
     content:
       "From concept to completion, the design process was seamless. The branding package we received was comprehensive and beautifully executed. Our customers love the new look!",
     avatar: "EW",
-    rotation: -1.8,
+    color: "from-festival-yellow to-festival-coral",
   },
   {
     id: "4",
@@ -49,7 +45,7 @@ const testimonialsData: TestimonialData[] = [
     content:
       "Outstanding design work! The logo and brand guidelines they created perfectly capture our company's essence. The whole team was responsive and incorporated our feedback brilliantly.",
     avatar: "DK",
-    rotation: 2.1,
+    color: "from-festival-coral to-festival-magenta",
   },
   {
     id: "5",
@@ -58,312 +54,268 @@ const testimonialsData: TestimonialData[] = [
     content:
       "The website design they created for us is absolutely stunning. Clean, modern, and user-friendly. Our conversion rates have improved significantly since the launch. Highly recommended!",
     avatar: "LT",
-    rotation: -2.8,
+    color: "from-festival-magenta to-festival-orange",
   },
 ];
 
 const TestimonialCard: React.FC<{
   testimonial: TestimonialData;
   index: number;
-  totalCards: number;
-}> = ({ testimonial, index, totalCards }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
+}> = ({ testimonial, index }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const controls = useAnimation();
 
   useEffect(() => {
-    if (!cardRef.current || !triggerRef.current) return;
-
-    const card = cardRef.current;
-    const trigger = triggerRef.current;
-    const isLast = index === totalCards - 1;
-
-    // Set initial card state
-    gsap.set(card, {
-      rotation: testimonial.rotation,
-      zIndex: index + 1,
-    });
-
-    // Create pin animation - this card gets pinned when it reaches the top
-    ScrollTrigger.create({
-      trigger: trigger,
-      start: "top top",
-      end: isLast ? "bottom bottom" : `+=${window.innerHeight}`,
-      pin: card,
-      pinSpacing: false,
-      onEnter: () => {
-        // Straighten the card when it gets pinned
-        gsap.to(card, {
-          rotation: 0,
-          duration: 0.5,
-          ease: "power2.out",
-        });
-      },
-    });
-
-    // If not the last card, animate the next card sliding up
-    if (!isLast) {
-      ScrollTrigger.create({
-        trigger: trigger,
-        start: "top top",
-        end: `+=${window.innerHeight}`,
-        scrub: 1,
-        onUpdate: (self) => {
-          const progress = self.progress;
-
-          // Start sliding next card when we're 30% through scrolling
-          if (progress > 0.3) {
-            const slideProgress = gsap.utils.mapRange(0.3, 1, 0, 1, progress);
-
-            // Find the next card
-            const nextCard = document.querySelector(
-              `[data-card-index="${index + 1}"]`,
-            ) as HTMLElement;
-
-            if (nextCard) {
-              // Slide next card up from below viewport
-              gsap.set(nextCard, {
-                y: `${(1 - slideProgress) * 100}vh`,
-                rotation:
-                  testimonialsData[index + 1]?.rotation * (1 - slideProgress) ||
-                  0,
-                zIndex: (index + 2) * 10,
-                scale: 0.98 + slideProgress * 0.02,
-              });
-
-              // Push current card slightly back for stacking effect
-              gsap.set(card, {
-                scale: 1 - slideProgress * 0.03,
-                opacity: 1 - slideProgress * 0.2,
-                y: -slideProgress * 10,
-                x: -slideProgress * 5,
-              });
-            }
-          }
-        },
-      });
+    if (isInView) {
+      controls.start("visible");
     }
-
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.trigger === trigger || st.pin === card) {
-          st.kill();
-        }
-      });
-      gsap.killTweensOf(card);
-    };
-  }, [testimonial.rotation, index, totalCards]);
+  }, [isInView, controls]);
 
   return (
-    <div ref={triggerRef} className="w-full h-screen">
-      <div
-        ref={cardRef}
-        data-card-index={index}
-        className="w-full h-screen flex items-center justify-center p-4"
-      >
-        <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-shadow duration-300 overflow-hidden relative w-full max-w-4xl">
-          {/* Twitter-like header */}
-          <div className="flex items-center p-4 md:p-6 border-b-2 border-black bg-gradient-to-r from-festival-cream to-festival-beige">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-festival-orange to-festival-pink border-2 border-black flex items-center justify-center text-white font-bold text-lg">
-              {testimonial.avatar}
-            </div>
-            <div className="ml-4 flex-1">
-              <div className="flex items-center gap-2">
-                <h4 className="font-bold text-lg text-black">
-                  {testimonial.name}
-                </h4>
-                <div className="w-5 h-5 bg-festival-orange rounded-full border-2 border-black flex items-center justify-center">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="text-white"
-                  >
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-black/70 font-medium">{testimonial.handle}</p>
-            </div>
-            <div className="text-festival-orange">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="text-festival-orange"
-              >
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-6">
-            <p className="text-black text-lg leading-relaxed font-medium">
-              {testimonial.content}
-            </p>
-            <div className="flex items-center justify-between mt-6 pt-4 border-t-2 border-black/10">
-              <div className="flex items-center gap-6 text-black/60">
-                <button className="flex items-center gap-2 hover:text-festival-pink transition-colors">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="font-semibold">Reply</span>
-                </button>
-                <button className="flex items-center gap-2 hover:text-festival-orange transition-colors">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M17 1L21 5L17 9M3 11V9C3 7.89543 3.89543 7 5 7H21M7 23L3 19L7 15M21 13V15C21 16.1046 20.1046 17 19 17H3"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="font-semibold">Retweet</span>
-                </button>
-                <button className="flex items-center gap-2 hover:text-festival-magenta transition-colors">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.99887 7.05 2.99887C5.59096 2.99887 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.54887 7.04097 1.54887 8.5C1.54887 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="font-semibold">Like</span>
-                </button>
-              </div>
-              <span className="text-sm text-black/50 font-medium">
-                2:15 PM · Dec 15, 2024 · Design Love
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Testimonials: React.FC = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    // Refresh ScrollTrigger when component mounts
-    ScrollTrigger.refresh();
-
-    return () => {
-      // Clean up any remaining triggers
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (
-          trigger.trigger &&
-          sectionRef.current?.contains(trigger.trigger as Node)
-        ) {
-          trigger.kill();
-        }
-      });
-    };
-  }, []);
-
-  return (
-    <section ref={sectionRef} className="bg-festival-cream relative">
-      <div className="max-w-7xl mx-auto px-4 md:px-20">
-        {/* Header Section */}
-        <div className="h-screen flex items-center justify-center relative">
-          <div className="text-center">
-            <motion.h2
-              className="flex items-center gap-8 md:gap-16 font-display font-black text-[6rem] md:text-[12rem] leading-none mb-8"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <span className="text-black">Design</span>
-              <motion.span
-                className="bg-festival-amber text-white px-4 md:px-8 py-2 md:py-4 rounded-2xl md:rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transform rotate-1 inline-block"
-                whileHover={{ rotate: -1, scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                Love
-              </motion.span>
-            </motion.h2>
-
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={{
+        hidden: {
+          opacity: 0,
+          y: 100,
+          scale: 0.8,
+          rotateX: -15,
+        },
+        visible: {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          rotateX: 0,
+          transition: {
+            duration: 0.8,
+            delay: index * 0.2,
+            ease: [0.25, 0.46, 0.45, 0.94],
+          },
+        },
+      }}
+      whileHover={{
+        scale: 1.02,
+        y: -10,
+        rotateY: 5,
+        transition: { duration: 0.3 },
+      }}
+      className="group"
+    >
+      <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden transform group-hover:-rotate-1">
+        {/* Header with gradient background */}
+        <div
+          className={`p-6 border-b-4 border-black bg-gradient-to-r ${testimonial.color}`}
+        >
+          <div className="flex items-center">
             <motion.div
-              className="bg-white border-4 border-black rounded-3xl shadow-lg overflow-hidden relative w-full max-w-2xl mx-auto aspect-[3/2] transform rotate-1"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
+              className="w-16 h-16 rounded-full bg-white border-4 border-black flex items-center justify-center text-black font-black text-xl shadow-lg"
+              whileHover={{
+                rotate: 360,
+                scale: 1.1,
+                transition: { duration: 0.6 },
+              }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-festival-orange/20 via-festival-pink/20 to-festival-yellow/20"></div>
-              <div className="absolute inset-8 border-2 border-black/20 rounded-2xl bg-white/80"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-festival-orange to-festival-pink rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-black">
-                    <svg
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="text-white"
-                    >
-                      <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.99887 7.05 2.99887C5.59096 2.99887 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.54887 7.04097 1.54887 8.5C1.54887 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold text-black mb-2">
-                    Client Love Stories
-                  </h3>
-                  <p className="text-sm md:text-base text-black/70 font-medium px-4">
-                    Scroll to see cards stack on each other
-                  </p>
-                </div>
+              {testimonial.avatar}
+            </motion.div>
+            <div className="ml-6">
+              <h4 className="font-black text-2xl text-white mb-1 drop-shadow-lg">
+                {testimonial.name}
+              </h4>
+              <p className="text-white/90 font-bold text-lg drop-shadow">
+                {testimonial.handle}
+              </p>
+            </div>
+            <motion.div
+              className="ml-auto"
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <div className="w-8 h-8 bg-white rounded-full border-2 border-black flex items-center justify-center">
+                <span className="text-black">✨</span>
               </div>
             </motion.div>
           </div>
         </div>
 
-        {/* Testimonial Cards - Each card gets its own screen */}
-        {testimonialsData.map((testimonial, index) => (
-          <TestimonialCard
-            key={testimonial.id}
-            testimonial={testimonial}
-            index={index}
-            totalCards={testimonialsData.length}
-          />
-        ))}
-
-        {/* Final section to ensure smooth scroll end */}
-        <div className="h-screen bg-festival-cream flex items-center justify-center">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+        {/* Content */}
+        <div className="p-8">
+          <motion.p
+            className="text-black text-xl leading-relaxed font-medium"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: index * 0.2 + 0.4, duration: 0.6 }}
           >
-            <h3 className="text-4xl md:text-6xl font-black text-black mb-4">
-              Ready to create your own love story?
-            </h3>
-            <p className="text-lg md:text-xl text-black/70 mb-8">
-              Join hundreds of satisfied clients who chose our design expertise
-            </p>
-            <motion.button
-              className="bg-festival-orange border-4 border-black text-white font-black px-8 py-4 rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300"
-              whileHover={{ scale: 1.05, rotate: -1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Start Your Project Today
-            </motion.button>
+            "{testimonial.content}"
+          </motion.p>
+
+          {/* Rating stars */}
+          <motion.div
+            className="flex items-center mt-6 gap-1"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.2 + 0.6, duration: 0.5 }}
+          >
+            {[...Array(5)].map((_, i) => (
+              <motion.span
+                key={i}
+                className="text-festival-amber text-2xl"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  delay: index * 0.2 + 0.8 + i * 0.1,
+                  type: "spring",
+                  stiffness: 200,
+                }}
+                whileHover={{
+                  scale: 1.3,
+                  rotate: 180,
+                  transition: { duration: 0.3 },
+                }}
+              >
+                ⭐
+              </motion.span>
+            ))}
+            <span className="ml-3 text-black/70 font-bold">5.0</span>
           </motion.div>
         </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const FloatingShape: React.FC<{ className: string; delay?: number }> = ({
+  className,
+  delay = 0,
+}) => (
+  <motion.div
+    className={className}
+    animate={{
+      y: [0, -20, 0],
+      rotate: [0, 180, 360],
+      scale: [1, 1.1, 1],
+    }}
+    transition={{
+      duration: 4,
+      repeat: Infinity,
+      delay,
+      ease: "easeInOut",
+    }}
+  />
+);
+
+const Testimonials: React.FC = () => {
+  const headerRef = useRef(null);
+  const isHeaderInView = useInView(headerRef, { once: true });
+
+  return (
+    <section className="relative py-20 bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream overflow-hidden">
+      {/* Floating background elements */}
+      <FloatingShape
+        className="absolute top-20 left-20 w-16 h-16 bg-festival-orange/20 rounded-full"
+        delay={0}
+      />
+      <FloatingShape
+        className="absolute top-40 right-32 w-12 h-12 bg-festival-pink/20 rotate-45"
+        delay={1}
+      />
+      <FloatingShape
+        className="absolute bottom-40 left-1/4 w-20 h-20 bg-festival-yellow/20 rounded-xl"
+        delay={2}
+      />
+      <FloatingShape
+        className="absolute top-1/2 right-20 w-8 h-8 bg-festival-coral/20 rounded-full"
+        delay={1.5}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* Header */}
+        <motion.div
+          ref={headerRef}
+          initial={{ opacity: 0, y: 50 }}
+          animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={isHeaderInView ? { scale: 1 } : {}}
+            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+            className="inline-block mb-6"
+          >
+            <span className="text-6xl">💕</span>
+          </motion.div>
+
+          <motion.h2
+            className="font-display font-black text-6xl md:text-8xl lg:text-9xl text-black mb-6 tracking-tight"
+            initial={{ opacity: 0, rotateX: -90 }}
+            animate={isHeaderInView ? { opacity: 1, rotateX: 0 } : {}}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            Client{" "}
+            <span className="bg-gradient-to-r from-festival-orange via-festival-pink to-festival-yellow bg-clip-text text-transparent">
+              Love
+            </span>
+          </motion.h2>
+
+          <motion.p
+            className="text-2xl md:text-3xl text-black/80 font-bold max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={isHeaderInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            Real stories from real clients who absolutely{" "}
+            <span className="text-festival-magenta">adore</span> our work! 🎨
+          </motion.p>
+        </motion.div>
+
+        {/* Testimonials Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+          {testimonialsData.map((testimonial, index) => (
+            <TestimonialCard
+              key={testimonial.id}
+              testimonial={testimonial}
+              index={index}
+            />
+          ))}
+        </div>
+
+        {/* Call to Action */}
+        <motion.div
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center mt-20"
+        >
+          <motion.div
+            whileHover={{ scale: 1.05, rotate: -1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <button className="bg-gradient-to-r from-festival-orange to-festival-pink text-white font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1">
+              Join Our Happy Clients! 🚀
+            </button>
+          </motion.div>
+
+          <motion.p
+            className="mt-6 text-xl text-black/70 font-medium"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            Ready to create your own success story?
+          </motion.p>
+        </motion.div>
       </div>
     </section>
   );
