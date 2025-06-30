@@ -160,7 +160,7 @@ const TestimonialCard: React.FC<{
           willChange: "transform, opacity, filter",
         }}
       >
-        <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
+        <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-shadow duration-300 overflow-hidden relative">
           {/* Twitter-like header */}
           <div className="flex items-center p-4 md:p-6 border-b-2 border-black bg-gradient-to-r from-festival-cream to-festival-beige">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-festival-orange to-festival-pink border-2 border-black flex items-center justify-center text-white font-bold text-lg">
