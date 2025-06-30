@@ -441,28 +441,71 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Portfolio Section */}
+      {/* Portfolio Section with Smooth GSAP Animations */}
       <section
         id="portfolio"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative overflow-hidden"
       >
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            whileInView={{
-              opacity: 1,
-              scale: 1,
-              rotate: 0,
-              transition: {
-                type: "spring",
-                damping: 10,
-                stiffness: 100,
-                duration: 1,
-              },
-            }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
+        {/* Speed-controlled background elements */}
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div
+            ref={useSpeedControl(0.8)}
+            className="absolute top-10 left-10 w-16 h-16 border-4 border-retro-orange rotate-45"
+          ></div>
+          <div
+            ref={useSpeedControl(1.2)}
+            className="absolute top-20 right-20 w-12 h-12 bg-retro-pink rounded-full"
+          ></div>
+          <div
+            ref={useSpeedControl(0.9)}
+            className="absolute bottom-40 left-20 w-20 h-20 border-4 border-retro-teal"
+          ></div>
+          <div
+            ref={useSpeedControl(1.1)}
+            className="absolute bottom-20 right-40 w-8 h-8 bg-retro-purple transform rotate-45"
+          ></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Smooth scrolling hero text */}
+          <div className="text-center mb-12 sm:mb-16 relative">
+            {/* Main staggered text */}
+            <div className="mb-6">
+              <div
+                ref={useStaggeredText("smooooth")}
+                className="font-display text-4xl sm:text-6xl lg:text-8xl mb-4"
+                style={{
+                  color: "transparent",
+                  WebkitTextStroke: "2px #8B5CF6",
+                }}
+              />
+              <div
+                ref={useStaggeredText("Portfolio Magic", 0.05)}
+                className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4"
+              />
+            </div>
+
+            {/* Layered scrolling text with different speeds */}
+            <div className="relative mb-8">
+              <div
+                ref={useStaggeredText("scrolling", 0.03)}
+                className="font-display text-6xl sm:text-8xl lg:text-[10rem] text-retro-purple/30 opacity-60"
+              />
+              {[0.95, 0.9, 0.85, 0.8].map((speed, index) => (
+                <div
+                  key={speed}
+                  ref={useSpeedControl(speed)}
+                  className="absolute inset-0 font-display text-6xl sm:text-8xl lg:text-[10rem] opacity-20 pointer-events-none"
+                  style={{
+                    color: "transparent",
+                    WebkitTextStroke: "1px rgba(139, 92, 246, 0.3)",
+                  }}
+                >
+                  scrolling
+                </div>
+              ))}
+            </div>
+
             <motion.div
               animate={{
                 scale: [1, 1.2, 1],
@@ -477,13 +520,34 @@ const Index = () => {
             >
               <Eye className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
             </motion.div>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
-              Portfolio Magic ✨
-            </h2>
+
             <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
-              See the transformative power of our expert design wizards!
+              See the transformative power of our expert design wizards with
+              smooth scrolling effects!
             </p>
-          </motion.div>
+          </div>
+
+          {/* Speed Control Demonstration */}
+          <div className="mb-16">
+            <h3 className="font-display text-xl sm:text-2xl text-retro-purple text-center mb-8">
+              Speed Control ✨
+            </h3>
+            <div className="flex gap-4 h-32 items-end justify-center">
+              {[0.8, 0.9, 1.0, 1.1, 1.2].map((speed, index) => (
+                <div
+                  key={speed}
+                  ref={useSpeedControl(speed)}
+                  className="bg-gradient-to-t from-retro-orange to-retro-pink rounded-lg flex items-end justify-center text-white font-bold text-sm"
+                  style={{
+                    height: `${60 + index * 20}px`,
+                    minWidth: "60px",
+                  }}
+                >
+                  <span className="mb-2">{speed}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <StaggerContainer>
             <BentoGrid>
