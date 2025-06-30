@@ -424,7 +424,7 @@ const HeroSectionNew: React.FC = () => {
         </div>
 
         {/* Floating stats */}
-        <div className="mt-16 flex flex-wrap justify-center gap-4 md:gap-8">
+        <div className="mt-16 flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full">
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
             { label: "Projects", value: "1.2K+", icon: Wand2 },
