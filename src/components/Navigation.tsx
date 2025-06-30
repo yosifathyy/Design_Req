@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { WiggleIcon } from "@/components/AnimatedElements";
-import { GSAPHover, GSAPMagneticButton } from "@/components/GSAPAnimatedElements";
+import {
+  GSAPHover,
+  GSAPMagneticButton,
+} from "@/components/GSAPAnimatedElements";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +79,7 @@ const Navigation = () => {
               Expert Design Studio ✨
             </p>
           </motion.div>
-        </button>
+        </GSAPMagneticButton>
 
         <div className="flex items-center space-x-8">
           {navItems.map(({ href, label, icon: Icon }) => (
