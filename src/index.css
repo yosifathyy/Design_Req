@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -11,15 +11,26 @@
    * A different format will require also updating the theme in tailwind.config.ts.
   */
   :root {
-    /* Retro playful color palette */
-    --retro-purple: 267 50% 70%;
-    --retro-teal: 182 44% 56%;
-    --retro-peach: 23 93% 77%;
-    --retro-cream: 47 100% 96%;
-    --retro-lavender: 263 55% 85%;
-    --retro-orange: 25 95% 65%;
-    --retro-mint: 160 51% 77%;
-    --retro-pink: 323 72% 85%;
+    /* Festival vibrant color palette */
+    --festival-orange: 20 100% 60%; /* Bright orange #FF6B35 */
+    --festival-pink: 325 100% 50%; /* Hot pink #FF006E */
+    --festival-yellow: 48 100% 52%; /* Bright yellow #FFD60A */
+    --festival-cream: 47 100% 95%; /* Cream background */
+    --festival-beige: 40 20% 88%; /* Light beige */
+    --festival-coral: 15 100% 65%; /* Coral #FF8C42 */
+    --festival-magenta: 320 100% 55%; /* Magenta #F72585 */
+    --festival-amber: 45 100% 55%; /* Amber #FFBE0B */
+    --festival-black: 0 0% 10%; /* Near black */
+
+    /* Map retro colors to festival for compatibility */
+    --retro-purple: 325 100% 50%;
+    --retro-teal: 20 100% 60%;
+    --retro-peach: 15 100% 65%;
+    --retro-cream: 47 100% 95%;
+    --retro-lavender: 40 20% 88%;
+    --retro-orange: 20 100% 60%;
+    --retro-mint: 48 100% 52%;
+    --retro-pink: 325 100% 50%;
 
     --background: 47 100% 96%;
     --foreground: 267 25% 25%;

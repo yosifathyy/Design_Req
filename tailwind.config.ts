@@ -20,19 +20,32 @@ export default {
     extend: {
       fontFamily: {
         display: ["Fredoka One", "cursive"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Space Grotesk", "Inter", "system-ui", "sans-serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
-        // Retro playful color palette
+        // Festival vibrant color palette
+        festival: {
+          orange: "hsl(var(--festival-orange))",
+          pink: "hsl(var(--festival-pink))",
+          yellow: "hsl(var(--festival-yellow))",
+          cream: "hsl(var(--festival-cream))",
+          beige: "hsl(var(--festival-beige))",
+          coral: "hsl(var(--festival-coral))",
+          magenta: "hsl(var(--festival-magenta))",
+          amber: "hsl(var(--festival-amber))",
+          black: "hsl(var(--festival-black))",
+        },
+        // Keep retro for backward compatibility
         retro: {
-          purple: "hsl(var(--retro-purple))",
-          teal: "hsl(var(--retro-teal))",
-          peach: "hsl(var(--retro-peach))",
-          cream: "hsl(var(--retro-cream))",
-          lavender: "hsl(var(--retro-lavender))",
-          orange: "hsl(var(--retro-orange))",
-          mint: "hsl(var(--retro-mint))",
-          pink: "hsl(var(--retro-pink))",
+          purple: "hsl(var(--festival-pink))",
+          teal: "hsl(var(--festival-orange))",
+          peach: "hsl(var(--festival-coral))",
+          cream: "hsl(var(--festival-cream))",
+          lavender: "hsl(var(--festival-beige))",
+          orange: "hsl(var(--festival-orange))",
+          mint: "hsl(var(--festival-yellow))",
+          pink: "hsl(var(--festival-pink))",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

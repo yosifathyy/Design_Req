@@ -94,11 +94,27 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden flex flex-col">
-      {/* Floating background elements */}
-      <FloatingElement className="absolute top-20 left-10 w-20 h-20 bg-retro-pink/20 rounded-full blur-xl" />
-      <FloatingElement className="absolute top-40 right-20 w-16 h-16 bg-retro-teal/30 rounded-full blur-lg" />
-      <FloatingElement className="absolute bottom-20 left-1/4 w-12 h-12 bg-retro-orange/20 rounded-full blur-md" />
+    <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
+      {/* Geometric color blocks background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Top geometric blocks */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-festival-orange rotate-12 rounded-lg opacity-90"></div>
+        <div className="absolute top-20 right-20 w-24 h-24 bg-festival-pink -rotate-12 rounded-lg opacity-80"></div>
+        <div className="absolute top-10 right-40 w-16 h-16 bg-festival-yellow rotate-45 rounded-lg opacity-70"></div>
+
+        {/* Left side blocks */}
+        <div className="absolute top-40 left-10 w-28 h-28 bg-festival-coral rotate-45 rounded-lg opacity-85"></div>
+        <div className="absolute top-60 left-0 w-20 h-20 bg-festival-magenta -rotate-12 rounded-lg opacity-75"></div>
+
+        {/* Bottom blocks */}
+        <div className="absolute bottom-40 left-1/4 w-24 h-24 bg-festival-amber rotate-12 rounded-lg opacity-80"></div>
+        <div className="absolute bottom-20 right-1/3 w-32 h-32 bg-festival-pink -rotate-45 rounded-lg opacity-70"></div>
+        <div className="absolute bottom-60 right-10 w-20 h-20 bg-festival-orange rotate-45 rounded-lg opacity-85"></div>
+
+        {/* Center accent blocks */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-festival-yellow rotate-12 rounded-lg opacity-60"></div>
+        <div className="absolute top-1/3 right-1/4 w-12 h-12 bg-festival-coral -rotate-45 rounded-lg opacity-70"></div>
+      </div>
 
       <Navigation />
 
