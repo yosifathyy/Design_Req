@@ -246,12 +246,12 @@ const Index = () => {
       {/* How It Works */}
       <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative bg-gray-100">
         <div className="max-w-7xl mx-auto">
-          <FadeInUp className="text-center mb-12 sm:mb-16">
+          <div className="text-center mb-12 sm:mb-16">
             <HandWrittenTitle
               title="How It Works"
               subtitle="Our streamlined process makes getting epic design work effortless and super fun! 🎨"
             />
-          </FadeInUp>
+          </div>
 
           <BentoGrid>
             <StaggerChild>
