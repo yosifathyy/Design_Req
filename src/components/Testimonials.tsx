@@ -77,43 +77,68 @@ const TestimonialCard: React.FC<{
 
     // Set initial position - all cards start at the bottom
     gsap.set(card, {
-      y: index * 50, // Slight offset for visual depth
-      scale: 1 - index * 0.02, // Slightly smaller for depth
+      y: index * 60, // Offset for visual depth
+      scale: 1 - index * 0.03, // Progressive scaling for depth
       zIndex: totalCards - index,
       rotation: testimonial.rotation,
+      transformOrigin: "center bottom",
     });
 
-    // Create the stacking animation
+    // Create the main stacking animation
     ScrollTrigger.create({
-      trigger: card.parentElement,
-      start: "top bottom",
-      end: isLast ? "bottom center" : "bottom top",
-      scrub: 1.5,
+      trigger: card.parentElement?.parentElement, // Target the container
+      start: `${index * 20}% bottom`,
+      end: `${(index + 1) * 20}% top`,
+      scrub: 2,
       onUpdate: (self) => {
         const progress = self.progress;
+        const adjustedProgress = Math.min(progress * 1.2, 1); // Slightly faster animation
 
         if (!isLast) {
-          // Cards slide up and stack
-          const yMovement = -progress * (window.innerHeight * 0.8);
-          const scaleMovement = 1 - progress * 0.1;
-          const rotationMovement = testimonial.rotation * (1 - progress * 0.5);
+          // Calculate stacking movement
+          const yMovement = -adjustedProgress * (window.innerHeight * 0.7);
+          const scaleMovement = 1 - adjustedProgress * 0.08;
+          const rotationMovement =
+            testimonial.rotation * (1 - adjustedProgress * 0.8);
+          const opacityMovement = 1 - adjustedProgress * 0.3;
 
           gsap.set(card, {
-            y: yMovement + index * 50,
+            y: yMovement + index * 60,
             scale: scaleMovement,
             rotation: rotationMovement,
-            zIndex: totalCards - index + Math.floor(progress * 10),
+            opacity: Math.max(opacityMovement, 0.7),
+            zIndex: totalCards - index + Math.floor(adjustedProgress * 20),
+            filter: `blur(${adjustedProgress * 2}px)`,
           });
         } else {
-          // Last card stays in place as the deck
+          // Last card becomes the final stacked deck
           gsap.set(card, {
-            y: index * 50,
+            y: index * 60,
             scale: 1,
             rotation: 0,
+            opacity: 1,
             zIndex: totalCards + 10,
+            filter: "blur(0px)",
           });
         }
       },
+    });
+
+    // Add a subtle hover effect
+    card.addEventListener("mouseenter", () => {
+      gsap.to(card, {
+        scale: (1 - index * 0.03) * 1.02,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    });
+
+    card.addEventListener("mouseleave", () => {
+      gsap.to(card, {
+        scale: 1 - index * 0.03,
+        duration: 0.3,
+        ease: "power2.out",
+      });
     });
 
     return () => {
