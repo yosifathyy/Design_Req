@@ -230,12 +230,22 @@ export const useGSAPFloating = (amplitude = 10, duration = 3) => {
 
     const element = ref.current;
 
-    gsap.to(element, {
+    // Initial floating animation for a short period, then stop
+    const floatingTween = gsap.to(element, {
       y: -amplitude,
       duration: duration,
       yoyo: true,
-      repeat: -1,
+      repeat: 3, // Only repeat 3 times instead of infinite
       ease: "power1.inOut",
+    });
+
+    // After 10 seconds, kill the animation to let users read
+    gsap.delayedCall(10, () => {
+      gsap.to(element, {
+        y: 0,
+        duration: 1,
+        ease: "power2.out",
+      });
     });
 
     return () => {
