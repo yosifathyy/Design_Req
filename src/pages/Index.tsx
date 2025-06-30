@@ -1171,6 +1171,290 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Interactive Image Shuffle Section */}
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: "rgb(243, 236, 210)",
+          }}
+        >
+          {/* Rainbow Vertical Lines SVG */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="100%"
+            viewBox="0 0 452 600"
+            fill="none"
+            preserveAspectRatio="none"
+            className="w-full h-full"
+          >
+            {/* Black outlines */}
+            <path
+              d="M426 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "472.353px, 127.747px" }}
+            />
+            <path
+              d="M376 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "427.467px, 172.633px" }}
+            />
+            <path
+              d="M326 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "375.83px, 224.27px" }}
+            />
+            <path
+              d="M276 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "317.443px, 282.657px" }}
+            />
+            <path
+              d="M226 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "252.306px, 347.794px" }}
+            />
+            <path
+              d="M176 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "180.42px, 419.68px" }}
+            />
+            <path
+              d="M126 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "101.783px, 498.317px" }}
+            />
+            <path
+              d="M76 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "16.396px, 583.704px" }}
+            />
+            <path
+              d="M26 0V600"
+              stroke="black"
+              strokeWidth="52"
+              style={{ strokeDasharray: "0px, 999999px" }}
+            />
+
+            {/* Colored lines */}
+            <path
+              d="M426 0V600"
+              stroke="#F97028"
+              strokeWidth="48"
+              style={{ strokeDasharray: "472.353px, 127.747px" }}
+            />
+            <path
+              d="M376 0V600"
+              stroke="#F489A3"
+              strokeWidth="48"
+              style={{ strokeDasharray: "427.467px, 172.633px" }}
+            />
+            <path
+              d="M326 0V600"
+              stroke="#F0BB0D"
+              strokeWidth="48"
+              style={{ strokeDasharray: "375.83px, 224.27px" }}
+            />
+            <path
+              d="M276 0V600"
+              stroke="#F3A20F"
+              strokeWidth="48"
+              style={{ strokeDasharray: "317.443px, 282.657px" }}
+            />
+            <path
+              d="M226 0V600"
+              stroke="#F97028"
+              strokeWidth="48"
+              style={{ strokeDasharray: "252.306px, 347.794px" }}
+            />
+            <path
+              d="M176 0V600"
+              stroke="#F489A3"
+              strokeWidth="48"
+              style={{ strokeDasharray: "180.42px, 419.68px" }}
+            />
+            <path
+              d="M126 0V600"
+              stroke="#F0BB0D"
+              strokeWidth="48"
+              style={{ strokeDasharray: "101.783px, 498.317px" }}
+            />
+            <path
+              d="M76 0V600"
+              stroke="#F3A20F"
+              strokeWidth="48"
+              style={{ strokeDasharray: "16.396px, 583.704px" }}
+            />
+            <path
+              d="M26 0V600"
+              stroke="#F97028"
+              strokeWidth="48"
+              style={{ strokeDasharray: "0px, 999999px" }}
+            />
+          </svg>
+        </div>
+
+        <div className="max-w-md mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            {/* Image Stack Container */}
+            <div className="relative w-full aspect-[4/5] mb-6">
+              {/* Image 1 - Front */}
+              <motion.div
+                className="absolute inset-0 z-30"
+                animate={{
+                  rotate: [3, -3, 3],
+                  scale: [1, 1.02, 1],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <div className="w-full h-full border-2 border-black rounded-3xl shadow-xl overflow-hidden bg-white">
+                  <img
+                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd793e76751328121_event-image-1.avif"
+                    alt="Portfolio showcase 1"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Image 2 - Second */}
+              <motion.div
+                className="absolute inset-0 z-20"
+                animate={{
+                  rotate: [-2, 2, -2],
+                  scale: [1, 1.01, 1],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1,
+                }}
+              >
+                <div className="w-full h-full border-2 border-black rounded-3xl shadow-lg overflow-hidden bg-white">
+                  <img
+                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd92bb1ada35b5840_event-image-2.avif"
+                    alt="Portfolio showcase 2"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Image 3 - Third */}
+              <motion.div
+                className="absolute inset-0 z-10"
+                animate={{
+                  rotate: [2, -2, 2],
+                  scale: [1, 1.01, 1],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2,
+                }}
+              >
+                <div className="w-full h-full border-2 border-black rounded-3xl shadow-md overflow-hidden bg-white">
+                  <img
+                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aadd1a93d98874d5b679_event-image-3.avif"
+                    alt="Portfolio showcase 3"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Image 4 - Fourth */}
+              <motion.div
+                className="absolute inset-0 z-0"
+                animate={{
+                  rotate: [-1, 1, -1],
+                }}
+                transition={{
+                  duration: 7,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 3,
+                }}
+              >
+                <div className="w-full h-full border-2 border-black rounded-3xl shadow-sm overflow-hidden bg-white">
+                  <img
+                    src="https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddb9d81bad24595e36_event-image-4.avif"
+                    alt="Portfolio showcase 4"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Shuffle Button */}
+            <div className="flex flex-col items-center gap-4 relative z-40">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center justify-center bg-retro-cream border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black"
+                onClick={() => {
+                  // Add shuffle functionality here
+                  console.log("Shuffle clicked!");
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  className="mr-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="text-current"
+                  >
+                    <path
+                      d="M1 4V10H7"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    />
+                    <path
+                      d="M23 20V14H17"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    />
+                    <path
+                      d="M20.5 8.99998C19.6855 6.75968 18.0244 4.92842 15.8739 3.89992C13.7235 2.87143 11.2553 2.72782 9 3.49998C7.7459 3.98238 6.59283 4.69457 5.6 5.59998L1 9.99998M23 14L18.4 18.4C16.6963 20.0855 14.3965 21.0308 12 21.0308C9.60347 21.0308 7.30368 20.0855 5.6 18.4C4.69459 17.4072 3.9824 16.2541 3.5 15"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    />
+                  </svg>
+                </motion.div>
+                <span className="font-bold tracking-tight">Shuffle</span>
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-retro-purple/90 text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
