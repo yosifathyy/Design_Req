@@ -256,15 +256,34 @@ const Testimonials: React.FC = () => {
           </motion.div>
 
           <motion.h2
-            className="font-display font-black text-6xl md:text-8xl lg:text-9xl text-black mb-6 tracking-tight"
+            className="flex items-center justify-center gap-8 md:gap-16 font-display font-black text-black mb-6 tracking-tight"
+            style={{
+              fontSize: "clamp(80px, 15vw, 234px)",
+              lineHeight: "0.9",
+              fontFamily: '"Fredoka One", cursive',
+            }}
             initial={{ opacity: 0, rotateX: -90 }}
             animate={isHeaderInView ? { opacity: 1, rotateX: 0 } : {}}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
-            Client{" "}
-            <span className="bg-gradient-to-r from-festival-orange via-festival-pink to-festival-yellow bg-clip-text text-transparent">
+            <span>Client</span>
+            <motion.span
+              className="relative inline-flex items-center justify-center px-6 md:px-12 py-2 md:py-4 bg-festival-amber text-white rounded-2xl md:rounded-3xl border-4 border-black"
+              style={{
+                fontSize: "clamp(76px, 14vw, 222px)",
+                lineHeight: "0.9",
+                boxShadow: "0px 11px 0px rgba(0, 0, 0, 0.15)",
+                transform: "rotate(-1deg)",
+              }}
+              whileHover={{
+                rotate: 1,
+                scale: 1.05,
+                boxShadow: "0px 16px 0px rgba(0, 0, 0, 0.2)",
+              }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               Love
-            </span>
+            </motion.span>
           </motion.h2>
 
           <motion.p
