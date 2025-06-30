@@ -112,7 +112,7 @@ const Index = () => {
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10"
       >
         {/* Hero background area */}
-        <div className="absolute inset-x-4 top-32 bottom-4 bg-gradient-to-b from-festival-pink/30 to-festival-pink/20 rounded-[2rem] sm:rounded-[3rem]"></div>
+        <div className="absolute inset-x-4 top-32 bottom-4 bg-gray-900 rounded-[2rem] sm:rounded-[3rem]"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
