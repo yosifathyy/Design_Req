@@ -108,7 +108,7 @@ const Index = () => {
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10"
       >
         {/* Hero background area */}
-        <div className="absolute inset-x-0 top-1/4 bottom-0 bg-gradient-to-b from-festival-pink/20 to-festival-pink/10 rounded-t-[3rem]"></div>
+        <div className="absolute inset-x-4 top-32 bottom-4 bg-gradient-to-b from-festival-pink/30 to-festival-pink/20 rounded-[2rem] sm:rounded-[3rem]"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
@@ -644,12 +644,12 @@ const Index = () => {
                       ].map((feature, index) => (
                         <motion.div
                           key={index}
-                          className="flex items-center text-retro-purple/70"
+                          className="flex items-center text-festival-black/60"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <TrendingUp className="w-3 h-3 text-retro-orange mr-2 flex-shrink-0" />
+                          <TrendingUp className="w-3 h-3 text-festival-orange mr-2 flex-shrink-0" />
                           <span className="text-xs sm:text-sm">{feature}</span>
                         </motion.div>
                       ))}
@@ -661,11 +661,11 @@ const Index = () => {
                     >
                       <Button
                         asChild
-                        className="w-full bg-gradient-to-r from-retro-orange to-retro-peach text-white font-semibold text-sm"
+                        className="w-full bg-festival-orange border-2 border-festival-black text-white font-bold text-sm"
                       >
                         <Link to="/start-project">
                           <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                          Start Your Transformation
+                          Get Started
                         </Link>
                       </Button>
                     </motion.div>
@@ -695,10 +695,10 @@ const Index = () => {
                     >
                       <Play className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                     </motion.div>
-                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                    <h3 className="font-bold text-lg sm:text-xl text-festival-black mb-2 sm:mb-3">
                       Interactive Preview 🎬
                     </h3>
-                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                    <p className="text-festival-black/70 mb-3 sm:mb-4 text-sm sm:text-base">
                       See our design process in action with live previews!
                     </p>
                     <div className="space-y-2 mb-4 flex-1">
@@ -747,10 +747,10 @@ const Index = () => {
                     >
                       <Trophy className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                     </motion.div>
-                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                    <h3 className="font-bold text-lg sm:text-xl text-festival-black mb-2 sm:mb-3">
                       Portfolio Highlights 🏆
                     </h3>
-                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                    <p className="text-festival-black/70 mb-3 sm:mb-4 text-sm sm:text-base">
                       Stunning results from our expert design team!
                     </p>
                     <div className="space-y-2 mb-4 flex-1">
@@ -853,10 +853,10 @@ const Index = () => {
                     >
                       <Heart className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                     </motion.div>
-                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                    <h3 className="font-bold text-lg sm:text-xl text-festival-black mb-2 sm:mb-3">
                       Our Mission 🎯
                     </h3>
-                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                    <p className="text-festival-black/70 mb-3 sm:mb-4 text-sm sm:text-base">
                       Making exceptional design accessible to everyone!
                     </p>
                     <div className="space-y-2 mb-4 flex-1">
@@ -868,12 +868,12 @@ const Index = () => {
                       ].map((feature, index) => (
                         <motion.div
                           key={index}
-                          className="flex items-center text-retro-purple/70"
+                          className="flex items-center text-festival-black/60"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <Heart className="w-3 h-3 text-retro-purple mr-2 flex-shrink-0" />
+                          <Heart className="w-3 h-3 text-festival-pink mr-2 flex-shrink-0" />
                           <span className="text-xs sm:text-sm">{feature}</span>
                         </motion.div>
                       ))}
@@ -885,11 +885,11 @@ const Index = () => {
                     >
                       <Button
                         asChild
-                        className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold text-sm"
+                        className="w-full bg-festival-pink border-2 border-festival-black text-white font-bold text-sm"
                       >
                         <Link to="/start-project">
                           <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                          Join Our Mission
+                          Get Started
                         </Link>
                       </Button>
                     </motion.div>
