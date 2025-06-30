@@ -509,55 +509,67 @@ const Index = () => {
 
           <StaggerContainer>
             <BentoGrid>
+              {/* Before & After Showcase */}
               <StaggerChild>
                 <BentoCard
-                  size="lg"
-                  gradient="from-retro-purple/10 via-retro-teal/10 to-retro-orange/10"
+                  size="md"
+                  gradient="from-retro-purple/20 via-retro-teal/20 to-retro-orange/20"
                   delay={0.2}
+                  className="h-full"
                 >
-                  <div className="p-8 h-full flex flex-col justify-center">
-                    <div className="flex items-center space-x-4 mb-6">
-                      <motion.div
-                        className="w-16 h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-2xl flex items-center justify-center"
-                        animate={{
-                          rotate: [0, 360],
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <Zap className="w-8 h-8 text-white" />
-                      </motion.div>
-                      <div>
-                        <h3 className="font-bold text-2xl text-retro-purple">
-                          Before & After Showcase 🎭
-                        </h3>
-                        <p className="text-retro-purple/70">
-                          Interactive transformations that'll amaze you!
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-lg text-retro-purple/80 mb-6">
-                      Experience our interactive before & after showcase tool
-                      that demonstrates the transformative power of our design
-                      expertise. From rough concepts to polished masterpieces!
-                      🌟
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                    <motion.div
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      animate={{
+                        rotate: [0, 360],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Zap className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                    </motion.div>
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                      Before & After Showcase 🎭
+                    </h3>
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      Interactive transformations that demonstrate our design
+                      magic!
                     </p>
+                    <div className="space-y-2 mb-4 flex-1">
+                      {[
+                        "Photo Retouching",
+                        "Logo Redesigns",
+                        "Brand Makeovers",
+                        "3D Transformations",
+                      ].map((feature, index) => (
+                        <motion.div
+                          key={index}
+                          className="flex items-center text-retro-purple/70"
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <TrendingUp className="w-3 h-3 text-retro-orange mr-2 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm">{feature}</span>
+                        </motion.div>
+                      ))}
+                    </div>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      className="mt-auto"
                     >
                       <Button
                         asChild
-                        className="bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold px-6 py-3 rounded-xl w-fit"
+                        className="w-full bg-gradient-to-r from-retro-orange to-retro-peach text-white font-semibold text-sm"
                       >
                         <Link to="/start-project">
-                          <TrendingUp className="w-4 h-4 mr-2" />
+                          <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                           Start Your Transformation
-                          <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
                       </Button>
                     </motion.div>
@@ -565,49 +577,111 @@ const Index = () => {
                 </BentoCard>
               </StaggerChild>
 
+              {/* Interactive Preview */}
               <StaggerChild>
-                <BentoCard size="md" delay={0.3}>
-                  <div className="p-6 h-full flex flex-col justify-center items-center text-center">
+                <BentoCard
+                  size="md"
+                  gradient="from-retro-teal/20 to-retro-mint/20"
+                  delay={0.3}
+                  className="h-full"
+                >
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
-                      className="aspect-video bg-gradient-to-br from-retro-cream to-white rounded-2xl flex items-center justify-center mb-4 w-full border-2 border-retro-purple/20"
-                      whileHover={{
-                        scale: 1.05,
-                        rotateY: 10,
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-teal to-retro-mint rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 180, 360],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
                       }}
                     >
-                      <div className="text-center">
-                        <motion.div
-                          animate={{
-                            scale: [1, 1.2, 1],
-                            rotate: [0, 180, 360],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                          }}
-                        >
-                          <Play className="w-12 h-12 text-retro-purple/40 mx-auto mb-2" />
-                        </motion.div>
-                        <p className="text-retro-purple/60 font-medium text-sm">
-                          Interactive Preview 🎬
-                        </p>
-                      </div>
+                      <Play className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                     </motion.div>
-                    <p className="text-sm text-retro-purple/70">
-                      Hover to see the magic happen! ✨
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                      Interactive Preview 🎬
+                    </h3>
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      See our design process in action with live previews!
                     </p>
+                    <div className="space-y-2 mb-4 flex-1">
+                      {[
+                        "Live Design Process",
+                        "Real-time Feedback",
+                        "Version Comparisons",
+                        "Interactive Tours",
+                      ].map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center text-xs sm:text-sm"
+                        >
+                          <Play className="w-3 h-3 text-retro-teal mr-2 flex-shrink-0" />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-retro-teal text-retro-teal hover:bg-retro-teal hover:text-white mt-auto text-sm"
+                    >
+                      <Link to="/start-project">Watch Demo</Link>
+                    </Button>
                   </div>
                 </BentoCard>
               </StaggerChild>
 
               {/* Portfolio Stats */}
               <StaggerChild>
-                <StatBentoCard
-                  stat="200+"
-                  label="Amazing Projects"
-                  icon={Trophy}
+                <BentoCard
+                  size="md"
+                  gradient="from-retro-purple/20 to-retro-lavender/20"
                   delay={0.4}
-                />
+                  className="h-full"
+                >
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                    <motion.div
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-lavender rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      whileHover={{
+                        rotate: [0, -10, 10, -10, 0],
+                        scale: 1.1,
+                      }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Trophy className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                    </motion.div>
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                      Portfolio Highlights 🏆
+                    </h3>
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      Stunning results from our expert design team!
+                    </p>
+                    <div className="space-y-2 mb-4 flex-1">
+                      {[
+                        "200+ Amazing Projects",
+                        "Award-Winning Designs",
+                        "Client Success Stories",
+                        "Industry Recognition",
+                      ].map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center text-xs sm:text-sm"
+                        >
+                          <Trophy className="w-3 h-3 text-retro-purple mr-2 flex-shrink-0" />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-retro-purple text-retro-purple hover:bg-retro-purple hover:text-white mt-auto text-sm"
+                    >
+                      <Link to="/start-project">View Gallery</Link>
+                    </Button>
+                  </div>
+                </BentoCard>
               </StaggerChild>
             </BentoGrid>
           </StaggerContainer>
@@ -664,114 +738,179 @@ const Index = () => {
               {/* Mission Card */}
               <StaggerChild>
                 <BentoCard
-                  size="lg"
+                  size="md"
                   gradient="from-retro-lavender/20 to-retro-mint/20"
                   delay={0.2}
+                  className="h-full"
                 >
-                  <div className="p-8 h-full flex items-center">
-                    <div className="w-1/2 space-y-6">
-                      <motion.div
-                        animate={{
-                          rotate: [0, 360],
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 8,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                        className="w-20 h-20 bg-gradient-to-br from-retro-purple to-retro-teal rounded-3xl flex items-center justify-center mb-6"
-                      >
-                        <Heart className="w-10 h-10 text-white" />
-                      </motion.div>
-                      <h3 className="font-bold text-3xl text-retro-purple">
-                        Our Mission 🎯
-                      </h3>
-                      <p className="text-retro-purple/80 text-lg leading-relaxed">
-                        We believe exceptional design should be accessible to
-                        everyone. Our curated team of expert designers works
-                        together to deliver professional, high-quality design
-                        services that help businesses and individuals bring
-                        their visions to life! ✨
-                      </p>
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                    <motion.div
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      animate={{
+                        rotate: [0, 360],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    >
+                      <Heart className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                    </motion.div>
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                      Our Mission 🎯
+                    </h3>
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      Making exceptional design accessible to everyone!
+                    </p>
+                    <div className="space-y-2 mb-4 flex-1">
+                      {[
+                        "Professional Quality",
+                        "Expert Designers",
+                        "Vision to Reality",
+                        "Accessible Pricing",
+                      ].map((feature, index) => (
+                        <motion.div
+                          key={index}
+                          className="flex items-center text-retro-purple/70"
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <Heart className="w-3 h-3 text-retro-purple mr-2 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm">{feature}</span>
+                        </motion.div>
+                      ))}
                     </div>
-                    <div className="w-1/2 flex justify-center">
-                      <motion.div
-                        className="relative"
-                        animate={{
-                          rotate: [0, 5, -5, 0],
-                          scale: [1, 1.05, 1],
-                        }}
-                        transition={{
-                          duration: 4,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="mt-auto"
+                    >
+                      <Button
+                        asChild
+                        className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold text-sm"
                       >
-                        <div className="w-48 h-48 bg-gradient-to-br from-retro-purple to-retro-teal rounded-3xl flex items-center justify-center relative overflow-hidden">
-                          <motion.div
-                            animate={{
-                              rotate: [0, 360],
-                            }}
-                            transition={{
-                              duration: 10,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
-                          >
-                            <Users className="w-24 h-24 text-white" />
-                          </motion.div>
-                          {/* Floating elements */}
-                          {[...Array(6)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="absolute w-2 h-2 bg-white rounded-full"
-                              animate={{
-                                x: [0, Math.random() * 100 - 50],
-                                y: [0, Math.random() * 100 - 50],
-                                opacity: [0, 1, 0],
-                                scale: [0, 1, 0],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: i * 0.3,
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </motion.div>
-                    </div>
+                        <Link to="/start-project">
+                          <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                          Join Our Mission
+                        </Link>
+                      </Button>
+                    </motion.div>
                   </div>
                 </BentoCard>
               </StaggerChild>
 
               {/* Team Stats */}
               <StaggerChild>
-                <StatBentoCard
-                  stat="15+"
-                  label="Creative Wizards"
-                  icon={Users}
+                <BentoCard
+                  size="md"
+                  gradient="from-retro-teal/20 to-retro-mint/20"
                   delay={0.3}
-                />
+                  className="h-full"
+                >
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                    <motion.div
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-teal to-retro-mint rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 10, -10, 0],
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Users className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                    </motion.div>
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                      Expert Team 👥
+                    </h3>
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      Our curated team of creative wizards!
+                    </p>
+                    <div className="space-y-2 mb-4 flex-1">
+                      {[
+                        "15+ Creative Wizards",
+                        "5+ Years Experience",
+                        "Global Talent Pool",
+                        "Diverse Expertise",
+                      ].map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center text-xs sm:text-sm"
+                        >
+                          <Users className="w-3 h-3 text-retro-teal mr-2 flex-shrink-0" />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-retro-teal text-retro-teal hover:bg-retro-teal hover:text-white mt-auto text-sm"
+                    >
+                      <Link to="/start-project">Meet Our Team</Link>
+                    </Button>
+                  </div>
+                </BentoCard>
               </StaggerChild>
 
+              {/* Global Reach */}
               <StaggerChild>
-                <StatBentoCard
-                  stat="5+"
-                  label="Years Experience"
-                  icon={Clock}
+                <BentoCard
+                  size="md"
+                  gradient="from-retro-purple/20 to-retro-lavender/20"
                   delay={0.4}
-                />
-              </StaggerChild>
-
-              <StaggerChild>
-                <StatBentoCard
-                  stat="50+"
-                  label="Countries Served"
-                  icon={Globe}
-                  delay={0.5}
-                />
+                  className="h-full"
+                >
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
+                    <motion.div
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-lavender rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      animate={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    >
+                      <Globe className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                    </motion.div>
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                      Global Reach 🌍
+                    </h3>
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      Serving creative minds worldwide!
+                    </p>
+                    <div className="space-y-2 mb-4 flex-1">
+                      {[
+                        "50+ Countries Served",
+                        "24/7 Support",
+                        "Multiple Languages",
+                        "Local Understanding",
+                      ].map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center text-xs sm:text-sm"
+                        >
+                          <Globe className="w-3 h-3 text-retro-purple mr-2 flex-shrink-0" />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-retro-purple text-retro-purple hover:bg-retro-purple hover:text-white mt-auto text-sm"
+                    >
+                      <Link to="/start-project">Global Project</Link>
+                    </Button>
+                  </div>
+                </BentoCard>
               </StaggerChild>
 
               {/* Values Card */}
@@ -779,41 +918,52 @@ const Index = () => {
                 <BentoCard
                   size="md"
                   gradient="from-retro-orange/20 to-retro-peach/20"
-                  delay={0.6}
+                  delay={0.5}
+                  className="h-full"
                 >
-                  <div className="p-6 h-full flex flex-col justify-center">
+                  <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
-                      className="w-16 h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-2xl flex items-center justify-center mb-4"
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
                       whileHover={{
                         rotate: 360,
-                        scale: 1.2,
+                        scale: 1.1,
                       }}
                       transition={{ duration: 0.6 }}
                     >
-                      <Smile className="w-8 h-8 text-white" />
+                      <Smile className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                     </motion.div>
-                    <h3 className="font-bold text-xl text-retro-purple mb-3">
+                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
                       Our Values 💫
                     </h3>
-                    <div className="space-y-3">
+                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
+                      Principles that guide everything we do!
+                    </p>
+                    <div className="space-y-2 mb-4 flex-1">
                       {[
                         "Creativity First",
                         "Quality Always",
                         "Client Happiness",
                         "Innovation Daily",
-                      ].map((value, index) => (
+                      ].map((feature, index) => (
                         <motion.div
                           key={index}
-                          className="flex items-center text-retro-purple/80"
+                          className="flex items-center text-retro-purple/70"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <Star className="w-4 h-4 text-retro-orange mr-2" />
-                          <span className="text-sm font-medium">{value}</span>
+                          <Star className="w-3 h-3 text-retro-orange mr-2 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm">{feature}</span>
                         </motion.div>
                       ))}
                     </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-retro-orange text-retro-orange hover:bg-retro-orange hover:text-white mt-auto text-sm"
+                    >
+                      <Link to="/start-project">Share Our Values</Link>
+                    </Button>
                   </div>
                 </BentoCard>
               </StaggerChild>
@@ -867,9 +1017,9 @@ const Index = () => {
             </p>
           </motion.div>
 
-          <StaggerContainer className="flex flex-col">
-            {/* Contact Methods Row */}
-            <div className="flex flex-row justify-start gap-6 text-left mb-8">
+          <StaggerContainer>
+            <BentoGrid>
+              {/* Contact Methods */}
               {[
                 {
                   icon: MessageCircle,
@@ -877,6 +1027,12 @@ const Index = () => {
                   description: "Instant support during business hours",
                   action: "Start Chat",
                   gradient: "from-retro-purple/20 to-retro-teal/20",
+                  features: [
+                    "Instant Response",
+                    "Business Hours",
+                    "Expert Help",
+                    "Real-time Chat",
+                  ],
                 },
                 {
                   icon: Mail,
@@ -884,6 +1040,12 @@ const Index = () => {
                   description: "Get detailed help via email",
                   action: "Send Email",
                   gradient: "from-retro-teal/20 to-retro-mint/20",
+                  features: [
+                    "Detailed Support",
+                    "24/7 Received",
+                    "File Attachments",
+                    "Follow-up",
+                  ],
                 },
                 {
                   icon: Phone,
@@ -891,33 +1053,49 @@ const Index = () => {
                   description: "Talk directly with our team",
                   action: "Call Now",
                   gradient: "from-retro-orange/20 to-retro-peach/20",
+                  features: [
+                    "Direct Contact",
+                    "Voice Support",
+                    "Screen Sharing",
+                    "Personal Touch",
+                  ],
                 },
               ].map((contact, index) => (
-                <StaggerChild key={index} className="flex-1 min-h-[220px]">
+                <StaggerChild key={index}>
                   <BentoCard
-                    size="sm"
+                    size="md"
                     gradient={contact.gradient}
                     delay={index * 0.1}
                     className="h-full"
                   >
-                    <div className="p-6 h-full flex flex-col justify-center items-center text-center">
+                    <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                       <motion.div
-                        className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4"
+                        className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
                         whileHover={{ rotate: 360, scale: 1.1 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <contact.icon className="w-8 h-8 text-white" />
+                        <contact.icon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                       </motion.div>
-                      <h3 className="font-bold text-lg text-white mb-2">
+                      <h3 className="font-bold text-lg sm:text-xl text-white mb-2 sm:mb-3">
                         {contact.title}
                       </h3>
-                      <p className="text-white/80 mb-4 text-sm">
+                      <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
                         {contact.description}
                       </p>
+                      <div className="space-y-2 mb-4 flex-1">
+                        {contact.features.map((feature, featureIndex) => (
+                          <div
+                            key={featureIndex}
+                            className="flex items-center text-xs sm:text-sm"
+                          >
+                            <CheckCircle className="w-3 h-3 text-white/60 mr-2 flex-shrink-0" />
+                            <span className="text-white/70">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
                       <Button
                         variant="outline"
-                        size="sm"
-                        className="border-white/30 text-white hover:bg-white hover:text-retro-purple"
+                        className="w-full border-white/30 text-white hover:bg-white hover:text-retro-purple mt-auto text-sm"
                       >
                         {contact.action}
                       </Button>
@@ -925,59 +1103,63 @@ const Index = () => {
                   </BentoCard>
                 </StaggerChild>
               ))}
-            </div>
 
-            {/* Contact Form */}
-            <StaggerChild>
-              <BentoCard
-                size="lg"
-                delay={0.4}
-                className="col-span-4 row-span-2 min-h-[400px]"
-              >
-                <div className="p-4 sm:p-6 lg:pl-32 lg:pr-22 lg:py-8 h-full ml-2">
-                  <motion.div
-                    className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
-                    initial={{ opacity: 0, x: -50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6 }}
-                  >
+              {/* Contact Form */}
+              <StaggerChild>
+                <BentoCard
+                  size="md"
+                  gradient="from-retro-lavender/20 to-retro-cream/20"
+                  delay={0.4}
+                  className="h-full"
+                >
+                  <div className="p-4 sm:p-5 lg:p-6 h-full">
                     <motion.div
-                      className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
-                      animate={{
-                        rotate: [0, 360],
-                      }}
-                      transition={{
-                        duration: 6,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
+                      className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
+                      initial={{ opacity: 0, x: -50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6 }}
                     >
-                      <Send className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                      <motion.div
+                        className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center"
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        <Send className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                      </motion.div>
+                      <div>
+                        <h3 className="font-bold text-lg sm:text-xl text-retro-purple">
+                          Send us a Message! 💌
+                        </h3>
+                        <p className="text-retro-purple/70 text-sm">
+                          Quick project inquiry form
+                        </p>
+                      </div>
                     </motion.div>
-                    <h3 className="font-display text-lg sm:text-xl lg:text-2xl text-retro-purple">
-                      Send us a Message! 💌
-                    </h3>
-                  </motion.div>
 
-                  <form className="space-y-4 sm:space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <form className="space-y-3 sm:space-y-4">
                       <div>
                         <Label
                           htmlFor="name"
-                          className="text-retro-purple font-medium"
+                          className="text-retro-purple font-medium text-sm"
                         >
                           Full Name ✨
                         </Label>
                         <Input
                           id="name"
                           placeholder="Your awesome name"
-                          className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
+                          className="mt-1 border-retro-purple/30 focus:border-retro-purple rounded-xl text-sm"
                         />
                       </div>
                       <div>
                         <Label
                           htmlFor="email"
-                          className="text-retro-purple font-medium"
+                          className="text-retro-purple font-medium text-sm"
                         >
                           Email Address 📧
                         </Label>
@@ -985,56 +1167,40 @@ const Index = () => {
                           id="email"
                           type="email"
                           placeholder="your@awesome-email.com"
-                          className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
+                          className="mt-1 border-retro-purple/30 focus:border-retro-purple rounded-xl text-sm"
                         />
                       </div>
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="subject"
-                        className="text-retro-purple font-medium"
+                      <div>
+                        <Label
+                          htmlFor="message"
+                          className="text-retro-purple font-medium text-sm"
+                        >
+                          Message 💭
+                        </Label>
+                        <Textarea
+                          id="message"
+                          placeholder="Tell us about your project..."
+                          rows={3}
+                          className="mt-1 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none text-sm"
+                        />
+                      </div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        Subject 🎯
-                      </Label>
-                      <Input
-                        id="subject"
-                        placeholder="What's this magical message about?"
-                        className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="message"
-                        className="text-retro-purple font-medium"
-                      >
-                        Message 💭
-                      </Label>
-                      <Textarea
-                        id="message"
-                        placeholder="Tell us about your amazing project ideas, questions, or just say hi! We love hearing from creative minds..."
-                        rows={5}
-                        className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none"
-                      />
-                    </div>
-                    <motion.div
-                      className="text-center"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button
-                        type="submit"
-                        size="lg"
-                        className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                      >
-                        <Send className="w-5 h-5 mr-2" />
-                        Send Magic Message ✨
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    </motion.div>
-                  </form>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+                        <Button
+                          type="submit"
+                          className="w-full bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold py-2 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Magic Message ✨
+                        </Button>
+                      </motion.div>
+                    </form>
+                  </div>
+                </BentoCard>
+              </StaggerChild>
+            </BentoGrid>
           </StaggerContainer>
 
           {/* CTA Section */}
