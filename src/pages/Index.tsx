@@ -95,6 +95,86 @@ const Index = () => {
     "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddb9d81bad24595e36_event-image-4.avif",
   ];
 
+  // Custom hooks for smooth scrolling effects
+  const useSpeedControl = (speed: number) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (!ref.current) return;
+
+      const element = ref.current;
+
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const yPos = progress * speed * 100 - 50;
+          gsap.set(element, { y: yPos });
+        },
+      });
+
+      return () => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (trigger.trigger === element) {
+            trigger.kill();
+          }
+        });
+      };
+    }, [speed]);
+
+    return ref;
+  };
+
+  const useStaggeredText = (text: string, lagMultiplier = 0.1) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (!ref.current) return;
+
+      const element = ref.current;
+      const chars = text.split("");
+
+      element.innerHTML = chars
+        .map(
+          (char, i) =>
+            `<span style="display: inline-block; transform: translateY(100px); opacity: 0;">${char === " " ? "&nbsp;" : char}</span>`,
+        )
+        .join("");
+
+      const spans = element.querySelectorAll("span");
+
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 80%",
+        onEnter: () => {
+          spans.forEach((span, i) => {
+            gsap.to(span, {
+              y: 0,
+              opacity: 1,
+              duration: 0.8,
+              delay: i * lagMultiplier,
+              ease: "power2.out",
+            });
+          });
+        },
+        once: true,
+      });
+
+      return () => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (trigger.trigger === element) {
+            trigger.kill();
+          }
+        });
+      };
+    }, [text, lagMultiplier]);
+
+    return ref;
+  };
+
   const shuffleImages = () => {
     if (isShuffling) return;
 
