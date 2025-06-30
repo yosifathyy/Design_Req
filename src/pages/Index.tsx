@@ -269,91 +269,117 @@ const Index = () => {
             />
           </div>
 
-          <BentoGrid>
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-pink border-2 border-festival-black"
-                delay={0.2}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <Upload className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Submit Your Brief
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    Tell us about your project using our AI-powered brief
-                    generator. It's like magic, but for design briefs!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+          <GSAPStagger staggerDelay={0.15}>
+            <BentoGrid>
+              <GSAPFlipIn delay={0.2}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-pink border-2 border-festival-black"
+                  delay={0.2}
+                >
+                  <GSAPHover animation="tilt">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={8} duration={2}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <Upload className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Submit Your Brief"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.3}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        Tell us about your project using our AI-powered brief
+                        generator. It's like magic, but for design briefs!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPFlipIn>
 
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-orange border-2 border-festival-black"
-                delay={0.3}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <Users className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Get Matched
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    We assign the perfect designer from our expert team. Think
-                    of it as design matchmaking!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+              <GSAPBounceIn delay={0.3}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-orange border-2 border-festival-black"
+                  delay={0.3}
+                >
+                  <GSAPHover animation="wiggle">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={12} duration={2.5}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <Users className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Get Matched"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.4}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        We assign the perfect designer from our expert team.
+                        Think of it as design matchmaking!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPBounceIn>
 
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-orange border-2 border-festival-black"
-                delay={0.4}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <MessageCircle className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Collaborate
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    Work directly with your designer through secure messaging.
-                    It's like having a design buddy!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+              <GSAPScaleIn delay={0.4}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-orange border-2 border-festival-black"
+                  delay={0.4}
+                >
+                  <GSAPHover animation="glow">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={10} duration={3}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <MessageCircle className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Collaborate"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.5}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        Work directly with your designer through secure
+                        messaging. It's like having a design buddy!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPScaleIn>
 
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-pink border-2 border-festival-black"
-                delay={0.5}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Receive Results
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    Get your professional designs delivered on time. Boom! Your
-                    vision comes to life!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
-          </BentoGrid>
+              <GSAPSlideIn direction="up" delay={0.5}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-pink border-2 border-festival-black"
+                  delay={0.5}
+                >
+                  <GSAPHover animation="bounce">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={15} duration={3.5}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <CheckCircle className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Receive Results"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.6}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        Get your professional designs delivered on time. Boom!
+                        Your vision comes to life!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPSlideIn>
+            </BentoGrid>
+          </GSAPStagger>
         </div>
       </section>
 
@@ -1168,7 +1194,7 @@ const Index = () => {
                       </motion.div>
                       <div>
                         <h3 className="font-bold text-xl sm:text-2xl text-retro-purple">
-                          Send us a Message! 💌
+                          Send us a Message! ���
                         </h3>
                         <p className="text-retro-purple/70 text-sm sm:text-base">
                           Tell us about your amazing project ideas!
