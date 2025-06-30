@@ -1404,14 +1404,25 @@ const Index = () => {
             </div>
 
             {/* Shuffle Button */}
-            <div className="flex flex-col items-center gap-4 relative z-40">
+            <div className="flex flex-col items-center gap-4 relative z-50 mt-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center bg-retro-cream border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black"
-                onClick={() => {
-                  // Add shuffle functionality here
+                className="flex items-center justify-center bg-retro-cream border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50"
+                style={{
+                  pointerEvents: "auto",
+                  touchAction: "manipulation",
+                  userSelect: "none",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   console.log("Shuffle clicked!");
+                  alert("Shuffle button clicked! 🎲");
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  console.log("Button pressed!");
                 }}
               >
                 <motion.div
@@ -1421,7 +1432,7 @@ const Index = () => {
                     repeat: Infinity,
                     ease: "linear",
                   }}
-                  className="mr-2"
+                  className="mr-2 pointer-events-none"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1429,7 +1440,7 @@ const Index = () => {
                     height="20"
                     viewBox="0 0 24 24"
                     fill="none"
-                    className="text-current"
+                    className="text-current pointer-events-none"
                   >
                     <path
                       d="M1 4V10H7"
@@ -1448,7 +1459,9 @@ const Index = () => {
                     />
                   </svg>
                 </motion.div>
-                <span className="font-bold tracking-tight">Shuffle</span>
+                <span className="font-bold tracking-tight pointer-events-none">
+                  Shuffle
+                </span>
               </motion.button>
             </div>
           </motion.div>
