@@ -55,7 +55,8 @@ function HandWrittenTitle({
         <motion.h1
           className="text-4xl md:text-6xl text-black dark:text-white tracking-tighter flex items-center gap-2"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
           {title}
@@ -64,7 +65,8 @@ function HandWrittenTitle({
           <motion.p
             className="text-xl text-black/80 dark:text-white/80"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 1, duration: 0.8 }}
           >
             {subtitle}
