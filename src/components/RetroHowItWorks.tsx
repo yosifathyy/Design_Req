@@ -278,42 +278,46 @@ const RetroHowItWorks: React.FC = () => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Title animation
+      // Enhanced title animation with more dramatic entrance
       gsap.fromTo(
         titleRef.current,
         {
           opacity: 0,
-          y: 100,
-          scale: 0.8,
-          rotation: -5,
+          y: 150,
+          scale: 0.7,
+          rotation: -10,
         },
         {
           opacity: 1,
           y: 0,
           scale: 1,
           rotation: 0,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.6)",
+          duration: 2,
+          ease: "elastic.out(1, 0.8)",
           scrollTrigger: {
             trigger: titleRef.current,
-            start: "top 85%",
+            start: "top 90%",
+            end: "top 70%",
             toggleActions: "play none none none",
+            scrub: 0.3,
           },
         },
       );
 
-      // Subtitle animation
+      // Subtitle animation with stagger effect
       gsap.fromTo(
         subtitleRef.current,
         {
           opacity: 0,
-          y: 50,
+          y: 80,
+          scale: 0.9,
         },
         {
           opacity: 1,
           y: 0,
-          duration: 1,
-          ease: "power2.out",
+          scale: 1,
+          duration: 1.2,
+          ease: "back.out(1.7)",
           scrollTrigger: {
             trigger: subtitleRef.current,
             start: "top 85%",
@@ -321,6 +325,22 @@ const RetroHowItWorks: React.FC = () => {
           },
         },
       );
+
+      // Animate floating background shapes on scroll
+      const shapes = sectionRef.current?.querySelectorAll(".floating-bg-shape");
+      shapes?.forEach((shape, i) => {
+        gsap.to(shape, {
+          y: -100,
+          rotation: 360,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1 + i * 0.3, // Different speeds for parallax effect
+          },
+        });
+      });
     }, sectionRef);
 
     return () => ctx.revert();
