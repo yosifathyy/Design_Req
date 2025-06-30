@@ -28,6 +28,20 @@ import {
   StaggerChild,
 } from "@/components/AnimatedElements";
 import {
+  GSAPFadeIn,
+  GSAPSlideIn,
+  GSAPBounceIn,
+  GSAPScaleIn,
+  GSAPFlipIn,
+  GSAPStagger,
+  GSAPHover,
+  GSAPFloating,
+  GSAPTypewriter,
+  GSAPParallax,
+  GSAPMagneticButton,
+  GSAPRevealText,
+} from "@/components/GSAPAnimatedElements";
+import {
   Sparkles,
   Palette,
   Layers,
