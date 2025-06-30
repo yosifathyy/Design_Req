@@ -1018,109 +1018,24 @@ const Index = () => {
           </motion.div>
 
           <StaggerContainer>
-            <BentoGrid>
-              {/* Contact Methods */}
-              {[
-                {
-                  icon: MessageCircle,
-                  title: "Live Chat 💬",
-                  description: "Instant support during business hours",
-                  action: "Start Chat",
-                  gradient: "from-retro-purple/20 to-retro-teal/20",
-                  features: [
-                    "Instant Response",
-                    "Business Hours",
-                    "Expert Help",
-                    "Real-time Chat",
-                  ],
-                },
-                {
-                  icon: Mail,
-                  title: "Email Support 📧",
-                  description: "Get detailed help via email",
-                  action: "Send Email",
-                  gradient: "from-retro-teal/20 to-retro-mint/20",
-                  features: [
-                    "Detailed Support",
-                    "24/7 Received",
-                    "File Attachments",
-                    "Follow-up",
-                  ],
-                },
-                {
-                  icon: Phone,
-                  title: "Quick Call 📱",
-                  description: "Talk directly with our team",
-                  action: "Call Now",
-                  gradient: "from-retro-orange/20 to-retro-peach/20",
-                  features: [
-                    "Direct Contact",
-                    "Voice Support",
-                    "Screen Sharing",
-                    "Personal Touch",
-                  ],
-                },
-              ].map((contact, index) => (
-                <StaggerChild key={index}>
-                  <BentoCard
-                    size="md"
-                    gradient={contact.gradient}
-                    delay={index * 0.1}
-                    className="h-full"
-                  >
-                    <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
-                      <motion.div
-                        className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
-                        whileHover={{ rotate: 360, scale: 1.1 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        <contact.icon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                      </motion.div>
-                      <h3 className="font-bold text-lg sm:text-xl text-white mb-2 sm:mb-3">
-                        {contact.title}
-                      </h3>
-                      <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
-                        {contact.description}
-                      </p>
-                      <div className="space-y-2 mb-4 flex-1">
-                        {contact.features.map((feature, featureIndex) => (
-                          <div
-                            key={featureIndex}
-                            className="flex items-center text-xs sm:text-sm"
-                          >
-                            <CheckCircle className="w-3 h-3 text-white/60 mr-2 flex-shrink-0" />
-                            <span className="text-white/70">{feature}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <Button
-                        variant="outline"
-                        className="w-full border-white/30 text-white hover:bg-white hover:text-retro-purple mt-auto text-sm"
-                      >
-                        {contact.action}
-                      </Button>
-                    </div>
-                  </BentoCard>
-                </StaggerChild>
-              ))}
-
+            <div className="max-w-2xl mx-auto">
               {/* Contact Form */}
               <StaggerChild>
                 <BentoCard
-                  size="md"
+                  size="lg"
                   gradient="from-retro-lavender/20 to-retro-cream/20"
-                  delay={0.4}
+                  delay={0.2}
                   className="h-full"
                 >
-                  <div className="p-4 sm:p-5 lg:p-6 h-full">
+                  <div className="p-6 sm:p-8 lg:p-10 h-full">
                     <motion.div
-                      className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6"
+                      className="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8"
                       initial={{ opacity: 0, x: -50 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6 }}
                     >
                       <motion.div
-                        className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center"
+                        className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center"
                         animate={{
                           rotate: [0, 360],
                         }}
@@ -1130,77 +1045,95 @@ const Index = () => {
                           ease: "linear",
                         }}
                       >
-                        <Send className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                        <Send className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                       </motion.div>
                       <div>
-                        <h3 className="font-bold text-lg sm:text-xl text-retro-purple">
+                        <h3 className="font-bold text-xl sm:text-2xl text-retro-purple">
                           Send us a Message! 💌
                         </h3>
-                        <p className="text-retro-purple/70 text-sm">
-                          Quick project inquiry form
+                        <p className="text-retro-purple/70 text-sm sm:text-base">
+                          Tell us about your amazing project ideas!
                         </p>
                       </div>
                     </motion.div>
 
-                    <form className="space-y-3 sm:space-y-4">
-                      <div>
-                        <Label
-                          htmlFor="name"
-                          className="text-retro-purple font-medium text-sm"
-                        >
-                          Full Name ✨
-                        </Label>
-                        <Input
-                          id="name"
-                          placeholder="Your awesome name"
-                          className="mt-1 border-retro-purple/30 focus:border-retro-purple rounded-xl text-sm"
-                        />
+                    <form className="space-y-4 sm:space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div>
+                          <Label
+                            htmlFor="name"
+                            className="text-retro-purple font-medium"
+                          >
+                            Full Name ✨
+                          </Label>
+                          <Input
+                            id="name"
+                            placeholder="Your awesome name"
+                            className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="email"
+                            className="text-retro-purple font-medium"
+                          >
+                            Email Address 📧
+                          </Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your@awesome-email.com"
+                            className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
+                          />
+                        </div>
                       </div>
                       <div>
                         <Label
-                          htmlFor="email"
-                          className="text-retro-purple font-medium text-sm"
+                          htmlFor="subject"
+                          className="text-retro-purple font-medium"
                         >
-                          Email Address 📧
+                          Subject 🎯
                         </Label>
                         <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@awesome-email.com"
-                          className="mt-1 border-retro-purple/30 focus:border-retro-purple rounded-xl text-sm"
+                          id="subject"
+                          placeholder="What's this magical message about?"
+                          className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
                         />
                       </div>
                       <div>
                         <Label
                           htmlFor="message"
-                          className="text-retro-purple font-medium text-sm"
+                          className="text-retro-purple font-medium"
                         >
                           Message 💭
                         </Label>
                         <Textarea
                           id="message"
-                          placeholder="Tell us about your project..."
-                          rows={3}
-                          className="mt-1 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none text-sm"
+                          placeholder="Tell us about your amazing project ideas, questions, or just say hi! We love hearing from creative minds..."
+                          rows={6}
+                          className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none"
                         />
                       </div>
                       <motion.div
+                        className="text-center"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <Button
                           type="submit"
-                          className="w-full bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold py-2 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
+                          size="lg"
+                          className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                         >
-                          <Send className="w-4 h-4 mr-2" />
+                          <Send className="w-5 h-5 mr-2" />
                           Send Magic Message ✨
+                          <ArrowRight className="w-5 h-5 ml-2" />
                         </Button>
                       </motion.div>
                     </form>
                   </div>
                 </BentoCard>
               </StaggerChild>
-            </BentoGrid>
+            </div>
           </StaggerContainer>
 
           {/* CTA Section */}
