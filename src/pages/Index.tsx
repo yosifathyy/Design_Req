@@ -389,54 +389,28 @@ const Index = () => {
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative"
       >
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.8 }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              transition: {
-                type: "spring",
-                damping: 15,
-                stiffness: 100,
-                duration: 0.8,
-              },
-            }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <motion.div
-              animate={{
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="inline-block mb-4 sm:mb-6"
-            >
-              <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
-            </motion.div>
-            <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
-              Our Creative Magic ✨
-            </h2>
-            <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
-              Professional design solutions that'll make your competitors
-              absolutely jealous! 🔥
-            </p>
-          </motion.div>
+          <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
+            <GSAPFloating amplitude={20} duration={4}>
+              <div className="inline-block mb-4 sm:mb-6">
+                <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
+              </div>
+            </GSAPFloating>
+            <GSAPRevealText
+              text="Our Creative Magic ✨"
+              className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight"
+              delay={0.2}
+            />
+            <GSAPFadeIn delay={0.4}>
+              <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
+                Professional design solutions that'll make your competitors
+                absolutely jealous! 🔥
+              </p>
+            </GSAPFadeIn>
+          </GSAPBounceIn>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="mt-8 mb-12"
-          >
+          <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12">
             <RevealImageList />
-          </motion.div>
+          </GSAPSlideIn>
 
           <StaggerContainer>
             <BentoGrid>
