@@ -404,7 +404,13 @@ const RetroCards: React.FC = () => {
 
   return (
     <section className="relative py-20 lg:py-32 bg-gradient-to-br from-retro-cream via-retro-lavender to-retro-peach overflow-hidden">
-      {/* Retro background pattern */}
+      {/* Retro background effects */}
+      <RetroFloatingShapes />
+      <RetroScanlines />
+      <RetroGrid />
+      <RetroGeometricBg />
+
+      {/* Additional retro background pattern */}
       <div className="absolute inset-0 opacity-20">
         <div
           className="w-full h-full"
