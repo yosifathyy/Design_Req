@@ -168,13 +168,13 @@ const TestimonialCard: React.FC<{
   }, [testimonial.rotation, index, totalCards]);
 
   return (
-    <div className="flex items-center justify-center sticky top-32 w-full h-screen">
+    <div className="absolute inset-0 flex items-center justify-center w-full">
       <div
         ref={cardRef}
         className="relative w-full max-w-3xl"
         style={{
-          transformOrigin: "center bottom",
-          willChange: "transform, opacity, filter",
+          transformOrigin: "center center",
+          willChange: "transform",
         }}
       >
         <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-shadow duration-300 overflow-hidden relative">
