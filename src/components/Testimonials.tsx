@@ -65,18 +65,74 @@ const testimonialsData: TestimonialData[] = [
 const TestimonialCard: React.FC<{
   testimonial: TestimonialData;
   index: number;
-}> = ({ testimonial, index }) => {
+  totalCards: number;
+}> = ({ testimonial, index, totalCards }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const card = cardRef.current;
+    const isLast = index === totalCards - 1;
+
+    // Set initial position - all cards start at the bottom
+    gsap.set(card, {
+      y: index * 50, // Slight offset for visual depth
+      scale: 1 - index * 0.02, // Slightly smaller for depth
+      zIndex: totalCards - index,
+      rotation: testimonial.rotation,
+    });
+
+    // Create the stacking animation
+    ScrollTrigger.create({
+      trigger: card.parentElement,
+      start: "top bottom",
+      end: isLast ? "bottom center" : "bottom top",
+      scrub: 1.5,
+      onUpdate: (self) => {
+        const progress = self.progress;
+
+        if (!isLast) {
+          // Cards slide up and stack
+          const yMovement = -progress * (window.innerHeight * 0.8);
+          const scaleMovement = 1 - progress * 0.1;
+          const rotationMovement = testimonial.rotation * (1 - progress * 0.5);
+
+          gsap.set(card, {
+            y: yMovement + index * 50,
+            scale: scaleMovement,
+            rotation: rotationMovement,
+            zIndex: totalCards - index + Math.floor(progress * 10),
+          });
+        } else {
+          // Last card stays in place as the deck
+          gsap.set(card, {
+            y: index * 50,
+            scale: 1,
+            rotation: 0,
+            zIndex: totalCards + 10,
+          });
+        }
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => {
+        if (trigger.trigger === card.parentElement) {
+          trigger.kill();
+        }
+      });
+    };
+  }, [testimonial.rotation, index, totalCards]);
+
   return (
-    <div className="flex items-center justify-center sticky top-0 w-full pt-64">
-      <motion.div
+    <div className="flex items-center justify-center sticky top-32 w-full h-screen">
+      <div
+        ref={cardRef}
         className="relative w-full max-w-3xl"
         style={{
-          transform: `rotate(${testimonial.rotation}deg)`,
+          transformOrigin: "center center",
         }}
-        initial={{ opacity: 0, y: 100 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: index * 0.1 }}
-        viewport={{ once: true }}
       >
         <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
           {/* Twitter-like header */}
