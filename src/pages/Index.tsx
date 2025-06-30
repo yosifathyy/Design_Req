@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
+import { RevealImageList } from "@/components/ui/reveal-images";
 import Navigation from "@/components/Navigation";
 import FAQ from "@/components/FAQ";
 import Testimonials from "@/components/Testimonials";
