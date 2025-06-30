@@ -42,6 +42,7 @@ import {
   GSAPRevealText,
 } from "@/components/GSAPAnimatedElements";
 import GSAPInteractiveBackground from "@/components/GSAPInteractiveBackground";
+import HeroSectionNew from "@/components/HeroSectionNew";
 import {
   Sparkles,
   Palette,
