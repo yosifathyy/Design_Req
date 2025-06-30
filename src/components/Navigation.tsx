@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { WiggleIcon } from "@/components/AnimatedElements";
+import {
+  GSAPHover,
+  GSAPMagneticButton,
+} from "@/components/GSAPAnimatedElements";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +52,7 @@ const Navigation = () => {
     <>
       {/* Desktop Navigation */}
       <nav className="hidden lg:flex items-center justify-between p-6 bg-retro-cream/80 backdrop-blur-sm border-b-2 border-retro-purple/20 sticky top-0 z-50">
-        <button
+        <GSAPMagneticButton
           onClick={scrollToHome}
           className="flex items-center space-x-3 group"
         >
@@ -75,25 +79,22 @@ const Navigation = () => {
               Expert Design Studio ✨
             </p>
           </motion.div>
-        </button>
+        </GSAPMagneticButton>
 
         <div className="flex items-center space-x-8">
           {navItems.map(({ href, label, icon: Icon }) => (
-            <motion.div
-              key={href}
-              whileHover={{ y: -3, scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <GSAPHover key={href} animation="lift">
               <button
                 onClick={() => scrollToSection(href)}
                 className="flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-all duration-200 text-retro-purple/80 hover:text-retro-purple hover:bg-retro-purple/10 cursor-pointer"
+                data-cursor={label}
               >
                 <WiggleIcon>
                   <Icon className="w-4 h-4" />
                 </WiggleIcon>
                 <span>{label}</span>
               </button>
-            </motion.div>
+            </GSAPHover>
           ))}
 
           <motion.div

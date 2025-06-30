@@ -28,6 +28,22 @@ import {
   StaggerChild,
 } from "@/components/AnimatedElements";
 import {
+  GSAPFadeIn,
+  GSAPSlideIn,
+  GSAPBounceIn,
+  GSAPScaleIn,
+  GSAPFlipIn,
+  GSAPStagger,
+  GSAPHover,
+  GSAPFloating,
+  GSAPTypewriter,
+  GSAPParallax,
+  GSAPMagneticButton,
+  GSAPRevealText,
+} from "@/components/GSAPAnimatedElements";
+import GSAPInteractiveBackground from "@/components/GSAPInteractiveBackground";
+import HeroSectionNew from "@/components/HeroSectionNew";
+import {
   Sparkles,
   Palette,
   Layers,
@@ -99,142 +115,31 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
-      {/* Clean minimal accent shapes - much fewer and simpler */}
-      <div className="absolute top-16 right-16 w-16 h-16 bg-festival-orange rotate-45 rounded-lg opacity-80"></div>
-      <div className="absolute top-32 right-32 w-12 h-12 bg-festival-pink -rotate-12 rounded-lg opacity-70"></div>
-      <div className="absolute bottom-32 left-16 w-14 h-14 bg-festival-yellow rotate-12 rounded-lg opacity-75"></div>
+      <GSAPInteractiveBackground
+        particleCount={30}
+        colors={["#ff6b35", "#ff1f7a", "#ffeb3b", "#ff8a5b", "#ffa726"]}
+      />
+      {/* GSAP Animated background shapes */}
+      <GSAPFloating amplitude={15} duration={4}>
+        <div className="absolute top-16 right-16 w-16 h-16 bg-festival-orange rotate-45 rounded-lg opacity-80"></div>
+      </GSAPFloating>
+      <GSAPFloating amplitude={20} duration={5}>
+        <div className="absolute top-32 right-32 w-12 h-12 bg-festival-pink -rotate-12 rounded-lg opacity-70"></div>
+      </GSAPFloating>
+      <GSAPFloating amplitude={12} duration={3.5}>
+        <div className="absolute bottom-32 left-16 w-14 h-14 bg-festival-yellow rotate-12 rounded-lg opacity-75"></div>
+      </GSAPFloating>
+      <GSAPParallax speed={0.3}>
+        <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-festival-coral rotate-45 rounded-lg opacity-60"></div>
+      </GSAPParallax>
+      <GSAPParallax speed={-0.2}>
+        <div className="absolute bottom-1/4 right-1/3 w-10 h-10 bg-festival-amber rotate-12 rounded-lg opacity-50"></div>
+      </GSAPParallax>
 
       <Navigation />
 
-      {/* Hero Section */}
-      <section
-        id="home"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10"
-      >
-        {/* Hero background area */}
-        <div className="absolute inset-x-4 top-32 bottom-4 bg-gray-900 rounded-[2rem] sm:rounded-[3rem]"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
-            <motion.div
-              className="inline-flex items-center space-x-2 bg-festival-orange px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 sm:mb-8 border-2 border-festival-black"
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <WiggleIcon>
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </WiggleIcon>
-              <span className="text-sm sm:text-base font-bold text-white tracking-wide">
-                EXPERT DESIGN STUDIO
-              </span>
-            </motion.div>
-          </BounceIn>
-
-          <BentoGrid className="mb-12 sm:mb-16">
-            {/* Main Hero Card */}
-            <HeroBentoCard delay={0.3}>
-              <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col justify-center text-center">
-                <motion.h1
-                  className="font-sans font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-festival-black mb-4 sm:mb-6 leading-tight tracking-tight"
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
-                >
-                  Creative vibes,{" "}
-                  <motion.span
-                    className="bg-gradient-to-r from-festival-orange via-festival-pink to-festival-yellow bg-clip-text text-transparent inline-block"
-                    animate={{
-                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    festival energy.
-                  </motion.span>
-                  <br />
-                  <span className="text-festival-orange">Good designs.</span>
-                </motion.h1>
-
-                <FadeInUp delay={0.7} className="mb-6 sm:mb-8">
-                  <p className="text-base sm:text-lg lg:text-xl text-festival-black/80 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0 font-medium">
-                    Connect with our curated team of creative wizards. From wild
-                    Photoshop edits to 3D masterpieces and unforgettable brand
-                    identities!
-                  </p>
-                </FadeInUp>
-
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.9, type: "spring", damping: 15 }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05, rotate: -1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button
-                      asChild
-                      className="bg-festival-orange border-2 border-festival-black text-white font-black px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
-                    >
-                      <Link to="/start-project">
-                        <WiggleIcon>
-                          <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        </WiggleIcon>
-                        Get Started
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                      </Link>
-                    </Button>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.05, rotate: 1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button
-                      variant="outline"
-                      className="border-2 border-festival-black text-festival-black hover:bg-festival-pink hover:text-white font-bold px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
-                      onClick={() =>
-                        document.getElementById("portfolio")?.scrollIntoView({
-                          behavior: "smooth",
-                        })
-                      }
-                    >
-                      <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                      See Work
-                    </Button>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </HeroBentoCard>
-
-            {/* Stats Cards */}
-            <StatBentoCard
-              stat="500+"
-              label="Projects Delivered"
-              icon={Target}
-              delay={0.4}
-            />
-            <StatBentoCard
-              stat="98%"
-              label="Client Satisfaction"
-              icon={Heart}
-              delay={0.5}
-            />
-            <StatBentoCard
-              stat="24h"
-              label="Average Turnaround"
-              icon={Clock}
-              delay={0.6}
-            />
-            <StatBentoCard
-              stat="15+"
-              label="Expert Designers"
-              icon={Users}
-              delay={0.7}
-            />
-          </BentoGrid>
-        </div>
-      </section>
+      {/* New Insane Hero Section with GSAP Magic */}
+      <HeroSectionNew />
 
       {/* Color Strip Divider */}
       <div className="w-full h-12 flex">
@@ -254,91 +159,117 @@ const Index = () => {
             />
           </div>
 
-          <BentoGrid>
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-pink border-2 border-festival-black"
-                delay={0.2}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <Upload className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Submit Your Brief
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    Tell us about your project using our AI-powered brief
-                    generator. It's like magic, but for design briefs!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+          <GSAPStagger staggerDelay={0.15}>
+            <BentoGrid>
+              <GSAPFlipIn delay={0.2}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-pink border-2 border-festival-black"
+                  delay={0.2}
+                >
+                  <GSAPHover animation="tilt">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={8} duration={2}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <Upload className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Submit Your Brief"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.3}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        Tell us about your project using our AI-powered brief
+                        generator. It's like magic, but for design briefs!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPFlipIn>
 
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-orange border-2 border-festival-black"
-                delay={0.3}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <Users className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Get Matched
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    We assign the perfect designer from our expert team. Think
-                    of it as design matchmaking!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+              <GSAPBounceIn delay={0.3}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-orange border-2 border-festival-black"
+                  delay={0.3}
+                >
+                  <GSAPHover animation="wiggle">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={12} duration={2.5}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <Users className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Get Matched"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.4}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        We assign the perfect designer from our expert team.
+                        Think of it as design matchmaking!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPBounceIn>
 
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-orange border-2 border-festival-black"
-                delay={0.4}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <MessageCircle className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Collaborate
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    Work directly with your designer through secure messaging.
-                    It's like having a design buddy!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
+              <GSAPScaleIn delay={0.4}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-orange border-2 border-festival-black"
+                  delay={0.4}
+                >
+                  <GSAPHover animation="glow">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={10} duration={3}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <MessageCircle className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Collaborate"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.5}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        Work directly with your designer through secure
+                        messaging. It's like having a design buddy!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPScaleIn>
 
-            <StaggerChild>
-              <BentoCard
-                size="md"
-                className="h-full bg-festival-pink border-2 border-festival-black"
-                delay={0.5}
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-festival-black" />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
-                    Receive Results
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed">
-                    Get your professional designs delivered on time. Boom! Your
-                    vision comes to life!
-                  </p>
-                </div>
-              </BentoCard>
-            </StaggerChild>
-          </BentoGrid>
+              <GSAPSlideIn direction="up" delay={0.5}>
+                <BentoCard
+                  size="md"
+                  className="h-full bg-festival-pink border-2 border-festival-black"
+                  delay={0.5}
+                >
+                  <GSAPHover animation="bounce">
+                    <div className="p-6 h-full flex flex-col">
+                      <GSAPFloating amplitude={15} duration={3.5}>
+                        <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                          <CheckCircle className="w-8 h-8 text-festival-black" />
+                        </div>
+                      </GSAPFloating>
+                      <GSAPRevealText
+                        text="Receive Results"
+                        className="font-black text-xl text-white mb-3 tracking-tight"
+                        delay={0.6}
+                      />
+                      <p className="text-white/90 text-sm font-medium leading-relaxed">
+                        Get your professional designs delivered on time. Boom!
+                        Your vision comes to life!
+                      </p>
+                    </div>
+                  </GSAPHover>
+                </BentoCard>
+              </GSAPSlideIn>
+            </BentoGrid>
+          </GSAPStagger>
         </div>
       </section>
 
@@ -348,54 +279,28 @@ const Index = () => {
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative"
       >
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.8 }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              transition: {
-                type: "spring",
-                damping: 15,
-                stiffness: 100,
-                duration: 0.8,
-              },
-            }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <motion.div
-              animate={{
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="inline-block mb-4 sm:mb-6"
-            >
-              <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
-            </motion.div>
-            <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
-              Our Creative Magic ✨
-            </h2>
-            <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
-              Professional design solutions that'll make your competitors
-              absolutely jealous! 🔥
-            </p>
-          </motion.div>
+          <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
+            <GSAPFloating amplitude={20} duration={4}>
+              <div className="inline-block mb-4 sm:mb-6">
+                <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
+              </div>
+            </GSAPFloating>
+            <GSAPRevealText
+              text="Our Creative Magic ✨"
+              className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight"
+              delay={0.2}
+            />
+            <GSAPFadeIn delay={0.4}>
+              <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
+                Professional design solutions that'll make your competitors
+                absolutely jealous! 🔥
+              </p>
+            </GSAPFadeIn>
+          </GSAPBounceIn>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="mt-8 mb-12"
-          >
+          <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12">
             <RevealImageList />
-          </motion.div>
+          </GSAPSlideIn>
 
           <StaggerContainer>
             <BentoGrid>
@@ -1153,7 +1058,7 @@ const Index = () => {
                       </motion.div>
                       <div>
                         <h3 className="font-bold text-xl sm:text-2xl text-retro-purple">
-                          Send us a Message! 💌
+                          Send us a Message! ���
                         </h3>
                         <p className="text-retro-purple/70 text-sm sm:text-base">
                           Tell us about your amazing project ideas!
