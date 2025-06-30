@@ -355,27 +355,27 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-retro-purple/20 via-retro-teal/20 to-retro-purple/20"
+                  gradient="from-festival-orange/90 to-festival-coral/90"
                   delay={0.2}
-                  className="h-full"
+                  className="h-full border-2 border-festival-black"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
-                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white border-2 border-festival-black rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
                       whileHover={{
                         rotate: 360,
                         scale: 1.1,
                         transition: { duration: 0.6 },
                       }}
                     >
-                      <Palette className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                      <Palette className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                     </motion.div>
-                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                    <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
                       Photoshop Design 🎨
                     </h3>
-                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
-                      Photo editing, compositing, and digital art creation
-                      that'll blow your mind!
+                    <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
+                      Mind-blowing photo editing, compositing, and digital art
+                      that'll absolutely destroy the competition!
                     </p>
                     <div className="space-y-2 mb-4 flex-1">
                       {[
@@ -419,13 +419,13 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-retro-teal/20 to-retro-mint/20"
+                  gradient="from-festival-pink/90 to-festival-magenta/90"
                   delay={0.3}
-                  className="h-full"
+                  className="h-full border-2 border-festival-black"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
-                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-teal to-retro-mint rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white border-2 border-festival-black rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
                       animate={{
                         rotateY: [0, 180, 360],
                       }}
@@ -435,13 +435,14 @@ const Index = () => {
                         ease: "linear",
                       }}
                     >
-                      <Layers className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                      <Layers className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                     </motion.div>
-                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                    <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
                       3D Design 🎯
                     </h3>
-                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
-                      Mind-blowing 3D modeling and visualization!
+                    <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
+                      Absolutely insane 3D modeling and visualization that'll
+                      blow everyone's minds!
                     </p>
                     <div className="space-y-2 mb-4 flex-1">
                       {[
@@ -474,26 +475,27 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-retro-orange/20 to-retro-peach/20"
+                  gradient="from-festival-yellow/90 to-festival-amber/90"
                   delay={0.4}
-                  className="h-full"
+                  className="h-full border-2 border-festival-black"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
-                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white border-2 border-festival-black rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
                       whileHover={{
                         rotate: [0, -10, 10, -10, 0],
                         scale: 1.1,
                       }}
                       transition={{ duration: 0.5 }}
                     >
-                      <Brush className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                      <Brush className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                     </motion.div>
-                    <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
+                    <h3 className="font-black text-lg sm:text-xl text-festival-black mb-2 sm:mb-3 tracking-tight">
                       Logo Design 🚀
                     </h3>
-                    <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
-                      Brand identity that stands out from the crowd!
+                    <p className="text-festival-black/80 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
+                      Epic brand identity that'll absolutely dominate and stand
+                      out from the crowd!
                     </p>
                     <div className="space-y-2 mb-4 flex-1">
                       {[
