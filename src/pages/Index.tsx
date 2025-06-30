@@ -246,15 +246,23 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
-        <div className="max-w-7xl mx-auto">
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative bg-festival-beige">
+        {/* Colorful section divider */}
+        <div className="absolute top-0 left-0 w-full h-12 flex">
+          <div className="flex-1 bg-festival-orange"></div>
+          <div className="flex-1 bg-festival-pink"></div>
+          <div className="flex-1 bg-festival-yellow"></div>
+          <div className="flex-1 bg-festival-coral"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <FadeInUp className="text-center mb-12 sm:mb-16">
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
+            <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
               How It Works
             </h2>
-            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
-              Our streamlined process makes getting professional design work
-              effortless and fun!
+            <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
+              Our streamlined process makes getting epic design work effortless
+              and super fun! 🎨
             </p>
           </FadeInUp>
 
@@ -294,9 +302,14 @@ const Index = () => {
       {/* Our Services Section */}
       <section
         id="services"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-white/20 backdrop-blur-sm relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative"
       >
-        <div className="max-w-7xl mx-auto">
+        {/* Geometric accent blocks for services */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-festival-pink rotate-45 rounded-lg opacity-80"></div>
+        <div className="absolute top-20 right-16 w-16 h-16 bg-festival-yellow -rotate-12 rounded-lg opacity-70"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-festival-coral rotate-12 rounded-lg opacity-75"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 100, scale: 0.8 }}
             whileInView={{
@@ -325,14 +338,14 @@ const Index = () => {
               }}
               className="inline-block mb-4 sm:mb-6"
             >
-              <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
+              <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
             </motion.div>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
-              Our Magic Services ✨
+            <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
+              Our Creative Magic ✨
             </h2>
-            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
+            <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
               Professional design solutions that'll make your competitors
-              jealous!
+              absolutely jealous! 🔥
             </p>
           </motion.div>
 
