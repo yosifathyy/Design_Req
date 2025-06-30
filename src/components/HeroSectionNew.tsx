@@ -198,8 +198,8 @@ const HeroSectionNew: React.FC = () => {
           // Title transformation
           if (titleRef.current) {
             gsap.set(titleRef.current, {
-              scale: 1 - progress * 0.2,
-              y: progress * -100,
+              scale: Math.max(0.8, 1 - progress * 0.2),
+              y: progress * -50,
             });
           }
         },
@@ -294,7 +294,7 @@ const HeroSectionNew: React.FC = () => {
 
       {/* Main content */}
       <div
-        className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center"
+        className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
         style={{ zIndex: 10 }}
       >
         {/* Badge */}
@@ -334,7 +334,7 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold mb-12"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] -mt-px mb-16"
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets <span className="text-festival-pink">festival vibes</span> to
@@ -345,7 +345,7 @@ const HeroSectionNew: React.FC = () => {
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full"
         >
           <motion.div
             whileHover={{
@@ -424,7 +424,7 @@ const HeroSectionNew: React.FC = () => {
         </div>
 
         {/* Floating stats */}
-        <div className="mt-16 flex flex-wrap justify-center gap-4 md:gap-8">
+        <div className="mt-16 flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full">
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
             { label: "Projects", value: "1.2K+", icon: Wand2 },
