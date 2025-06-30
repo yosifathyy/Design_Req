@@ -246,13 +246,10 @@ const Index = () => {
       <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative bg-gray-100">
         <div className="max-w-7xl mx-auto">
           <FadeInUp className="text-center mb-12 sm:mb-16">
-            <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
-              How It Works
-            </h2>
-            <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
-              Our streamlined process makes getting epic design work effortless
-              and super fun! 🎨
-            </p>
+            <HandWrittenTitle
+              title="How It Works"
+              subtitle="Our streamlined process makes getting epic design work effortless and super fun! 🎨"
+            />
           </FadeInUp>
 
           <BentoGrid>
