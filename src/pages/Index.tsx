@@ -403,11 +403,11 @@ const Index = () => {
                     >
                       <Button
                         asChild
-                        className="w-full bg-gradient-to-r from-retro-purple to-retro-teal text-white font-semibold text-sm"
+                        className="w-full bg-white border-2 border-festival-black text-festival-black hover:bg-festival-black hover:text-white font-black text-sm tracking-wide uppercase"
                       >
                         <Link to="/start-project">
                           <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                          Start Photoshop Project
+                          Get Started
                         </Link>
                       </Button>
                     </motion.div>
@@ -462,10 +462,9 @@ const Index = () => {
                     </div>
                     <Button
                       asChild
-                      variant="outline"
-                      className="w-full border-retro-teal text-retro-teal hover:bg-retro-teal hover:text-white mt-auto text-sm"
+                      className="w-full bg-white border-2 border-festival-black text-festival-black hover:bg-festival-black hover:text-white font-black text-sm tracking-wide uppercase mt-auto"
                     >
-                      <Link to="/start-project">Start 3D Project</Link>
+                      <Link to="/start-project">Get Started</Link>
                     </Button>
                   </div>
                 </BentoCard>
@@ -515,10 +514,9 @@ const Index = () => {
                     </div>
                     <Button
                       asChild
-                      variant="outline"
-                      className="w-full border-retro-orange text-retro-orange hover:bg-retro-orange hover:text-white mt-auto text-sm"
+                      className="w-full bg-festival-black border-2 border-festival-black text-white hover:bg-white hover:text-festival-black font-black text-sm tracking-wide uppercase mt-auto"
                     >
-                      <Link to="/start-project">Start Logo Project</Link>
+                      <Link to="/start-project">Get Started</Link>
                     </Button>
                   </div>
                 </BentoCard>
