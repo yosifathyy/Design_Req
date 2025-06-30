@@ -83,21 +83,18 @@ const Navigation = () => {
 
         <div className="flex items-center space-x-8">
           {navItems.map(({ href, label, icon: Icon }) => (
-            <motion.div
-              key={href}
-              whileHover={{ y: -3, scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <GSAPHover key={href} animation="lift">
               <button
                 onClick={() => scrollToSection(href)}
                 className="flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-all duration-200 text-retro-purple/80 hover:text-retro-purple hover:bg-retro-purple/10 cursor-pointer"
+                data-cursor={label}
               >
                 <WiggleIcon>
                   <Icon className="w-4 h-4" />
                 </WiggleIcon>
                 <span>{label}</span>
               </button>
-            </motion.div>
+            </GSAPHover>
           ))}
 
           <motion.div
