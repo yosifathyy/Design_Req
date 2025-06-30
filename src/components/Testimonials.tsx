@@ -68,113 +68,158 @@ const TestimonialCard: React.FC<{
   totalCards: number;
 }> = ({ testimonial, index, totalCards }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || !containerRef.current) return;
 
     const card = cardRef.current;
+    const container = containerRef.current;
     const isLast = index === totalCards - 1;
 
-    // Calculate final stacked position - all cards should end up at the same position
-    const finalStackY = 20; // Final stack position
-    const initialSpread = index * 150; // Initial vertical spread between cards
-
-    // Set initial position - cards spread out vertically
+    // Set initial card styling and position
     gsap.set(card, {
-      y: initialSpread,
-      scale: 1,
-      zIndex: totalCards - index,
       rotation: testimonial.rotation,
+      scale: 1,
+      zIndex: index + 1,
       transformOrigin: "center center",
     });
 
-    // Create individual scroll trigger for each card to stack properly
+    // Create the main pinning ScrollTrigger for this card
     ScrollTrigger.create({
-      trigger: card.parentElement?.parentElement,
-      start: "top bottom",
-      end: "bottom top",
+      trigger: container,
+      start: "center center",
+      end: isLast ? "bottom bottom" : `+=${window.innerHeight}`,
+      pin: true,
+      pinSpacing: false,
       scrub: 1,
+      onEnter: () => {
+        // Card enters and becomes active
+        gsap.to(card, {
+          rotation: 0,
+          scale: 1.02,
+          zIndex: index + 10,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+      },
       onUpdate: (self) => {
-        const scrollProgress = self.progress;
+        const progress = self.progress;
 
-        // Calculate when this card should start moving (staggered)
-        const cardStartProgress = index * 0.15; // Each card starts 15% later
-        const cardEndProgress = Math.min(cardStartProgress + 0.3, 1); // Each card animates over 30%
+        // Apply visual enhancements as the card is being viewed
+        const shadowIntensity = 8 + progress * 4;
+        const shadowBlur = progress * 2;
 
-        // Normalize progress for this specific card
-        const cardProgress = gsap.utils.clamp(
-          0,
-          1,
-          gsap.utils.mapRange(
-            cardStartProgress,
-            cardEndProgress,
-            0,
-            1,
-            scrollProgress,
-          ),
-        );
+        gsap.set(card, {
+          filter: `drop-shadow(${shadowIntensity}px ${shadowIntensity}px ${shadowBlur}px rgba(0,0,0,0.3))`,
+        });
 
-        if (cardProgress > 0) {
-          // Calculate the target position (stacking on the final position)
-          const targetY = finalStackY + (totalCards - index - 1) * 2; // Small offset for visual stacking
-          const currentY = gsap.utils.interpolate(
-            initialSpread,
-            targetY,
-            cardProgress,
-          );
+        // If not the last card and progress is high, prepare for next card
+        if (!isLast && progress > 0.7) {
+          const overlayProgress = gsap.utils.mapRange(0.7, 1, 0, 1, progress);
 
-          // Gradually reduce rotation as cards stack
-          const currentRotation = testimonial.rotation * (1 - cardProgress);
-
-          // Scale slightly down for depth effect when stacked
-          const currentScale = 1 - cardProgress * 0.02;
-
+          // Slightly scale down and fade current card as next one approaches
           gsap.set(card, {
-            y: currentY,
-            rotation: currentRotation,
-            scale: currentScale,
-            zIndex: totalCards - index + Math.floor(cardProgress * 10),
+            scale: 1.02 - overlayProgress * 0.02,
+            opacity: 1 - overlayProgress * 0.1,
+            filter: `drop-shadow(${shadowIntensity}px ${shadowIntensity}px ${shadowBlur}px rgba(0,0,0,0.3)) blur(${overlayProgress}px)`,
           });
         }
       },
     });
 
-    // Add a subtle hover effect that works with the stacking
-    card.addEventListener("mouseenter", () => {
+    // Create the slide-up animation for the next card
+    if (index < totalCards - 1) {
+      const nextIndex = index + 1;
+
+      ScrollTrigger.create({
+        trigger: container,
+        start: "center center",
+        end: `+=${window.innerHeight}`,
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+
+          if (progress > 0.6) {
+            // Find the next card element
+            const nextContainer = container.parentElement?.children[
+              nextIndex + 1
+            ] as HTMLElement; // +1 because of header
+            if (nextContainer) {
+              const nextCard = nextContainer.querySelector(
+                "[data-testimonial-card]",
+              ) as HTMLElement;
+              if (nextCard) {
+                const slideProgress = gsap.utils.mapRange(
+                  0.6,
+                  1,
+                  0,
+                  1,
+                  progress,
+                );
+
+                // Slide the next card up from below
+                gsap.set(nextCard, {
+                  y: `${(1 - slideProgress) * 100}vh`,
+                  scale: 0.9 + slideProgress * 0.1,
+                  zIndex: nextIndex + 20, // Higher z-index to appear on top
+                  opacity: slideProgress,
+                  rotation:
+                    testimonialsData[nextIndex]?.rotation *
+                      (1 - slideProgress) || 0,
+                });
+              }
+            }
+          }
+        },
+      });
+    }
+
+    // Enhanced hover interactions
+    const handleMouseEnter = () => {
+      gsap.to(card, {
+        scale: 1.05,
+        rotation: 0,
+        duration: 0.4,
+        ease: "back.out(1.7)",
+      });
+    };
+
+    const handleMouseLeave = () => {
       gsap.to(card, {
         scale: 1.02,
-        y: "+=5",
-        duration: 0.3,
+        rotation: testimonial.rotation * 0.2,
+        duration: 0.4,
         ease: "power2.out",
       });
-    });
+    };
 
-    card.addEventListener("mouseleave", () => {
-      gsap.to(card, {
-        scale: 1,
-        y: "-=5",
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    });
+    card.addEventListener("mouseenter", handleMouseEnter);
+    card.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.trigger === card.parentElement) {
+        if (trigger.trigger === container) {
           trigger.kill();
         }
       });
+      card.removeEventListener("mouseenter", handleMouseEnter);
+      card.removeEventListener("mouseleave", handleMouseLeave);
+      gsap.killTweensOf(card);
     };
   }, [testimonial.rotation, index, totalCards]);
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center w-full">
+    <div
+      ref={containerRef}
+      className="relative w-full h-screen flex items-center justify-center"
+    >
       <div
         ref={cardRef}
-        className="relative w-full max-w-3xl"
+        data-testimonial-card
+        className="relative w-full max-w-4xl"
         style={{
-          transformOrigin: "center center",
-          willChange: "transform",
+          willChange: "transform, opacity, filter",
         }}
       >
         <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-shadow duration-300 overflow-hidden relative">
