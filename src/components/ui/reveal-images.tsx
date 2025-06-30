@@ -90,7 +90,7 @@ function RevealImageList() {
     },
   ];
   return (
-    <div className="flex flex-col gap-1 rounded-sm bg-background px-8 py-4">
+    <div className="flex flex-col gap-1 rounded-sm bg-festival-cream px-8 py-4">
       <h3 className="text-sm font-black uppercase text-muted-foreground">
         Our services
       </h3>
