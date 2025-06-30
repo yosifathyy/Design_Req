@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Navigation from "@/components/Navigation";
+import FAQ from "@/components/FAQ";
+import Testimonials from "@/components/Testimonials";
 import {
   BentoGrid,
   BentoCard,
@@ -1552,6 +1554,12 @@ const Index = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <Testimonials />
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Footer */}
       <footer className="bg-retro-purple/90 text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
