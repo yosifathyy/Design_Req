@@ -107,7 +107,10 @@ const Index = () => {
         id="home"
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10"
       >
-        <div className="max-w-7xl mx-auto">
+        {/* Hero background area */}
+        <div className="absolute inset-x-0 top-1/4 bottom-0 bg-gradient-to-b from-festival-pink/20 to-festival-pink/10 rounded-t-[3rem]"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <BounceIn delay={0.2} className="text-center mb-8 sm:mb-12">
             <motion.div
               className="inline-flex items-center space-x-2 bg-festival-orange px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 sm:mb-8 border-2 border-festival-black"
@@ -229,8 +232,16 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Color Strip Divider */}
+      <div className="w-full h-12 flex">
+        <div className="flex-1 bg-festival-orange"></div>
+        <div className="flex-1 bg-festival-pink"></div>
+        <div className="flex-1 bg-festival-yellow"></div>
+        <div className="flex-1 bg-festival-orange"></div>
+      </div>
+
       {/* How It Works */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative bg-gray-100">
         <div className="max-w-7xl mx-auto">
           <FadeInUp className="text-center mb-12 sm:mb-16">
             <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
@@ -599,9 +610,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-retro-purple/20 via-retro-teal/20 to-retro-orange/20"
                   delay={0.2}
-                  className="h-full"
+                  className="h-full bg-festival-orange/30 border border-festival-orange/50"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
@@ -825,9 +835,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-retro-lavender/20 to-retro-mint/20"
                   delay={0.2}
-                  className="h-full"
+                  className="h-full bg-festival-pink/20 border border-festival-pink/30"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
@@ -1003,9 +1012,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-retro-orange/20 to-retro-peach/20"
                   delay={0.5}
-                  className="h-full"
+                  className="h-full bg-festival-orange/20 border border-festival-orange/30"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
@@ -1109,9 +1117,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="lg"
-                  gradient="from-retro-lavender/20 to-retro-cream/20"
                   delay={0.2}
-                  className="h-full"
+                  className="h-full bg-white border border-gray-200"
                 >
                   <div className="p-6 sm:p-8 lg:p-10 h-full">
                     <motion.div
