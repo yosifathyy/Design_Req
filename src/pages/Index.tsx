@@ -114,6 +114,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
+      <GSAPInteractiveBackground
+        particleCount={30}
+        colors={["#ff6b35", "#ff1f7a", "#ffeb3b", "#ff8a5b", "#ffa726"]}
+      />
       {/* GSAP Animated background shapes */}
       <GSAPFloating amplitude={15} duration={4}>
         <div className="absolute top-16 right-16 w-16 h-16 bg-festival-orange rotate-45 rounded-lg opacity-80"></div>
