@@ -245,66 +245,66 @@ const RetroHowItWorks: React.FC = () => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Enhanced title animation with more dramatic entrance
+      // Much smoother title animation
       gsap.fromTo(
         titleRef.current,
         {
           opacity: 0,
-          y: 150,
-          scale: 0.7,
-          rotation: -10,
+          y: 100,
+          scale: 0.8,
+          rotation: -5,
         },
         {
           opacity: 1,
           y: 0,
           scale: 1,
           rotation: 0,
-          duration: 2,
-          ease: "elastic.out(1, 0.8)",
+          duration: 1.8,
+          ease: "power2.out", // Smoother easing
           scrollTrigger: {
             trigger: titleRef.current,
-            start: "top 90%",
-            end: "top 70%",
+            start: "top 85%",
+            end: "top 60%",
             toggleActions: "play none none none",
-            scrub: 0.3,
+            scrub: 0.6, // Smoother scrub
           },
         },
       );
 
-      // Subtitle animation with stagger effect
+      // Smoother subtitle animation
       gsap.fromTo(
         subtitleRef.current,
         {
           opacity: 0,
-          y: 80,
-          scale: 0.9,
+          y: 60,
+          scale: 0.95,
         },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 1.2,
-          ease: "back.out(1.7)",
+          duration: 1.5,
+          ease: "power2.out", // Smoother easing
           scrollTrigger: {
             trigger: subtitleRef.current,
-            start: "top 85%",
+            start: "top 80%",
             toggleActions: "play none none none",
           },
         },
       );
 
-      // Animate floating background shapes on scroll
+      // Smoother background shapes animation
       const shapes = sectionRef.current?.querySelectorAll(".floating-bg-shape");
       shapes?.forEach((shape, i) => {
         gsap.to(shape, {
-          y: -100,
-          rotation: 360,
+          y: -80,
+          rotation: 180,
           ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
             end: "bottom top",
-            scrub: 1 + i * 0.3, // Different speeds for parallax effect
+            scrub: 2 + i * 0.5, // Much smoother parallax
           },
         });
       });
