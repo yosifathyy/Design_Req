@@ -198,8 +198,8 @@ const HeroSectionNew: React.FC = () => {
           // Title transformation
           if (titleRef.current) {
             gsap.set(titleRef.current, {
-              scale: 1 - progress * 0.2,
-              y: progress * -100,
+              scale: Math.max(0.8, 1 - progress * 0.2),
+              y: progress * -50,
             });
           }
         },
