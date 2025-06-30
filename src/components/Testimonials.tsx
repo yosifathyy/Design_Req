@@ -75,50 +75,65 @@ const TestimonialCard: React.FC<{
     const card = cardRef.current;
     const isLast = index === totalCards - 1;
 
-    // Set initial position - all cards start at the bottom
+    // Calculate final stacked position - all cards should end up at the same position
+    const finalStackY = 20; // Final stack position
+    const initialSpread = index * 150; // Initial vertical spread between cards
+
+    // Set initial position - cards spread out vertically
     gsap.set(card, {
-      y: index * 60, // Offset for visual depth
-      scale: 1 - index * 0.03, // Progressive scaling for depth
+      y: initialSpread,
+      scale: 1,
       zIndex: totalCards - index,
       rotation: testimonial.rotation,
-      transformOrigin: "center bottom",
+      transformOrigin: "center center",
     });
 
-    // Create the main stacking animation
+    // Create individual scroll trigger for each card to stack properly
     ScrollTrigger.create({
-      trigger: card.parentElement?.parentElement, // Target the container
-      start: `${index * 20}% bottom`,
-      end: `${(index + 1) * 20}% top`,
-      scrub: 2,
+      trigger: card.parentElement?.parentElement,
+      start: "top bottom",
+      end: "bottom top",
+      scrub: 1,
       onUpdate: (self) => {
-        const progress = self.progress;
-        const adjustedProgress = Math.min(progress * 1.2, 1); // Slightly faster animation
+        const scrollProgress = self.progress;
 
-        if (!isLast) {
-          // Calculate stacking movement
-          const yMovement = -adjustedProgress * (window.innerHeight * 0.7);
-          const scaleMovement = 1 - adjustedProgress * 0.08;
-          const rotationMovement =
-            testimonial.rotation * (1 - adjustedProgress * 0.8);
-          const opacityMovement = 1 - adjustedProgress * 0.3;
+        // Calculate when this card should start moving (staggered)
+        const cardStartProgress = index * 0.15; // Each card starts 15% later
+        const cardEndProgress = Math.min(cardStartProgress + 0.3, 1); // Each card animates over 30%
+
+        // Normalize progress for this specific card
+        const cardProgress = gsap.utils.clamp(
+          0,
+          1,
+          gsap.utils.mapRange(
+            cardStartProgress,
+            cardEndProgress,
+            0,
+            1,
+            scrollProgress,
+          ),
+        );
+
+        if (cardProgress > 0) {
+          // Calculate the target position (stacking on the final position)
+          const targetY = finalStackY + (totalCards - index - 1) * 2; // Small offset for visual stacking
+          const currentY = gsap.utils.interpolate(
+            initialSpread,
+            targetY,
+            cardProgress,
+          );
+
+          // Gradually reduce rotation as cards stack
+          const currentRotation = testimonial.rotation * (1 - cardProgress);
+
+          // Scale slightly down for depth effect when stacked
+          const currentScale = 1 - cardProgress * 0.02;
 
           gsap.set(card, {
-            y: yMovement + index * 60,
-            scale: scaleMovement,
-            rotation: rotationMovement,
-            opacity: Math.max(opacityMovement, 0.7),
-            zIndex: totalCards - index + Math.floor(adjustedProgress * 20),
-            filter: `blur(${adjustedProgress * 2}px)`,
-          });
-        } else {
-          // Last card becomes the final stacked deck
-          gsap.set(card, {
-            y: index * 60,
-            scale: 1,
-            rotation: 0,
-            opacity: 1,
-            zIndex: totalCards + 10,
-            filter: "blur(0px)",
+            y: currentY,
+            rotation: currentRotation,
+            scale: currentScale,
+            zIndex: totalCards - index + Math.floor(cardProgress * 10),
           });
         }
       },
