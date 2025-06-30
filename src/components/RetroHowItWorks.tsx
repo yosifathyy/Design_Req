@@ -365,13 +365,13 @@ const RetroHowItWorks: React.FC = () => {
         />
       </div>
 
-      {/* Floating retro shapes */}
+      {/* Floating retro shapes with scroll animation */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(8)].map((_, i) => (
           <div
             key={i}
             className={cn(
-              "absolute opacity-10",
+              "floating-bg-shape absolute opacity-10",
               i % 4 === 0
                 ? "w-16 h-16 bg-retro-pink rounded-full"
                 : i % 4 === 1
