@@ -27,6 +27,11 @@ import {
   GSAPMagneticButton,
 } from "@/components/GSAPAnimatedElements";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Portfolio = () => {
   const portfolioItems = [
