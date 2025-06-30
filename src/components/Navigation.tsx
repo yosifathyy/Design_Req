@@ -14,10 +14,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { WiggleIcon } from "@/components/AnimatedElements";
-import {
-  GSAPHover,
-  GSAPMagneticButton,
-} from "@/components/GSAPAnimatedElements";
+import { GSAPHover, GSAPMagneticButton } from "@/components/GSAPAnimatedElements";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +49,7 @@ const Navigation = () => {
     <>
       {/* Desktop Navigation */}
       <nav className="hidden lg:flex items-center justify-between p-6 bg-retro-cream/80 backdrop-blur-sm border-b-2 border-retro-purple/20 sticky top-0 z-50">
-        <button
+        <GSAPMagneticButton
           onClick={scrollToHome}
           className="flex items-center space-x-3 group"
         >
