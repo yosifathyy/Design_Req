@@ -188,37 +188,23 @@ const Index = () => {
                   </p>
                 </FadeInUp>
 
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.9, type: "spring", damping: 15 }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05, rotate: -1 }}
-                    whileTap={{ scale: 0.95 }}
+                <GSAPFadeIn delay={0.9} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+                  <GSAPMagneticButton
+                    className="bg-festival-orange border-2 border-festival-black text-white font-black px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
+                    onClick={() => window.location.href = "/start-project"}
                   >
-                    <Button
-                      asChild
-                      className="bg-festival-orange border-2 border-festival-black text-white font-black px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
-                    >
-                      <Link to="/start-project">
-                        <WiggleIcon>
-                          <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        </WiggleIcon>
-                        Get Started
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                      </Link>
-                    </Button>
-                  </motion.div>
+                    <WiggleIcon>
+                      <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    </WiggleIcon>
+                    Get Started
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                  </GSAPMagneticButton>
 
-                  <motion.div
-                    whileHover={{ scale: 1.05, rotate: 1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                  <GSAPHover animation="bounce">
                     <Button
                       variant="outline"
                       className="border-2 border-festival-black text-festival-black hover:bg-festival-pink hover:text-white font-bold px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-xl transition-all duration-300 text-sm sm:text-base lg:text-lg uppercase tracking-wide w-full sm:w-auto"
+                      data-cursor="View Work"
                       onClick={() =>
                         document.getElementById("portfolio")?.scrollIntoView({
                           behavior: "smooth",
