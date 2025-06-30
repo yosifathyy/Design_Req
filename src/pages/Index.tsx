@@ -441,260 +441,347 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Portfolio Section - Retro Animated Showcase */}
+      {/* Portfolio Section - Creative Interactive Universe */}
       <section
         id="portfolio"
-        className="px-4 sm:px-6 py-16 sm:py-20 lg:py-24 relative bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 overflow-hidden"
+        className="relative min-h-screen bg-gradient-to-b from-gray-900 via-purple-900/50 to-gray-900 overflow-hidden"
       >
-        {/* Floating retro shapes with speed control */}
-        <div className="absolute inset-0 pointer-events-none opacity-30">
-          <div
-            ref={useSpeedControl(0.8)}
-            className="absolute top-20 left-10 w-20 h-20 border-4 border-retro-orange rotate-45 animate-pulse"
-          ></div>
-          <div
-            ref={useSpeedControl(1.2)}
-            className="absolute top-40 right-20 w-16 h-16 bg-retro-pink rounded-full animate-bounce"
-          ></div>
-          <div
-            ref={useSpeedControl(0.9)}
-            className="absolute bottom-40 left-20 w-24 h-24 border-4 border-retro-teal rotate-12"
-          ></div>
-          <div
-            ref={useSpeedControl(1.1)}
-            className="absolute bottom-20 right-40 w-12 h-12 bg-retro-purple transform rotate-45 animate-spin"
-            style={{ animationDuration: "8s" }}
-          ></div>
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Floating Orbs */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className={`absolute w-${4 + (i % 4) * 2} h-${4 + (i % 4) * 2} rounded-full opacity-60`}
+              style={{
+                background: `radial-gradient(circle, ${["#FF6B35", "#FF1F7A", "#FFEB3B", "#FF8A5B"][i % 4]}, transparent)`,
+                left: `${(i * 8.33) % 100}%`,
+                top: `${(i * 12.7) % 100}%`,
+              }}
+              animate={{
+                y: [0, -100, 0],
+                x: [0, Math.sin(i) * 50, 0],
+                scale: [1, 1.2, 1],
+                opacity: [0.4, 0.8, 0.4],
+              }}
+              transition={{
+                duration: 8 + (i % 3) * 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.5,
+              }}
+            />
+          ))}
+
+          {/* Morphing Shapes */}
+          <svg
+            className="absolute inset-0 w-full h-full opacity-20"
+            viewBox="0 0 1000 1000"
+          >
+            <motion.path
+              d="M100,300 Q300,100 500,300 T900,300 Q700,500 500,700 T100,300"
+              fill="none"
+              stroke="#FF6B35"
+              strokeWidth="2"
+              animate={{
+                d: [
+                  "M100,300 Q300,100 500,300 T900,300 Q700,500 500,700 T100,300",
+                  "M100,400 Q400,200 500,400 T900,400 Q600,600 500,800 T100,400",
+                  "M100,300 Q300,100 500,300 T900,300 Q700,500 500,700 T100,300",
+                ],
+              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          {/* Header with staggered animation */}
-          <div className="text-center mb-16 lg:mb-20">
+        <div className="relative z-10 px-4 sm:px-6 py-20">
+          {/* Glitch Header */}
+          <div className="text-center mb-20">
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="relative"
             >
-              <div
-                ref={useStaggeredText("Portfolio")}
-                className="font-display text-5xl sm:text-6xl lg:text-8xl xl:text-9xl mb-4 text-retro-purple"
-              />
-              <div
-                ref={useStaggeredText("Showcase", 0.05)}
-                className="font-display text-3xl sm:text-4xl lg:text-6xl xl:text-7xl mb-6 bg-gradient-to-r from-retro-orange to-retro-peach bg-clip-text text-transparent"
-              />
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-lg sm:text-xl lg:text-2xl text-retro-purple/80 max-w-3xl mx-auto leading-relaxed"
-            >
-              Groovy designs that'll blow your mind! Check out our radical
-              portfolio of creative projects 🚀
-            </motion.p>
-          </div>
-
-          {/* Animated Portfolio Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
-            {[
-              {
-                title: "Retro Brand Identity",
-                category: "Branding",
-                description: "Far-out brand identity with psychedelic vibes",
-                color: "from-retro-orange to-retro-peach",
-                icon: "🎨",
-                delay: 0.1,
-              },
-              {
-                title: "Groovy Web App",
-                category: "Web Design",
-                description: "Totally radical web application design",
-                color: "from-retro-purple to-retro-teal",
-                icon: "💻",
-                delay: 0.2,
-              },
-              {
-                title: "Funky Mobile App",
-                category: "App Design",
-                description: "Smooth mobile experience with retro flair",
-                color: "from-retro-mint to-retro-lavender",
-                icon: "📱",
-                delay: 0.3,
-              },
-              {
-                title: "Electric Poster Series",
-                category: "Print Design",
-                description: "Mind-blowing poster designs that pop",
-                color: "from-retro-peach to-retro-pink",
-                icon: "🎭",
-                delay: 0.4,
-              },
-              {
-                title: "Cosmic Logo Design",
-                category: "Logo Design",
-                description: "Out-of-this-world logo concepts",
-                color: "from-retro-teal to-retro-orange",
-                icon: "⭐",
-                delay: 0.5,
-              },
-              {
-                title: "Disco Package Design",
-                category: "Packaging",
-                description: "Packaging that makes products dance",
-                color: "from-retro-lavender to-retro-purple",
-                icon: "📦",
-                delay: 0.6,
-              },
-            ].map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50, rotateX: -10 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  delay: project.delay,
-                  duration: 0.8,
-                  ease: "easeOut",
+              <motion.h2
+                className="font-display text-6xl sm:text-8xl lg:text-9xl font-black mb-8 relative"
+                animate={{
+                  textShadow: [
+                    "0 0 0 #FF6B35, 0 0 0 #FF1F7A",
+                    "2px 0 0 #FF6B35, -2px 0 0 #FF1F7A",
+                    "0 0 0 #FF6B35, 0 0 0 #FF1F7A",
+                  ],
                 }}
-                whileHover={{
-                  y: -10,
-                  scale: 1.02,
-                  rotateY: 5,
-                  transition: { duration: 0.3 },
-                }}
-                className="group cursor-pointer"
+                transition={{ duration: 2, repeat: Infinity }}
               >
-                <div
-                  ref={useSpeedControl(0.95 + index * 0.05)}
-                  className="bg-white/80 backdrop-blur-sm border-3 border-retro-purple/20 rounded-3xl p-6 lg:p-8 h-full hover:border-retro-orange/50 transition-all duration-500 hover:shadow-2xl hover:shadow-retro-orange/20"
-                >
-                  {/* Project Image Placeholder */}
-                  <div
-                    className={`relative h-48 lg:h-56 rounded-2xl bg-gradient-to-br ${project.color} mb-6 overflow-hidden group-hover:scale-105 transition-transform duration-500`}
-                  >
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl lg:text-7xl opacity-60 group-hover:scale-110 transition-transform duration-500">
-                        {project.icon}
-                      </span>
-                    </div>
+                <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-orange-400 bg-clip-text text-transparent">
+                  CREATIVE
+                </span>
+              </motion.h2>
 
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        whileHover={{ scale: 1 }}
-                        className="flex gap-3"
-                      >
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-white text-white hover:bg-white hover:text-black"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-retro-orange hover:bg-retro-peach text-white"
-                        >
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          Live
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </div>
-
-                  {/* Project Details */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={`px-3 py-1 text-sm font-bold rounded-full bg-gradient-to-r ${project.color} text-white`}
-                      >
-                        {project.category}
-                      </span>
-                      <Star className="w-5 h-5 text-retro-orange group-hover:fill-retro-orange transition-all duration-300" />
-                    </div>
-
-                    <h3 className="font-display text-xl lg:text-2xl text-retro-purple group-hover:text-retro-orange transition-colors duration-300">
-                      {project.title}
-                    </h3>
-
-                    <p className="text-retro-purple/70 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
-                </div>
+              <motion.div
+                className="font-display text-4xl sm:text-6xl lg:text-7xl text-white/90"
+                animate={{
+                  y: [0, -10, 0],
+                  rotateZ: [0, 1, -1, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                UNIVERSE
               </motion.div>
-            ))}
+            </motion.div>
           </div>
 
-          {/* Call to Action with Magnetic Effect */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="text-center"
-          >
-            <div className="bg-white/60 backdrop-blur-sm border-3 border-retro-purple/30 rounded-3xl p-8 lg:p-12 max-w-4xl mx-auto relative overflow-hidden">
-              {/* Background pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="grid grid-cols-8 grid-rows-6 h-full w-full">
-                  {Array.from({ length: 48 }).map((_, i) => (
-                    <div key={i} className="border border-retro-orange"></div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative z-10">
+          {/* Floating Portfolio Cards */}
+          <div className="max-w-7xl mx-auto">
+            <div className="relative h-[80vh] overflow-hidden">
+              {[
+                {
+                  title: "Neon Dreams",
+                  category: "Digital Art",
+                  x: 10,
+                  y: 20,
+                  color: "#FF6B35",
+                  scale: 1.2,
+                },
+                {
+                  title: "Cyber Punk",
+                  category: "UI/UX",
+                  x: 70,
+                  y: 10,
+                  color: "#FF1F7A",
+                  scale: 0.9,
+                },
+                {
+                  title: "Retro Wave",
+                  category: "Branding",
+                  x: 30,
+                  y: 50,
+                  color: "#FFEB3B",
+                  scale: 1.1,
+                },
+                {
+                  title: "Space Odyssey",
+                  category: "3D Design",
+                  x: 80,
+                  y: 60,
+                  color: "#FF8A5B",
+                  scale: 1.0,
+                },
+                {
+                  title: "Quantum Flux",
+                  category: "Animation",
+                  x: 15,
+                  y: 75,
+                  color: "#8B5CF6",
+                  scale: 1.3,
+                },
+                {
+                  title: "Neural Network",
+                  category: "Web Design",
+                  x: 60,
+                  y: 30,
+                  color: "#10B981",
+                  scale: 0.8,
+                },
+              ].map((project, index) => (
                 <motion.div
+                  key={index}
+                  className="absolute cursor-pointer group"
+                  style={{
+                    left: `${project.x}%`,
+                    top: `${project.y}%`,
+                    transform: `scale(${project.scale})`,
+                  }}
+                  initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                  whileInView={{
+                    opacity: 1,
+                    scale: project.scale,
+                    rotate: 0,
+                  }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: index * 0.2,
+                    duration: 1.2,
+                    type: "spring",
+                    stiffness: 100,
+                  }}
+                  whileHover={{
+                    scale: project.scale * 1.2,
+                    zIndex: 50,
+                    rotateY: 15,
+                    rotateX: 10,
+                  }}
                   animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0],
+                    y: [0, -20, 0],
+                    rotateZ: [0, 2, -2, 0],
                   }}
                   transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
+                    y: {
+                      duration: 4 + index * 0.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                    rotateZ: {
+                      duration: 6 + index * 0.3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
                   }}
-                  className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-r from-retro-orange to-retro-pink rounded-full flex items-center justify-center mx-auto mb-6"
                 >
-                  <Rocket className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
-                </motion.div>
-
-                <h3 className="font-display text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-4">
-                  Ready to Get{" "}
-                  <span className="bg-gradient-to-r from-retro-orange to-retro-peach bg-clip-text text-transparent">
-                    Groovy?
-                  </span>
-                </h3>
-
-                <p className="text-lg lg:text-xl text-retro-purple/80 mb-8 max-w-2xl mx-auto leading-relaxed">
-                  Let's create something totally radical together! Our team of
-                  design wizards is ready to bring your wildest ideas to life.
-                </p>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    asChild
-                    size="lg"
-                    className="bg-gradient-to-r from-retro-purple via-retro-teal to-retro-orange text-white font-bold px-8 lg:px-12 py-4 lg:py-6 rounded-2xl shadow-2xl text-lg lg:text-xl hover:shadow-retro-orange/30 transition-all duration-500 border-3 border-retro-purple/30"
+                  {/* Card */}
+                  <div
+                    className="w-64 h-80 rounded-3xl p-6 backdrop-blur-lg border border-white/20 relative overflow-hidden group-hover:border-white/50 transition-all duration-500"
+                    style={{
+                      background: `linear-gradient(135deg, ${project.color}20, ${project.color}10, transparent)`,
+                      boxShadow: `0 20px 40px ${project.color}30`,
+                    }}
                   >
-                    <Link to="/start-project">
-                      Start Your Project
-                      <ArrowRight className="w-6 h-6 ml-3" />
-                    </Link>
-                  </Button>
+                    {/* Morphing blob background */}
+                    <motion.div
+                      className="absolute inset-0 opacity-30"
+                      animate={{
+                        borderRadius: [
+                          "60% 40% 30% 70% / 60% 30% 70% 40%",
+                          "30% 60% 70% 40% / 50% 60% 30% 60%",
+                          "60% 40% 30% 70% / 60% 30% 70% 40%",
+                        ],
+                      }}
+                      transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      style={{ background: project.color }}
+                    />
+
+                    {/* Content */}
+                    <div className="relative z-10 h-full flex flex-col justify-between">
+                      <div>
+                        <motion.div
+                          className="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center text-2xl"
+                          style={{ backgroundColor: project.color }}
+                          whileHover={{ rotate: 360, scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          🚀
+                        </motion.div>
+
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
+                          {project.title}
+                        </h3>
+
+                        <p className="text-white/70 text-sm mb-4">
+                          {project.category}
+                        </p>
+                      </div>
+
+                      {/* Interactive elements */}
+                      <div className="space-y-3">
+                        <motion.div
+                          className="flex gap-2"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileHover={{ opacity: 1, y: 0 }}
+                        >
+                          <Button
+                            size="sm"
+                            className="bg-white/20 hover:bg-white/30 text-white border-0"
+                          >
+                            View
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-white/30 text-white hover:bg-white/20"
+                          >
+                            Code
+                          </Button>
+                        </motion.div>
+
+                        {/* Particle effect on hover */}
+                        <motion.div
+                          className="flex gap-1"
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: project.color }}
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [0.5, 1, 0.5],
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                delay: i * 0.1,
+                              }}
+                            />
+                          ))}
+                        </motion.div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
-              </div>
+              ))}
             </div>
+          </div>
+
+          {/* Interactive CTA */}
+          <motion.div
+            className="text-center mt-20"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <motion.div
+              className="relative inline-block"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 text-white font-bold px-12 py-6 rounded-full text-xl relative overflow-hidden group border-0"
+              >
+                <Link to="/start-project">
+                  <motion.span
+                    className="relative z-10 flex items-center"
+                    animate={{
+                      textShadow: [
+                        "0 0 0 rgba(255,255,255,0)",
+                        "0 0 20px rgba(255,255,255,0.5)",
+                        "0 0 0 rgba(255,255,255,0)",
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    Enter the Universe
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <ArrowRight className="w-6 h-6 ml-3" />
+                    </motion.div>
+                  </motion.span>
+
+                  {/* Ripple effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 opacity-0 group-hover:opacity-20"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </Link>
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
