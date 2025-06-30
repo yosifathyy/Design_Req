@@ -95,26 +95,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
-      {/* Geometric color blocks background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Top geometric blocks */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-festival-orange rotate-12 rounded-lg opacity-90"></div>
-        <div className="absolute top-20 right-20 w-24 h-24 bg-festival-pink -rotate-12 rounded-lg opacity-80"></div>
-        <div className="absolute top-10 right-40 w-16 h-16 bg-festival-yellow rotate-45 rounded-lg opacity-70"></div>
-
-        {/* Left side blocks */}
-        <div className="absolute top-40 left-10 w-28 h-28 bg-festival-coral rotate-45 rounded-lg opacity-85"></div>
-        <div className="absolute top-60 left-0 w-20 h-20 bg-festival-magenta -rotate-12 rounded-lg opacity-75"></div>
-
-        {/* Bottom blocks */}
-        <div className="absolute bottom-40 left-1/4 w-24 h-24 bg-festival-amber rotate-12 rounded-lg opacity-80"></div>
-        <div className="absolute bottom-20 right-1/3 w-32 h-32 bg-festival-pink -rotate-45 rounded-lg opacity-70"></div>
-        <div className="absolute bottom-60 right-10 w-20 h-20 bg-festival-orange rotate-45 rounded-lg opacity-85"></div>
-
-        {/* Center accent blocks */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-festival-yellow rotate-12 rounded-lg opacity-60"></div>
-        <div className="absolute top-1/3 right-1/4 w-12 h-12 bg-festival-coral -rotate-45 rounded-lg opacity-70"></div>
-      </div>
+      {/* Clean minimal accent shapes - much fewer and simpler */}
+      <div className="absolute top-16 right-16 w-16 h-16 bg-festival-orange rotate-45 rounded-lg opacity-80"></div>
+      <div className="absolute top-32 right-32 w-12 h-12 bg-festival-pink -rotate-12 rounded-lg opacity-70"></div>
+      <div className="absolute bottom-32 left-16 w-14 h-14 bg-festival-yellow rotate-12 rounded-lg opacity-75"></div>
 
       <Navigation />
 
@@ -246,16 +230,8 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative bg-festival-beige">
-        {/* Colorful section divider */}
-        <div className="absolute top-0 left-0 w-full h-12 flex">
-          <div className="flex-1 bg-festival-orange"></div>
-          <div className="flex-1 bg-festival-pink"></div>
-          <div className="flex-1 bg-festival-yellow"></div>
-          <div className="flex-1 bg-festival-coral"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
+        <div className="max-w-7xl mx-auto">
           <FadeInUp className="text-center mb-12 sm:mb-16">
             <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight">
               How It Works
@@ -267,34 +243,89 @@ const Index = () => {
           </FadeInUp>
 
           <BentoGrid>
-            <FeatureBentoCard
-              title="Submit Your Brief"
-              description="Tell us about your project using our AI-powered brief generator. It's like magic, but for design briefs!"
-              icon={Upload}
-              gradient="from-retro-purple/80 to-retro-purple/60"
-              delay={0.2}
-            />
-            <FeatureBentoCard
-              title="Get Matched"
-              description="We assign the perfect designer from our expert team. Think of it as design matchmaking!"
-              icon={Users}
-              gradient="from-retro-teal/80 to-retro-teal/60"
-              delay={0.3}
-            />
-            <FeatureBentoCard
-              title="Collaborate"
-              description="Work directly with your designer through secure messaging. It's like having a design buddy!"
-              icon={MessageCircle}
-              gradient="from-retro-orange/80 to-retro-orange/60"
-              delay={0.4}
-            />
-            <FeatureBentoCard
-              title="Receive Results"
-              description="Get your professional designs delivered on time. Boom! Your vision comes to life!"
-              icon={CheckCircle}
-              gradient="from-retro-pink/80 to-retro-pink/60"
-              delay={0.5}
-            />
+            <StaggerChild>
+              <BentoCard
+                size="md"
+                className="h-full bg-festival-pink border-2 border-festival-black"
+                delay={0.2}
+              >
+                <div className="p-6 h-full flex flex-col">
+                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                    <Upload className="w-8 h-8 text-festival-black" />
+                  </div>
+                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
+                    Submit Your Brief
+                  </h3>
+                  <p className="text-white/90 text-sm font-medium leading-relaxed">
+                    Tell us about your project using our AI-powered brief
+                    generator. It's like magic, but for design briefs!
+                  </p>
+                </div>
+              </BentoCard>
+            </StaggerChild>
+
+            <StaggerChild>
+              <BentoCard
+                size="md"
+                className="h-full bg-festival-orange border-2 border-festival-black"
+                delay={0.3}
+              >
+                <div className="p-6 h-full flex flex-col">
+                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                    <Users className="w-8 h-8 text-festival-black" />
+                  </div>
+                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
+                    Get Matched
+                  </h3>
+                  <p className="text-white/90 text-sm font-medium leading-relaxed">
+                    We assign the perfect designer from our expert team. Think
+                    of it as design matchmaking!
+                  </p>
+                </div>
+              </BentoCard>
+            </StaggerChild>
+
+            <StaggerChild>
+              <BentoCard
+                size="md"
+                className="h-full bg-festival-orange border-2 border-festival-black"
+                delay={0.4}
+              >
+                <div className="p-6 h-full flex flex-col">
+                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                    <MessageCircle className="w-8 h-8 text-festival-black" />
+                  </div>
+                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
+                    Collaborate
+                  </h3>
+                  <p className="text-white/90 text-sm font-medium leading-relaxed">
+                    Work directly with your designer through secure messaging.
+                    It's like having a design buddy!
+                  </p>
+                </div>
+              </BentoCard>
+            </StaggerChild>
+
+            <StaggerChild>
+              <BentoCard
+                size="md"
+                className="h-full bg-festival-pink border-2 border-festival-black"
+                delay={0.5}
+              >
+                <div className="p-6 h-full flex flex-col">
+                  <div className="w-16 h-16 bg-white border-2 border-festival-black rounded-xl flex items-center justify-center mb-4">
+                    <CheckCircle className="w-8 h-8 text-festival-black" />
+                  </div>
+                  <h3 className="font-black text-xl text-white mb-3 tracking-tight">
+                    Receive Results
+                  </h3>
+                  <p className="text-white/90 text-sm font-medium leading-relaxed">
+                    Get your professional designs delivered on time. Boom! Your
+                    vision comes to life!
+                  </p>
+                </div>
+              </BentoCard>
+            </StaggerChild>
           </BentoGrid>
         </div>
       </section>
@@ -304,12 +335,7 @@ const Index = () => {
         id="services"
         className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative"
       >
-        {/* Geometric accent blocks for services */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-festival-pink rotate-45 rounded-lg opacity-80"></div>
-        <div className="absolute top-20 right-16 w-16 h-16 bg-festival-yellow -rotate-12 rounded-lg opacity-70"></div>
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-festival-coral rotate-12 rounded-lg opacity-75"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 100, scale: 0.8 }}
             whileInView={{
@@ -355,9 +381,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-festival-orange/90 to-festival-coral/90"
                   delay={0.2}
-                  className="h-full border-2 border-festival-black"
+                  className="h-full bg-festival-orange border-2 border-festival-black"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
@@ -419,9 +444,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-festival-pink/90 to-festival-magenta/90"
                   delay={0.3}
-                  className="h-full border-2 border-festival-black"
+                  className="h-full bg-festival-pink border-2 border-festival-black"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
@@ -474,9 +498,8 @@ const Index = () => {
               <StaggerChild>
                 <BentoCard
                   size="md"
-                  gradient="from-festival-yellow/90 to-festival-amber/90"
                   delay={0.4}
-                  className="h-full border-2 border-festival-black"
+                  className="h-full bg-festival-yellow border-2 border-festival-black"
                 >
                   <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
                     <motion.div
