@@ -55,24 +55,52 @@ export const BentoCard = ({
       scale: 0.8,
     });
 
-    // Entrance animation
-    const tl = gsap.timeline({
-      delay: delay,
-      scrollTrigger: {
-        trigger: card,
-        start: "top 85%",
-        end: "bottom 15%",
-        toggleActions: "play none none reverse",
+    // Enhanced entrance and exit animations
+    ScrollTrigger.create({
+      trigger: card,
+      start: "top 90%",
+      end: "bottom 10%",
+      onEnter: () => {
+        gsap.to(card, {
+          y: 0,
+          opacity: 1,
+          rotation: 0,
+          scale: 1,
+          duration: 0.8,
+          delay: delay,
+          ease: "back.out(1.7)",
+        });
       },
-    });
-
-    tl.to(card, {
-      y: 0,
-      opacity: 1,
-      rotation: 0,
-      scale: 1,
-      duration: 0.8,
-      ease: "back.out(1.7)",
+      onLeave: () => {
+        gsap.to(card, {
+          y: -150,
+          opacity: 0,
+          rotation: Math.random() * 20 - 10,
+          scale: 0.4,
+          duration: 0.6,
+          ease: "power2.in",
+        });
+      },
+      onEnterBack: () => {
+        gsap.to(card, {
+          y: 0,
+          opacity: 1,
+          rotation: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: "elastic.out(1, 0.8)",
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(card, {
+          y: 150,
+          opacity: 0,
+          rotation: Math.random() * 20 - 10,
+          scale: 0.5,
+          duration: 0.5,
+          ease: "power2.in",
+        });
+      },
     });
 
     // Hover animations
@@ -209,6 +237,7 @@ export const BentoGrid = ({
       y: 50,
       opacity: 0,
       rotation: "random(-5, 5)",
+      scale: 0.8,
     });
 
     ScrollTrigger.create({
@@ -220,9 +249,43 @@ export const BentoGrid = ({
           y: 0,
           opacity: 1,
           rotation: 0,
+          scale: 1,
           duration: 0.8,
           stagger: 0.1,
           ease: "back.out(1.7)",
+        });
+      },
+      onLeave: () => {
+        gsap.to(cards, {
+          y: -100,
+          opacity: 0,
+          rotation: "random(-15, 15)",
+          scale: 0.6,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: "power2.in",
+        });
+      },
+      onEnterBack: () => {
+        gsap.to(cards, {
+          y: 0,
+          opacity: 1,
+          rotation: 0,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(cards, {
+          y: 100,
+          opacity: 0,
+          rotation: "random(-10, 10)",
+          scale: 0.7,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "power2.in",
         });
       },
     });
@@ -230,14 +293,21 @@ export const BentoGrid = ({
 
   return (
     <div
-      ref={gridRef}
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full",
-        "p-4 sm:p-6 lg:p-8",
+        "w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+        "flex justify-center",
         className,
       )}
     >
-      {children}
+      <div
+        ref={gridRef}
+        className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 w-full",
+          "justify-items-center place-items-center",
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 };
