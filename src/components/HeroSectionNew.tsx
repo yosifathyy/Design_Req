@@ -259,39 +259,6 @@ const HeroSectionNew: React.FC = () => {
         ))}
       </div>
 
-      {/* Floating orbs */}
-      <div
-        ref={orbsRef}
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 2 }}
-      >
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className={`floating-orb absolute w-24 h-24 rounded-full border-4 border-black ${
-              i % 4 === 0
-                ? "bg-gradient-to-br from-festival-orange to-festival-pink"
-                : i % 4 === 1
-                  ? "bg-gradient-to-br from-festival-pink to-festival-amber"
-                  : i % 4 === 2
-                    ? "bg-gradient-to-br from-festival-yellow to-festival-coral"
-                    : "bg-gradient-to-br from-festival-coral to-festival-magenta"
-            } shadow-2xl`}
-            style={{
-              left: `${20 + Math.random() * 60}%`,
-              top: `${15 + Math.random() * 70}%`,
-            }}
-          >
-            <div className="absolute inset-3 bg-white/30 rounded-full backdrop-blur-sm flex items-center justify-center">
-              {i % 4 === 0 && <Sparkles className="w-6 h-6 text-white" />}
-              {i % 4 === 1 && <Zap className="w-6 h-6 text-white" />}
-              {i % 4 === 2 && <Star className="w-6 h-6 text-white" />}
-              {i % 4 === 3 && <Heart className="w-6 h-6 text-white" />}
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Main content */}
       <div
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
