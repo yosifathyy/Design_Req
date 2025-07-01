@@ -17,6 +17,7 @@ import {
   Palette,
   Wand2,
 } from "lucide-react";
+import { Squares } from "@/components/ui/squares-background";
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
