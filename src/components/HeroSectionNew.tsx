@@ -230,10 +230,7 @@ const HeroSectionNew: React.FC = () => {
       </div>
 
       {/* Animated Squares Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 5 }}
-      >
+      <div className="absolute inset-0" style={{ zIndex: 5 }}>
         <Squares
           direction="diagonal"
           speed={0.8}
