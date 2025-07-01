@@ -230,13 +230,16 @@ const HeroSectionNew: React.FC = () => {
       </div>
 
       {/* Animated Squares Background */}
-      <div className="absolute inset-0" style={{ zIndex: 5 }}>
+      <div
+        className="absolute inset-0"
+        style={{ zIndex: 8, pointerEvents: "auto" }}
+      >
         <Squares
           direction="diagonal"
           speed={0.8}
           squareSize={40}
           borderColor="rgba(0, 0, 0, 0.3)"
-          hoverFillColor="rgba(255, 107, 53, 0.3)"
+          hoverFillColor="rgba(255, 107, 53, 0.5)"
           className="opacity-80"
         />
       </div>
