@@ -328,7 +328,7 @@ const HeroSectionNew: React.FC = () => {
             perspective: "1000px",
           }}
         >
-          Design Magic ✨
+          Design Requests ✨
         </h1>
 
         {/* Subtitle */}
