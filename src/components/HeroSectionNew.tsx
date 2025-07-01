@@ -42,24 +42,6 @@ const HeroSectionNew: React.FC = () => {
       // Create entrance timeline
       const tl = gsap.timeline({ delay: 0.5 });
 
-      // Animate floating orbs
-      gsap.set(".floating-orb", {
-        scale: 0,
-        rotation: "random(-180, 180)",
-      });
-
-      tl.to(
-        ".floating-orb",
-        {
-          scale: 1,
-          rotation: 0,
-          duration: 1.5,
-          stagger: 0.1,
-          ease: "elastic.out(1, 0.5)",
-        },
-        0,
-      );
-
       // Animate background shapes
       gsap.set(".bg-shape", {
         scale: 0,
