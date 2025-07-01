@@ -299,7 +299,7 @@ const HeroSectionNew: React.FC = () => {
       >
         {/* Badge */}
         <motion.div
-          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full mb-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           whileHover={{
             scale: 1.05,
             rotate: 2,
@@ -328,13 +328,13 @@ const HeroSectionNew: React.FC = () => {
             perspective: "1000px",
           }}
         >
-          Design Magic ✨
+          Design Requests ✨
         </h1>
 
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] -mt-px mb-16"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] mt-[51px] mb-[53px]"
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets <span className="text-festival-pink">festival vibes</span> to
@@ -424,7 +424,7 @@ const HeroSectionNew: React.FC = () => {
         </div>
 
         {/* Floating stats */}
-        <div className="mt-16 flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full">
+        <div className="mt-16 mb-[45px] flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full">
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
             { label: "Projects", value: "1.2K+", icon: Wand2 },

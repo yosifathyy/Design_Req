@@ -17,6 +17,7 @@ import {
   HeroBentoCard,
 } from "@/components/BentoCards";
 import RetroCards from "@/components/RetroCards";
+import RetroFlipGrid from "@/components/RetroFlipGrid";
 import RetroHowItWorks from "@/components/RetroHowItWorks";
 import {
   FadeInUp,
@@ -241,7 +242,7 @@ const Index = () => {
       {/* Our Services Section */}
       <section
         id="services"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px]"
       >
         <div className="max-w-7xl mx-auto">
           <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
@@ -441,353 +442,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Portfolio Section - Creative Interactive Universe */}
-      <section
-        id="portfolio"
-        className="relative min-h-screen bg-gradient-to-b from-gray-900 via-purple-900/50 to-gray-900 overflow-hidden"
-      >
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Floating Orbs */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className={`absolute w-${4 + (i % 4) * 2} h-${4 + (i % 4) * 2} rounded-full opacity-60`}
-              style={{
-                background: `radial-gradient(circle, ${["#FF6B35", "#FF1F7A", "#FFEB3B", "#FF8A5B"][i % 4]}, transparent)`,
-                left: `${(i * 8.33) % 100}%`,
-                top: `${(i * 12.7) % 100}%`,
-              }}
-              animate={{
-                y: [0, -100, 0],
-                x: [0, Math.sin(i) * 50, 0],
-                scale: [1, 1.2, 1],
-                opacity: [0.4, 0.8, 0.4],
-              }}
-              transition={{
-                duration: 8 + (i % 3) * 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: i * 0.5,
-              }}
-            />
-          ))}
-
-          {/* Morphing Shapes */}
-          <svg
-            className="absolute inset-0 w-full h-full opacity-20"
-            viewBox="0 0 1000 1000"
-          >
-            <motion.path
-              d="M100,300 Q300,100 500,300 T900,300 Q700,500 500,700 T100,300"
-              fill="none"
-              stroke="#FF6B35"
-              strokeWidth="2"
-              animate={{
-                d: [
-                  "M100,300 Q300,100 500,300 T900,300 Q700,500 500,700 T100,300",
-                  "M100,400 Q400,200 500,400 T900,400 Q600,600 500,800 T100,400",
-                  "M100,300 Q300,100 500,300 T900,300 Q700,500 500,700 T100,300",
-                ],
-              }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </svg>
-        </div>
-
-        <div className="relative z-10 px-4 sm:px-6 py-20">
-          {/* Glitch Header */}
-          <div className="text-center mb-20">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <motion.h2
-                className="font-display text-6xl sm:text-8xl lg:text-9xl font-black mb-8 relative"
-                animate={{
-                  textShadow: [
-                    "0 0 0 #FF6B35, 0 0 0 #FF1F7A",
-                    "2px 0 0 #FF6B35, -2px 0 0 #FF1F7A",
-                    "0 0 0 #FF6B35, 0 0 0 #FF1F7A",
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-orange-400 bg-clip-text text-transparent">
-                  CREATIVE
-                </span>
-              </motion.h2>
-
-              <motion.div
-                className="font-display text-4xl sm:text-6xl lg:text-7xl text-white/90"
-                animate={{
-                  y: [0, -10, 0],
-                  rotateZ: [0, 1, -1, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                UNIVERSE
-              </motion.div>
-            </motion.div>
-          </div>
-
-          {/* Floating Portfolio Cards */}
-          <div className="max-w-7xl mx-auto">
-            <div className="relative h-[80vh] overflow-hidden">
-              {[
-                {
-                  title: "Neon Dreams",
-                  category: "Digital Art",
-                  x: 10,
-                  y: 20,
-                  color: "#FF6B35",
-                  scale: 1.2,
-                },
-                {
-                  title: "Cyber Punk",
-                  category: "UI/UX",
-                  x: 70,
-                  y: 10,
-                  color: "#FF1F7A",
-                  scale: 0.9,
-                },
-                {
-                  title: "Retro Wave",
-                  category: "Branding",
-                  x: 30,
-                  y: 50,
-                  color: "#FFEB3B",
-                  scale: 1.1,
-                },
-                {
-                  title: "Space Odyssey",
-                  category: "3D Design",
-                  x: 80,
-                  y: 60,
-                  color: "#FF8A5B",
-                  scale: 1.0,
-                },
-                {
-                  title: "Quantum Flux",
-                  category: "Animation",
-                  x: 15,
-                  y: 75,
-                  color: "#8B5CF6",
-                  scale: 1.3,
-                },
-                {
-                  title: "Neural Network",
-                  category: "Web Design",
-                  x: 60,
-                  y: 30,
-                  color: "#10B981",
-                  scale: 0.8,
-                },
-              ].map((project, index) => (
-                <motion.div
-                  key={index}
-                  className="absolute cursor-pointer group"
-                  style={{
-                    left: `${project.x}%`,
-                    top: `${project.y}%`,
-                    transform: `scale(${project.scale})`,
-                  }}
-                  initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                  whileInView={{
-                    opacity: 1,
-                    scale: project.scale,
-                    rotate: 0,
-                  }}
-                  viewport={{ once: true }}
-                  transition={{
-                    delay: index * 0.2,
-                    duration: 1.2,
-                    type: "spring",
-                    stiffness: 100,
-                  }}
-                  whileHover={{
-                    scale: project.scale * 1.2,
-                    zIndex: 50,
-                    rotateY: 15,
-                    rotateX: 10,
-                  }}
-                  animate={{
-                    y: [0, -20, 0],
-                    rotateZ: [0, 2, -2, 0],
-                  }}
-                  transition={{
-                    y: {
-                      duration: 4 + index * 0.5,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    },
-                    rotateZ: {
-                      duration: 6 + index * 0.3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    },
-                  }}
-                >
-                  {/* Card */}
-                  <div
-                    className="w-64 h-80 rounded-3xl p-6 backdrop-blur-lg border border-white/20 relative overflow-hidden group-hover:border-white/50 transition-all duration-500"
-                    style={{
-                      background: `linear-gradient(135deg, ${project.color}20, ${project.color}10, transparent)`,
-                      boxShadow: `0 20px 40px ${project.color}30`,
-                    }}
-                  >
-                    {/* Morphing blob background */}
-                    <motion.div
-                      className="absolute inset-0 opacity-30"
-                      animate={{
-                        borderRadius: [
-                          "60% 40% 30% 70% / 60% 30% 70% 40%",
-                          "30% 60% 70% 40% / 50% 60% 30% 60%",
-                          "60% 40% 30% 70% / 60% 30% 70% 40%",
-                        ],
-                      }}
-                      transition={{
-                        duration: 8,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                      style={{ background: project.color }}
-                    />
-
-                    {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-between">
-                      <div>
-                        <motion.div
-                          className="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center text-2xl"
-                          style={{ backgroundColor: project.color }}
-                          whileHover={{ rotate: 360, scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          🚀
-                        </motion.div>
-
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
-                          {project.title}
-                        </h3>
-
-                        <p className="text-white/70 text-sm mb-4">
-                          {project.category}
-                        </p>
-                      </div>
-
-                      {/* Interactive elements */}
-                      <div className="space-y-3">
-                        <motion.div
-                          className="flex gap-2"
-                          initial={{ opacity: 0, y: 20 }}
-                          whileHover={{ opacity: 1, y: 0 }}
-                        >
-                          <Button
-                            size="sm"
-                            className="bg-white/20 hover:bg-white/30 text-white border-0"
-                          >
-                            View
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-white/30 text-white hover:bg-white/20"
-                          >
-                            Code
-                          </Button>
-                        </motion.div>
-
-                        {/* Particle effect on hover */}
-                        <motion.div
-                          className="flex gap-1"
-                          whileHover={{ scale: 1.1 }}
-                        >
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="w-2 h-2 rounded-full"
-                              style={{ backgroundColor: project.color }}
-                              animate={{
-                                scale: [1, 1.5, 1],
-                                opacity: [0.5, 1, 0.5],
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                delay: i * 0.1,
-                              }}
-                            />
-                          ))}
-                        </motion.div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Interactive CTA */}
-          <motion.div
-            className="text-center mt-20"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              className="relative inline-block"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                asChild
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 text-white font-bold px-12 py-6 rounded-full text-xl relative overflow-hidden group border-0"
-              >
-                <Link to="/start-project">
-                  <motion.span
-                    className="relative z-10 flex items-center"
-                    animate={{
-                      textShadow: [
-                        "0 0 0 rgba(255,255,255,0)",
-                        "0 0 20px rgba(255,255,255,0.5)",
-                        "0 0 0 rgba(255,255,255,0)",
-                      ],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    Enter the Universe
-                    <motion.div
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <ArrowRight className="w-6 h-6 ml-3" />
-                    </motion.div>
-                  </motion.span>
-
-                  {/* Ripple effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 opacity-0 group-hover:opacity-20"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </Link>
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Original Portfolio Cards Section */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative -ml-[2px]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <motion.div
@@ -989,13 +645,18 @@ const Index = () => {
               </StaggerChild>
             </BentoGrid>
           </StaggerContainer>
+
+          {/* Retro Flip Grid */}
+          <div className="mt-20">
+            <RetroFlipGrid />
+          </div>
         </div>
       </section>
 
       {/* About Us Section */}
       <section
         id="about"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-white/20 backdrop-blur-sm relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-white/20 backdrop-blur-sm relative mt-[53px]"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
