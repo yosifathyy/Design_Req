@@ -1,10 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const RetroFlipGrid: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridSectionRef = useRef<HTMLDivElement>(null);
   const [modalImage, setModalImage] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -40,6 +47,109 @@ const RetroFlipGrid: React.FC = () => {
   };
 
   const gridRows = createRows();
+
+  // GSAP scroll animations
+  useEffect(() => {
+    if (!containerRef.current || !headerRef.current || !gridSectionRef.current)
+      return;
+
+    const ctx = gsap.context(() => {
+      // Initial state - hide everything
+      gsap.set([headerRef.current, gridSectionRef.current], {
+        opacity: 0,
+        y: 100,
+        scale: 0.8,
+      });
+
+      // Header animation
+      gsap.to(headerRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // Grid section animation with stagger
+      gsap.to(gridSectionRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 1.5,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: gridSectionRef.current,
+          start: "top 75%",
+          end: "bottom 25%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // Individual grid rows animation
+      const rows = gridSectionRef.current?.querySelectorAll(".grid-row");
+      if (rows) {
+        rows.forEach((row, index) => {
+          gsap.fromTo(
+            row,
+            {
+              opacity: 0,
+              y: 80,
+              rotateX: -15,
+              scale: 0.9,
+            },
+            {
+              opacity: 1,
+              y: 0,
+              rotateX: 0,
+              scale: 1,
+              duration: 0.8,
+              delay: index * 0.1,
+              ease: "back.out(1.7)",
+              scrollTrigger: {
+                trigger: row,
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play none none reverse",
+              },
+            },
+          );
+        });
+      }
+
+      // Scroll-out animations
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        onLeave: () => {
+          gsap.to([headerRef.current, gridSectionRef.current], {
+            opacity: 0,
+            y: -50,
+            scale: 0.95,
+            duration: 0.6,
+            ease: "power2.in",
+          });
+        },
+        onEnterBack: () => {
+          gsap.to([headerRef.current, gridSectionRef.current], {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: "back.out(1.7)",
+          });
+        },
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   // Drag-to-tilt interaction
   useEffect(() => {
@@ -128,9 +238,9 @@ const RetroFlipGrid: React.FC = () => {
         }
       `}</style>
 
-      <div className="relative">
+      <div ref={containerRef} className="relative">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div ref={headerRef} className="text-center mb-8">
           <h3
             className="text-3xl md:text-4xl font-bold tracking-tight text-festival-black mb-4"
             style={{ textShadow: "2px 2px 0 #000" }}
@@ -143,7 +253,10 @@ const RetroFlipGrid: React.FC = () => {
         </div>
 
         {/* Perspective Grid */}
-        <div className="relative h-[600px] overflow-hidden flex items-center justify-center noise">
+        <div
+          ref={gridSectionRef}
+          className="relative h-[600px] overflow-hidden flex items-center justify-center noise"
+        >
           <div
             ref={wrapperRef}
             className="perspective w-full h-full flex items-center justify-center"
@@ -159,7 +272,7 @@ const RetroFlipGrid: React.FC = () => {
               {gridRows.map((rowImages, rowIndex) => (
                 <div
                   key={rowIndex}
-                  className={`grid grid-cols-7 gap-5 ${
+                  className={`grid grid-cols-7 gap-5 grid-row ${
                     rowIndex % 2 === 0 ? "row-odd" : "row-even"
                   }`}
                 >
