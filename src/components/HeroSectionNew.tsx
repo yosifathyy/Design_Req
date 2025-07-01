@@ -26,7 +26,7 @@ const HeroSectionNew: React.FC = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
-  const orbsRef = useRef<HTMLDivElement>(null);
+
   const mouseFollowerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
