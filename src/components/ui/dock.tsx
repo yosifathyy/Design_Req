@@ -286,9 +286,7 @@ export default function NeubrutalistDock() {
           className={`aspect-square ${submitButton.color} hover:rotate-1 transition-transform duration-100`} // Changed aspect ratio to square
         >
           <DockLabel>{submitButton.title}</DockLabel>
-          <DockIcon>
-            {submitButton.icon} {/* Use the icon directly */}
-          </DockIcon>
+          <DockIcon>{submitButton.icon}</DockIcon>
         </DockItem>
       </Dock>
     </div>
