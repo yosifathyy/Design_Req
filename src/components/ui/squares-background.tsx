@@ -73,20 +73,6 @@ export function Squares({
           ctx.strokeRect(squareX, squareY, squareSize, squareSize);
         }
       }
-
-      const gradient = ctx.createRadialGradient(
-        canvas.width / 2,
-        canvas.height / 2,
-        0,
-        canvas.width / 2,
-        canvas.height / 2,
-        Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2)) / 2,
-      );
-      gradient.addColorStop(0, "rgba(6, 6, 6, 0)");
-      gradient.addColorStop(1, "#060606");
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
     const updateAnimation = () => {
