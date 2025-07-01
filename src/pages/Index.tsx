@@ -645,6 +645,11 @@ const Index = () => {
               </StaggerChild>
             </BentoGrid>
           </StaggerContainer>
+
+          {/* Retro Flip Grid */}
+          <div className="mt-20">
+            <RetroFlipGrid />
+          </div>
         </div>
       </section>
 
