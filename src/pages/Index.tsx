@@ -241,7 +241,7 @@ const Index = () => {
       {/* Our Services Section */}
       <section
         id="services"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px]"
       >
         <div className="max-w-7xl mx-auto">
           <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
@@ -787,7 +787,7 @@ const Index = () => {
       </section>
 
       {/* Original Portfolio Cards Section */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative">
+      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative -ml-[2px]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <motion.div
@@ -995,7 +995,7 @@ const Index = () => {
       {/* About Us Section */}
       <section
         id="about"
-        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-white/20 backdrop-blur-sm relative"
+        className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-white/20 backdrop-blur-sm relative mt-[53px]"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
