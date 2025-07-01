@@ -1,205 +1,339 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useNavigate, useLocation } from "react-router-dom";
+import NeubrutalistDock from "@/components/ui/dock";
 import {
-  Menu,
-  X,
-  Sparkles,
-  Palette,
+  motion,
+  MotionValue,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type SpringOptions,
+  AnimatePresence,
+} from "framer-motion";
+import {
+  Children,
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  HomeIcon,
+  Briefcase,
+  FolderOpen,
   Users,
   Phone,
-  Eye,
-  MessageCircle,
+  Send,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { WiggleIcon } from "@/components/AnimatedElements";
-import {
-  GSAPHover,
-  GSAPMagneticButton,
-} from "@/components/GSAPAnimatedElements";
+import { cn } from "@/lib/utils";
+
+const DOCK_HEIGHT = 128;
+const DEFAULT_MAGNIFICATION = 80;
+const DEFAULT_DISTANCE = 150;
+const DEFAULT_PANEL_HEIGHT = 64;
+
+type DockProps = {
+  children: React.ReactNode;
+  className?: string;
+  distance?: number;
+  panelHeight?: number;
+  magnification?: number;
+  spring?: SpringOptions;
+};
+type DockItemProps = {
+  className?: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+};
+type DockLabelProps = {
+  className?: string;
+  children: React.ReactNode;
+};
+type DockIconProps = {
+  className?: string;
+  children: React.ReactNode;
+};
+
+type DocContextType = {
+  mouseX: MotionValue;
+  spring: SpringOptions;
+  magnification: number;
+  distance: number;
+};
+type DockProviderProps = {
+  children: React.ReactNode;
+  value: DocContextType;
+};
+
+const DockContext = createContext<DocContextType | undefined>(undefined);
+
+function DockProvider({ children, value }: DockProviderProps) {
+  return <DockContext.Provider value={value}>{children}</DockContext.Provider>;
+}
+
+function useDock() {
+  const context = useContext(DockContext);
+  if (!context) {
+    throw new Error("useDock must be used within an DockProvider");
+  }
+  return context;
+}
+
+function Dock({
+  children,
+  className,
+  spring = { mass: 0.1, stiffness: 150, damping: 12 },
+  magnification = DEFAULT_MAGNIFICATION,
+  distance = DEFAULT_DISTANCE,
+  panelHeight = DEFAULT_PANEL_HEIGHT,
+}: DockProps) {
+  const mouseX = useMotionValue(Infinity);
+  const isHovered = useMotionValue(0);
+
+  const maxHeight = useMemo(() => {
+    return Math.max(DOCK_HEIGHT, magnification + magnification / 2 + 4);
+  }, [magnification]);
+
+  const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
+  const height = useSpring(heightRow, spring);
+
+  return (
+    <motion.div
+      style={{
+        height: height,
+        scrollbarWidth: "none",
+      }}
+      className="mx-2 flex max-w-full items-end overflow-x-auto"
+    >
+      <motion.div
+        onMouseMove={({ pageX }) => {
+          isHovered.set(1);
+          mouseX.set(pageX);
+        }}
+        onMouseLeave={() => {
+          isHovered.set(0);
+          mouseX.set(Infinity);
+        }}
+        className={cn(
+          "mx-auto flex w-fit gap-4 border-4 border-black bg-gradient-to-r from-lime-200 via-green-200 to-emerald-200 px-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
+          className,
+        )}
+        style={{ height: panelHeight }}
+        role="toolbar"
+        aria-label="Application dock"
+      >
+        <DockProvider value={{ mouseX, spring, distance, magnification }}>
+          {children}
+        </DockProvider>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function DockItem({ children, className, onClick }: DockItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const { distance, magnification, mouseX, spring } = useDock();
+
+  const isHovered = useMotionValue(0);
+
+  const mouseDistance = useTransform(mouseX, (val) => {
+    const domRect = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - domRect.x - domRect.width / 2;
+  });
+
+  const widthTransform = useTransform(
+    mouseDistance,
+    [-distance, 0, distance],
+    [40, magnification, 40],
+  );
+
+  const width = useSpring(widthTransform, spring);
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ width }}
+      onHoverStart={() => isHovered.set(1)}
+      onHoverEnd={() => isHovered.set(0)}
+      onFocus={() => isHovered.set(1)}
+      onBlur={() => isHovered.set(0)}
+      onClick={onClick}
+      className={cn(
+        "relative inline-flex items-center justify-center border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-100 cursor-pointer",
+        className,
+      )}
+      tabIndex={0}
+      role="button"
+      aria-haspopup="true"
+    >
+      {Children.map(children, (child) =>
+        cloneElement(child as React.ReactElement, {
+          style: { width },
+          isHovered,
+        }),
+      )}
+    </motion.div>
+  );
+}
+
+function DockLabel({ children, className, ...rest }: DockLabelProps) {
+  const restProps = rest as Record<string, unknown>;
+  const isHovered = restProps["isHovered"] as MotionValue<number>;
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = isHovered.on("change", (latest) => {
+      setIsVisible(latest === 1);
+    });
+
+    return () => unsubscribe();
+  }, [isHovered]);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ opacity: 1, y: -10 }}
+          exit={{ opacity: 0, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className={cn(
+            "absolute -top-8 left-1/2 w-fit whitespace-pre border-3 border-black bg-yellow-300 px-3 py-1 text-sm font-bold text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]",
+            className,
+          )}
+          role="tooltip"
+          style={{ x: "-50%" }}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function DockIcon({ children, className, ...rest }: DockIconProps) {
+  const restProps = rest as Record<string, unknown>;
+  const style = restProps["style"] as React.CSSProperties | undefined;
+  const width = style?.width as MotionValue<number>;
+
+  const widthTransform = useTransform(width, (val) => val / 2);
+
+  return (
+    <motion.div
+      style={{ width: widthTransform }}
+      className={cn("flex items-center justify-center", className)}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 const Navigation = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
 
-  const navItems = [
-    { href: "#services", label: "Our Services", icon: Palette },
-    { href: "#portfolio", label: "Portfolio", icon: Eye },
-    { href: "#about", label: "About Us", icon: Users },
-    { href: "#contact", label: "Contact", icon: MessageCircle },
-  ];
-
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId.substring(1));
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    // If we're not on the home page, navigate there first
+    if (location.pathname !== "/") {
+      navigate("/");
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 100);
+    } else {
+      // We're already on home page, just scroll
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }
-    setIsOpen(false);
   };
 
   const scrollToHome = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    if (location.pathname !== "/") {
+      navigate("/");
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const data = [
+    {
+      title: "Home",
+      icon: <HomeIcon className="h-full w-full text-black" />,
+      action: () => scrollToHome(),
+      color: "bg-yellow-400",
+    },
+    {
+      title: "Our Services",
+      icon: <Briefcase className="h-full w-full text-black" />,
+      action: () => scrollToSection("services"),
+      color: "bg-pink-400",
+    },
+    {
+      title: "Portfolio",
+      icon: <FolderOpen className="h-full w-full text-black" />,
+      action: () => scrollToSection("portfolio"),
+      color: "bg-cyan-400",
+    },
+    {
+      title: "About Us",
+      icon: <Users className="h-full w-full text-black" />,
+      action: () => scrollToSection("about"),
+      color: "bg-green-400",
+    },
+    {
+      title: "Contact us",
+      icon: <Phone className="h-full w-full text-black" />,
+      action: () => scrollToSection("contact"),
+      color: "bg-purple-400",
+    },
+  ];
+
+  const submitButton = {
+    title: "Submit Request",
+    icon: <Send className="h-full w-full text-black" />,
+    action: () => navigate("/start-project"),
+    color: "bg-orange-200",
   };
 
   return (
-    <>
-      {/* Desktop Navigation */}
-      <nav className="hidden lg:flex items-center justify-between p-6 bg-retro-cream/80 backdrop-blur-sm border-b-2 border-retro-purple/20 sticky top-0 z-50">
-        <GSAPMagneticButton
-          onClick={scrollToHome}
-          className="flex items-center space-x-3 group"
+    <div className="fixed bottom-4 left-1/2 max-w-full -translate-x-1/2 z-50">
+      <Dock className="items-end pb-3">
+        {data.map((item, idx) => (
+          <DockItem
+            key={idx}
+            className={`aspect-square ${item.color} hover:rotate-3 transition-transform duration-100`}
+            onClick={item.action}
+          >
+            <DockLabel>{item.title}</DockLabel>
+            <DockIcon>{item.icon}</DockIcon>
+          </DockItem>
+        ))}
+        <DockItem
+          className={`aspect-square ${submitButton.color} hover:rotate-1 transition-transform duration-100`}
+          onClick={submitButton.action}
         >
-          <motion.div
-            className="w-12 h-12 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl flex items-center justify-center"
-            whileHover={{
-              scale: 1.1,
-              rotate: 360,
-            }}
-            transition={{ duration: 0.6 }}
-          >
-            <WiggleIcon>
-              <Sparkles className="w-6 h-6 text-white" />
-            </WiggleIcon>
-          </motion.div>
-          <motion.div
-            whileHover={{ y: -2 }}
-            transition={{ type: "spring", damping: 15 }}
-          >
-            <h1 className="font-display text-2xl text-retro-purple">
-              design requests
-            </h1>
-            <p className="text-xs text-retro-purple/70 font-medium">
-              Expert Design Studio ✨
-            </p>
-          </motion.div>
-        </GSAPMagneticButton>
-
-        <div className="flex items-center space-x-8">
-          {navItems.map(({ href, label, icon: Icon }) => (
-            <GSAPHover key={href} animation="lift">
-              <button
-                onClick={() => scrollToSection(href)}
-                className="flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-all duration-200 text-retro-purple/80 hover:text-retro-purple hover:bg-retro-purple/10 cursor-pointer"
-                data-cursor={label}
-              >
-                <WiggleIcon>
-                  <Icon className="w-4 h-4" />
-                </WiggleIcon>
-                <span>{label}</span>
-              </button>
-            </GSAPHover>
-          ))}
-
-          <motion.div
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Button
-              asChild
-              className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 animate-pulse-glow"
-            >
-              <Link to="/start-project">🚀 Start Your Project</Link>
-            </Button>
-          </motion.div>
-        </div>
-      </nav>
-
-      {/* Mobile Navigation */}
-      <nav className="lg:hidden bg-retro-cream/95 backdrop-blur-sm border-b-2 border-retro-purple/20 sticky top-0 z-50">
-        <div className="flex items-center justify-between p-4">
-          <button
-            onClick={scrollToHome}
-            className="flex items-center space-x-2"
-          >
-            <motion.div
-              className="w-10 h-10 bg-gradient-to-br from-retro-purple to-retro-teal rounded-lg flex items-center justify-center"
-              whileHover={{
-                scale: 1.1,
-                rotate: 360,
-              }}
-              transition={{ duration: 0.6 }}
-            >
-              <Sparkles className="w-5 h-5 text-white" />
-            </motion.div>
-            <div>
-              <h1 className="font-display text-xl text-retro-purple">
-                design requests
-              </h1>
-              <p className="text-xs text-retro-purple/70">Expert Studio</p>
-            </div>
-          </button>
-
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-retro-purple"
-            >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </Button>
-          </motion.div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <motion.div
-            className="p-4 border-t border-retro-purple/20 bg-retro-cream"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="space-y-3">
-              {navItems.map(({ href, label, icon: Icon }, index) => (
-                <motion.button
-                  key={href}
-                  onClick={() => scrollToSection(href)}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 w-full text-retro-purple/80 hover:bg-retro-purple/10 hover:text-retro-purple"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <WiggleIcon>
-                    <Icon className="w-5 h-5" />
-                  </WiggleIcon>
-                  <span>{label}</span>
-                </motion.button>
-              ))}
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  asChild
-                  className="w-full bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold py-3 rounded-xl shadow-lg mt-4"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Link to="/start-project">🚀 Start Your Project</Link>
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </nav>
-    </>
+          <DockLabel>{submitButton.title}</DockLabel>
+          <DockIcon>{submitButton.icon}</DockIcon>
+        </DockItem>
+      </Dock>
+    </div>
   );
 };
 
