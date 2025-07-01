@@ -247,7 +247,7 @@ const HeroSectionNew: React.FC = () => {
       {/* Main content */}
       <div
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
-        style={{ zIndex: 15, position: "relative", pointerEvents: "auto" }}
+        style={{ zIndex: 9998, position: "relative", pointerEvents: "auto" }}
       >
         {/* Badge */}
         <motion.div
