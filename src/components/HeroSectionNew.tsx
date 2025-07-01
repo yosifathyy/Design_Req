@@ -114,19 +114,6 @@ const HeroSectionNew: React.FC = () => {
       );
 
       // Continuous animations
-      gsap.to(".floating-orb", {
-        y: "random(-20, 20)",
-        x: "random(-10, 10)",
-        rotation: "random(-180, 180)",
-        duration: "random(3, 6)",
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: {
-          amount: 2,
-          from: "random",
-        },
-      });
 
       // Background shapes floating
       gsap.to(".bg-shape", {
