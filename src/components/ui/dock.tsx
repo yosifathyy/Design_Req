@@ -1,5 +1,5 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import NeubrutalistDock from "@/components/ui/dock";
+"use client";
+
 import {
   motion,
   MotionValue,
@@ -45,7 +45,6 @@ type DockProps = {
 type DockItemProps = {
   className?: string;
   children: React.ReactNode;
-  onClick?: () => void;
 };
 type DockLabelProps = {
   className?: string;
@@ -132,7 +131,7 @@ function Dock({
   );
 }
 
-function DockItem({ children, className, onClick }: DockItemProps) {
+function DockItem({ children, className }: DockItemProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const { distance, magnification, mouseX, spring } = useDock();
@@ -160,9 +159,8 @@ function DockItem({ children, className, onClick }: DockItemProps) {
       onHoverEnd={() => isHovered.set(0)}
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
-      onClick={onClick}
       className={cn(
-        "relative inline-flex items-center justify-center border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-100 cursor-pointer",
+        "relative inline-flex items-center justify-center border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-100",
         className,
       )}
       tabIndex={0}
@@ -171,7 +169,7 @@ function DockItem({ children, className, onClick }: DockItemProps) {
     >
       {Children.map(children, (child) =>
         cloneElement(child as React.ReactElement, {
-          style: { width },
+          style: { width }, // Pass width as a style prop
           isHovered,
         }),
       )}
@@ -216,8 +214,8 @@ function DockLabel({ children, className, ...rest }: DockLabelProps) {
 
 function DockIcon({ children, className, ...rest }: DockIconProps) {
   const restProps = rest as Record<string, unknown>;
-  const style = restProps["style"] as React.CSSProperties | undefined;
-  const width = style?.width as MotionValue<number>;
+  const style = restProps["style"] as React.CSSProperties | undefined; // Access style prop
+  const width = style?.width as MotionValue<number>; // Extract width from style
 
   const widthTransform = useTransform(width, (val) => val / 2);
 
@@ -231,103 +229,61 @@ function DockIcon({ children, className, ...rest }: DockIconProps) {
   );
 }
 
-const Navigation = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const data = [
+  {
+    title: "Home",
+    icon: <HomeIcon className="h-full w-full text-black" />,
+    href: "#",
+    color: "bg-yellow-400",
+  },
+  {
+    title: "Our Services",
+    icon: <Briefcase className="h-full w-full text-black" />,
+    href: "#",
+    color: "bg-pink-400",
+  },
+  {
+    title: "Portfolio",
+    icon: <FolderOpen className="h-full w-full text-black" />,
+    href: "#",
+    color: "bg-cyan-400",
+  },
+  {
+    title: "About Us",
+    icon: <Users className="h-full w-full text-black" />,
+    href: "#",
+    color: "bg-green-400",
+  },
+  {
+    title: "Contact us",
+    icon: <Phone className="h-full w-full text-black" />,
+    href: "#",
+    color: "bg-purple-400",
+  },
+];
 
-  const scrollToSection = (sectionId: string) => {
-    // If we're not on the home page, navigate there first
-    if (location.pathname !== "/") {
-      navigate("/");
-      // Wait for navigation to complete, then scroll
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
-      }, 100);
-    } else {
-      // We're already on home page, just scroll
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }
-  };
+const submitButton = {
+  title: "Submit Request",
+  icon: <Send className="h-full w-full text-black" />,
+  href: "#",
+  color: "bg-orange-200", // Lighter background
+};
 
-  const scrollToHome = () => {
-    if (location.pathname !== "/") {
-      navigate("/");
-    } else {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const data = [
-    {
-      title: "Home",
-      icon: <HomeIcon className="h-full w-full text-black" />,
-      action: () => scrollToHome(),
-      color: "bg-yellow-400",
-    },
-    {
-      title: "Our Services",
-      icon: <Briefcase className="h-full w-full text-black" />,
-      action: () => scrollToSection("services"),
-      color: "bg-pink-400",
-    },
-    {
-      title: "Portfolio",
-      icon: <FolderOpen className="h-full w-full text-black" />,
-      action: () => scrollToSection("portfolio"),
-      color: "bg-cyan-400",
-    },
-    {
-      title: "About Us",
-      icon: <Users className="h-full w-full text-black" />,
-      action: () => scrollToSection("about"),
-      color: "bg-green-400",
-    },
-    {
-      title: "Contact us",
-      icon: <Phone className="h-full w-full text-black" />,
-      action: () => scrollToSection("contact"),
-      color: "bg-purple-400",
-    },
-  ];
-
-  const submitButton = {
-    title: "Submit Request",
-    icon: <Send className="h-full w-full text-black" />,
-    action: () => navigate("/start-project"),
-    color: "bg-orange-200",
-  };
-
+export default function NeubrutalistDock() {
   return (
-    <div className="fixed bottom-4 left-1/2 max-w-full -translate-x-1/2 z-50">
+    <div className="absolute bottom-2 left-1/2 max-w-full -translate-x-1/2">
       <Dock className="items-end pb-3">
         {data.map((item, idx) => (
           <DockItem
             key={idx}
             className={`aspect-square ${item.color} hover:rotate-3 transition-transform duration-100`}
-            onClick={item.action}
           >
             <DockLabel>{item.title}</DockLabel>
             <DockIcon>{item.icon}</DockIcon>
           </DockItem>
         ))}
         <DockItem
-          className={`aspect-square ${submitButton.color} hover:rotate-1 transition-transform duration-100`}
-          onClick={submitButton.action}
+          className={`aspect-square ${submitButton.color} hover:rotate-1 transition-transform duration-100`} // Changed aspect ratio to square
         >
           <DockLabel>{submitButton.title}</DockLabel>
           <DockIcon>{submitButton.icon}</DockIcon>
@@ -335,6 +291,6 @@ const Navigation = () => {
       </Dock>
     </div>
   );
-};
+}
 
-export default Navigation;
+export { Dock, DockItem, DockLabel, DockIcon, useDock };

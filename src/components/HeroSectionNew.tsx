@@ -17,6 +17,7 @@ import {
   Palette,
   Wand2,
 } from "lucide-react";
+import { Squares } from "@/components/ui/squares-background";
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
@@ -26,7 +27,7 @@ const HeroSectionNew: React.FC = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
-  const orbsRef = useRef<HTMLDivElement>(null);
+
   const mouseFollowerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,24 +42,6 @@ const HeroSectionNew: React.FC = () => {
 
       // Create entrance timeline
       const tl = gsap.timeline({ delay: 0.5 });
-
-      // Animate floating orbs
-      gsap.set(".floating-orb", {
-        scale: 0,
-        rotation: "random(-180, 180)",
-      });
-
-      tl.to(
-        ".floating-orb",
-        {
-          scale: 1,
-          rotation: 0,
-          duration: 1.5,
-          stagger: 0.1,
-          ease: "elastic.out(1, 0.5)",
-        },
-        0,
-      );
 
       // Animate background shapes
       gsap.set(".bg-shape", {
@@ -132,19 +115,6 @@ const HeroSectionNew: React.FC = () => {
       );
 
       // Continuous animations
-      gsap.to(".floating-orb", {
-        y: "random(-20, 20)",
-        x: "random(-10, 10)",
-        rotation: "random(-180, 180)",
-        duration: "random(3, 6)",
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: {
-          amount: 2,
-          from: "random",
-        },
-      });
 
       // Background shapes floating
       gsap.to(".bg-shape", {
@@ -259,37 +229,16 @@ const HeroSectionNew: React.FC = () => {
         ))}
       </div>
 
-      {/* Floating orbs */}
-      <div
-        ref={orbsRef}
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 2 }}
-      >
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className={`floating-orb absolute w-24 h-24 rounded-full border-4 border-black ${
-              i % 4 === 0
-                ? "bg-gradient-to-br from-festival-orange to-festival-pink"
-                : i % 4 === 1
-                  ? "bg-gradient-to-br from-festival-pink to-festival-amber"
-                  : i % 4 === 2
-                    ? "bg-gradient-to-br from-festival-yellow to-festival-coral"
-                    : "bg-gradient-to-br from-festival-coral to-festival-magenta"
-            } shadow-2xl`}
-            style={{
-              left: `${20 + Math.random() * 60}%`,
-              top: `${15 + Math.random() * 70}%`,
-            }}
-          >
-            <div className="absolute inset-3 bg-white/30 rounded-full backdrop-blur-sm flex items-center justify-center">
-              {i % 4 === 0 && <Sparkles className="w-6 h-6 text-white" />}
-              {i % 4 === 1 && <Zap className="w-6 h-6 text-white" />}
-              {i % 4 === 2 && <Star className="w-6 h-6 text-white" />}
-              {i % 4 === 3 && <Heart className="w-6 h-6 text-white" />}
-            </div>
-          </div>
-        ))}
+      {/* Animated Squares Background */}
+      <div className="absolute inset-0" style={{ zIndex: 3 }}>
+        <Squares
+          direction="diagonal"
+          speed={0.8}
+          squareSize={40}
+          borderColor="rgba(0, 0, 0, 0.3)"
+          hoverFillColor="rgba(255, 107, 53, 0.8)"
+          className="opacity-80 pointer-events-auto"
+        />
       </div>
 
       {/* Main content */}
