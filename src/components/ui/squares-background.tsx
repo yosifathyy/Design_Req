@@ -160,6 +160,11 @@ export function Squares({
     <canvas
       ref={canvasRef}
       className={`w-full h-full border-none block ${className}`}
+      style={{
+        pointerEvents: "auto",
+        position: "relative",
+        zIndex: 1,
+      }}
     />
   );
 }
