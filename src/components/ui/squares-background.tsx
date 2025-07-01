@@ -34,8 +34,8 @@ export function Squares({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas background
-    canvas.style.background = "#060606";
+    // Set canvas background to transparent
+    canvas.style.background = "transparent";
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
