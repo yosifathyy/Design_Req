@@ -113,7 +113,7 @@ const TestimonialCard: React.FC<{
       pin: true,
       pinSpacing: false,
       onEnter: () => {
-        gsap.set(card, { zIndex: totalCards - index });
+        gsap.set(card, { zIndex: index + 1 });
       },
     });
 
