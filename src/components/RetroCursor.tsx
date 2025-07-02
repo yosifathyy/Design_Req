@@ -241,9 +241,9 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [enabled, isHovering, cursorMode]);
+  }, [enabled, isMobile, isHovering, cursorMode]);
 
-  if (!enabled) return null;
+  if (!enabled || isMobile) return null;
 
   return (
     <>
