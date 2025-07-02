@@ -213,12 +213,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           ease: "elastic.out(1, 0.5)",
         });
       }
-
-      gsap.to(cursorTrailRef.current, {
-        scale: isHovering ? 2 : 1,
-        duration: 0.3,
-        ease: "elastic.out(1, 0.3)",
-      });
     };
 
     // Add continuous animations
