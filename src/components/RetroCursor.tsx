@@ -135,39 +135,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           duration: 0.4,
           ease: "power2.out",
         });
-
-        // Pixel dots form a large starburst pattern
-        gsap.to(pixelDotsRef.current, {
-          scale: 2,
-          opacity: 1,
-          duration: 0.5,
-          ease: "back.out(3)",
-          stagger: {
-            amount: 0.3,
-            from: "center",
-          },
-        });
-
-        // Continuous rotation for pixel dots
-        gsap.to(pixelDotsRef.current, {
-          rotation: 360,
-          duration: 2,
-          ease: "none",
-          repeat: -1,
-        });
-
-        // Pulsing animation for pixel dots
-        gsap.to(pixelDotsRef.current, {
-          scale: 2.5,
-          duration: 0.8,
-          ease: "power2.inOut",
-          repeat: -1,
-          yoyo: true,
-          stagger: {
-            amount: 0.4,
-            from: "random",
-          },
-        });
       }
     };
 
