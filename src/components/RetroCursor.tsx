@@ -140,19 +140,28 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         setIsHovering(true);
         setCursorMode("hover");
 
-        // Transform main cursor into large pulsing star
+        // Transform main cursor into pulsing star shape
         gsap.to(cursorMainRef.current, {
-          scale: 3,
+          scale: 1.5,
           rotation: 45,
           borderRadius: "30%",
           duration: 0.4,
           ease: "back.out(2)",
         });
 
-        // Trail becomes a large rotating ring
+        // Add pulsing animation to create star effect
+        gsap.to(cursorMainRef.current, {
+          scale: 1.8,
+          duration: 0.6,
+          ease: "power2.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+
+        // Trail becomes a smaller rotating ring
         gsap.to(cursorTrailRef.current, {
-          scale: 4,
-          borderWidth: "6px",
+          scale: 2,
+          borderWidth: "4px",
           borderStyle: "solid",
           rotation: 180,
           duration: 0.5,
