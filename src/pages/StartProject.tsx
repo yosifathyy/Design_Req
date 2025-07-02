@@ -205,6 +205,9 @@ const StartProject = () => {
                           playClickSound();
                           setProjectType(type.id);
                         }}
+                        onMouseEnter={() => {
+                          playHoverSound();
+                        }}
                         className="cursor-pointer"
                       >
                         <TiltCard
