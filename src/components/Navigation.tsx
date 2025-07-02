@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useClickSound } from "@/hooks/use-click-sound";
 
 const DOCK_HEIGHT = 128;
 const DEFAULT_MAGNIFICATION = 80;
@@ -143,6 +144,7 @@ function Dock({
 function DockItem({ children, className, onClick }: DockItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { playClickSound, playHoverSound } = useClickSound();
 
   const { distance, magnification, mouseX, spring } = useDock();
 
@@ -167,11 +169,17 @@ function DockItem({ children, className, onClick }: DockItemProps) {
     <motion.div
       ref={ref}
       style={{ width }}
-      onHoverStart={() => isHovered.set(1)}
+      onHoverStart={() => {
+        isHovered.set(1);
+        playHoverSound();
+      }}
       onHoverEnd={() => isHovered.set(0)}
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
-      onClick={onClick}
+      onClick={() => {
+        playClickSound();
+        onClick?.();
+      }}
       className={cn(
         "relative inline-flex items-center justify-center border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-100 cursor-pointer",
         className,

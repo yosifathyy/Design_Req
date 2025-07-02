@@ -9,6 +9,7 @@ import {
 } from "@/lib/gsap-animations";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useClickSound } from "@/hooks/use-click-sound";
 
 interface GSAPFadeInProps {
   children: ReactNode;
@@ -226,6 +227,7 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const magnetRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { playClickSound, playHoverSound } = useClickSound();
 
   useEffect(() => {
     if (!buttonRef.current || !magnetRef.current) return;
@@ -258,6 +260,7 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
       if (magnetRef.current) {
         magnetRef.current.style.transition = "transform 0.3s ease-out";
       }
+      playHoverSound();
     };
 
     button.addEventListener("mousemove", handleMouseMove);
@@ -275,7 +278,10 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
     <button
       ref={buttonRef}
       className={cn("relative overflow-hidden", className)}
-      onClick={onClick}
+      onClick={() => {
+        playClickSound();
+        onClick?.();
+      }}
     >
       <div ref={magnetRef} className="w-full h-full">
         {children}

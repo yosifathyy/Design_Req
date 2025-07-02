@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useClickSound } from "@/hooks/use-click-sound";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +45,7 @@ import { motion } from "framer-motion";
 const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
+  const { playClickSound, playHoverSound } = useClickSound();
   const [formData, setFormData] = useState({
     projectName: "",
     description: "",
@@ -199,7 +201,13 @@ const StartProject = () => {
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        onClick={() => setProjectType(type.id)}
+                        onClick={() => {
+                          playClickSound();
+                          setProjectType(type.id);
+                        }}
+                        onMouseEnter={() => {
+                          playHoverSound();
+                        }}
                         className="cursor-pointer"
                       >
                         <TiltCard

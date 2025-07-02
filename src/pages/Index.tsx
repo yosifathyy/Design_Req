@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
 import { RevealImageList } from "@/components/ui/reveal-images";
 import Navigation from "@/components/Navigation";
+import { useClickSound } from "@/hooks/use-click-sound";
 import FAQ from "@/components/FAQ";
 import Testimonials from "@/components/Testimonials";
 import {
@@ -91,6 +92,7 @@ const Index = () => {
   // State for image shuffle
   const [imageOrder, setImageOrder] = useState([0, 1, 2, 3]);
   const [isShuffling, setIsShuffling] = useState(false);
+  const { playClickSound, playHoverSound } = useClickSound();
 
   const images = [
     "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd793e76751328121_event-image-1.avif",
@@ -737,7 +739,10 @@ const Index = () => {
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <Heart className="w-3 h-3 text-festival-pink mr-2 flex-shrink-0" />
+                          <Heart
+                            className="w-3 h-3 mr-2 flex-shrink-0"
+                            style={{ color: "#121212" }}
+                          />
                           <span className="text-xs sm:text-sm">{feature}</span>
                         </motion.div>
                       ))}
@@ -1351,11 +1356,15 @@ const Index = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  playClickSound();
                   shuffleImages();
                 }}
                 onMouseDown={(e) => {
                   e.preventDefault();
                   console.log("Button pressed!");
+                }}
+                onMouseEnter={() => {
+                  playHoverSound();
                 }}
               >
                 <motion.div
@@ -1470,13 +1479,17 @@ const Index = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        playClickSound();
                         document
                           .getElementById(link.href.substring(1))
                           ?.scrollIntoView({
                             behavior: "smooth",
-                          })
-                      }
+                          });
+                      }}
+                      onMouseEnter={() => {
+                        playHoverSound();
+                      }}
                       className="hover:text-white cursor-pointer"
                     >
                       {link.label}

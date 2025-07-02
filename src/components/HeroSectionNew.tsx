@@ -6,6 +6,7 @@ import { TextPlugin } from "gsap/TextPlugin";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useClickSound } from "@/hooks/use-click-sound";
 import {
   Sparkles,
   Rocket,
@@ -27,6 +28,7 @@ const HeroSectionNew: React.FC = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
+  const { playClickSound, playHoverSound } = useClickSound();
 
   useEffect(() => {
     if (!heroRef.current) return;
@@ -252,10 +254,10 @@ const HeroSectionNew: React.FC = () => {
         <p
           ref={subtitleRef}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold mb-8"
-          style={{ marginTop: "200px", position: "relative", zIndex: 1 }}
+          style={{ marginTop: "0", position: "relative", zIndex: 1 }}
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
-          meets <span className="text-festival-pink">festival vibes</span> to
+          meets <span style={{ color: "#121212" }}>festival vibes</span> to
           create <span className="text-festival-amber">legendary designs!</span>{" "}
           🎨🔥
         </p>
@@ -276,7 +278,11 @@ const HeroSectionNew: React.FC = () => {
             <Link
               to="/start-project"
               className="group relative overflow-hidden bg-gradient-to-r from-festival-orange to-festival-pink text-white font-black px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 text-xl uppercase tracking-wide inline-flex items-center gap-4"
+              onClick={() => playClickSound()}
+              onMouseEnter={() => playHoverSound()}
             >
+              {/* Animated background - moved behind content */}
+              <div className="absolute inset-0 bg-gradient-to-r from-festival-pink to-festival-amber opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
               <motion.div
                 animate={{
                   x: [0, 5, 0],
@@ -287,10 +293,11 @@ const HeroSectionNew: React.FC = () => {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
+                className="relative z-10"
               >
                 <Rocket className="w-6 h-6" />
               </motion.div>
-              Start Creating
+              <span className="relative z-10">Start Creating</span>
               <motion.div
                 animate={{ x: [0, 10, 0] }}
                 transition={{
@@ -298,11 +305,10 @@ const HeroSectionNew: React.FC = () => {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
+                className="relative z-10"
               >
                 <ArrowRight className="w-6 h-6" />
               </motion.div>
-              {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-festival-pink to-festival-amber opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </Link>
           </motion.div>
 
