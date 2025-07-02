@@ -7,7 +7,6 @@ interface RetroCursorProps {
 
 export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
   const cursorMainRef = useRef<HTMLDivElement>(null);
-  const cursorTrailRef = useRef<HTMLDivElement>(null);
   const scanLineRef = useRef<HTMLDivElement>(null);
 
   const [isHovering, setIsHovering] = useState(false);
