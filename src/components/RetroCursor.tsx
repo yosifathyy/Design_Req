@@ -368,16 +368,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       yoyo: true,
     });
 
-    // Glitch effect random flicker
-    gsap.to(glitchRef.current, {
-      x: "+=2",
-      duration: 0.1,
-      ease: "none",
-      repeat: -1,
-      repeatDelay: gsap.utils.random(0.5, 2),
-      yoyo: true,
-    });
-
     // Add event listeners
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseover", handleMouseOver);
