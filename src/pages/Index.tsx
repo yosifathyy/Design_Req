@@ -1473,13 +1473,14 @@ const Index = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        playClickSound();
                         document
                           .getElementById(link.href.substring(1))
                           ?.scrollIntoView({
                             behavior: "smooth",
-                          })
-                      }
+                          });
+                      }}
                       className="hover:text-white cursor-pointer"
                     >
                       {link.label}
