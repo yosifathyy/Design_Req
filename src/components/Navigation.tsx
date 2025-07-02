@@ -325,8 +325,18 @@ const Navigation = () => {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 max-w-full -translate-x-1/2 z-50">
-      <Dock className="items-end pb-3">
+    <div
+      className={cn(
+        "fixed left-1/2 max-w-full -translate-x-1/2 z-50",
+        isMobile ? "bottom-2" : "bottom-4",
+      )}
+    >
+      <Dock
+        className={cn("items-end", isMobile ? "pb-2" : "pb-3")}
+        magnification={isMobile ? MOBILE_MAGNIFICATION : DEFAULT_MAGNIFICATION}
+        distance={isMobile ? MOBILE_DISTANCE : DEFAULT_DISTANCE}
+        panelHeight={isMobile ? MOBILE_PANEL_HEIGHT : DEFAULT_PANEL_HEIGHT}
+      >
         {data.map((item, idx) => (
           <DockItem
             key={idx}
