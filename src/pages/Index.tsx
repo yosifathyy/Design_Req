@@ -92,6 +92,7 @@ const Index = () => {
   // State for image shuffle
   const [imageOrder, setImageOrder] = useState([0, 1, 2, 3]);
   const [isShuffling, setIsShuffling] = useState(false);
+  const { playClickSound } = useClickSound();
 
   const images = [
     "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd793e76751328121_event-image-1.avif",
