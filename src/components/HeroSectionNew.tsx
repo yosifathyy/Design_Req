@@ -28,6 +28,7 @@ const HeroSectionNew: React.FC = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
+  const { playClickSound, playHoverSound } = useClickSound();
 
   useEffect(() => {
     if (!heroRef.current) return;
