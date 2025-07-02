@@ -119,8 +119,8 @@ export const RetroGrid: React.FC = () => {
       className="fixed inset-0 pointer-events-none z-0 opacity-20"
       style={{
         backgroundImage: `
-          linear-gradient(rgba(18, 18, 18, 0.2) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(18, 18, 18, 0.2) 1px, transparent 1px),
+          linear-gradient(rgba(255, 0, 149, 0.2) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 0, 149, 0.2) 1px, transparent 1px),
           linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
           linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)
         `,
