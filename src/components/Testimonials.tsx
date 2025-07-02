@@ -118,8 +118,15 @@ const TestimonialCard: React.FC<{
       trigger: card,
       start: "top top",
       end: () => {
-        const followingContent = document.querySelector(".following-content");
-        return followingContent ? `${followingContent.offsetTop}px` : "+=150vh";
+        // Each card should be pinned for a shorter duration
+        // Last card stays until following content, others unpin after their animation
+        if (index === totalCards - 1) {
+          const followingContent = document.querySelector(".following-content");
+          return followingContent
+            ? `${followingContent.offsetTop}px`
+            : "+=100vh";
+        }
+        return "+=100vh"; // Shorter pin duration for non-last cards
       },
       pin: true,
       pinSpacing: false,
