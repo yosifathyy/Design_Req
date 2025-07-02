@@ -260,6 +260,7 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
       if (magnetRef.current) {
         magnetRef.current.style.transition = "transform 0.3s ease-out";
       }
+      playHoverSound();
     };
 
     button.addEventListener("mousemove", handleMouseMove);
