@@ -282,14 +282,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       document.removeEventListener("mouseout", handleMouseOut);
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
-
-      // Clean up pixel dots
-      pixelDots.forEach((dot) => {
-        if (dot.parentNode) {
-          dot.parentNode.removeChild(dot);
-        }
-      });
-      pixelDotsRef.current = [];
     };
   }, [enabled, isHovering, cursorMode]);
 
