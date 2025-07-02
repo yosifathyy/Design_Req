@@ -242,17 +242,23 @@ export const useGSAPFloating = (amplitude = 10, duration = 3) => {
 
     const element = ref.current;
 
-    // Reduce or disable animation on mobile/reduced motion
-    if (isReducedMotion()) {
-      return; // No animation for reduced motion preference or mobile
+    // Completely disable if user prefers reduced motion
+    if (prefersReducedMotion()) {
+      return;
     }
 
-    // Initial floating animation for a short period, then stop
+    // Reduce animation on mobile but still allow it
+    const isMobile = isMobileDevice();
+    const adjustedAmplitude = isMobile ? amplitude * 0.5 : amplitude;
+    const adjustedDuration = isMobile ? duration * 1.5 : duration;
+    const repeatCount = isMobile ? 3 : -1; // Limited repeats on mobile, infinite on desktop
+
+    // Floating animation
     const floatingTween = gsap.to(element, {
-      y: -amplitude,
-      duration: duration,
+      y: -adjustedAmplitude,
+      duration: adjustedDuration,
       yoyo: true,
-      repeat: 3, // Only repeat 3 times instead of infinite
+      repeat: repeatCount,
       ease: "power1.inOut",
     });
 
