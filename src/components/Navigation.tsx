@@ -142,6 +142,7 @@ function Dock({
 
 function DockItem({ children, className, onClick }: DockItemProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const { distance, magnification, mouseX, spring } = useDock();
 
@@ -152,10 +153,12 @@ function DockItem({ children, className, onClick }: DockItemProps) {
     return val - domRect.x - domRect.width / 2;
   });
 
+  const minSize = isMobile ? 32 : 40;
+  const maxSize = isMobile ? MOBILE_MAGNIFICATION : magnification;
   const widthTransform = useTransform(
     mouseDistance,
     [-distance, 0, distance],
-    [40, magnification, 40],
+    [minSize, maxSize, minSize],
   );
 
   const width = useSpring(widthTransform, spring);
