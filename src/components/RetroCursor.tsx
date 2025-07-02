@@ -31,12 +31,13 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
     for (let i = 0; i < 16; i++) {
       const dot = document.createElement("div");
       dot.className = "fixed pointer-events-none z-[9996]";
-      dot.style.width = "3px";
-      dot.style.height = "3px";
-      dot.style.backgroundColor = `hsl(${280 + i * 5}, 80%, 60%)`;
-      dot.style.borderRadius = "1px";
+      dot.style.width = "8px";
+      dot.style.height = "8px";
+      dot.style.backgroundColor = `hsl(${280 + i * 15}, 90%, 70%)`;
+      dot.style.borderRadius = "50%";
       dot.style.opacity = "0";
       dot.style.transform = "translate(-50%, -50%)";
+      dot.style.boxShadow = `0 0 15px hsl(${280 + i * 15}, 90%, 70%)`;
       container.appendChild(dot);
       pixelDots.push(dot);
       pixelDotsRef.current.push(dot);
@@ -108,7 +109,7 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       // Pixel dots follow in formation
       pixelDots.forEach((dot, index) => {
         const angle = (index / pixelDots.length) * Math.PI * 2;
-        const radius = cursorMode === "hover" ? 25 : 15;
+        const radius = cursorMode === "hover" ? 60 : 15; // Much larger radius on hover
         const offsetX = Math.cos(angle) * radius;
         const offsetY = Math.sin(angle) * radius;
 
@@ -150,65 +151,85 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       }
 
       if (isInteractive && !isHovering) {
-        console.log("Hovering over interactive element:", target, element);
         setIsHovering(true);
         setCursorMode("hover");
 
-        // Transform main cursor into diamond/cross shape
+        // Transform main cursor into large pulsing star
         gsap.to(cursorMainRef.current, {
-          scaleX: 0.5,
-          scaleY: 1.5,
+          scale: 3,
           rotation: 45,
-          duration: 0.3,
-          ease: "back.out(1.7)",
+          borderRadius: "30%",
+          duration: 0.4,
+          ease: "back.out(2)",
         });
 
-        // Trail becomes a square and scales up
+        // Trail becomes a large rotating ring
         gsap.to(cursorTrailRef.current, {
-          scale: 2,
-          borderRadius: "20%",
-          rotation: 45,
-          duration: 0.4,
+          scale: 4,
+          borderWidth: "6px",
+          borderStyle: "solid",
+          rotation: 180,
+          duration: 0.5,
           ease: "elastic.out(1, 0.3)",
         });
 
-        // Scan line becomes more intense
+        // Scan line becomes a cross pattern
         gsap.to(scanLineRef.current, {
-          scale: 1.5,
-          opacity: 0.8,
-          duration: 0.3,
+          scaleX: 20,
+          scaleY: 2,
+          opacity: 1,
+          borderRadius: "50%",
+          duration: 0.4,
           ease: "power2.out",
         });
 
-        // Pixel dots animate in and pulse
+        // Pixel dots form a large starburst pattern
         gsap.to(pixelDotsRef.current, {
-          scale: 1,
-          opacity: 0.8,
-          duration: 0.4,
-          ease: "back.out(2)",
+          scale: 2,
+          opacity: 1,
+          duration: 0.5,
+          ease: "back.out(3)",
           stagger: {
-            amount: 0.2,
-            from: "random",
+            amount: 0.3,
+            from: "center",
           },
         });
 
-        // Start pulsing animation for pixel dots
+        // Continuous rotation for pixel dots
         gsap.to(pixelDotsRef.current, {
-          scale: 1.3,
-          duration: 0.5,
+          rotation: 360,
+          duration: 2,
+          ease: "none",
+          repeat: -1,
+        });
+
+        // Pulsing animation for pixel dots
+        gsap.to(pixelDotsRef.current, {
+          scale: 2.5,
+          duration: 0.8,
           ease: "power2.inOut",
           repeat: -1,
           yoyo: true,
           stagger: {
-            amount: 0.3,
+            amount: 0.4,
             from: "random",
           },
         });
 
-        // Glitch effect becomes visible
+        // Glitch effect becomes very visible with color cycling
         gsap.to(glitchRef.current, {
-          opacity: 0.6,
-          duration: 0.2,
+          opacity: 1,
+          scale: 3,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+
+        // Add continuous color cycling to glitch
+        gsap.to(glitchRef.current, {
+          filter: "hue-rotate(360deg)",
+          duration: 1,
+          ease: "none",
+          repeat: -1,
         });
       }
     };
@@ -244,33 +265,35 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       }
 
       if (!nowInteractive && isHovering) {
-        console.log("Leaving interactive element");
         setIsHovering(false);
         setCursorMode("normal");
 
         // Reset main cursor
         gsap.to(cursorMainRef.current, {
-          scaleX: 1,
-          scaleY: 1,
+          scale: 1,
           rotation: 0,
-          duration: 0.5,
+          borderRadius: "2px",
+          duration: 0.6,
           ease: "elastic.out(1, 0.5)",
         });
 
         // Reset trail
         gsap.to(cursorTrailRef.current, {
           scale: 1,
-          borderRadius: "50%",
+          borderWidth: "3px",
+          borderStyle: "dotted",
           rotation: 0,
-          duration: 0.5,
+          duration: 0.6,
           ease: "elastic.out(1, 0.3)",
         });
 
         // Reset scan line
         gsap.to(scanLineRef.current, {
-          scale: 1,
+          scaleX: 1,
+          scaleY: 1,
           opacity: 0.4,
-          duration: 0.3,
+          borderRadius: "1px",
+          duration: 0.4,
           ease: "power2.out",
         });
 
@@ -278,19 +301,24 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         gsap.to(pixelDotsRef.current, {
           scale: 0,
           opacity: 0,
-          duration: 0.3,
+          duration: 0.4,
           ease: "back.in(1.7)",
-          stagger: 0.02,
+          stagger: 0.03,
         });
 
-        // Kill pulsing animation
+        // Kill all animations on pixel dots
         gsap.killTweensOf(pixelDotsRef.current);
 
         // Hide glitch effect
         gsap.to(glitchRef.current, {
           opacity: 0,
-          duration: 0.2,
+          scale: 1,
+          filter: "hue-rotate(0deg)",
+          duration: 0.3,
         });
+
+        // Kill glitch animation
+        gsap.killTweensOf(glitchRef.current);
       }
     };
 
