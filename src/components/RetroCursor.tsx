@@ -21,13 +21,10 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
     document.body.style.cursor = "none";
 
     // Set initial positions
-    gsap.set(
-      [cursorMainRef.current, cursorTrailRef.current, scanLineRef.current],
-      {
-        xPercent: -50,
-        yPercent: -50,
-      },
-    );
+    gsap.set([cursorMainRef.current, scanLineRef.current], {
+      xPercent: -50,
+      yPercent: -50,
+    });
 
     // Mouse position tracking
     let mouseX = 0;
