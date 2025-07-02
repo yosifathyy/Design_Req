@@ -121,20 +121,32 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       });
     };
 
-    const handleMouseEnter = (e: Event) => {
-      const target = e.target as HTMLElement;
-      const isInteractive =
-        target.tagName === "A" ||
-        target.tagName === "BUTTON" ||
-        target.classList.contains("cursor-pointer") ||
-        target.closest("button") ||
-        target.closest("a") ||
-        target.closest("[role='button']") ||
-        target.closest("input") ||
-        target.closest("textarea") ||
-        target.hasAttribute("onclick");
+    const checkIfInteractive = (element: HTMLElement): boolean => {
+      if (!element || element === document.body) return false;
 
-      if (isInteractive) {
+      return (
+        element.tagName === "A" ||
+        element.tagName === "BUTTON" ||
+        element.classList.contains("cursor-pointer") ||
+        (element.hasAttribute("role") &&
+          (element.getAttribute("role") === "button" ||
+            element.getAttribute("role") === "link" ||
+            element.getAttribute("role") === "menuitem")) ||
+        element.hasAttribute("onclick") ||
+        element.hasAttribute("tabindex") ||
+        element.tagName === "INPUT" ||
+        element.tagName === "TEXTAREA" ||
+        element.tagName === "SELECT" ||
+        // Check parent elements
+        checkIfInteractive(element.parentElement as HTMLElement)
+      );
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isInteractive = checkIfInteractive(target);
+
+      if (isInteractive && !isHovering) {
         setIsHovering(true);
         setCursorMode("hover");
 
@@ -197,20 +209,18 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       }
     };
 
-    const handleMouseLeave = (e: Event) => {
+    const handleMouseOut = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isInteractive =
-        target.tagName === "A" ||
-        target.tagName === "BUTTON" ||
-        target.classList.contains("cursor-pointer") ||
-        target.closest("button") ||
-        target.closest("a") ||
-        target.closest("[role='button']") ||
-        target.closest("input") ||
-        target.closest("textarea") ||
-        target.hasAttribute("onclick");
+      const relatedTarget = e.relatedTarget as HTMLElement;
 
-      if (isInteractive) {
+      // Only reset if we're actually leaving an interactive element
+      // and not moving to a child element
+      const wasInteractive = checkIfInteractive(target);
+      const nowInteractive = relatedTarget
+        ? checkIfInteractive(relatedTarget)
+        : false;
+
+      if (wasInteractive && !nowInteractive && isHovering) {
         setIsHovering(false);
         setCursorMode("normal");
 
@@ -350,16 +360,16 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
 
     // Add event listeners
     document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseover", handleMouseEnter);
-    document.addEventListener("mouseout", handleMouseLeave);
+    document.addEventListener("mouseover", handleMouseOver);
+    document.addEventListener("mouseout", handleMouseOut);
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       document.body.style.cursor = "auto";
       document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseover", handleMouseEnter);
-      document.removeEventListener("mouseout", handleMouseLeave);
+      document.removeEventListener("mouseover", handleMouseOver);
+      document.removeEventListener("mouseout", handleMouseOut);
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
 
@@ -438,11 +448,11 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         style={{
           width: "20px",
           height: "20px",
-          background: `linear-gradient(45deg, 
-            hsl(var(--festival-pink)) 0%, 
-            transparent 25%, 
-            hsl(var(--festival-orange)) 50%, 
-            transparent 75%, 
+          background: `linear-gradient(45deg,
+            hsl(var(--festival-pink)) 0%,
+            transparent 25%,
+            hsl(var(--festival-orange)) 50%,
+            transparent 75%,
             hsl(var(--festival-yellow)) 100%
           )`,
           opacity: 0,
