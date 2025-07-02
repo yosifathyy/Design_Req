@@ -6,6 +6,7 @@ import { TextPlugin } from "gsap/TextPlugin";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useClickSound } from "@/hooks/use-click-sound";
 import {
   Sparkles,
   Rocket,
