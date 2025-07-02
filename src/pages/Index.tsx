@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
 import { RevealImageList } from "@/components/ui/reveal-images";
 import Navigation from "@/components/Navigation";
+import { useClickSound } from "@/hooks/use-click-sound";
 import FAQ from "@/components/FAQ";
 import Testimonials from "@/components/Testimonials";
 import {
