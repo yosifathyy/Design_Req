@@ -8,6 +8,7 @@ import {
   useGSAPParallax,
 } from "@/lib/gsap-animations";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface GSAPFadeInProps {
   children: ReactNode;
