@@ -182,12 +182,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         duration: 0.1,
         ease: "power2.out",
       });
-
-      gsap.to(cursorTrailRef.current, {
-        scale: isHovering ? 1.5 : 0.8,
-        duration: 0.1,
-        ease: "power2.out",
-      });
     };
 
     const handleMouseUp = () => {
