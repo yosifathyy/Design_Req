@@ -228,7 +228,10 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (!buttonRef.current || !magnetRef.current || isMobile) return;
+    if (!buttonRef.current || !magnetRef.current) return;
+
+    // Only disable on touch devices, not all mobile
+    if ("ontouchstart" in window) return;
 
     const button = buttonRef.current;
     const magnet = magnetRef.current;
