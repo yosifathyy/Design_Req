@@ -150,6 +150,7 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       }
 
       if (isInteractive && !isHovering) {
+        console.log("Hovering over interactive element:", target, element);
         setIsHovering(true);
         setCursorMode("hover");
 
@@ -243,6 +244,7 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       }
 
       if (!nowInteractive && isHovering) {
+        console.log("Leaving interactive element");
         setIsHovering(false);
         setCursorMode("normal");
 
