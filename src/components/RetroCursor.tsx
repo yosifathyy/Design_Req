@@ -10,7 +10,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
   const cursorTrailRef = useRef<HTMLDivElement>(null);
   const scanLineRef = useRef<HTMLDivElement>(null);
   const pixelDotsRef = useRef<HTMLDivElement[]>([]);
-  const glitchRef = useRef<HTMLDivElement>(null);
 
   const [isHovering, setIsHovering] = useState(false);
   const [cursorMode, setCursorMode] = useState<"normal" | "hover" | "click">(
