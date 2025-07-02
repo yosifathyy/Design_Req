@@ -220,13 +220,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         duration: 0.1,
         ease: "power2.out",
       });
-
-      // Pixel dots burst outward
-      gsap.to(pixelDotsRef.current, {
-        scale: 1.8,
-        duration: 0.1,
-        ease: "power2.out",
-      });
     };
 
     const handleMouseUp = () => {
