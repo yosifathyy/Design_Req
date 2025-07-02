@@ -1353,6 +1353,7 @@ const Index = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  playClickSound();
                   shuffleImages();
                 }}
                 onMouseDown={(e) => {
