@@ -121,30 +121,33 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       });
     };
 
-    const checkIfInteractive = (element: HTMLElement): boolean => {
-      if (!element || element === document.body) return false;
-
-      return (
-        element.tagName === "A" ||
-        element.tagName === "BUTTON" ||
-        element.classList.contains("cursor-pointer") ||
-        (element.hasAttribute("role") &&
-          (element.getAttribute("role") === "button" ||
-            element.getAttribute("role") === "link" ||
-            element.getAttribute("role") === "menuitem")) ||
-        element.hasAttribute("onclick") ||
-        element.hasAttribute("tabindex") ||
-        element.tagName === "INPUT" ||
-        element.tagName === "TEXTAREA" ||
-        element.tagName === "SELECT" ||
-        // Check parent elements
-        checkIfInteractive(element.parentElement as HTMLElement)
-      );
-    };
-
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isInteractive = checkIfInteractive(target);
+
+      // Check if current element or any parent is interactive
+      let element: HTMLElement | null = target;
+      let isInteractive = false;
+
+      while (element && element !== document.body) {
+        if (
+          element.tagName === "A" ||
+          element.tagName === "BUTTON" ||
+          element.classList.contains("cursor-pointer") ||
+          element.getAttribute("role") === "button" ||
+          element.getAttribute("role") === "link" ||
+          element.getAttribute("role") === "menuitem" ||
+          element.hasAttribute("onclick") ||
+          (element.hasAttribute("tabindex") &&
+            element.getAttribute("tabindex") !== "-1") ||
+          element.tagName === "INPUT" ||
+          element.tagName === "TEXTAREA" ||
+          element.tagName === "SELECT"
+        ) {
+          isInteractive = true;
+          break;
+        }
+        element = element.parentElement;
+      }
 
       if (isInteractive && !isHovering) {
         setIsHovering(true);
@@ -210,17 +213,36 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
     };
 
     const handleMouseOut = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
       const relatedTarget = e.relatedTarget as HTMLElement;
 
-      // Only reset if we're actually leaving an interactive element
-      // and not moving to a child element
-      const wasInteractive = checkIfInteractive(target);
-      const nowInteractive = relatedTarget
-        ? checkIfInteractive(relatedTarget)
-        : false;
+      // Check if we're moving to an interactive element
+      let element: HTMLElement | null = relatedTarget;
+      let nowInteractive = false;
 
-      if (wasInteractive && !nowInteractive && isHovering) {
+      if (relatedTarget) {
+        while (element && element !== document.body) {
+          if (
+            element.tagName === "A" ||
+            element.tagName === "BUTTON" ||
+            element.classList.contains("cursor-pointer") ||
+            element.getAttribute("role") === "button" ||
+            element.getAttribute("role") === "link" ||
+            element.getAttribute("role") === "menuitem" ||
+            element.hasAttribute("onclick") ||
+            (element.hasAttribute("tabindex") &&
+              element.getAttribute("tabindex") !== "-1") ||
+            element.tagName === "INPUT" ||
+            element.tagName === "TEXTAREA" ||
+            element.tagName === "SELECT"
+          ) {
+            nowInteractive = true;
+            break;
+          }
+          element = element.parentElement;
+        }
+      }
+
+      if (!nowInteractive && isHovering) {
         setIsHovering(false);
         setCursorMode("normal");
 
