@@ -1338,11 +1338,11 @@ const Index = () => {
             </div>
 
             {/* Shuffle Button */}
-            <div className="flex flex-col items-center gap-4 relative z-50 mt-4">
+            <div className="flex flex-col items-center gap-3 sm:gap-4 relative z-50 mt-3 sm:mt-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center justify-center ${isShuffling ? "bg-retro-orange" : "bg-retro-cream"} border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50 ${isShuffling ? "opacity-75" : ""}`}
+                className={`flex items-center justify-center ${isShuffling ? "bg-retro-orange" : "bg-retro-cream"} border-2 border-black rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50 min-h-[44px] min-w-[120px] ${isShuffling ? "opacity-75" : ""}`}
                 style={{
                   pointerEvents: "auto",
                   touchAction: "manipulation",
