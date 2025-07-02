@@ -180,7 +180,10 @@ export const useGSAPHover = (
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!ref.current || isReducedMotion()) return;
+    if (!ref.current) return;
+
+    // Disable hover effects only if user prefers reduced motion or on touch devices
+    if (prefersReducedMotion() || "ontouchstart" in window) return;
 
     const element = ref.current;
 
