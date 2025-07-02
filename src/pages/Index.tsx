@@ -455,14 +455,24 @@ const Index = () => {
               }}
               className="inline-block mb-4 sm:mb-6"
             >
-              <Eye className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
+              <Eye
+                className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 mx-auto"
+                style={{ color: "#f77331" }}
+              />
             </motion.div>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
-              Portfolio Gallery ✨
+            <h2
+              className="mb-3 sm:mb-4"
+              style={{
+                color: "rgba(0, 0, 0, 1)",
+                font: "400 44px/40px Aladin, display",
+              }}
+            >
+              <span style={{ color: "rgb(18, 18, 18)" }}>
+                <font face="Aclonica, sans-serif">
+                  <strong>Portfolio Gallery</strong>
+                </font>
+              </span>
             </h2>
-            <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
-              Explore our amazing portfolio cards below!
-            </p>
           </div>
 
           <StaggerContainer>
