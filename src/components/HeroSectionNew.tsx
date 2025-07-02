@@ -252,7 +252,7 @@ const HeroSectionNew: React.FC = () => {
         <p
           ref={subtitleRef}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold mb-8"
-          style={{ marginTop: "100px" }}
+          style={{ marginTop: "200px", position: "relative", zIndex: 1 }}
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets <span className="text-festival-pink">festival vibes</span> to
