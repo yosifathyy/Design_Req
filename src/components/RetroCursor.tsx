@@ -201,18 +201,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           duration: 0.4,
           ease: "power2.out",
         });
-
-        // Hide pixel dots
-        gsap.to(pixelDotsRef.current, {
-          scale: 0,
-          opacity: 0,
-          duration: 0.4,
-          ease: "back.in(1.7)",
-          stagger: 0.03,
-        });
-
-        // Kill all animations on pixel dots
-        gsap.killTweensOf(pixelDotsRef.current);
       }
     };
 
