@@ -41,8 +41,19 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, onClick, ...props }, ref) => {
-    const { playClickSound } = useClickSound();
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      onClick,
+      onMouseEnter,
+      ...props
+    },
+    ref,
+  ) => {
+    const { playClickSound, playHoverSound } = useClickSound();
     const Comp = asChild ? Slot : "button";
 
     const handleClick = React.useCallback(
@@ -53,11 +64,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       [playClickSound, onClick],
     );
 
+    const handleMouseEnter = React.useCallback(
+      (event: React.MouseEvent<HTMLButtonElement>) => {
+        playHoverSound();
+        onMouseEnter?.(event);
+      },
+      [playHoverSound, onMouseEnter],
+    );
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
         {...props}
       />
     );
