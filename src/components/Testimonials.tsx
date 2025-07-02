@@ -75,10 +75,12 @@ const TestimonialCard: React.FC<{
     const card = cardRef.current;
     const img = imgRef.current;
 
-    // Calculate mapped values based on card index
+    // Set initial z-index - higher index = higher z-index (cards stack in front)
+    gsap.set(card, { zIndex: totalCards + index });
+
+    // Calculate mapped values based on card index - reduced blur intensity
     const yPos = gsap.utils.mapRange(0, totalCards - 1, 0, -100, index);
-    const scaleValue = gsap.utils.mapRange(0, totalCards - 1, 1, 0.8, index);
-    const blurValue = gsap.utils.mapRange(0, totalCards - 1, 0, 8, index);
+    const scaleValue = gsap.utils.mapRange(0, totalCards - 1, 1, 0.85, index);
 
     // GSAP scroll-triggered animation for the image element
     gsap.fromTo(
@@ -91,13 +93,22 @@ const TestimonialCard: React.FC<{
       {
         y: yPos,
         scale: scaleValue,
-        filter: `blur(${blurValue}px)`,
+        filter: "blur(0px)", // Start with no blur
         scrollTrigger: {
           trigger: card,
           scrub: true,
           start: "top 25vh",
           end: "+=200vh",
           invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            // Only apply blur in the last 40% of the animation
+            const progress = self.progress;
+            if (progress > 0.6) {
+              const blurProgress = gsap.utils.mapRange(0.6, 1, 0, 1, progress);
+              const blurValue = blurProgress * 4; // Reduced max blur
+              gsap.set(img, { filter: `blur(${blurValue}px)` });
+            }
+          },
         },
       },
     );
@@ -112,9 +123,6 @@ const TestimonialCard: React.FC<{
       },
       pin: true,
       pinSpacing: false,
-      onEnter: () => {
-        gsap.set(card, { zIndex: index + 1 });
-      },
     });
 
     return () => {
