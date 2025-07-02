@@ -17,7 +17,7 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
   );
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || isMobile) return;
 
     // Hide default cursor
     document.body.style.cursor = "none";
