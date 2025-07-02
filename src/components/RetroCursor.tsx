@@ -30,12 +30,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       },
     );
 
-    gsap.set(pixelDots, {
-      xPercent: -50,
-      yPercent: -50,
-      scale: 0,
-    });
-
     // Mouse position tracking
     let mouseX = 0;
     let mouseY = 0;
