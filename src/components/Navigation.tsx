@@ -28,11 +28,16 @@ import {
   Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DOCK_HEIGHT = 128;
 const DEFAULT_MAGNIFICATION = 80;
 const DEFAULT_DISTANCE = 150;
 const DEFAULT_PANEL_HEIGHT = 64;
+const MOBILE_DOCK_HEIGHT = 80;
+const MOBILE_MAGNIFICATION = 60;
+const MOBILE_DISTANCE = 100;
+const MOBILE_PANEL_HEIGHT = 48;
 
 type DockProps = {
   children: React.ReactNode;
