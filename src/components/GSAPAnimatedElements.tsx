@@ -227,6 +227,7 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const magnetRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { playClickSound } = useClickSound();
 
   useEffect(() => {
     if (!buttonRef.current || !magnetRef.current) return;
