@@ -308,14 +308,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         ease: "power2.out",
       });
 
-      // Glitch burst effect
-      gsap.to(glitchRef.current, {
-        opacity: 1,
-        scale: 2,
-        duration: 0.1,
-        ease: "power2.out",
-      });
-
       // Pixel dots burst outward
       gsap.to(pixelDotsRef.current, {
         scale: 1.8,
