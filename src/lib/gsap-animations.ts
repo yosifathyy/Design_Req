@@ -239,6 +239,11 @@ export const useGSAPFloating = (amplitude = 10, duration = 3) => {
 
     const element = ref.current;
 
+    // Reduce or disable animation on mobile/reduced motion
+    if (isReducedMotion()) {
+      return; // No animation for reduced motion preference or mobile
+    }
+
     // Initial floating animation for a short period, then stop
     const floatingTween = gsap.to(element, {
       y: -amplitude,
