@@ -257,7 +257,7 @@ const HeroSectionNew: React.FC = () => {
           style={{ marginTop: "0", position: "relative", zIndex: 1 }}
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
-          meets <span className="text-festival-pink">festival vibes</span> to
+          meets <span style={{ color: "#121212" }}>festival vibes</span> to
           create <span className="text-festival-amber">legendary designs!</span>{" "}
           🎨🔥
         </p>
