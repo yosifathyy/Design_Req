@@ -8,6 +8,7 @@ import {
   useGSAPParallax,
 } from "@/lib/gsap-animations";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface GSAPFadeInProps {
   children: ReactNode;
@@ -224,9 +225,13 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const magnetRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!buttonRef.current || !magnetRef.current) return;
+
+    // Only disable on touch devices, not all mobile
+    if ("ontouchstart" in window) return;
 
     const button = buttonRef.current;
     const magnet = magnetRef.current;

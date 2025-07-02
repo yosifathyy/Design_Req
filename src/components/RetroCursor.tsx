@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RetroCursorProps {
   enabled?: boolean;
 }
 
 export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
+  const isMobile = useIsMobile();
   const cursorMainRef = useRef<HTMLDivElement>(null);
-  const cursorTrailRef = useRef<HTMLDivElement>(null);
   const scanLineRef = useRef<HTMLDivElement>(null);
-  const pixelDotsRef = useRef<HTMLDivElement[]>([]);
-  const glitchRef = useRef<HTMLDivElement>(null);
 
   const [isHovering, setIsHovering] = useState(false);
   const [cursorMode, setCursorMode] = useState<"normal" | "hover" | "click">(
@@ -18,49 +17,15 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
   );
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || isMobile) return;
 
     // Hide default cursor
     document.body.style.cursor = "none";
 
-    // Create pixel dots for retro effect
-    const pixelDots: HTMLDivElement[] = [];
-    const container = document.body;
-
-    // Create 16 pixel dots in a grid pattern
-    for (let i = 0; i < 16; i++) {
-      const dot = document.createElement("div");
-      dot.className = "fixed pointer-events-none z-[9996]";
-      dot.style.width = "8px";
-      dot.style.height = "8px";
-      dot.style.backgroundColor = `hsl(${280 + i * 15}, 90%, 70%)`;
-      dot.style.borderRadius = "50%";
-      dot.style.opacity = "0";
-      dot.style.transform = "translate(-50%, -50%)";
-      dot.style.boxShadow = `0 0 15px hsl(${280 + i * 15}, 90%, 70%)`;
-      container.appendChild(dot);
-      pixelDots.push(dot);
-      pixelDotsRef.current.push(dot);
-    }
-
     // Set initial positions
-    gsap.set(
-      [
-        cursorMainRef.current,
-        cursorTrailRef.current,
-        scanLineRef.current,
-        glitchRef.current,
-      ],
-      {
-        xPercent: -50,
-        yPercent: -50,
-      },
-    );
-
-    gsap.set(pixelDots, {
+    gsap.set([cursorMainRef.current, scanLineRef.current], {
       xPercent: -50,
       yPercent: -50,
-      scale: 0,
     });
 
     // Mouse position tracking
@@ -82,43 +47,12 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         ease: "none",
       });
 
-      // Trail with delay and easing
-      gsap.to(cursorTrailRef.current, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-
       // Scan line with smooth follow
       gsap.to(scanLineRef.current, {
         x: mouseX,
         y: mouseY,
         duration: 0.4,
         ease: "power1.out",
-      });
-
-      // Glitch effect position
-      gsap.to(glitchRef.current, {
-        x: mouseX + gsap.utils.random(-2, 2),
-        y: mouseY + gsap.utils.random(-2, 2),
-        duration: 0.05,
-        ease: "none",
-      });
-
-      // Pixel dots follow in formation
-      pixelDots.forEach((dot, index) => {
-        const angle = (index / pixelDots.length) * Math.PI * 2;
-        const radius = cursorMode === "hover" ? 60 : 15; // Much larger radius on hover
-        const offsetX = Math.cos(angle) * radius;
-        const offsetY = Math.sin(angle) * radius;
-
-        gsap.to(dot, {
-          x: mouseX + offsetX,
-          y: mouseY + offsetY,
-          duration: 0.2 + index * 0.01,
-          ease: "power2.out",
-        });
       });
     };
 
@@ -154,23 +88,22 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         setIsHovering(true);
         setCursorMode("hover");
 
-        // Transform main cursor into large pulsing star
+        // Transform main cursor into pulsing star shape
         gsap.to(cursorMainRef.current, {
-          scale: 3,
+          scale: 1.5,
           rotation: 45,
           borderRadius: "30%",
           duration: 0.4,
           ease: "back.out(2)",
         });
 
-        // Trail becomes a large rotating ring
-        gsap.to(cursorTrailRef.current, {
-          scale: 4,
-          borderWidth: "6px",
-          borderStyle: "solid",
-          rotation: 180,
-          duration: 0.5,
-          ease: "elastic.out(1, 0.3)",
+        // Add pulsing animation to create star effect
+        gsap.to(cursorMainRef.current, {
+          scale: 1.8,
+          duration: 0.6,
+          ease: "power2.inOut",
+          repeat: -1,
+          yoyo: true,
         });
 
         // Scan line becomes a cross pattern
@@ -181,55 +114,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           borderRadius: "50%",
           duration: 0.4,
           ease: "power2.out",
-        });
-
-        // Pixel dots form a large starburst pattern
-        gsap.to(pixelDotsRef.current, {
-          scale: 2,
-          opacity: 1,
-          duration: 0.5,
-          ease: "back.out(3)",
-          stagger: {
-            amount: 0.3,
-            from: "center",
-          },
-        });
-
-        // Continuous rotation for pixel dots
-        gsap.to(pixelDotsRef.current, {
-          rotation: 360,
-          duration: 2,
-          ease: "none",
-          repeat: -1,
-        });
-
-        // Pulsing animation for pixel dots
-        gsap.to(pixelDotsRef.current, {
-          scale: 2.5,
-          duration: 0.8,
-          ease: "power2.inOut",
-          repeat: -1,
-          yoyo: true,
-          stagger: {
-            amount: 0.4,
-            from: "random",
-          },
-        });
-
-        // Glitch effect becomes very visible with color cycling
-        gsap.to(glitchRef.current, {
-          opacity: 1,
-          scale: 3,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-
-        // Add continuous color cycling to glitch
-        gsap.to(glitchRef.current, {
-          filter: "hue-rotate(360deg)",
-          duration: 1,
-          ease: "none",
-          repeat: -1,
         });
       }
     };
@@ -268,23 +152,14 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         setIsHovering(false);
         setCursorMode("normal");
 
-        // Reset main cursor
+        // Kill pulsing animation and reset main cursor
+        gsap.killTweensOf(cursorMainRef.current);
         gsap.to(cursorMainRef.current, {
           scale: 1,
           rotation: 0,
           borderRadius: "2px",
           duration: 0.6,
           ease: "elastic.out(1, 0.5)",
-        });
-
-        // Reset trail
-        gsap.to(cursorTrailRef.current, {
-          scale: 1,
-          borderWidth: "3px",
-          borderStyle: "dotted",
-          rotation: 0,
-          duration: 0.6,
-          ease: "elastic.out(1, 0.3)",
         });
 
         // Reset scan line
@@ -296,29 +171,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           duration: 0.4,
           ease: "power2.out",
         });
-
-        // Hide pixel dots
-        gsap.to(pixelDotsRef.current, {
-          scale: 0,
-          opacity: 0,
-          duration: 0.4,
-          ease: "back.in(1.7)",
-          stagger: 0.03,
-        });
-
-        // Kill all animations on pixel dots
-        gsap.killTweensOf(pixelDotsRef.current);
-
-        // Hide glitch effect
-        gsap.to(glitchRef.current, {
-          opacity: 0,
-          scale: 1,
-          filter: "hue-rotate(0deg)",
-          duration: 0.3,
-        });
-
-        // Kill glitch animation
-        gsap.killTweensOf(glitchRef.current);
       }
     };
 
@@ -332,63 +184,37 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         duration: 0.1,
         ease: "power2.out",
       });
-
-      gsap.to(cursorTrailRef.current, {
-        scale: isHovering ? 1.5 : 0.8,
-        duration: 0.1,
-        ease: "power2.out",
-      });
-
-      // Glitch burst effect
-      gsap.to(glitchRef.current, {
-        opacity: 1,
-        scale: 2,
-        duration: 0.1,
-        ease: "power2.out",
-      });
-
-      // Pixel dots burst outward
-      gsap.to(pixelDotsRef.current, {
-        scale: 1.8,
-        duration: 0.1,
-        ease: "power2.out",
-      });
     };
 
     const handleMouseUp = () => {
       setCursorMode(isHovering ? "hover" : "normal");
 
       // Return to previous state
-      const targetScaleX = isHovering ? 0.5 : 1;
-      const targetScaleY = isHovering ? 1.5 : 1;
+      const targetScale = isHovering ? 1.5 : 1;
       const targetRotation = isHovering ? 45 : 0;
 
-      gsap.to(cursorMainRef.current, {
-        scaleX: targetScaleX,
-        scaleY: targetScaleY,
-        rotation: targetRotation,
-        duration: 0.3,
-        ease: "elastic.out(1, 0.5)",
-      });
-
-      gsap.to(cursorTrailRef.current, {
-        scale: isHovering ? 2 : 1,
-        duration: 0.3,
-        ease: "elastic.out(1, 0.3)",
-      });
-
-      gsap.to(glitchRef.current, {
-        opacity: isHovering ? 0.6 : 0,
-        scale: 1,
-        duration: 0.2,
-        ease: "power2.out",
-      });
-
-      gsap.to(pixelDotsRef.current, {
-        scale: isHovering ? 1 : 0,
-        duration: 0.2,
-        ease: "power2.out",
-      });
+      if (isHovering) {
+        // Restart pulsing animation if hovering
+        gsap.killTweensOf(cursorMainRef.current);
+        gsap.set(cursorMainRef.current, {
+          scale: targetScale,
+          rotation: targetRotation,
+        });
+        gsap.to(cursorMainRef.current, {
+          scale: 1.8,
+          duration: 0.6,
+          ease: "power2.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+      } else {
+        gsap.to(cursorMainRef.current, {
+          scale: targetScale,
+          rotation: targetRotation,
+          duration: 0.3,
+          ease: "elastic.out(1, 0.5)",
+        });
+      }
     };
 
     // Add continuous animations
@@ -397,16 +223,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       duration: 1.5,
       ease: "power2.inOut",
       repeat: -1,
-      yoyo: true,
-    });
-
-    // Glitch effect random flicker
-    gsap.to(glitchRef.current, {
-      x: "+=2",
-      duration: 0.1,
-      ease: "none",
-      repeat: -1,
-      repeatDelay: gsap.utils.random(0.5, 2),
       yoyo: true,
     });
 
@@ -424,18 +240,10 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       document.removeEventListener("mouseout", handleMouseOut);
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
-
-      // Clean up pixel dots
-      pixelDots.forEach((dot) => {
-        if (dot.parentNode) {
-          dot.parentNode.removeChild(dot);
-        }
-      });
-      pixelDotsRef.current = [];
     };
-  }, [enabled, isHovering, cursorMode]);
+  }, [enabled, isMobile, isHovering, cursorMode]);
 
-  if (!enabled) return null;
+  if (!enabled || isMobile) return null;
 
   return (
     <>
@@ -458,24 +266,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         }}
       />
 
-      {/* Trail cursor - retro circle */}
-      <div
-        ref={cursorTrailRef}
-        className="fixed top-0 left-0 pointer-events-none z-[9998]"
-        style={{
-          width: "28px",
-          height: "28px",
-          border: "3px solid hsl(var(--festival-pink))",
-          borderRadius: "50%",
-          backgroundColor: "transparent",
-          borderStyle: "dotted",
-          boxShadow: `
-            0 0 0 2px hsl(var(--festival-black)),
-            0 0 20px hsl(var(--festival-pink))
-          `,
-        }}
-      />
-
       {/* Scan line effect */}
       <div
         ref={scanLineRef}
@@ -490,27 +280,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
             0 0 20px hsl(var(--festival-orange))
           `,
           borderRadius: "1px",
-        }}
-      />
-
-      {/* Glitch effect */}
-      <div
-        ref={glitchRef}
-        className="fixed top-0 left-0 pointer-events-none z-[9995]"
-        style={{
-          width: "20px",
-          height: "20px",
-          background: `linear-gradient(45deg,
-            hsl(var(--festival-pink)) 0%,
-            transparent 25%,
-            hsl(var(--festival-orange)) 50%,
-            transparent 75%,
-            hsl(var(--festival-yellow)) 100%
-          )`,
-          opacity: 0,
-          borderRadius: "2px",
-          filter: "blur(1px)",
-          mixBlendMode: "screen",
         }}
       />
 

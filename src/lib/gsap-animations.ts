@@ -7,6 +7,18 @@ import { useEffect, useRef } from "react";
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
+// Detect if user prefers reduced motion
+const prefersReducedMotion = () => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
+
+// Detect if user is on mobile device
+const isMobileDevice = () => {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768;
+};
+
 // Custom GSAP hooks for React components
 
 export const useGSAPFadeIn = (trigger?: boolean, delay = 0) => {
@@ -170,6 +182,9 @@ export const useGSAPHover = (
   useEffect(() => {
     if (!ref.current) return;
 
+    // Disable hover effects only if user prefers reduced motion or on touch devices
+    if (prefersReducedMotion() || "ontouchstart" in window) return;
+
     const element = ref.current;
 
     const getHoverAnimation = () => {
@@ -230,12 +245,23 @@ export const useGSAPFloating = (amplitude = 10, duration = 3) => {
 
     const element = ref.current;
 
-    // Initial floating animation for a short period, then stop
+    // Completely disable if user prefers reduced motion
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    // Reduce animation on mobile but still allow it
+    const isMobile = isMobileDevice();
+    const adjustedAmplitude = isMobile ? amplitude * 0.5 : amplitude;
+    const adjustedDuration = isMobile ? duration * 1.5 : duration;
+    const repeatCount = isMobile ? 3 : -1; // Limited repeats on mobile, infinite on desktop
+
+    // Floating animation
     const floatingTween = gsap.to(element, {
-      y: -amplitude,
-      duration: duration,
+      y: -adjustedAmplitude,
+      duration: adjustedDuration,
       yoyo: true,
-      repeat: 3, // Only repeat 3 times instead of infinite
+      repeat: repeatCount,
       ease: "power1.inOut",
     });
 

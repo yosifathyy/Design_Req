@@ -216,7 +216,7 @@ const HeroSectionNew: React.FC = () => {
       >
         {/* Badge */}
         <motion.div
-          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-4 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           whileHover={{
             scale: 1.05,
             rotate: 2,
@@ -232,26 +232,27 @@ const HeroSectionNew: React.FC = () => {
             <Palette className="w-6 h-6 text-white" />
           </motion.div>
           <span className="text-lg font-black text-white tracking-wide">
-            CREATIVE POWERHOUSE ⚡
+            CREATIVE POWERHOUSE ��
           </span>
         </motion.div>
 
         {/* Main title */}
         <h1
           ref={titleRef}
-          className="font-display font-black text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] text-black mb-8 tracking-tight leading-[0.8]"
+          className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-black mb-24 tracking-tight leading-[0.9]"
           style={{
             textShadow: "8px 8px 0px rgba(0,0,0,0.1)",
             perspective: "1000px",
           }}
         >
-          Design Requests ✨
+          Design Requests
         </h1>
 
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] mt-[51px] mb-[53px]"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold mb-8"
+          style={{ marginTop: "200px", position: "relative", zIndex: 1 }}
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets <span className="text-festival-pink">festival vibes</span> to
@@ -262,7 +263,7 @@ const HeroSectionNew: React.FC = () => {
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full"
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full mt-6"
         >
           <motion.div
             whileHover={{

@@ -28,11 +28,16 @@ import {
   Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DOCK_HEIGHT = 128;
 const DEFAULT_MAGNIFICATION = 80;
 const DEFAULT_DISTANCE = 150;
 const DEFAULT_PANEL_HEIGHT = 64;
+const MOBILE_DOCK_HEIGHT = 80;
+const MOBILE_MAGNIFICATION = 60;
+const MOBILE_DISTANCE = 100;
+const MOBILE_PANEL_HEIGHT = 48;
 
 type DockProps = {
   children: React.ReactNode;
@@ -91,10 +96,13 @@ function Dock({
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
+  const isMobile = useIsMobile();
 
   const maxHeight = useMemo(() => {
-    return Math.max(DOCK_HEIGHT, magnification + magnification / 2 + 4);
-  }, [magnification]);
+    const dockHeight = isMobile ? MOBILE_DOCK_HEIGHT : DOCK_HEIGHT;
+    const mag = isMobile ? MOBILE_MAGNIFICATION : magnification;
+    return Math.max(dockHeight, mag + mag / 2 + 4);
+  }, [magnification, isMobile]);
 
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
   const height = useSpring(heightRow, spring);
@@ -134,6 +142,7 @@ function Dock({
 
 function DockItem({ children, className, onClick }: DockItemProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const { distance, magnification, mouseX, spring } = useDock();
 
@@ -144,10 +153,12 @@ function DockItem({ children, className, onClick }: DockItemProps) {
     return val - domRect.x - domRect.width / 2;
   });
 
+  const minSize = isMobile ? 32 : 40;
+  const maxSize = isMobile ? MOBILE_MAGNIFICATION : magnification;
   const widthTransform = useTransform(
     mouseDistance,
     [-distance, 0, distance],
-    [40, magnification, 40],
+    [minSize, maxSize, minSize],
   );
 
   const width = useSpring(widthTransform, spring);
@@ -234,6 +245,7 @@ function DockIcon({ children, className, ...rest }: DockIconProps) {
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
@@ -313,8 +325,18 @@ const Navigation = () => {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 max-w-full -translate-x-1/2 z-50">
-      <Dock className="items-end pb-3">
+    <div
+      className={cn(
+        "fixed left-1/2 max-w-full -translate-x-1/2 z-50",
+        isMobile ? "bottom-2" : "bottom-4",
+      )}
+    >
+      <Dock
+        className={cn("items-end", isMobile ? "pb-2" : "pb-3")}
+        magnification={isMobile ? MOBILE_MAGNIFICATION : DEFAULT_MAGNIFICATION}
+        distance={isMobile ? MOBILE_DISTANCE : DEFAULT_DISTANCE}
+        panelHeight={isMobile ? MOBILE_PANEL_HEIGHT : DEFAULT_PANEL_HEIGHT}
+      >
         {data.map((item, idx) => (
           <DockItem
             key={idx}

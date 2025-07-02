@@ -200,22 +200,22 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
-      {/* GSAP Animated background shapes */}
+    <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24">
+      {/* GSAP Animated background shapes - reduced on mobile */}
       <GSAPFloating amplitude={15} duration={4}>
-        <div className="absolute top-16 right-16 w-16 h-16 bg-festival-orange rotate-45 rounded-lg opacity-80"></div>
+        <div className="absolute top-8 sm:top-16 right-4 sm:right-16 w-8 sm:w-16 h-8 sm:h-16 bg-festival-orange rotate-45 rounded-lg opacity-60 sm:opacity-80"></div>
       </GSAPFloating>
       <GSAPFloating amplitude={20} duration={5}>
-        <div className="absolute top-32 right-32 w-12 h-12 bg-festival-pink -rotate-12 rounded-lg opacity-70"></div>
+        <div className="absolute top-16 sm:top-32 right-8 sm:right-32 w-6 sm:w-12 h-6 sm:h-12 bg-festival-pink -rotate-12 rounded-lg opacity-50 sm:opacity-70"></div>
       </GSAPFloating>
       <GSAPFloating amplitude={12} duration={3.5}>
-        <div className="absolute bottom-32 left-16 w-14 h-14 bg-festival-yellow rotate-12 rounded-lg opacity-75"></div>
+        <div className="absolute bottom-16 sm:bottom-32 left-4 sm:left-16 w-8 sm:w-14 h-8 sm:h-14 bg-festival-yellow rotate-12 rounded-lg opacity-50 sm:opacity-75"></div>
       </GSAPFloating>
       <GSAPParallax speed={0.3}>
-        <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-festival-coral rotate-45 rounded-lg opacity-60"></div>
+        <div className="absolute top-1/2 left-1/4 w-4 sm:w-8 h-4 sm:h-8 bg-festival-coral rotate-45 rounded-lg opacity-40 sm:opacity-60"></div>
       </GSAPParallax>
       <GSAPParallax speed={-0.2}>
-        <div className="absolute bottom-1/4 right-1/3 w-10 h-10 bg-festival-amber rotate-12 rounded-lg opacity-50"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-6 sm:w-10 h-6 sm:h-10 bg-festival-amber rotate-12 rounded-lg opacity-30 sm:opacity-50"></div>
       </GSAPParallax>
 
       <Navigation />
@@ -1129,7 +1129,7 @@ const Index = () => {
       </section>
 
       {/* Interactive Image Shuffle Section */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+      <section className="px-4 sm:px-6 py-8 sm:py-12 lg:py-20 relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -1259,16 +1259,16 @@ const Index = () => {
           </svg>
         </div>
 
-        <div className="max-w-md mx-auto relative z-10">
+        <div className="max-w-xs sm:max-w-md mx-auto relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="relative"
           >
             {/* Image Stack Container */}
-            <div className="relative w-full aspect-[4/5] mb-6">
+            <div className="relative w-full aspect-[4/5] mb-4 sm:mb-6">
               {imageOrder.map((imageIndex, stackIndex) => {
                 const zIndexes = [30, 20, 10, 0];
                 const shadows = [
@@ -1338,11 +1338,11 @@ const Index = () => {
             </div>
 
             {/* Shuffle Button */}
-            <div className="flex flex-col items-center gap-4 relative z-50 mt-4">
+            <div className="flex flex-col items-center gap-3 sm:gap-4 relative z-50 mt-3 sm:mt-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center justify-center ${isShuffling ? "bg-retro-orange" : "bg-retro-cream"} border-2 border-black rounded-full px-6 py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50 ${isShuffling ? "opacity-75" : ""}`}
+                className={`flex items-center justify-center ${isShuffling ? "bg-retro-orange" : "bg-retro-cream"} border-2 border-black rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-lg transition-all duration-300 hover:shadow-xl font-bold text-black cursor-pointer relative z-50 min-h-[44px] min-w-[120px] ${isShuffling ? "opacity-75" : ""}`}
                 style={{
                   pointerEvents: "auto",
                   touchAction: "manipulation",
@@ -1433,10 +1433,10 @@ const Index = () => {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"
+                  className="w-10 sm:w-12 h-10 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center"
                   animate={{ rotate: [0, 360] }}
                   transition={{
-                    duration: 10,
+                    duration: 15,
                     repeat: Infinity,
                     ease: "linear",
                   }}
