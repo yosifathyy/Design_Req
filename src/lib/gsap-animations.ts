@@ -177,7 +177,7 @@ export const useGSAPHover = (
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || isReducedMotion()) return;
 
     const element = ref.current;
 
