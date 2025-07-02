@@ -117,10 +117,8 @@ const TestimonialCard: React.FC<{
     ScrollTrigger.create({
       trigger: card,
       start: "top top",
-      end: () => {
-        const followingContent = document.querySelector(".following-content");
-        return followingContent ? `${followingContent.offsetTop}px` : "+=150vh";
-      },
+      endTrigger: ".following-content",
+      end: "top 100",
       pin: true,
       pinSpacing: false,
     });
