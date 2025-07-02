@@ -39,6 +39,7 @@ const AppContent = () => {
     <>
       {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
+      <RetroCursor enabled={!isLoading} />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/start-project" element={<StartProject />} />
