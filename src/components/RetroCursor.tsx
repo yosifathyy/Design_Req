@@ -44,12 +44,7 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
 
     // Set initial positions
     gsap.set(
-      [
-        cursorMainRef.current,
-        cursorTrailRef.current,
-        scanLineRef.current,
-        glitchRef.current,
-      ],
+      [cursorMainRef.current, cursorTrailRef.current, scanLineRef.current],
       {
         xPercent: -50,
         yPercent: -50,
