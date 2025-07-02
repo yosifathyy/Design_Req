@@ -320,29 +320,36 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
       setCursorMode(isHovering ? "hover" : "normal");
 
       // Return to previous state
-      const targetScaleX = isHovering ? 0.5 : 1;
-      const targetScaleY = isHovering ? 1.5 : 1;
+      const targetScale = isHovering ? 1.5 : 1;
       const targetRotation = isHovering ? 45 : 0;
 
-      gsap.to(cursorMainRef.current, {
-        scaleX: targetScaleX,
-        scaleY: targetScaleY,
-        rotation: targetRotation,
-        duration: 0.3,
-        ease: "elastic.out(1, 0.5)",
-      });
+      if (isHovering) {
+        // Restart pulsing animation if hovering
+        gsap.killTweensOf(cursorMainRef.current);
+        gsap.set(cursorMainRef.current, {
+          scale: targetScale,
+          rotation: targetRotation,
+        });
+        gsap.to(cursorMainRef.current, {
+          scale: 1.8,
+          duration: 0.6,
+          ease: "power2.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+      } else {
+        gsap.to(cursorMainRef.current, {
+          scale: targetScale,
+          rotation: targetRotation,
+          duration: 0.3,
+          ease: "elastic.out(1, 0.5)",
+        });
+      }
 
       gsap.to(cursorTrailRef.current, {
         scale: isHovering ? 2 : 1,
         duration: 0.3,
         ease: "elastic.out(1, 0.3)",
-      });
-
-      gsap.to(glitchRef.current, {
-        opacity: isHovering ? 0.6 : 0,
-        scale: 1,
-        duration: 0.2,
-        ease: "power2.out",
       });
 
       gsap.to(pixelDotsRef.current, {
