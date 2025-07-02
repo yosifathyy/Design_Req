@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CartoonyCursor from "@/components/CartoonyCursor";
 import GSAPCursor from "@/components/GSAPCursor";
+import RetroCursor from "@/components/RetroCursor";
 import GSAPPageTransition from "@/components/GSAPPageTransition";
 import GSAPLoader from "@/components/GSAPLoader";
 import GSAPScrollProgress from "@/components/GSAPScrollProgress";
@@ -39,7 +40,7 @@ const AppContent = () => {
     <>
       {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
-      <GSAPCursor enabled={!isLoading} />
+      <RetroCursor enabled={!isLoading} />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/start-project" element={<StartProject />} />

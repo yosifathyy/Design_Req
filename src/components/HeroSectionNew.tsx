@@ -28,8 +28,6 @@ const HeroSectionNew: React.FC = () => {
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
 
-  const mouseFollowerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!heroRef.current) return;
 
@@ -131,20 +129,6 @@ const HeroSectionNew: React.FC = () => {
         },
       });
 
-      // Mouse follower effect
-      const handleMouseMove = (e: MouseEvent) => {
-        if (!mouseFollowerRef.current) return;
-
-        gsap.to(mouseFollowerRef.current, {
-          x: e.clientX - 50,
-          y: e.clientY - 50,
-          duration: 0.8,
-          ease: "power2.out",
-        });
-      };
-
-      window.addEventListener("mousemove", handleMouseMove);
-
       // Scroll-triggered animations
       ScrollTrigger.create({
         trigger: heroRef.current,
@@ -174,10 +158,6 @@ const HeroSectionNew: React.FC = () => {
           }
         },
       });
-
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-      };
     }, heroRef);
 
     return () => ctx.revert();
@@ -189,18 +169,6 @@ const HeroSectionNew: React.FC = () => {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream"
       style={{ zIndex: 1 }}
     >
-      {/* Mouse follower */}
-      <div
-        ref={mouseFollowerRef}
-        className="fixed w-24 h-24 pointer-events-none mix-blend-difference"
-        style={{
-          transform: "translate(-50%, -50%)",
-          zIndex: 40,
-        }}
-      >
-        <div className="w-full h-full bg-festival-orange rounded-full opacity-20 animate-pulse"></div>
-      </div>
-
       {/* Background shapes */}
       <div
         ref={shapesRef}

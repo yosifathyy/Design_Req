@@ -15,21 +15,18 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
   blendMode = "multiply",
 }) => {
   const cursorRef = useRef<HTMLDivElement>(null);
-  const followerRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [cursorText, setCursorText] = useState("");
 
   useEffect(() => {
-    if (!enabled || !cursorRef.current || !followerRef.current) return;
+    if (!enabled || !cursorRef.current) return;
 
     const cursor = cursorRef.current;
-    const follower = followerRef.current;
 
     // Hide default cursor
     document.body.style.cursor = "none";
 
     // Set initial positions
-    gsap.set([cursor, follower], {
+    gsap.set(cursor, {
       xPercent: -50,
       yPercent: -50,
     });
@@ -39,13 +36,6 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
         x: e.clientX,
         y: e.clientY,
         duration: 0.1,
-        ease: "power2.out",
-      });
-
-      gsap.to(follower, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.8,
         ease: "power2.out",
       });
     };
@@ -62,23 +52,10 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
       ) {
         setIsHovering(true);
         gsap.to(cursor, {
-          scale: 0.5,
+          scale: 1.5,
           duration: 0.3,
           ease: "power2.out",
         });
-        gsap.to(follower, {
-          scale: 3,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-
-        // Check for custom cursor text
-        const cursorTextAttr =
-          target.getAttribute("data-cursor") ||
-          target.closest("[data-cursor]")?.getAttribute("data-cursor");
-        if (cursorTextAttr) {
-          setCursorText(cursorTextAttr);
-        }
       }
     };
 
@@ -93,8 +70,7 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
         target.closest("a")
       ) {
         setIsHovering(false);
-        setCursorText("");
-        gsap.to([cursor, follower], {
+        gsap.to(cursor, {
           scale: 1,
           duration: 0.3,
           ease: "power2.out",
@@ -103,7 +79,7 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
     };
 
     const handleMouseDown = () => {
-      gsap.to([cursor, follower], {
+      gsap.to(cursor, {
         scale: 0.8,
         duration: 0.1,
         ease: "power2.out",
@@ -111,8 +87,8 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
     };
 
     const handleMouseUp = () => {
-      gsap.to([cursor, follower], {
-        scale: isHovering ? [0.5, 3] : [1, 1],
+      gsap.to(cursor, {
+        scale: isHovering ? 1.5 : 1,
         duration: 0.1,
         ease: "power2.out",
       });
@@ -151,28 +127,6 @@ export const GSAPCursor: React.FC<GSAPCursorProps> = ({
           mixBlendMode: blendMode as any,
         }}
       />
-
-      {/* Follower circle */}
-      <div
-        ref={followerRef}
-        className="fixed top-0 left-0 pointer-events-none z-[9998] border-2 rounded-full flex items-center justify-center"
-        style={{
-          width: size * 2,
-          height: size * 2,
-          borderColor: color,
-          backgroundColor: isHovering ? `${color}20` : "transparent",
-          transition: "background-color 0.3s ease",
-        }}
-      >
-        {cursorText && (
-          <span
-            className="text-xs font-bold text-white"
-            style={{ color: color }}
-          >
-            {cursorText}
-          </span>
-        )}
-      </div>
     </>
   );
 };
