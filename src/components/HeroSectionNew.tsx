@@ -216,7 +216,7 @@ const HeroSectionNew: React.FC = () => {
       >
         {/* Badge */}
         <motion.div
-          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-8 sm:mb-8 sm:-mb-[60px] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           whileHover={{
             scale: 1.05,
             rotate: 2,
@@ -256,7 +256,7 @@ const HeroSectionNew: React.FC = () => {
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets <span className="text-festival-pink">festival vibes</span> to
           create <span className="text-festival-amber">legendary designs!</span>{" "}
-          🎨🔥
+          ���🔥
         </p>
 
         {/* CTA Buttons */}
