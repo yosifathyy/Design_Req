@@ -167,10 +167,7 @@ export const GSAPFloating: React.FC<GSAPFloatingProps> = ({
   duration = 3,
   className,
 }) => {
-  const isMobile = useIsMobile();
-  const adjustedAmplitude = isMobile ? amplitude * 0.5 : amplitude;
-  const adjustedDuration = isMobile ? duration * 1.5 : duration;
-  const ref = useGSAPFloating(adjustedAmplitude, adjustedDuration);
+  const ref = useGSAPFloating(amplitude, duration);
 
   return (
     <div ref={ref} className={className}>
