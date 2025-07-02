@@ -451,27 +451,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         }}
       />
 
-      {/* Glitch effect */}
-      <div
-        ref={glitchRef}
-        className="fixed top-0 left-0 pointer-events-none z-[9995]"
-        style={{
-          width: "20px",
-          height: "20px",
-          background: `linear-gradient(45deg,
-            hsl(var(--festival-pink)) 0%,
-            transparent 25%,
-            hsl(var(--festival-orange)) 50%,
-            transparent 75%,
-            hsl(var(--festival-yellow)) 100%
-          )`,
-          opacity: 0,
-          borderRadius: "2px",
-          filter: "blur(1px)",
-          mixBlendMode: "screen",
-        }}
-      />
-
       <style jsx>{`
         @keyframes pixelPulse {
           0%,
