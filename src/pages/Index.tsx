@@ -200,7 +200,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24">
       {/* GSAP Animated background shapes - reduced on mobile */}
       <GSAPFloating amplitude={15} duration={4}>
         <div className="absolute top-8 sm:top-16 right-4 sm:right-16 w-8 sm:w-16 h-8 sm:h-16 bg-festival-orange rotate-45 rounded-lg opacity-60 sm:opacity-80"></div>
