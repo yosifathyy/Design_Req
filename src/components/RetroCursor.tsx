@@ -257,12 +257,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         duration: 0.3,
         ease: "elastic.out(1, 0.3)",
       });
-
-      gsap.to(pixelDotsRef.current, {
-        scale: isHovering ? 1 : 0,
-        duration: 0.2,
-        ease: "power2.out",
-      });
     };
 
     // Add continuous animations
