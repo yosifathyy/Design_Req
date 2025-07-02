@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import { motion, useInView, useAnimation } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface TestimonialData {
   id: string;
@@ -61,65 +64,92 @@ const testimonialsData: TestimonialData[] = [
 const TestimonialCard: React.FC<{
   testimonial: TestimonialData;
   index: number;
-}> = ({ testimonial, index }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const controls = useAnimation();
+  totalCards: number;
+}> = ({ testimonial, index, totalCards }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isInView) {
-      controls.start("visible");
-    }
-  }, [isInView, controls]);
+    if (!cardRef.current || !imgRef.current) return;
 
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={controls}
-      variants={{
-        hidden: {
-          opacity: 0,
-          y: 100,
-          scale: 0.8,
-          rotateX: -15,
-        },
-        visible: {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          rotateX: 0,
-          transition: {
-            duration: 0.8,
-            delay: index * 0.2,
-            ease: [0.25, 0.46, 0.45, 0.94],
+    const card = cardRef.current;
+    const img = imgRef.current;
+
+    // Set initial z-index - higher index = higher z-index (cards stack in front)
+    gsap.set(card, { zIndex: totalCards + index });
+
+    // Calculate mapped values based on card index - reduced blur intensity
+    const yPos = gsap.utils.mapRange(0, totalCards - 1, 0, -100, index);
+    const scaleValue = gsap.utils.mapRange(0, totalCards - 1, 1, 0.85, index);
+
+    // GSAP scroll-triggered animation for the image element
+    gsap.fromTo(
+      img,
+      {
+        scale: 1,
+        transformOrigin: "center top",
+        filter: "blur(0px)",
+      },
+      {
+        y: yPos,
+        scale: scaleValue,
+        filter: "blur(0px)", // Start with no blur
+        scrollTrigger: {
+          trigger: card,
+          scrub: true,
+          start: "top 25vh",
+          end: "+=200vh",
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            // Only apply blur in the last 40% of the animation
+            const progress = self.progress;
+            if (progress > 0.6) {
+              const blurProgress = gsap.utils.mapRange(0.6, 1, 0, 1, progress);
+              const blurValue = blurProgress * 2; // Further reduced max blur
+              gsap.set(img, { filter: `blur(${blurValue}px)` });
+            }
           },
         },
-      }}
-      whileHover={{
-        scale: 1.02,
-        y: -10,
-        rotateY: 5,
-        transition: { duration: 0.3 },
-      }}
-      className="group"
+      },
+    );
+
+    // Separate ScrollTrigger for pinning each card
+    ScrollTrigger.create({
+      trigger: card,
+      start: "top top",
+      endTrigger: ".following-content",
+      end: "top 400",
+      pin: true,
+      pinSpacing: false,
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.trigger === card || st.pin === card) {
+          st.kill();
+        }
+      });
+      gsap.killTweensOf([card, img]);
+    };
+  }, [testimonial, index, totalCards]);
+
+  return (
+    <div
+      ref={cardRef}
+      className="testimonial-card w-full h-screen flex items-center justify-center p-4"
     >
-      <div className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden transform group-hover:-rotate-1">
+      <div
+        ref={imgRef}
+        className="bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden w-full max-w-4xl"
+      >
         {/* Header with gradient background */}
         <div
           className={`p-6 border-b-4 border-black bg-gradient-to-r ${testimonial.color}`}
         >
           <div className="flex items-center">
-            <motion.div
-              className="w-16 h-16 rounded-full bg-white border-4 border-black flex items-center justify-center text-black font-black text-xl shadow-lg"
-              whileHover={{
-                rotate: 360,
-                scale: 1.1,
-                transition: { duration: 0.6 },
-              }}
-            >
+            <div className="w-16 h-16 rounded-full bg-white border-4 border-black flex items-center justify-center text-black font-black text-xl shadow-lg">
               {testimonial.avatar}
-            </motion.div>
+            </div>
             <div className="ml-6">
               <h4 className="font-black text-2xl text-white mb-1 drop-shadow-lg">
                 {testimonial.name}
@@ -128,146 +158,85 @@ const TestimonialCard: React.FC<{
                 {testimonial.handle}
               </p>
             </div>
-            <motion.div
-              className="ml-auto"
-              animate={{
-                rotate: [0, 10, -10, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
+            <div className="ml-auto">
               <div className="w-8 h-8 bg-white rounded-full border-2 border-black flex items-center justify-center">
                 <span className="text-black">✨</span>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="p-8">
-          <motion.p
-            className="text-black text-xl leading-relaxed font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.2 + 0.4, duration: 0.6 }}
-          >
+          <p className="text-black text-xl leading-relaxed font-medium">
             "{testimonial.content}"
-          </motion.p>
+          </p>
 
           {/* Rating stars */}
-          <motion.div
-            className="flex items-center mt-6 gap-1"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 + 0.6, duration: 0.5 }}
-          >
+          <div className="flex items-center mt-6 gap-1">
             {[...Array(5)].map((_, i) => (
-              <motion.span
-                key={i}
-                className="text-festival-amber text-2xl"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: index * 0.2 + 0.8 + i * 0.1,
-                  type: "spring",
-                  stiffness: 200,
-                }}
-                whileHover={{
-                  scale: 1.3,
-                  rotate: 180,
-                  transition: { duration: 0.3 },
-                }}
-              >
-                ⭐
-              </motion.span>
+              <span key={i} className="text-festival-amber text-2xl">
+                ���
+              </span>
             ))}
             <span className="ml-3 text-black/70 font-bold">5.0</span>
-          </motion.div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
-const FloatingShape: React.FC<{ className: string; delay?: number }> = ({
-  className,
-  delay = 0,
-}) => (
-  <motion.div
-    className={className}
-    animate={{
-      y: [0, -20, 0],
-      rotate: [0, 180, 360],
-      scale: [1, 1.1, 1],
-    }}
-    transition={{
-      duration: 4,
-      repeat: Infinity,
-      delay,
-      ease: "easeInOut",
-    }}
-  />
-);
-
 const Testimonials: React.FC = () => {
-  const headerRef = useRef(null);
-  const isHeaderInView = useInView(headerRef, { once: true });
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Initialize header animation
+    if (headerRef.current) {
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 80%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Cleanup on unmount
+    return () => {
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+    };
+  }, []);
 
   return (
-    <section className="relative py-20 bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream overflow-hidden">
-      {/* Floating background elements */}
-      <FloatingShape
-        className="absolute top-20 left-20 w-16 h-16 bg-festival-orange/20 rounded-full"
-        delay={0}
-      />
-      <FloatingShape
-        className="absolute top-40 right-32 w-12 h-12 bg-festival-pink/20 rotate-45"
-        delay={1}
-      />
-      <FloatingShape
-        className="absolute bottom-40 left-1/4 w-20 h-20 bg-festival-yellow/20 rounded-xl"
-        delay={2}
-      />
-      <FloatingShape
-        className="absolute top-1/2 right-20 w-8 h-8 bg-festival-coral/20 rounded-full"
-        delay={1.5}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* Header */}
-        <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: 50 }}
-          animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={isHeaderInView ? { scale: 1 } : {}}
-            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-            className="inline-block mb-6"
-          >
+    <section className="relative bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
+      {/* Header */}
+      <div
+        ref={headerRef}
+        className="h-screen flex items-center justify-center"
+      >
+        <div className="text-center px-4">
+          <div className="inline-block mb-6">
             <span className="text-6xl">💕</span>
-          </motion.div>
+          </div>
 
-          <motion.h2
+          <h2
             className="flex items-center justify-center gap-8 md:gap-16 font-display font-black text-black mb-6 tracking-tight"
             style={{
               fontSize: "clamp(80px, 15vw, 234px)",
               lineHeight: "0.9",
               fontFamily: '"Fredoka One", cursive',
             }}
-            initial={{ opacity: 0, rotateX: -90 }}
-            animate={isHeaderInView ? { opacity: 1, rotateX: 0 } : {}}
-            transition={{ delay: 0.5, duration: 0.8 }}
           >
             <span>Client</span>
-            <motion.span
+            <span
               className="relative inline-flex items-center justify-center px-6 md:px-12 py-2 md:py-4 bg-festival-amber text-white rounded-2xl md:rounded-3xl border-4 border-black"
               style={{
                 fontSize: "clamp(76px, 14vw, 222px)",
@@ -275,66 +244,41 @@ const Testimonials: React.FC = () => {
                 boxShadow: "0px 11px 0px rgba(0, 0, 0, 0.15)",
                 transform: "rotate(-1deg)",
               }}
-              whileHover={{
-                rotate: 1,
-                scale: 1.05,
-                boxShadow: "0px 16px 0px rgba(0, 0, 0, 0.2)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
             >
               Love
-            </motion.span>
-          </motion.h2>
+            </span>
+          </h2>
 
-          <motion.p
-            className="text-2xl md:text-3xl text-black/80 font-bold max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={isHeaderInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
+          <p className="text-2xl md:text-3xl text-black/80 font-bold max-w-3xl mx-auto leading-relaxed">
             Real stories from real clients who absolutely{" "}
             <span className="text-festival-magenta">adore</span> our work! 🎨
-          </motion.p>
-        </motion.div>
-
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {testimonialsData.map((testimonial, index) => (
-            <TestimonialCard
-              key={testimonial.id}
-              testimonial={testimonial}
-              index={index}
-            />
-          ))}
+          </p>
         </div>
+      </div>
 
-        {/* Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mt-20"
-        >
-          <motion.div
-            whileHover={{ scale: 1.05, rotate: -1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <button className="bg-gradient-to-r from-festival-orange to-festival-pink text-white font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1">
-              Join Our Happy Clients! 🚀
-            </button>
-          </motion.div>
+      {/* Testimonial Cards */}
+      {testimonialsData.map((testimonial, index) => (
+        <TestimonialCard
+          key={testimonial.id}
+          testimonial={testimonial}
+          index={index}
+          totalCards={testimonialsData.length}
+        />
+      ))}
 
-          <motion.p
-            className="mt-6 text-xl text-black/70 font-medium"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+      {/* Following Content - End marker for pinning */}
+      <div className="following-content h-screen flex items-center justify-center bg-gradient-to-br from-festival-orange to-festival-pink">
+        <div className="text-center">
+          <h3 className="text-6xl font-black text-white mb-4 drop-shadow-lg">
+            Ready for your love story?
+          </h3>
+          <button className="bg-white text-festival-orange font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1">
+            Join Our Happy Clients! 🚀
+          </button>
+          <p className="mt-6 text-xl text-white/90 font-medium">
             Ready to create your own success story?
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
       </div>
     </section>
   );
