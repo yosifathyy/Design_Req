@@ -64,21 +64,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         duration: 0.4,
         ease: "power1.out",
       });
-
-      // Pixel dots follow in formation
-      pixelDots.forEach((dot, index) => {
-        const angle = (index / pixelDots.length) * Math.PI * 2;
-        const radius = cursorMode === "hover" ? 60 : 15; // Much larger radius on hover
-        const offsetX = Math.cos(angle) * radius;
-        const offsetY = Math.sin(angle) * radius;
-
-        gsap.to(dot, {
-          x: mouseX + offsetX,
-          y: mouseY + offsetY,
-          duration: 0.2 + index * 0.01,
-          ease: "power2.out",
-        });
-      });
     };
 
     const handleMouseOver = (e: MouseEvent) => {
