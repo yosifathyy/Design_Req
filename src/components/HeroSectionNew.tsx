@@ -251,7 +251,7 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] sm:pt-[75px] mt-0 sm:mt-4 mb-[53px]"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[75px] sm:pt-[38px] mt-4 sm:mt-0 mb-[53px]"
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets{" "}
