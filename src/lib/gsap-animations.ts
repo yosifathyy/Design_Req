@@ -7,6 +7,15 @@ import { useEffect, useRef } from "react";
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
+// Detect if user prefers reduced motion or is on mobile
+const isReducedMotion = () => {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    window.innerWidth < 768
+  );
+};
+
 // Custom GSAP hooks for React components
 
 export const useGSAPFadeIn = (trigger?: boolean, delay = 0) => {
