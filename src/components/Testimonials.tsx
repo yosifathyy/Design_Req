@@ -118,7 +118,7 @@ const TestimonialCard: React.FC<{
       trigger: card,
       start: "top top",
       endTrigger: ".following-content",
-      end: "top 100",
+      end: "top 400",
       pin: true,
       pinSpacing: false,
     });
