@@ -21,26 +21,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
     // Hide default cursor
     document.body.style.cursor = "none";
 
-    // Create pixel dots for retro effect
-    const pixelDots: HTMLDivElement[] = [];
-    const container = document.body;
-
-    // Create 16 pixel dots in a grid pattern
-    for (let i = 0; i < 16; i++) {
-      const dot = document.createElement("div");
-      dot.className = "fixed pointer-events-none z-[9996]";
-      dot.style.width = "8px";
-      dot.style.height = "8px";
-      dot.style.backgroundColor = `hsl(${280 + i * 15}, 90%, 70%)`;
-      dot.style.borderRadius = "50%";
-      dot.style.opacity = "0";
-      dot.style.transform = "translate(-50%, -50%)";
-      dot.style.boxShadow = `0 0 15px hsl(${280 + i * 15}, 90%, 70%)`;
-      container.appendChild(dot);
-      pixelDots.push(dot);
-      pixelDotsRef.current.push(dot);
-    }
-
     // Set initial positions
     gsap.set(
       [cursorMainRef.current, cursorTrailRef.current, scanLineRef.current],
