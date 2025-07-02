@@ -169,7 +169,10 @@ function DockItem({ children, className, onClick }: DockItemProps) {
     <motion.div
       ref={ref}
       style={{ width }}
-      onHoverStart={() => isHovered.set(1)}
+      onHoverStart={() => {
+        isHovered.set(1);
+        playHoverSound();
+      }}
       onHoverEnd={() => isHovered.set(0)}
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
