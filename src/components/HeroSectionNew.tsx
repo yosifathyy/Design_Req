@@ -254,12 +254,9 @@ const HeroSectionNew: React.FC = () => {
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-4 mt-0 mb-8"
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
-          meets{" "}
-          <span className="text-festival-pink mt-0 sm:mt-[29px]">
-            festival vibes
-          </span>{" "}
-          to create{" "}
-          <span className="text-festival-amber">legendary designs!</span> 🎨🔥
+          meets <span className="text-festival-pink">festival vibes</span> to
+          create <span className="text-festival-amber">legendary designs!</span>{" "}
+          🎨🔥
         </p>
 
         {/* CTA Buttons */}
