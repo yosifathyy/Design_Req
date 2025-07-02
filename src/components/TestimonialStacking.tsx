@@ -203,7 +203,7 @@ const TestimonialCard: React.FC<{
             </p>
             <div className="flex items-center justify-between mt-6 pt-4 border-t-2 border-black/10">
               <div className="flex items-center gap-6 text-black/60">
-                <button className="flex items-center gap-2 hover:text-festival-pink transition-colors">
+                <button className="flex items-center gap-2 transition-colors hover:text-[#121212]">
                   <span className="font-semibold">Reply</span>
                 </button>
                 <button className="flex items-center gap-2 hover:text-festival-orange transition-colors">
