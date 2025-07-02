@@ -144,6 +144,7 @@ function Dock({
 function DockItem({ children, className, onClick }: DockItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { playClickSound } = useClickSound();
 
   const { distance, magnification, mouseX, spring } = useDock();
 
