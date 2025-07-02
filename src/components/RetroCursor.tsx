@@ -160,16 +160,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           ease: "elastic.out(1, 0.5)",
         });
 
-        // Reset trail
-        gsap.to(cursorTrailRef.current, {
-          scale: 1,
-          borderWidth: "3px",
-          borderStyle: "dotted",
-          rotation: 0,
-          duration: 0.6,
-          ease: "elastic.out(1, 0.3)",
-        });
-
         // Reset scan line
         gsap.to(scanLineRef.current, {
           scaleX: 1,
