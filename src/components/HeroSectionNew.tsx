@@ -239,13 +239,13 @@ const HeroSectionNew: React.FC = () => {
         {/* Main title */}
         <h1
           ref={titleRef}
-          className="font-display font-black text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] text-black mb-8 tracking-tight leading-[0.8]"
+          className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-black mb-8 tracking-tight leading-[0.8]"
           style={{
             textShadow: "8px 8px 0px rgba(0,0,0,0.1)",
             perspective: "1000px",
           }}
         >
-          Design Requests ✨
+          Design Requests
         </h1>
 
         {/* Subtitle */}
