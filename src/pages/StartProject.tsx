@@ -45,6 +45,7 @@ import { motion } from "framer-motion";
 const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
+  const { playClickSound } = useClickSound();
   const [formData, setFormData] = useState({
     projectName: "",
     description: "",
