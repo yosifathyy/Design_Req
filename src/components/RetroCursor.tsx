@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RetroCursorProps {
   enabled?: boolean;
 }
 
 export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
+  const isMobile = useIsMobile();
   const cursorMainRef = useRef<HTMLDivElement>(null);
   const scanLineRef = useRef<HTMLDivElement>(null);
 
