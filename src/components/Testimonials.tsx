@@ -105,7 +105,7 @@ const TestimonialCard: React.FC<{
             const progress = self.progress;
             if (progress > 0.6) {
               const blurProgress = gsap.utils.mapRange(0.6, 1, 0, 1, progress);
-              const blurValue = blurProgress * 4; // Reduced max blur
+              const blurValue = blurProgress * 2; // Further reduced max blur
               gsap.set(img, { filter: `blur(${blurValue}px)` });
             }
           },
@@ -176,7 +176,7 @@ const TestimonialCard: React.FC<{
           <div className="flex items-center mt-6 gap-1">
             {[...Array(5)].map((_, i) => (
               <span key={i} className="text-festival-amber text-2xl">
-                ⭐
+                ���
               </span>
             ))}
             <span className="ml-3 text-black/70 font-bold">5.0</span>
