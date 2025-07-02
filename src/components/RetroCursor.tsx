@@ -247,7 +247,8 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         setIsHovering(false);
         setCursorMode("normal");
 
-        // Reset main cursor
+        // Kill pulsing animation and reset main cursor
+        gsap.killTweensOf(cursorMainRef.current);
         gsap.to(cursorMainRef.current, {
           scale: 1,
           rotation: 0,
