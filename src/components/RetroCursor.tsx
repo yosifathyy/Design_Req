@@ -92,14 +92,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         ease: "power1.out",
       });
 
-      // Glitch effect position
-      gsap.to(glitchRef.current, {
-        x: mouseX + gsap.utils.random(-2, 2),
-        y: mouseY + gsap.utils.random(-2, 2),
-        duration: 0.05,
-        ease: "none",
-      });
-
       // Pixel dots follow in formation
       pixelDots.forEach((dot, index) => {
         const angle = (index / pixelDots.length) * Math.PI * 2;
