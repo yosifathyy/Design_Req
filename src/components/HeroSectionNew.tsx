@@ -251,12 +251,12 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] mb-[53px]"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold pt-[38px] sm:pt-[75px] mt-0 sm:mt-4 mb-[53px]"
         >
           Where <span className="text-festival-orange">wild creativity</span>{" "}
           meets <span className="text-festival-pink">festival vibes</span> to
           create <span className="text-festival-amber">legendary designs!</span>{" "}
-          ���🔥
+          🎨🔥
         </p>
 
         {/* CTA Buttons */}
