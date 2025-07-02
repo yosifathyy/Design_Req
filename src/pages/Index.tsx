@@ -1484,6 +1484,9 @@ const Index = () => {
                             behavior: "smooth",
                           });
                       }}
+                      onMouseEnter={() => {
+                        playHoverSound();
+                      }}
                       className="hover:text-white cursor-pointer"
                     >
                       {link.label}
