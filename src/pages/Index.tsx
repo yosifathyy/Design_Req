@@ -1259,16 +1259,16 @@ const Index = () => {
           </svg>
         </div>
 
-        <div className="max-w-md mx-auto relative z-10">
+        <div className="max-w-xs sm:max-w-md mx-auto relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="relative"
           >
             {/* Image Stack Container */}
-            <div className="relative w-full aspect-[4/5] mb-6">
+            <div className="relative w-full aspect-[4/5] mb-4 sm:mb-6">
               {imageOrder.map((imageIndex, stackIndex) => {
                 const zIndexes = [30, 20, 10, 0];
                 const shadows = [
