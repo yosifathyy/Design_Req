@@ -1433,10 +1433,10 @@ const Index = () => {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"
+                  className="w-10 sm:w-12 h-10 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center"
                   animate={{ rotate: [0, 360] }}
                   transition={{
-                    duration: 10,
+                    duration: 15,
                     repeat: Infinity,
                     ease: "linear",
                   }}
