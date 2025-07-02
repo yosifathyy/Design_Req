@@ -288,17 +288,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
 
         // Kill all animations on pixel dots
         gsap.killTweensOf(pixelDotsRef.current);
-
-        // Hide glitch effect
-        gsap.to(glitchRef.current, {
-          opacity: 0,
-          scale: 1,
-          filter: "hue-rotate(0deg)",
-          duration: 0.3,
-        });
-
-        // Kill glitch animation
-        gsap.killTweensOf(glitchRef.current);
       }
     };
 
