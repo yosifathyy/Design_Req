@@ -45,14 +45,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         ease: "none",
       });
 
-      // Trail with delay and easing
-      gsap.to(cursorTrailRef.current, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-
       // Scan line with smooth follow
       gsap.to(scanLineRef.current, {
         x: mouseX,
