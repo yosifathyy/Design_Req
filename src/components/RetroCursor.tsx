@@ -104,16 +104,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
           yoyo: true,
         });
 
-        // Trail becomes a smaller rotating ring
-        gsap.to(cursorTrailRef.current, {
-          scale: 2,
-          borderWidth: "4px",
-          borderStyle: "solid",
-          rotation: 180,
-          duration: 0.5,
-          ease: "elastic.out(1, 0.3)",
-        });
-
         // Scan line becomes a cross pattern
         gsap.to(scanLineRef.current, {
           scaleX: 20,
