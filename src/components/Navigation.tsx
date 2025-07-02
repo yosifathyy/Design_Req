@@ -96,10 +96,13 @@ function Dock({
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
+  const isMobile = useIsMobile();
 
   const maxHeight = useMemo(() => {
-    return Math.max(DOCK_HEIGHT, magnification + magnification / 2 + 4);
-  }, [magnification]);
+    const dockHeight = isMobile ? MOBILE_DOCK_HEIGHT : DOCK_HEIGHT;
+    const mag = isMobile ? MOBILE_MAGNIFICATION : magnification;
+    return Math.max(dockHeight, mag + mag / 2 + 4);
+  }, [magnification, isMobile]);
 
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
   const height = useSpring(heightRow, spring);
