@@ -277,7 +277,10 @@ export const GSAPMagneticButton: React.FC<GSAPMagneticButtonProps> = ({
     <button
       ref={buttonRef}
       className={cn("relative overflow-hidden", className)}
-      onClick={onClick}
+      onClick={() => {
+        playClickSound();
+        onClick?.();
+      }}
     >
       <div ref={magnetRef} className="w-full h-full">
         {children}
