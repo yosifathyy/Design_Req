@@ -262,7 +262,7 @@ const HeroSectionNew: React.FC = () => {
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full"
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full mt-6"
         >
           <motion.div
             whileHover={{
