@@ -1360,6 +1360,9 @@ const Index = () => {
                   e.preventDefault();
                   console.log("Button pressed!");
                 }}
+                onMouseEnter={() => {
+                  playHoverSound();
+                }}
               >
                 <motion.div
                   animate={
