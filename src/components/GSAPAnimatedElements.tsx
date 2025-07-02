@@ -9,6 +9,7 @@ import {
 } from "@/lib/gsap-animations";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useClickSound } from "@/hooks/use-click-sound";
 
 interface GSAPFadeInProps {
   children: ReactNode;
