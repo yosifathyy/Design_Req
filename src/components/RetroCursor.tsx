@@ -210,22 +210,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
             from: "random",
           },
         });
-
-        // Glitch effect becomes very visible with color cycling
-        gsap.to(glitchRef.current, {
-          opacity: 1,
-          scale: 3,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-
-        // Add continuous color cycling to glitch
-        gsap.to(glitchRef.current, {
-          filter: "hue-rotate(360deg)",
-          duration: 1,
-          ease: "none",
-          repeat: -1,
-        });
       }
     };
 
