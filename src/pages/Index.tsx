@@ -1129,7 +1129,7 @@ const Index = () => {
       </section>
 
       {/* Interactive Image Shuffle Section */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+      <section className="px-4 sm:px-6 py-8 sm:py-12 lg:py-20 relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-20"
           style={{
