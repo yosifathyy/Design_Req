@@ -739,7 +739,10 @@ const Index = () => {
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <Heart className="w-3 h-3 text-festival-pink mr-2 flex-shrink-0" />
+                          <Heart
+                            className="w-3 h-3 mr-2 flex-shrink-0"
+                            style={{ color: "#121212" }}
+                          />
                           <span className="text-xs sm:text-sm">{feature}</span>
                         </motion.div>
                       ))}
