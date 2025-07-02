@@ -278,7 +278,11 @@ const HeroSectionNew: React.FC = () => {
             <Link
               to="/start-project"
               className="group relative overflow-hidden bg-gradient-to-r from-festival-orange to-festival-pink text-white font-black px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 text-xl uppercase tracking-wide inline-flex items-center gap-4"
+              onClick={() => playClickSound()}
+              onMouseEnter={() => playHoverSound()}
             >
+              {/* Animated background - moved behind content */}
+              <div className="absolute inset-0 bg-gradient-to-r from-festival-pink to-festival-amber opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
               <motion.div
                 animate={{
                   x: [0, 5, 0],
@@ -289,10 +293,11 @@ const HeroSectionNew: React.FC = () => {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
+                className="relative z-10"
               >
                 <Rocket className="w-6 h-6" />
               </motion.div>
-              Start Creating
+              <span className="relative z-10">Start Creating</span>
               <motion.div
                 animate={{ x: [0, 10, 0] }}
                 transition={{
@@ -300,11 +305,10 @@ const HeroSectionNew: React.FC = () => {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
+                className="relative z-10"
               >
                 <ArrowRight className="w-6 h-6" />
               </motion.div>
-              {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-festival-pink to-festival-amber opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </Link>
           </motion.div>
 
