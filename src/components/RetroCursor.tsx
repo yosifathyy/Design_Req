@@ -264,24 +264,6 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         }}
       />
 
-      {/* Trail cursor - retro circle */}
-      <div
-        ref={cursorTrailRef}
-        className="fixed top-0 left-0 pointer-events-none z-[9998]"
-        style={{
-          width: "28px",
-          height: "28px",
-          border: "3px solid hsl(var(--festival-pink))",
-          borderRadius: "50%",
-          backgroundColor: "transparent",
-          borderStyle: "dotted",
-          boxShadow: `
-            0 0 0 2px hsl(var(--festival-black)),
-            0 0 20px hsl(var(--festival-pink))
-          `,
-        }}
-      />
-
       {/* Scan line effect */}
       <div
         ref={scanLineRef}
