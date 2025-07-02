@@ -201,21 +201,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col">
-      {/* GSAP Animated background shapes */}
+      {/* GSAP Animated background shapes - reduced on mobile */}
       <GSAPFloating amplitude={15} duration={4}>
-        <div className="absolute top-16 right-16 w-16 h-16 bg-festival-orange rotate-45 rounded-lg opacity-80"></div>
+        <div className="absolute top-8 sm:top-16 right-4 sm:right-16 w-8 sm:w-16 h-8 sm:h-16 bg-festival-orange rotate-45 rounded-lg opacity-60 sm:opacity-80"></div>
       </GSAPFloating>
       <GSAPFloating amplitude={20} duration={5}>
-        <div className="absolute top-32 right-32 w-12 h-12 bg-festival-pink -rotate-12 rounded-lg opacity-70"></div>
+        <div className="absolute top-16 sm:top-32 right-8 sm:right-32 w-6 sm:w-12 h-6 sm:h-12 bg-festival-pink -rotate-12 rounded-lg opacity-50 sm:opacity-70"></div>
       </GSAPFloating>
       <GSAPFloating amplitude={12} duration={3.5}>
-        <div className="absolute bottom-32 left-16 w-14 h-14 bg-festival-yellow rotate-12 rounded-lg opacity-75"></div>
+        <div className="absolute bottom-16 sm:bottom-32 left-4 sm:left-16 w-8 sm:w-14 h-8 sm:h-14 bg-festival-yellow rotate-12 rounded-lg opacity-50 sm:opacity-75"></div>
       </GSAPFloating>
       <GSAPParallax speed={0.3}>
-        <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-festival-coral rotate-45 rounded-lg opacity-60"></div>
+        <div className="absolute top-1/2 left-1/4 w-4 sm:w-8 h-4 sm:h-8 bg-festival-coral rotate-45 rounded-lg opacity-40 sm:opacity-60"></div>
       </GSAPParallax>
       <GSAPParallax speed={-0.2}>
-        <div className="absolute bottom-1/4 right-1/3 w-10 h-10 bg-festival-amber rotate-12 rounded-lg opacity-50"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-6 sm:w-10 h-6 sm:h-10 bg-festival-amber rotate-12 rounded-lg opacity-30 sm:opacity-50"></div>
       </GSAPParallax>
 
       <Navigation />
