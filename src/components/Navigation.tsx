@@ -245,6 +245,7 @@ function DockIcon({ children, className, ...rest }: DockIconProps) {
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
