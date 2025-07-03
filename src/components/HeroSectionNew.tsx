@@ -247,32 +247,15 @@ const HeroSectionNew: React.FC = () => {
           }}
         >
           <img
-            src="https://pouch.jumpshare.com/preview/2oj7dzs6tAXQF4B_LIWaaCJS-7Xlr-JxshKfegTmqZOgqeBrprM1xUD3fN7XYVUoCiu8KP8BUcRxbAUvEvSYaFB600btrHD81Yx2wgTmt18"
+            src="https://cdn.builder.io/api/v1/image/assets%2F6ab2dfa502f944c3bc697692f3ed4a43%2F9b230b2ea8e148b8b469f0ecd8579afd?format=webp&width=800"
             alt="Design Requests Logo"
             className="max-w-full h-auto mx-auto block"
             style={{
               maxHeight: "200px",
-              minHeight: "100px",
               width: "auto",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
-              backgroundColor: "transparent",
             }}
-            onError={(e) => {
-              console.error("Logo failed to load:", e);
-              e.currentTarget.style.display = "none";
-              e.currentTarget.nextElementSibling.style.display = "block";
-            }}
-            onLoad={() => console.log("Logo loaded successfully")}
           />
-          <div
-            className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-black tracking-tight leading-[0.9] text-center"
-            style={{
-              display: "none",
-              textShadow: "8px 8px 0px rgba(0,0,0,0.1)",
-            }}
-          >
-            Design Requests
-          </div>
         </div>
 
         {/* Subtitle */}
