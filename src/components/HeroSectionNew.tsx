@@ -35,7 +35,7 @@ const HeroSectionNew: React.FC = () => {
 
     const ctx = gsap.context(() => {
       // Initial setup
-      gsap.set([titleRef.current, subtitleRef.current, ctaRef.current], {
+      gsap.set([subtitleRef.current, ctaRef.current], {
         opacity: 0,
         y: 100,
       });
