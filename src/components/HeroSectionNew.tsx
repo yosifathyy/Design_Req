@@ -76,19 +76,39 @@ const HeroSectionNew: React.FC = () => {
         0.5,
       );
 
-      // Logo scroll-out animation
+      // Logo scroll-out animation (bidirectional)
       ScrollTrigger.create({
-        trigger: logoRef.current,
+        trigger: heroRef.current,
         start: "top top",
         end: "bottom top",
-        scrub: 2,
-        animation: gsap.to(logoRef.current, {
-          y: -200,
-          scale: 0.6,
-          opacity: 0.3,
-          rotation: -10,
-          ease: "power2.out",
-        }),
+        scrub: 1,
+        animation: gsap.fromTo(
+          logoRef.current,
+          {
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            rotation: 0,
+          },
+          {
+            y: -150,
+            scale: 0.7,
+            opacity: 0.4,
+            rotation: -5,
+            ease: "none",
+          },
+        ),
+        onUpdate: (self) => {
+          // Ensure logo is visible when at the top
+          if (self.progress === 0) {
+            gsap.set(logoRef.current, {
+              y: 0,
+              scale: 1,
+              opacity: 1,
+              rotation: 0,
+            });
+          }
+        },
       });
 
       // Subtitle animation
