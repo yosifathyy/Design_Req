@@ -27,7 +27,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const [isLoading, setIsLoading] = useState(false); // Disable loader temporarily
+  const [isLoading, setIsLoading] = useState(true); // Enable retro preloader
 
   useEffect(() => {
     initializeGSAP();
