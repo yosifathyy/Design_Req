@@ -262,7 +262,10 @@ const HeroSectionNew: React.FC = () => {
 
         {/* Main title */}
         <div
-          ref={logoRef}
+          ref={(el) => {
+            logoRef.current = el;
+            titleRef.current = el;
+          }}
           className="mb-24"
           style={{
             perspective: "1000px",
