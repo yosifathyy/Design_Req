@@ -39,7 +39,7 @@ const AppContent = () => {
 
   return (
     <>
-      {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
+      {isLoading && <RetroPreloader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
       <RetroCursor enabled={!isLoading} />
       <Routes>
