@@ -276,7 +276,7 @@ const HeroSectionNew: React.FC = () => {
             alt="Design Requests Logo"
             className="max-w-full h-auto mx-auto block"
             style={{
-              maxHeight: "230px",
+              maxHeight: "276px",
               width: "auto",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
