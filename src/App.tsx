@@ -10,6 +10,7 @@ import RetroCursor from "@/components/RetroCursor";
 import GSAPPageTransition from "@/components/GSAPPageTransition";
 import GSAPLoader from "@/components/GSAPLoader";
 import GSAPScrollProgress from "@/components/GSAPScrollProgress";
+import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
 import Index from "./pages/Index";
 import StartProject from "./pages/StartProject";
