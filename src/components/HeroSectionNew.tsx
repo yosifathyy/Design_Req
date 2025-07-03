@@ -240,10 +240,11 @@ const HeroSectionNew: React.FC = () => {
 
         {/* Main title */}
         <div
-          ref={titleRef}
           className="mb-24"
           style={{
             perspective: "1000px",
+            opacity: 1,
+            transform: "translateY(0px)",
           }}
         >
           <img
@@ -254,7 +255,10 @@ const HeroSectionNew: React.FC = () => {
               maxHeight: "200px",
               width: "auto",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+              display: "block",
             }}
+            onLoad={() => console.log("Logo loaded successfully")}
+            onError={(e) => console.error("Logo failed to load:", e)}
           />
         </div>
 
