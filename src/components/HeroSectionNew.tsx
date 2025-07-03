@@ -409,7 +409,10 @@ const HeroSectionNew: React.FC = () => {
         </div>
 
         {/* Floating stats */}
-        <div className="mt-16 mb-[45px] flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full">
+        <div
+          className="flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full"
+          style={{ margin: "49px 0 43px" }}
+        >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
             { label: "Projects", value: "1.2K+", icon: Wand2 },
