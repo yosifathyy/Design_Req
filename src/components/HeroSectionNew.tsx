@@ -25,6 +25,7 @@ gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 const HeroSectionNew: React.FC = () => {
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
