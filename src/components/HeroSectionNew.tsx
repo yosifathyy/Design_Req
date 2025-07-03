@@ -24,7 +24,7 @@ gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
 const HeroSectionNew: React.FC = () => {
   const heroRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
@@ -35,13 +35,14 @@ const HeroSectionNew: React.FC = () => {
 
     const ctx = gsap.context(() => {
       // Initial setup
-      gsap.set([titleRef.current, subtitleRef.current, ctaRef.current], {
+      gsap.set([logoRef.current, subtitleRef.current, ctaRef.current], {
         opacity: 0,
         y: 100,
+        scale: 0.8,
       });
 
       // Create entrance timeline
-      const tl = gsap.timeline({ delay: 0.5 });
+      const tl = gsap.timeline({ delay: 0.3 });
 
       // Animate background shapes
       gsap.set(".bg-shape", {
@@ -61,34 +62,54 @@ const HeroSectionNew: React.FC = () => {
         0.2,
       );
 
-      // Title animation with character reveal
-      if (titleRef.current) {
-        const title = titleRef.current;
-        const text = title.textContent || "";
-        title.innerHTML = text
-          .split("")
-          .map((char) =>
-            char === " "
-              ? `<span class="char">&nbsp;</span>`
-              : `<span class="char">${char}</span>`,
-          )
-          .join("");
+      // Logo entrance animation
+      tl.to(
+        logoRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "back.out(1.7)",
+          filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+        },
+        0.5,
+      );
 
-        gsap.set(".char", { opacity: 0, y: 100, rotateX: -90 });
-
-        tl.to(titleRef.current, { opacity: 1, duration: 0.1 }, 0.8).to(
-          ".char",
+      // Logo scroll-out animation (bidirectional)
+      ScrollTrigger.create({
+        trigger: heroRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+        animation: gsap.fromTo(
+          logoRef.current,
           {
-            opacity: 1,
             y: 0,
-            rotateX: 0,
-            duration: 0.8,
-            stagger: 0.03,
-            ease: "back.out(1.7)",
+            scale: 1,
+            opacity: 1,
+            rotation: 0,
           },
-          0.8,
-        );
-      }
+          {
+            y: -150,
+            scale: 0.7,
+            opacity: 0.4,
+            rotation: -5,
+            ease: "none",
+          },
+        ),
+        onUpdate: (self) => {
+          // Ensure logo is visible when at the top
+          if (self.progress === 0) {
+            gsap.set(logoRef.current, {
+              y: 0,
+              scale: 1,
+              opacity: 1,
+              rotation: 0,
+            });
+          }
+        },
+      });
 
       // Subtitle animation
       tl.to(
@@ -239,16 +260,27 @@ const HeroSectionNew: React.FC = () => {
         </motion.div>
 
         {/* Main title */}
-        <h1
-          ref={titleRef}
-          className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-black mb-24 tracking-tight leading-[0.9]"
+        <div
+          ref={logoRef}
+          className="mb-24"
           style={{
-            textShadow: "8px 8px 0px rgba(0,0,0,0.1)",
             perspective: "1000px",
           }}
         >
-          Design Requests
-        </h1>
+          <img
+            src="https://i.postimg.cc/JnS8wrG0/logo-image.png"
+            alt="Design Requests Logo"
+            className="max-w-full h-auto mx-auto block"
+            style={{
+              maxHeight: "200px",
+              width: "auto",
+              filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+              display: "block",
+            }}
+            onLoad={() => console.log("Logo loaded successfully")}
+            onError={(e) => console.error("Logo failed to load:", e)}
+          />
+        </div>
 
         {/* Subtitle */}
         <p
