@@ -61,34 +61,7 @@ const HeroSectionNew: React.FC = () => {
         0.2,
       );
 
-      // Title animation with character reveal
-      if (titleRef.current) {
-        const title = titleRef.current;
-        const text = title.textContent || "";
-        title.innerHTML = text
-          .split("")
-          .map((char) =>
-            char === " "
-              ? `<span class="char">&nbsp;</span>`
-              : `<span class="char">${char}</span>`,
-          )
-          .join("");
-
-        gsap.set(".char", { opacity: 0, y: 100, rotateX: -90 });
-
-        tl.to(titleRef.current, { opacity: 1, duration: 0.1 }, 0.8).to(
-          ".char",
-          {
-            opacity: 1,
-            y: 0,
-            rotateX: 0,
-            duration: 0.8,
-            stagger: 0.03,
-            ease: "back.out(1.7)",
-          },
-          0.8,
-        );
-      }
+      // Logo is now static and visible immediately
 
       // Subtitle animation
       tl.to(
