@@ -24,7 +24,7 @@ gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
 const HeroSectionNew: React.FC = () => {
   const heroRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
@@ -35,13 +35,14 @@ const HeroSectionNew: React.FC = () => {
 
     const ctx = gsap.context(() => {
       // Initial setup
-      gsap.set([subtitleRef.current, ctaRef.current], {
+      gsap.set([logoRef.current, subtitleRef.current, ctaRef.current], {
         opacity: 0,
         y: 100,
+        scale: 0.8,
       });
 
       // Create entrance timeline
-      const tl = gsap.timeline({ delay: 0.5 });
+      const tl = gsap.timeline({ delay: 0.3 });
 
       // Animate background shapes
       gsap.set(".bg-shape", {
@@ -61,7 +62,34 @@ const HeroSectionNew: React.FC = () => {
         0.2,
       );
 
-      // Logo is now static and visible immediately
+      // Logo entrance animation
+      tl.to(
+        logoRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "back.out(1.7)",
+          filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+        },
+        0.5,
+      );
+
+      // Logo scroll-out animation
+      ScrollTrigger.create({
+        trigger: logoRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 2,
+        animation: gsap.to(logoRef.current, {
+          y: -200,
+          scale: 0.6,
+          opacity: 0.3,
+          rotation: -10,
+          ease: "power2.out",
+        }),
+      });
 
       // Subtitle animation
       tl.to(
@@ -213,11 +241,10 @@ const HeroSectionNew: React.FC = () => {
 
         {/* Main title */}
         <div
+          ref={logoRef}
           className="mb-24"
           style={{
             perspective: "1000px",
-            opacity: 1,
-            transform: "translateY(0px)",
           }}
         >
           <img
