@@ -239,16 +239,23 @@ const HeroSectionNew: React.FC = () => {
         </motion.div>
 
         {/* Main title */}
-        <h1
+        <div
           ref={titleRef}
-          className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-black mb-24 tracking-tight leading-[0.9]"
+          className="mb-24"
           style={{
-            textShadow: "8px 8px 0px rgba(0,0,0,0.1)",
             perspective: "1000px",
           }}
         >
-          Design Requests
-        </h1>
+          <img
+            src="https://pouch.jumpshare.com/preview/2oj7dzs6tAXQF4B_LIWaaCJS-7Xlr-JxshKfegTmqZOgqeBrprM1xUD3fN7XYVUoCiu8KP8BUcRxbAUvEvSYaFB600btrHD81Yx2wgTmt18"
+            alt="Design Requests Logo"
+            className="max-w-full h-auto mx-auto"
+            style={{
+              maxHeight: "200px",
+              filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+            }}
+          />
+        </div>
 
         {/* Subtitle */}
         <p
