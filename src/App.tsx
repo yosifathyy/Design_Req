@@ -10,6 +10,7 @@ import RetroCursor from "@/components/RetroCursor";
 import GSAPPageTransition from "@/components/GSAPPageTransition";
 import GSAPLoader from "@/components/GSAPLoader";
 import GSAPScrollProgress from "@/components/GSAPScrollProgress";
+import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
 import Index from "./pages/Index";
 import StartProject from "./pages/StartProject";
@@ -26,7 +27,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const [isLoading, setIsLoading] = useState(false); // Disable loader temporarily
+  const [isLoading, setIsLoading] = useState(true); // Enable retro preloader
 
   useEffect(() => {
     initializeGSAP();
@@ -38,7 +39,7 @@ const AppContent = () => {
 
   return (
     <>
-      {isLoading && <GSAPLoader onComplete={handleLoadComplete} />}
+      {isLoading && <RetroPreloader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
       <RetroCursor enabled={!isLoading} />
       <Routes>

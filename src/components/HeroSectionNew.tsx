@@ -25,6 +25,7 @@ gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 const HeroSectionNew: React.FC = () => {
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
@@ -261,7 +262,10 @@ const HeroSectionNew: React.FC = () => {
 
         {/* Main title */}
         <div
-          ref={logoRef}
+          ref={(el) => {
+            logoRef.current = el;
+            titleRef.current = el;
+          }}
           className="mb-24"
           style={{
             perspective: "1000px",
@@ -272,7 +276,7 @@ const HeroSectionNew: React.FC = () => {
             alt="Design Requests Logo"
             className="max-w-full h-auto mx-auto block"
             style={{
-              maxHeight: "200px",
+              maxHeight: "300px",
               width: "auto",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
@@ -285,13 +289,41 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold mb-8"
-          style={{ marginTop: "0", position: "relative", zIndex: 1 }}
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
+          style={{
+            marginTop: "-93px",
+            marginBottom: "-4px",
+            maxWidth: "727px",
+            margin: "-93px auto -4px",
+            position: "relative",
+            zIndex: 1,
+            fontFamily: "Righteous, display",
+            textShadow: "3px 3px 0px rgba(0,0,0,0.3)",
+          }}
         >
-          Where <span className="text-festival-orange">wild creativity</span>{" "}
-          meets <span style={{ color: "#121212" }}>festival vibes</span> to
-          create <span className="text-festival-amber">legendary designs!</span>{" "}
-          🎨🔥
+          <span style={{ fontFamily: "Righteous, display" }}>Where </span>
+          <span
+            className="text-festival-orange"
+            style={{ fontFamily: "Righteous, display" }}
+          >
+            wild creativity
+          </span>
+          <span
+            style={{ fontFamily: "Righteous, display", paddingLeft: "8px" }}
+          >
+            {" "}
+            meets{" "}
+          </span>
+          <span style={{ color: "#e84686", fontFamily: "Righteous, display" }}>
+            client desires
+          </span>
+          <span style={{ fontFamily: "Righteous, display" }}> to create </span>
+          <span style={{ color: "#36a5c6", fontFamily: "Righteous, display" }}>
+            legendary designs!
+          </span>
+          <span style={{ boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)" }}>
+            🎨
+          </span>
         </p>
 
         {/* CTA Buttons */}
@@ -380,7 +412,10 @@ const HeroSectionNew: React.FC = () => {
         </div>
 
         {/* Floating stats */}
-        <div className="mt-16 mb-[45px] flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full">
+        <div
+          className="flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full"
+          style={{ margin: "49px 0 43px" }}
+        >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
             { label: "Projects", value: "1.2K+", icon: Wand2 },
