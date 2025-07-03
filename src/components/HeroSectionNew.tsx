@@ -289,13 +289,38 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 max-w-4xl mx-auto leading-relaxed font-bold mb-8"
-          style={{ marginTop: "0", position: "relative", zIndex: 1 }}
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
+          style={{
+            marginTop: "-93px",
+            marginBottom: "-4px",
+            maxWidth: "727px",
+            margin: "-93px auto -4px",
+            position: "relative",
+            zIndex: 1,
+            fontFamily: "Righteous, display",
+          }}
         >
-          Where <span className="text-festival-orange">wild creativity</span>{" "}
-          meets <span style={{ color: "#121212" }}>festival vibes</span> to
-          create <span className="text-festival-amber">legendary designs!</span>{" "}
-          🎨🔥
+          <span style={{ fontFamily: "Righteous, display" }}>Where </span>
+          <span
+            className="text-festival-orange"
+            style={{ fontFamily: "Righteous, display" }}
+          >
+            wild creativity
+          </span>
+          <span
+            style={{ fontFamily: "Righteous, display", paddingLeft: "8px" }}
+          >
+            {" "}
+            meets{" "}
+          </span>
+          <span style={{ color: "#e84686", fontFamily: "Righteous, display" }}>
+            client desires
+          </span>
+          <span style={{ fontFamily: "Righteous, display" }}> to create </span>
+          <span style={{ color: "#36a5c6", fontFamily: "Righteous, display" }}>
+            legendary designs!
+          </span>
+          🎨
         </p>
 
         {/* CTA Buttons */}
