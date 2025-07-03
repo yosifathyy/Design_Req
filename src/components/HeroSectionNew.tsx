@@ -321,7 +321,9 @@ const HeroSectionNew: React.FC = () => {
           <span style={{ color: "#36a5c6", fontFamily: "Righteous, display" }}>
             legendary designs!
           </span>
-          🎨
+          <span style={{ boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)" }}>
+            🎨
+          </span>
         </p>
 
         {/* CTA Buttons */}
