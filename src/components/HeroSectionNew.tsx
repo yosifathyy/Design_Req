@@ -247,7 +247,7 @@ const HeroSectionNew: React.FC = () => {
           }}
         >
           <img
-            src="https://cdn.builder.io/api/v1/image/assets%2F6ab2dfa502f944c3bc697692f3ed4a43%2F9b230b2ea8e148b8b469f0ecd8579afd?format=webp&width=800"
+            src="https://i.postimg.cc/JnS8wrG0/logo-image.png"
             alt="Design Requests Logo"
             className="max-w-full h-auto mx-auto block"
             style={{
