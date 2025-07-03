@@ -298,6 +298,7 @@ const HeroSectionNew: React.FC = () => {
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
+            textShadow: "3px 3px 0px rgba(0,0,0,0.3)",
           }}
         >
           <span style={{ fontFamily: "Righteous, display" }}>Where </span>
