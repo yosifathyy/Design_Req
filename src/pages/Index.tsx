@@ -296,9 +296,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 </GSAPFadeIn>
               </GSAPBounceIn>
 
-              <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12">
-                <RevealImageList />
-              </GSAPSlideIn>
+              <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12" />
 
               <StaggerContainer>
                 <BentoGrid>
