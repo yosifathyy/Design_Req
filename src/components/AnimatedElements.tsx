@@ -1,5 +1,6 @@
 import { motion, useInView, useAnimation } from "framer-motion";
 import { useRef, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 // Scroll animation hook
 export const useScrollAnimation = () => {
