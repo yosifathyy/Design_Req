@@ -46,6 +46,7 @@ import {
   GSAPRevealText,
 } from "@/components/GSAPAnimatedElements";
 import HeroSectionNew from "@/components/HeroSectionNew";
+import FestivalContactForm from "@/components/FestivalContactForm";
 import {
   Sparkles,
   Palette,
