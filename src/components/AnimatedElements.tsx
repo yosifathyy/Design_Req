@@ -235,7 +235,7 @@ export const StaggerChild = ({ children, className = "" }: any) => {
           },
         },
       }}
-      className={className}
+      className={cn("flex flex-col justify-center items-start", className)}
     >
       {children}
     </motion.div>
