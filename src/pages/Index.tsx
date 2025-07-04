@@ -862,7 +862,13 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                     Get In Touch! 📞
                   </span>
                 </h2>
-                <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
+                <p
+                  className="text-base sm:text-lg xl:text-xl max-w-2xl mx-auto px-4 sm:px-0"
+                  style={{
+                    color: "rgba(12, 11, 12, 1)",
+                    fontFamily: "ADLaM Display, display",
+                  }}
+                >
                   Have questions about our services? Need help with your
                   project? We're here to help make magic happen! ���
                 </p>
