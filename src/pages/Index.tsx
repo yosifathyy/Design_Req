@@ -219,6 +219,17 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
   return (
     <AnimatePresence mode="wait">
+      {!animationsEnabled && (
+        <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24">
+          {/* Placeholder content during loading */}
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-festival-orange rounded-full opacity-50"></div>
+              <p className="text-festival-black/60 text-lg">Getting ready...</p>
+            </div>
+          </div>
+        </div>
+      )}
       {animationsEnabled && (
         <motion.div
           className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24"
