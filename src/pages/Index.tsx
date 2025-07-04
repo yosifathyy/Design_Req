@@ -47,6 +47,7 @@ import {
 } from "@/components/GSAPAnimatedElements";
 import HeroSectionNew from "@/components/HeroSectionNew";
 import FestivalContactForm from "@/components/FestivalContactForm";
+import { RetroGrid } from "@/components/ui/retro-grid";
 import {
   Sparkles,
   Palette,
