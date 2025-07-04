@@ -81,8 +81,24 @@ import {
   Coffee,
   Briefcase,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
+
+// Conditional animation wrapper
+const ConditionalMotion = ({
+  children,
+  enabled,
+  ...motionProps
+}: {
+  children: React.ReactNode;
+  enabled: boolean;
+  [key: string]: any;
+}) => {
+  if (!enabled) {
+    return <div {...motionProps}>{children}</div>;
+  }
+  return <motion.div {...motionProps}>{children}</motion.div>;
+};
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
