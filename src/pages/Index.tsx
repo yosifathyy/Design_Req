@@ -234,7 +234,14 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24">
+    <AnimatePresence mode="wait">
+      {animationsEnabled && (
+        <motion.div
+          className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
       {/* GSAP Animated background shapes - reduced on mobile */}
       <GSAPFloating amplitude={15} duration={4}>
         <div className="absolute top-8 sm:top-16 right-4 sm:right-16 w-8 sm:w-16 h-8 sm:h-16 bg-festival-orange rotate-45 rounded-lg opacity-60 sm:opacity-80"></div>
