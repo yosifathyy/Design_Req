@@ -443,7 +443,15 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Brush className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                         </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-festival-black mb-2 sm:mb-3 tracking-tight">
-                          Logo Design 🚀
+                          Logo&nbsp;
+                          <span
+                            style={{
+                              color: "rgb(255, 255, 255)",
+                              backgroundColor: "rgb(255, 119, 51)",
+                            }}
+                          >
+                            Request&nbsp;
+                          </span>
                         </h3>
                         <p className="text-festival-black/80 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
                           Epic brand identity that'll absolutely dominate and
