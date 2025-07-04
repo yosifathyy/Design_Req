@@ -274,14 +274,11 @@ const Testimonials: React.FC = () => {
       <div className="following-content h-screen flex items-center justify-center bg-gradient-to-br from-festival-orange to-festival-pink">
         <div className="text-center">
           <h3 className="text-6xl font-black text-white mb-4 drop-shadow-lg">
-            Ready for your love story?
+            Ready for your story?
           </h3>
           <button className="bg-white text-festival-orange font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1">
             Join Our Happy Clients! 🚀
           </button>
-          <p className="mt-6 text-xl text-white/90 font-medium">
-            Ready to create your own success story?
-          </p>
         </div>
       </div>
     </section>
