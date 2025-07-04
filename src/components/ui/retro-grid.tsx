@@ -20,11 +20,13 @@ export function RetroGrid({
         <div
           className={cn(
             "animate-grid",
-
+            "will-change-transform",
+            "[backface-visibility:hidden]",
+            "[transform-style:preserve-3d]",
             "[background-repeat:repeat] [background-size:60px_60px] [height:300vh] [inset:0%_0px] [margin-left:-50%] [transform-origin:100%_0_0] [width:600vw]",
 
-            // Grey grid lines for both light and dark modes
-            "[background-image:linear-gradient(to_right,rgb(166,166,166)_1px,transparent_0),linear-gradient(to_bottom,rgb(166,166,166)_1px,transparent_0)]",
+            // Grey grid lines with improved anti-aliasing
+            "[background-image:linear-gradient(to_right,rgba(166,166,166,0.8)_1px,transparent_1px),linear-gradient(to_bottom,rgba(166,166,166,0.8)_1px,transparent_1px)]",
           )}
         />
       </div>
