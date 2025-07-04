@@ -249,8 +249,13 @@ const Testimonials: React.FC = () => {
           </h2>
 
           <p className="text-2xl md:text-3xl text-black/80 font-bold max-w-3xl mx-auto leading-relaxed">
-            Real stories from real clients who absolutely{" "}
-            <span className="text-festival-magenta">adore</span> our work! 🎨
+            Real stories from clients who absolutely{" "}
+            <span
+              style={{ color: "rgba(220, 122, 18, 1)", paddingLeft: "2px" }}
+            >
+              adore
+            </span>{" "}
+            our work!&nbsp;
           </p>
         </div>
       </div>
