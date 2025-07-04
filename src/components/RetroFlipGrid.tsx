@@ -240,17 +240,7 @@ const RetroFlipGrid: React.FC = () => {
 
       <div ref={containerRef} className="relative">
         {/* Header */}
-        <div ref={headerRef} className="text-center mb-8">
-          <h3
-            className="text-3xl md:text-4xl font-bold tracking-tight text-festival-black mb-4"
-            style={{ textShadow: "2px 2px 0 #000" }}
-          >
-            RETRO PORTFOLIO GRID
-          </h3>
-          <p className="text-festival-black/80 text-lg">
-            Interactive 3D grid showcasing our creative work
-          </p>
-        </div>
+        <div ref={headerRef} className="text-center mb-8" />
 
         {/* Perspective Grid */}
         <div
