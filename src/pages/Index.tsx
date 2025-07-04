@@ -314,21 +314,16 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                       className="h-full bg-festival-orange border-2 border-festival-black"
                     >
                       <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
-                        <ConditionalMotion
-                          enabled={animationsEnabled}
+                        <motion.div
                           className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white border-2 border-festival-black rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
-                          whileHover={
-                            animationsEnabled
-                              ? {
-                                  rotate: 360,
-                                  scale: 1.1,
-                                  transition: { duration: 0.6 },
-                                }
-                              : undefined
-                          }
+                          whileHover={{
+                            rotate: 360,
+                            scale: 1.1,
+                            transition: { duration: 0.6 },
+                          }}
                         >
                           <Palette className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
-                        </ConditionalMotion>
+                        </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
                           Photoshop Design 🎨
                         </h3>
