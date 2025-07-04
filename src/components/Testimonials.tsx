@@ -228,19 +228,20 @@ const Testimonials: React.FC = () => {
           <h2
             className="flex items-center justify-center gap-8 md:gap-16 font-display font-black text-black mb-6 tracking-tight"
             style={{
-              fontSize: "clamp(80px, 15vw, 234px)",
-              lineHeight: "0.9",
+              fontSize: "171px",
+              lineHeight: "154px",
               fontFamily: '"Fredoka One", cursive',
             }}
           >
-            <span>Client</span>
+            <span style={{ fontSize: "88px" }}>Client</span>
             <span
               className="relative inline-flex items-center justify-center px-6 md:px-12 py-2 md:py-4 bg-festival-amber text-white rounded-2xl md:rounded-3xl border-4 border-black"
               style={{
-                fontSize: "clamp(76px, 14vw, 222px)",
-                lineHeight: "0.9",
+                fontSize: "88px",
+                lineHeight: "144px",
                 boxShadow: "0px 11px 0px rgba(0, 0, 0, 0.15)",
                 transform: "rotate(-1deg)",
+                marginLeft: "-41px",
               }}
             >
               Love
