@@ -1223,6 +1223,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
           {/* Footer */}
           <footer className="bg-retro-purple/90 text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
+            <RetroGrid />
             <div className="max-w-6xl mx-auto relative z-10">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
                 <div>
