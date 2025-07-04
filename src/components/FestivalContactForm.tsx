@@ -480,7 +480,7 @@ const FestivalContactForm: React.FC = () => {
               ) : (
                 <>
                   <Send className="w-6 h-6" />
-                  <span>Send Magic Message!</span>
+                  <span>Send Message!</span>
                   <Sparkles className="w-6 h-6" />
                 </>
               )}
