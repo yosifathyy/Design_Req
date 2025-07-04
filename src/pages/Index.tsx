@@ -274,7 +274,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
           {/* Our Services Section */}
           <section
             id="services"
-            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px]"
+            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px] flex flex-col justify-center items-center"
           >
             <div className="max-w-7xl mx-auto">
               <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
