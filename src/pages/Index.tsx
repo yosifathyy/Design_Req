@@ -524,7 +524,6 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
               </div>
 
               <StaggerContainer />
-              </StaggerContainer>
 
               {/* Retro Flip Grid */}
               <div className="mt-20">
