@@ -874,7 +874,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 </p>
               </motion.div>
 
-              <FestivalContactForm />
+              <div />
 
               {/* CTA Section */}
               <motion.div
