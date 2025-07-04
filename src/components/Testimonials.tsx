@@ -223,9 +223,7 @@ const Testimonials: React.FC = () => {
         className="h-screen flex items-center justify-center"
       >
         <div className="text-center px-4">
-          <div className="inline-block mb-6">
-            <span className="text-6xl">💕</span>
-          </div>
+          <div className="inline-block mb-6" />
 
           <h2
             className="flex items-center justify-center gap-8 md:gap-16 font-display font-black text-black mb-6 tracking-tight"
