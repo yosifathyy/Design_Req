@@ -203,7 +203,10 @@ export const BentoCard = ({
       <div className="absolute top-1/2 right-6 w-4 h-4 bg-festival-black transform rotate-45 opacity-10"></div>
 
       {/* Content */}
-      <div ref={contentRef} className="relative z-10 h-full p-6">
+      <div
+        ref={contentRef}
+        className="relative z-10 h-full p-6 flex flex-col justify-start items-start"
+      >
         {children}
       </div>
 
