@@ -387,7 +387,12 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Layers className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                         </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
-                          3D Design 🎯
+                          3D&nbsp;
+                          <span
+                            style={{ backgroundColor: "rgb(255, 119, 51)" }}
+                          >
+                            Request&nbsp;
+                          </span>
                         </h3>
                         <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
                           Absolutely insane 3D modeling and visualization
