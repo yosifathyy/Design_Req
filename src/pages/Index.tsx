@@ -780,7 +780,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Smile className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                         </motion.div>
                         <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
-                          Our Values 💫
+                          Our Values ����
                         </h3>
                         <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
                           Principles that guide everything we do!
@@ -857,8 +857,10 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 >
                   <MessageCircle className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
                 </motion.div>
-                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
-                  Get In Touch! 📞
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-3 sm:mb-4">
+                  <span style={{ color: "rgb(0, 0, 0)" }}>
+                    Get In Touch! 📞
+                  </span>
                 </h2>
                 <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
                   Have questions about our services? Need help with your
