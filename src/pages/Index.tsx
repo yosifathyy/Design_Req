@@ -1037,7 +1037,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 <div className="max-w-2xl mx-auto">
                   {/* Contact Form */}
                   <FestivalContactForm />
-                      <div className="p-6 sm:p-8 lg:p-10 h-full">
+
                         <motion.div
                           className="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8"
                           initial={{ opacity: 0, x: -50 }}
