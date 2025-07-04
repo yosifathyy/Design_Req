@@ -197,7 +197,7 @@ const RetroFlipGrid: React.FC = () => {
 
   return (
     <>
-      <style jsx>{`
+      <style>{`
         .noise {
           background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill-opacity=".05"><rect width="3" height="3"/><rect x="30" width="3" height="3"/><rect y="30" width="3" height="3"/><rect x="30" y="30" width="3" height="3"/></svg>');
           background-size: 60px 60px;

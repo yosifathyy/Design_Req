@@ -415,7 +415,7 @@ const RetroHowItWorks: React.FC = () => {
       </div>
 
       {/* Custom animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%,
           100% {

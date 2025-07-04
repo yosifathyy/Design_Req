@@ -283,7 +283,7 @@ export const RetroCursor: React.FC<RetroCursorProps> = ({ enabled = true }) => {
         }}
       />
 
-      <style jsx>{`
+      <style>{`
         @keyframes pixelPulse {
           0%,
           100% {
