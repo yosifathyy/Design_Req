@@ -291,10 +291,10 @@ const HeroSectionNew: React.FC = () => {
           ref={subtitleRef}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
           style={{
-            marginTop: "-93px",
+            marginTop: "-116px",
             marginBottom: "-4px",
             maxWidth: "727px",
-            margin: "-93px auto -4px",
+            margin: "-116px auto -4px",
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
@@ -320,9 +320,6 @@ const HeroSectionNew: React.FC = () => {
           <span style={{ fontFamily: "Righteous, display" }}> to create </span>
           <span style={{ color: "#36a5c6", fontFamily: "Righteous, display" }}>
             legendary designs!
-          </span>
-          <span style={{ boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)" }}>
-            🎨
           </span>
         </p>
 
