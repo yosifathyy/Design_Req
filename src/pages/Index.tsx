@@ -1033,9 +1033,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 </p>
               </motion.div>
 
-              <StaggerContainer>
-                <div className="max-w-2xl mx-auto">
-                  {/* Contact Form */}
+              <FestivalContactForm />
                   <StaggerChild>
                     <BentoCard
                       size="lg"
