@@ -319,9 +319,9 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Palette className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                         </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
-                          Photoshop Design 🎨
+                          Photoshop Request&nbsp;
                         </h3>
-                        <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
+                        <p className="text-white/90 text-sm sm:text-base font-medium">
                           Mind-blowing photo editing, compositing, and digital
                           art that'll absolutely destroy the competition!
                         </p>
