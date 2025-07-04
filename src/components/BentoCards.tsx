@@ -302,9 +302,10 @@ export const BentoGrid = ({
       <div
         ref={gridRef}
         className={cn(
-          "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 w-full",
-          "justify-items-center place-items-center",
+          "flex gap-6 sm:gap-8 w-full",
+          "justify-center items-start flex-row",
         )}
+        style={{ marginLeft: "15px" }}
       >
         {children}
       </div>
