@@ -216,7 +216,7 @@ const Testimonials: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
+    <section className="relative">
       {/* Header */}
       <div
         ref={headerRef}

@@ -1219,6 +1219,40 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             }}
           />
 
+          {/* Contact Section */}
+          <div
+            className="max-w-[1215px] mx-auto flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat pl-[7px] mx-[-6px]"
+            style={{
+              backgroundImage:
+                "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F8353c55e732a4f94aabdffdb2d27e932)",
+            }}
+          >
+            <div className="text-center mb-16">
+              <div className="inline-block mb-6 transform rotate-1" />
+              <h2 className="font-display text-4xl lg:text-5xl mb-4" />
+            </div>
+            <div className="max-w-[678px] mt-[-31px] px-4 pt-4 pb-9 pl-[33px]">
+              <h2
+                className="font-display text-5xl font-black text-center uppercase tracking-wider text-shadow-[4px_4px_0_rgba(0,0,0,1)] pb-1 my-[69px_0_90px] mb-[90px] mt-[69px]"
+                style={{ color: "#fe8264", letterSpacing: "1.2px" }}
+              >
+                Get in Touch
+                <br />
+              </h2>
+              <p
+                className="text-2xl lg:text-3xl max-w-2xl self-start mx-auto mt-[-82px]"
+                style={{
+                  color: "rgb(12, 11, 12)",
+                  fontFamily: "ADLaM Display, display",
+                }}
+              >
+                Have questions about our services? Need help with your project?
+                We're here to help make magic happen!
+              </p>
+              <FestivalContactForm />
+            </div>
+          </div>
+
           {/* FAQ Section */}
           <FAQ />
 
@@ -1337,7 +1371,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
               <div className="border-t border-white/20 pt-8 text-center text-white/70">
                 <p>
-                  © 2024 design requests. All rights reserved. Expert design
+                  © 2025 design requests. All rights reserved. Expert design
                   services you can trust! Made with{" "}
                   <motion.span
                     animate={{
