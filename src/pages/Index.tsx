@@ -851,22 +851,6 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             </div>
             <div className="max-w-6xl mx-auto relative z-10">
               <div className="text-center mb-16">
-                  opacity: 1,
-                  scale: 1,
-                  rotateY: 0,
-                  transition: {
-                    type: "spring",
-                    damping: 10,
-                    stiffness: 80,
-                    duration: 1.5,
-                  },
-                }}
-                viewport={{ once: true }}
-                className="text-center mb-12 sm:mb-16"
-              >
-                <motion.div
-                  animate={{
-                    rotate: [0, 10, -10, 0],
                     scale: [1, 1.1, 1],
                   }}
                   transition={{
