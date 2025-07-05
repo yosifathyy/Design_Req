@@ -295,7 +295,7 @@ const Testimonials: React.FC = () => {
           <img
             loading="lazy"
             srcSet="https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=100 100w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=200 200w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=400 400w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=800 800w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=1200 1200w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=1600 1600w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=2000 2000w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084"
-            className="aspect-square object-cover object-center w-[39%] min-h-0 min-w-[20px] overflow-hidden mx-auto mt-[118px] mb-[-251px]"
+            className="aspect-square object-cover object-center w-[30%] min-h-0 min-w-[20px] overflow-hidden mx-auto mt-[221px] mb-[-251px]"
             alt=""
           />
         </div>

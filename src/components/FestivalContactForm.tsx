@@ -157,7 +157,7 @@ const FestivalContactForm: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-1 px-4">
+    <div className="max-w-2xl mx-auto pt-0 px-4 pb-1">
       <motion.h2
         className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-center uppercase tracking-wide mb-8 sm:mb-12 mt-[-112px]"
         initial={{ opacity: 0, y: -50 }}
