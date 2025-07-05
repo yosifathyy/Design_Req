@@ -851,17 +851,6 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             </div>
             <div className="max-w-6xl mx-auto relative z-10">
               <div className="text-center mb-16">
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="inline-block mb-4 sm:mb-6"
-                >
-                  <MessageCircle className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
-                </motion.div>
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-3 sm:mb-4">
                   <span style={{ color: "rgb(0, 0, 0)" }}>
                     Get In Touch! 📞
