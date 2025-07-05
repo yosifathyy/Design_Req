@@ -440,8 +440,8 @@ const HeroSectionNew: React.FC = () => {
         >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
-            { label: "Projects", value: "1.2K+", icon: Wand2 },
-            { label: "Awards", value: "25+", icon: Star },
+            { label: "projects", value: "400+", icon: Wand2 },
+            { label: "Awards", value: "15+", icon: Star },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
