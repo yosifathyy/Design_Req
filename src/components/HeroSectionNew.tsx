@@ -301,24 +301,48 @@ const HeroSectionNew: React.FC = () => {
             textShadow: "3px 3px 0px rgba(0,0,0,0.3)",
           }}
         >
-          <span style={{ fontFamily: "Righteous, display" }}>Where </span>
+          <span style={{ fontFamily: "Righteous, display", fontSize: "30px" }}>
+            Where{" "}
+          </span>
           <span
-            className="text-festival-orange"
-            style={{ fontFamily: "Righteous, display" }}
+            style={{
+              color: "#21201f",
+              fontFamily: "Righteous, display",
+              fontSize: "30px",
+            }}
           >
             wild creativity
           </span>
           <span
-            style={{ fontFamily: "Righteous, display", paddingLeft: "8px" }}
+            style={{
+              fontFamily: "Righteous, display",
+              paddingLeft: "8px",
+              fontSize: "30px",
+            }}
           >
             {" "}
             meets{" "}
           </span>
-          <span style={{ color: "#e84686", fontFamily: "Righteous, display" }}>
+          <span
+            style={{
+              color: "#302f2d",
+              fontFamily: "Righteous, display",
+              fontSize: "30px",
+            }}
+          >
             client desires
           </span>
-          <span style={{ fontFamily: "Righteous, display" }}> to create </span>
-          <span style={{ color: "#36a5c6", fontFamily: "Righteous, display" }}>
+          <span style={{ fontFamily: "Righteous, display", fontSize: "30px" }}>
+            {" "}
+            to create{" "}
+          </span>
+          <span
+            style={{
+              color: "#2d2b2a",
+              fontFamily: "Righteous, display",
+              fontSize: "33px",
+            }}
+          >
             legendary designs!
           </span>
         </p>
