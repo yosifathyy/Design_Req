@@ -822,11 +822,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             </div>
           </section>
 
-          {/* Contact Section */}
-          <section
-            id="contact"
-            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative mx-auto"
-          >
+
             <div className="max-w-7xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, rotateY: -45 }}
