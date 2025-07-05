@@ -1226,6 +1226,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
               backgroundImage:
                 "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F8353c55e732a4f94aabdffdb2d27e932)",
             }}
+            data-contact-form
           >
             <div className="text-center mb-16">
               <div className="inline-block mb-6 transform rotate-1" />
