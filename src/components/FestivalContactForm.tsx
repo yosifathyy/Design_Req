@@ -175,7 +175,7 @@ const FestivalContactForm: React.FC = () => {
       </motion.h2>
 
       <p
-        className="text-lg lg:text-xl max-w-2xl self-start mx-auto mt-[-35px] mb-8"
+        className="text-lg lg:text-xl max-w-2xl self-start mx-auto mt-[-43px] mb-8"
         style={{
           color: "rgb(12, 11, 12)",
           fontFamily: "ADLaM Display, display",
