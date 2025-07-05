@@ -825,60 +825,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
           {/* Interactive Image Shuffle Section */}
           <section className="px-4 sm:px-6 py-8 sm:py-12 lg:py-20 relative overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{
-                background: "rgb(243, 236, 210)",
-              }}
-            >
-              {/* Rainbow Vertical Lines SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="100%"
-                viewBox="0 0 452 600"
-                fill="none"
-                preserveAspectRatio="none"
-                className="w-full h-full"
-              >
-                {/* Black outlines */}
-                <path
-                  d="M426 0V600"
-                  stroke="black"
-                  strokeWidth="52"
-                  style={{ strokeDasharray: "472.353px, 127.747px" }}
-                />
-              </svg>
-            </div>
-            <div className="max-w-6xl mx-auto relative z-10">
-              <div className="text-center mb-16">
-                <button
-                  onClick={shuffleImages}
-                  disabled={isShuffling}
-                  className="relative group px-8 py-4 font-display font-black text-lg text-festival-black bg-festival-cream border-4 border-festival-black rounded-xl shadow-[8px_8px_0px_0px] shadow-festival-black hover:shadow-[12px_12px_0px_0px] hover:shadow-festival-orange transition-all duration-300 transform -rotate-1 hover:-rotate-2 active:shadow-[4px_4px_0px_0px] active:translate-x-1 active:translate-y-1"
-                >
-                  <div className="flex items-center space-x-3">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-6 h-6"
-                    >
-                      <path d="M16 3h5v5" />
-                      <path d="m21 3-7 7" />
-                      <path d="M8 3H3v5" />
-                      <path d="m3 3 7 7" />
-                    </svg>
-                    <span>Shuffle</span>
-                  </div>
-                </button>
-              </div>
-            </div>
+            <div className="max-w-6xl mx-auto relative z-10" />
           </section>
 
           {/* Interactive Image Shuffle Section */}
@@ -1190,7 +1137,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
           {/* Contact Section */}
           <div
-            className="w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-[-165px]"
+            className="w-[99%] flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-[-165px]"
             style={{
               backgroundImage:
                 "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F8353c55e732a4f94aabdffdb2d27e932)",
