@@ -851,41 +851,33 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             </div>
             <div className="max-w-6xl mx-auto relative z-10">
               <div className="text-center mb-16">
-
-
-
-              {/* CTA Section */}
-              <motion.div
-                className="text-center mt-16"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.8 },
-                }}
-                viewport={{ once: true }}
-              >
-                <TiltCard className="bg-gradient-to-br from-retro-purple/10 to-retro-teal/10 rounded-3xl p-8 backdrop-blur-sm border-2 border-retro-purple/20 inline-block">
-                  <p className="text-lg text-retro-purple/80 mb-4">
-                    Ready to start your design project instead? 🚀
-                  </p>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      className="bg-gradient-to-r from-retro-purple to-retro-teal text-white font-bold px-8 py-4 rounded-2xl shadow-xl"
+                <button
+                  onClick={shuffleImages}
+                  disabled={isShuffling}
+                  className="relative group px-8 py-4 font-display font-black text-lg text-festival-black bg-festival-cream border-4 border-festival-black rounded-xl shadow-[8px_8px_0px_0px] shadow-festival-black hover:shadow-[12px_12px_0px_0px] hover:shadow-festival-orange transition-all duration-300 transform -rotate-1 hover:-rotate-2 active:shadow-[4px_4px_0px_0px] active:translate-x-1 active:translate-y-1"
+                >
+                  <div className="flex items-center space-x-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-6 h-6"
                     >
-                      <Link to="/start-project">
-                        <Rocket className="w-5 h-5 mr-2" />
-                        Start Your Project Now!
-                      </Link>
-                    </Button>
-                  </motion.div>
-                </TiltCard>
-              </motion.div>
+                      <path d="M16 3h5v5" />
+                      <path d="m21 3-7 7" />
+                      <path d="M8 3H3v5" />
+                      <path d="m3 3 7 7" />
+                    </svg>
+                    <span>Shuffle</span>
+                  </div>
+                </button>
+              </div>
             </div>
           </section>
 
