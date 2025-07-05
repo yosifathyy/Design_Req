@@ -851,18 +851,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             </div>
             <div className="max-w-6xl mx-auto relative z-10">
               <div className="text-center mb-16">
-                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-3 sm:mb-4">
-                  <span style={{ color: "rgb(0, 0, 0)" }}>
-                    Get In Touch! 📞
-                  </span>
-                </h2>
-                <p
-                  className="text-base sm:text-lg xl:text-xl max-w-2xl mx-auto px-4 sm:px-0"
-                  style={{
-                    color: "rgba(12, 11, 12, 1)",
-                    fontFamily: "ADLaM Display, display",
-                  }}
-                >
+
 
 
               {/* CTA Section */}
