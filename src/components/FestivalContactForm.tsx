@@ -451,11 +451,15 @@ const FestivalContactForm: React.FC = () => {
           <motion.button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-gradient-to-r from-festival-magenta to-festival-pink text-festival-black font-display font-black text-xl sm:text-2xl uppercase tracking-wider px-8 py-4 sm:px-12 sm:py-6 border-4 border-festival-black rounded-2xl shadow-[6px_6px_0px_0px] shadow-festival-black transform -rotate-1 transition-all duration-300 ${
+            className={`text-festival-black font-display font-black text-xl sm:text-2xl uppercase tracking-wider px-8 py-4 sm:px-12 sm:py-6 border-4 border-festival-black rounded-2xl shadow-[6px_6px_0px_0px] shadow-festival-black transform -rotate-1 transition-all duration-300 bg-cover bg-center bg-no-repeat ${
               isSubmitting
-                ? "opacity-75 cursor-not-allowed bg-gradient-to-r from-festival-orange to-festival-coral"
+                ? "opacity-75 cursor-not-allowed"
                 : "hover:-rotate-2 hover:scale-105 hover:shadow-[8px_8px_0px_0px] hover:shadow-festival-orange active:rotate-0 active:scale-95 active:shadow-[4px_4px_0px_0px]"
             }`}
+            style={{
+              backgroundImage:
+                "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F9b311ff328f04653a2de85d9cc8ebda6)",
+            }}
             whileHover={
               !isSubmitting
                 ? {
