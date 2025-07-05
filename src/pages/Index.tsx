@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,6 +47,8 @@ import {
   GSAPRevealText,
 } from "@/components/GSAPAnimatedElements";
 import HeroSectionNew from "@/components/HeroSectionNew";
+import FestivalContactForm from "@/components/FestivalContactForm";
+import { RetroGrid } from "@/components/ui/retro-grid";
 import {
   Sparkles,
   Palette,
@@ -232,7 +235,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
       )}
       {animationsEnabled && (
         <motion.div
-          className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24"
+          className="min-h-[634px] bg-festival-cream relative overflow-hidden flex flex-col pb-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -273,7 +276,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
           {/* Our Services Section */}
           <section
             id="services"
-            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px]"
+            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px] flex flex-col justify-center items-center"
           >
             <div className="max-w-7xl mx-auto">
               <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
@@ -295,9 +298,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 </GSAPFadeIn>
               </GSAPBounceIn>
 
-              <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12">
-                <RevealImageList />
-              </GSAPSlideIn>
+              <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12" />
 
               <StaggerContainer>
                 <BentoGrid>
@@ -320,9 +321,9 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Palette className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                         </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
-                          Photoshop Design 🎨
+                          Photoshop Request&nbsp;
                         </h3>
-                        <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
+                        <p className="text-white/90 text-sm sm:text-base font-medium">
                           Mind-blowing photo editing, compositing, and digital
                           art that'll absolutely destroy the competition!
                         </p>
@@ -388,7 +389,12 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Layers className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                         </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
-                          3D Design 🎯
+                          3D&nbsp;
+                          <span
+                            style={{ backgroundColor: "rgb(255, 119, 51)" }}
+                          >
+                            Request&nbsp;
+                          </span>
                         </h3>
                         <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
                           Absolutely insane 3D modeling and visualization
@@ -439,7 +445,15 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Brush className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
                         </motion.div>
                         <h3 className="font-black text-lg sm:text-xl text-festival-black mb-2 sm:mb-3 tracking-tight">
-                          Logo Design 🚀
+                          Logo&nbsp;
+                          <span
+                            style={{
+                              color: "rgb(255, 255, 255)",
+                              backgroundColor: "rgb(255, 119, 51)",
+                            }}
+                          >
+                            Request&nbsp;
+                          </span>
                         </h3>
                         <p className="text-festival-black/80 mb-3 sm:mb-4 text-sm sm:text-base font-medium">
                           Epic brand identity that'll absolutely dominate and
@@ -511,185 +525,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                 </h2>
               </div>
 
-              <StaggerContainer>
-                <BentoGrid>
-                  {/* Before & After Showcase */}
-                  <StaggerChild>
-                    <BentoCard
-                      size="md"
-                      delay={0.2}
-                      className="h-full bg-festival-orange/30 border border-festival-orange/50"
-                    >
-                      <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
-                        <motion.div
-                          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-orange to-retro-peach rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
-                          animate={{
-                            rotate: [0, 360],
-                            scale: [1, 1.1, 1],
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                        >
-                          <Zap className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                        </motion.div>
-                        <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
-                          Before & After Showcase 🎭
-                        </h3>
-                        <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
-                          Interactive transformations that demonstrate our
-                          design magic!
-                        </p>
-                        <div className="space-y-2 mb-4 flex-1">
-                          {[
-                            "Photo Retouching",
-                            "Logo Redesigns",
-                            "Brand Makeovers",
-                            "3D Transformations",
-                          ].map((feature, index) => (
-                            <motion.div
-                              key={index}
-                              className="flex items-center text-festival-black/60"
-                              initial={{ opacity: 0, x: -20 }}
-                              whileInView={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.1 }}
-                            >
-                              <TrendingUp className="w-3 h-3 text-festival-orange mr-2 flex-shrink-0" />
-                              <span className="text-xs sm:text-sm">
-                                {feature}
-                              </span>
-                            </motion.div>
-                          ))}
-                        </div>
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="mt-auto"
-                        >
-                          <Button
-                            asChild
-                            className="w-full bg-festival-orange border-2 border-festival-black text-white font-bold text-sm"
-                          >
-                            <Link to="/start-project">
-                              <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                              Get Started
-                            </Link>
-                          </Button>
-                        </motion.div>
-                      </div>
-                    </BentoCard>
-                  </StaggerChild>
-
-                  {/* Interactive Preview */}
-                  <StaggerChild>
-                    <BentoCard
-                      size="md"
-                      gradient="from-retro-teal/20 to-retro-mint/20"
-                      delay={0.3}
-                      className="h-full"
-                    >
-                      <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
-                        <motion.div
-                          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-teal to-retro-mint rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
-                          animate={{
-                            scale: [1, 1.1, 1],
-                            rotate: [0, 180, 360],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                          }}
-                        >
-                          <Play className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                        </motion.div>
-                        <h3 className="font-bold text-lg sm:text-xl text-festival-black mb-2 sm:mb-3">
-                          Interactive Preview 🎬
-                        </h3>
-                        <p className="text-festival-black/70 mb-3 sm:mb-4 text-sm sm:text-base">
-                          See our design process in action with live previews!
-                        </p>
-                        <div className="space-y-2 mb-4 flex-1">
-                          {[
-                            "Live Design Process",
-                            "Real-time Feedback",
-                            "Version Comparisons",
-                            "Interactive Tours",
-                          ].map((feature, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center text-xs sm:text-sm"
-                            >
-                              <Play className="w-3 h-3 text-retro-teal mr-2 flex-shrink-0" />
-                              {feature}
-                            </div>
-                          ))}
-                        </div>
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="w-full border-retro-teal text-retro-teal hover:bg-retro-teal hover:text-white mt-auto text-sm"
-                        >
-                          <Link to="/start-project">Watch Demo</Link>
-                        </Button>
-                      </div>
-                    </BentoCard>
-                  </StaggerChild>
-
-                  {/* Portfolio Stats */}
-                  <StaggerChild>
-                    <BentoCard
-                      size="md"
-                      gradient="from-retro-purple/20 to-retro-lavender/20"
-                      delay={0.4}
-                      className="h-full"
-                    >
-                      <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
-                        <motion.div
-                          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-retro-purple to-retro-lavender rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
-                          whileHover={{
-                            rotate: [0, -10, 10, -10, 0],
-                            scale: 1.1,
-                          }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <Trophy className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                        </motion.div>
-                        <h3 className="font-bold text-lg sm:text-xl text-festival-black mb-2 sm:mb-3">
-                          Portfolio Highlights 🏆
-                        </h3>
-                        <p className="text-festival-black/70 mb-3 sm:mb-4 text-sm sm:text-base">
-                          Stunning results from our expert design team!
-                        </p>
-                        <div className="space-y-2 mb-4 flex-1">
-                          {[
-                            "200+ Amazing Projects",
-                            "Award-Winning Designs",
-                            "Client Success Stories",
-                            "Industry Recognition",
-                          ].map((feature, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center text-xs sm:text-sm"
-                            >
-                              <Trophy className="w-3 h-3 text-retro-purple mr-2 flex-shrink-0" />
-                              {feature}
-                            </div>
-                          ))}
-                        </div>
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="w-full border-retro-purple text-retro-purple hover:bg-retro-purple hover:text-white mt-auto text-sm"
-                        >
-                          <Link to="/start-project">View Gallery</Link>
-                        </Button>
-                      </div>
-                    </BentoCard>
-                  </StaggerChild>
-                </BentoGrid>
-              </StaggerContainer>
+              <StaggerContainer />
 
               {/* Retro Flip Grid */}
               <div className="mt-20">
@@ -946,7 +782,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                           <Smile className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                         </motion.div>
                         <h3 className="font-bold text-lg sm:text-xl text-retro-purple mb-2 sm:mb-3">
-                          Our Values 💫
+                          Our Values ����
                         </h3>
                         <p className="text-retro-purple/80 mb-3 sm:mb-4 text-sm sm:text-base">
                           Principles that guide everything we do!
@@ -987,202 +823,9 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
             </div>
           </section>
 
-          {/* Contact Section */}
-          <section
-            id="contact"
-            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative mx-auto"
-          >
-            <div className="max-w-7xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5, rotateY: -45 }}
-                whileInView={{
-                  opacity: 1,
-                  scale: 1,
-                  rotateY: 0,
-                  transition: {
-                    type: "spring",
-                    damping: 10,
-                    stiffness: 80,
-                    duration: 1.5,
-                  },
-                }}
-                viewport={{ once: true }}
-                className="text-center mb-12 sm:mb-16"
-              >
-                <motion.div
-                  animate={{
-                    rotate: [0, 10, -10, 0],
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="inline-block mb-4 sm:mb-6"
-                >
-                  <MessageCircle className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
-                </motion.div>
-                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-retro-purple mb-3 sm:mb-4">
-                  Get In Touch! 📞
-                </h2>
-                <p className="text-base sm:text-lg xl:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 sm:px-0">
-                  Have questions about our services? Need help with your
-                  project? We're here to help make magic happen! ���
-                </p>
-              </motion.div>
-
-              <StaggerContainer>
-                <div className="max-w-2xl mx-auto">
-                  {/* Contact Form */}
-                  <StaggerChild>
-                    <BentoCard
-                      size="lg"
-                      delay={0.2}
-                      className="h-full bg-white border border-gray-200"
-                    >
-                      <div className="p-6 sm:p-8 lg:p-10 h-full">
-                        <motion.div
-                          className="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8"
-                          initial={{ opacity: 0, x: -50 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6 }}
-                        >
-                          <motion.div
-                            className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-retro-purple to-retro-teal rounded-xl lg:rounded-2xl flex items-center justify-center"
-                            animate={{
-                              rotate: [0, 360],
-                            }}
-                            transition={{
-                              duration: 6,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
-                          >
-                            <Send className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-                          </motion.div>
-                          <div>
-                            <h3 className="font-bold text-xl sm:text-2xl text-retro-purple">
-                              Send us a Message! ���
-                            </h3>
-                            <p className="text-retro-purple/70 text-sm sm:text-base">
-                              Tell us about your amazing project ideas!
-                            </p>
-                          </div>
-                        </motion.div>
-
-                        <form className="space-y-4 sm:space-y-6">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                            <div>
-                              <Label
-                                htmlFor="name"
-                                className="text-retro-purple font-medium"
-                              >
-                                Full Name ✨
-                              </Label>
-                              <Input
-                                id="name"
-                                placeholder="Your awesome name"
-                                className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
-                              />
-                            </div>
-                            <div>
-                              <Label
-                                htmlFor="email"
-                                className="text-retro-purple font-medium"
-                              >
-                                Email Address 📧
-                              </Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                placeholder="your@awesome-email.com"
-                                className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <Label
-                              htmlFor="subject"
-                              className="text-retro-purple font-medium"
-                            >
-                              Subject 🎯
-                            </Label>
-                            <Input
-                              id="subject"
-                              placeholder="What's this magical message about?"
-                              className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl"
-                            />
-                          </div>
-                          <div>
-                            <Label
-                              htmlFor="message"
-                              className="text-retro-purple font-medium"
-                            >
-                              Message 💭
-                            </Label>
-                            <Textarea
-                              id="message"
-                              placeholder="Tell us about your amazing project ideas, questions, or just say hi! We love hearing from creative minds..."
-                              rows={6}
-                              className="mt-2 border-retro-purple/30 focus:border-retro-purple rounded-xl resize-none"
-                            />
-                          </div>
-                          <motion.div
-                            className="text-center"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <Button
-                              type="submit"
-                              size="lg"
-                              className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                            >
-                              <Send className="w-5 h-5 mr-2" />
-                              Send Magic Message ✨
-                              <ArrowRight className="w-5 h-5 ml-2" />
-                            </Button>
-                          </motion.div>
-                        </form>
-                      </div>
-                    </BentoCard>
-                  </StaggerChild>
-                </div>
-              </StaggerContainer>
-
-              {/* CTA Section */}
-              <motion.div
-                className="text-center mt-16"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.8 },
-                }}
-                viewport={{ once: true }}
-              >
-                <TiltCard className="bg-gradient-to-br from-retro-purple/10 to-retro-teal/10 rounded-3xl p-8 backdrop-blur-sm border-2 border-retro-purple/20 inline-block">
-                  <p className="text-lg text-retro-purple/80 mb-4">
-                    Ready to start your design project instead? 🚀
-                  </p>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      className="bg-gradient-to-r from-retro-purple to-retro-teal text-white font-bold px-8 py-4 rounded-2xl shadow-xl"
-                    >
-                      <Link to="/start-project">
-                        <Rocket className="w-5 h-5 mr-2" />
-                        Start Your Project Now!
-                      </Link>
-                    </Button>
-                  </motion.div>
-                </TiltCard>
-              </motion.div>
-            </div>
+          {/* Interactive Image Shuffle Section */}
+          <section className="px-4 sm:px-6 py-8 sm:py-12 lg:py-20 relative overflow-hidden">
+            <div className="max-w-6xl mx-auto relative z-10" />
           </section>
 
           {/* Interactive Image Shuffle Section */}
@@ -1481,11 +1124,47 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
           {/* Testimonials Section */}
           <Testimonials />
 
+          {/* Contact Section */}
+          <section
+            id="contact"
+            className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative mx-auto"
+            style={{
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+            }}
+          />
+
+          {/* Contact Section */}
+          <div
+            className="w-[99%] flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-[-165px]"
+            style={{
+              backgroundImage:
+                "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F8353c55e732a4f94aabdffdb2d27e932)",
+            }}
+            data-contact-form
+          >
+            <div className="text-center mb-16">
+              <div className="inline-block mb-6 transform rotate-1" />
+              <h2 className="font-display text-4xl lg:text-5xl mb-4" />
+            </div>
+            <div className="max-w-[678px] mt-[-31px] py-1 px-4 pb-9 pl-[33px]">
+              <h2
+                className="font-display text-5xl font-black text-center uppercase tracking-wider text-shadow-[4px_4px_0_rgba(0,0,0,1)] pb-1 my-[69px_0_90px] mb-[90px] mt-[69px]"
+                style={{ color: "#fe8264", letterSpacing: "1.2px" }}
+              >
+                <br />
+              </h2>
+              <FestivalContactForm />
+            </div>
+          </div>
+
           {/* FAQ Section */}
           <FAQ />
 
           {/* Footer */}
-          <footer className="bg-retro-purple/90 text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
+          <footer className="bg-black text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
+            <RetroGrid />
             <div className="max-w-6xl mx-auto relative z-10">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
                 <div>
@@ -1598,7 +1277,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
               <div className="border-t border-white/20 pt-8 text-center text-white/70">
                 <p>
-                  © 2024 design requests. All rights reserved. Expert design
+                  © 2025 design requests. All rights reserved. Expert design
                   services you can trust! Made with{" "}
                   <motion.span
                     animate={{

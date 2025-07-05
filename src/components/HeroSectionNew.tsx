@@ -291,45 +291,67 @@ const HeroSectionNew: React.FC = () => {
           ref={subtitleRef}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
           style={{
-            marginTop: "-93px",
+            marginTop: "-116px",
             marginBottom: "-4px",
             maxWidth: "727px",
-            margin: "-93px auto -4px",
+            margin: "-116px auto -4px",
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
             textShadow: "3px 3px 0px rgba(0,0,0,0.3)",
           }}
         >
-          <span style={{ fontFamily: "Righteous, display" }}>Where </span>
+          <span style={{ fontFamily: "Righteous, display", fontSize: "30px" }}>
+            Where{" "}
+          </span>
           <span
-            className="text-festival-orange"
-            style={{ fontFamily: "Righteous, display" }}
+            style={{
+              color: "#21201f",
+              fontFamily: "Righteous, display",
+              fontSize: "30px",
+            }}
           >
             wild creativity
           </span>
           <span
-            style={{ fontFamily: "Righteous, display", paddingLeft: "8px" }}
+            style={{
+              fontFamily: "Righteous, display",
+              paddingLeft: "8px",
+              fontSize: "30px",
+            }}
           >
             {" "}
             meets{" "}
           </span>
-          <span style={{ color: "#e84686", fontFamily: "Righteous, display" }}>
+          <span
+            style={{
+              color: "#302f2d",
+              fontFamily: "Righteous, display",
+              fontSize: "30px",
+            }}
+          >
             client desires
           </span>
-          <span style={{ fontFamily: "Righteous, display" }}> to create </span>
-          <span style={{ color: "#36a5c6", fontFamily: "Righteous, display" }}>
-            legendary designs!
+          <span style={{ fontFamily: "Righteous, display", fontSize: "30px" }}>
+            {" "}
+            to create{" "}
           </span>
-          <span style={{ boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)" }}>
-            🎨
+          <span
+            style={{
+              color: "#2d2b2a",
+              fontFamily: "Righteous, display",
+              fontSize: "33px",
+            }}
+          >
+            legendary designs!
           </span>
         </p>
 
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full mt-6"
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full"
+          style={{ marginTop: "9px" }}
         >
           <motion.div
             whileHover={{
@@ -414,12 +436,12 @@ const HeroSectionNew: React.FC = () => {
         {/* Floating stats */}
         <div
           className="flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full"
-          style={{ margin: "49px 0 43px" }}
+          style={{ margin: "10px 0 43px" }}
         >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
-            { label: "Projects", value: "1.2K+", icon: Wand2 },
-            { label: "Awards", value: "25+", icon: Star },
+            { label: "projects", value: "400+", icon: Wand2 },
+            { label: "Awards", value: "15+", icon: Star },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}

@@ -1,5 +1,6 @@
 import { motion, useInView, useAnimation } from "framer-motion";
 import { useRef, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 // Scroll animation hook
 export const useScrollAnimation = () => {
@@ -235,7 +236,7 @@ export const StaggerChild = ({ children, className = "" }: any) => {
           },
         },
       }}
-      className={className}
+      className={cn("flex flex-col justify-center items-start", className)}
     >
       {children}
     </motion.div>

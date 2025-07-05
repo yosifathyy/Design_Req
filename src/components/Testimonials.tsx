@@ -216,33 +216,32 @@ const Testimonials: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
+    <section className="relative">
       {/* Header */}
       <div
         ref={headerRef}
         className="h-screen flex items-center justify-center"
       >
         <div className="text-center px-4">
-          <div className="inline-block mb-6">
-            <span className="text-6xl">💕</span>
-          </div>
+          <div className="inline-block mb-6" />
 
           <h2
             className="flex items-center justify-center gap-8 md:gap-16 font-display font-black text-black mb-6 tracking-tight"
             style={{
-              fontSize: "clamp(80px, 15vw, 234px)",
-              lineHeight: "0.9",
+              fontSize: "171px",
+              lineHeight: "154px",
               fontFamily: '"Fredoka One", cursive',
             }}
           >
-            <span>Client</span>
+            <span style={{ fontSize: "88px" }}>Client</span>
             <span
               className="relative inline-flex items-center justify-center px-6 md:px-12 py-2 md:py-4 bg-festival-amber text-white rounded-2xl md:rounded-3xl border-4 border-black"
               style={{
-                fontSize: "clamp(76px, 14vw, 222px)",
-                lineHeight: "0.9",
+                fontSize: "88px",
+                lineHeight: "144px",
                 boxShadow: "0px 11px 0px rgba(0, 0, 0, 0.15)",
                 transform: "rotate(-1deg)",
+                marginLeft: "-41px",
               }}
             >
               Love
@@ -250,8 +249,13 @@ const Testimonials: React.FC = () => {
           </h2>
 
           <p className="text-2xl md:text-3xl text-black/80 font-bold max-w-3xl mx-auto leading-relaxed">
-            Real stories from real clients who absolutely{" "}
-            <span className="text-festival-magenta">adore</span> our work! 🎨
+            Real stories from clients who{" "}
+            <span
+              style={{ color: "rgba(220, 122, 18, 1)", padding: "0 3px 0 2px" }}
+            >
+              adore
+            </span>{" "}
+            our work!&nbsp;
           </p>
         </div>
       </div>
@@ -267,17 +271,33 @@ const Testimonials: React.FC = () => {
       ))}
 
       {/* Following Content - End marker for pinning */}
-      <div className="following-content h-screen flex items-center justify-center bg-gradient-to-br from-festival-orange to-festival-pink">
-        <div className="text-center">
+      <div
+        className="following-content h-[717px] flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F84f10231392747c98c3aa24600cbfdbe)",
+        }}
+      >
+        <div className="text-center pt-[167px] flex flex-col">
           <h3 className="text-6xl font-black text-white mb-4 drop-shadow-lg">
-            Ready for your love story?
+            Ready for your story?
           </h3>
-          <button className="bg-white text-festival-orange font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1">
+          <button
+            className="bg-white text-festival-orange font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1 w-[869px] mx-auto"
+            onClick={() => {
+              document.querySelector("[data-contact-form]")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
             Join Our Happy Clients! 🚀
           </button>
-          <p className="mt-6 text-xl text-white/90 font-medium">
-            Ready to create your own success story?
-          </p>
+          <img
+            loading="lazy"
+            srcSet="https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=100 100w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=200 200w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=400 400w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=800 800w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=1200 1200w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=1600 1600w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=2000 2000w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084"
+            className="aspect-square object-cover object-center w-[30%] min-h-0 min-w-[20px] overflow-hidden mx-auto mt-[221px] mb-[-251px]"
+            alt=""
+          />
         </div>
       </div>
     </section>
