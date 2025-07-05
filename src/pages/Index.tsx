@@ -825,7 +825,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
           {/* Interactive Image Shuffle Section */}
           <section className="px-4 sm:px-6 py-8 sm:py-12 lg:py-20 relative overflow-hidden">
             <div
-                initial={{ opacity: 0, scale: 0.5, rotateY: -45 }}
+
                 whileInView={{
                   opacity: 1,
                   scale: 1,
