@@ -823,7 +823,6 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
           </section>
 
 
-            <div className="max-w-7xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, rotateY: -45 }}
                 whileInView={{
