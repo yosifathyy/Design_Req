@@ -863,12 +863,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
                     fontFamily: "ADLaM Display, display",
                   }}
                 >
-                  Have questions about our services? Need help with your
-                  project? We're here to help make magic happen! ���
-                </p>
-              </motion.div>
 
-              <div />
 
               {/* CTA Section */}
               <motion.div
