@@ -825,8 +825,31 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
           {/* Interactive Image Shuffle Section */}
           <section className="px-4 sm:px-6 py-8 sm:py-12 lg:py-20 relative overflow-hidden">
             <div
-
-                whileInView={{
+              className="absolute inset-0 opacity-20"
+              style={{
+                background: "rgb(243, 236, 210)",
+              }}
+            >
+              {/* Rainbow Vertical Lines SVG */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="100%"
+                viewBox="0 0 452 600"
+                fill="none"
+                preserveAspectRatio="none"
+                className="w-full h-full"
+              >
+                {/* Black outlines */}
+                <path
+                  d="M426 0V600"
+                  stroke="black"
+                  strokeWidth="52"
+                  style={{ strokeDasharray: "472.353px, 127.747px" }}
+                />
+              </svg>
+            </div>
+            <div className="max-w-6xl mx-auto relative z-10">
+              <div className="text-center mb-16">
                   opacity: 1,
                   scale: 1,
                   rotateY: 0,
