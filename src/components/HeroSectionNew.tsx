@@ -238,28 +238,6 @@ const HeroSectionNew: React.FC = () => {
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
         style={{ zIndex: 10 }}
       >
-        {/* Badge */}
-        <motion.div
-          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-4 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-          whileHover={{
-            scale: 1.05,
-            rotate: 2,
-            boxShadow: "12px 12px 0px 0px rgba(0,0,0,1)",
-          }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <Palette className="w-6 h-6 text-white" />
-          </motion.div>
-          <span className="text-lg font-black text-white tracking-wide">
-            CREATIVE POWERHOUSE ��
-          </span>
-        </motion.div>
-
         {/* Main title */}
         <div
           ref={(el) => {

@@ -1137,7 +1137,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
 
           {/* Contact Section */}
           <div
-            className="w-[99%] flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-[-165px]"
+            className="w-[100%] flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-[-210px]"
             style={{
               backgroundImage:
                 "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F8353c55e732a4f94aabdffdb2d27e932)",
