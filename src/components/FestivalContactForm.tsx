@@ -230,9 +230,6 @@ const FestivalContactForm: React.FC = () => {
                   </span>
                   <Heart className="w-6 h-6 text-festival-black" />
                 </div>
-                <p className="text-festival-black/80 font-bold text-sm mt-2">
-                  Click to reveal the magic input!
-                </p>
               </motion.div>
             ) : (
               <motion.div
@@ -315,9 +312,6 @@ const FestivalContactForm: React.FC = () => {
                   </span>
                   <Star className="w-6 h-6 text-festival-black" />
                 </div>
-                <p className="text-festival-black/80 font-bold text-sm mt-2">
-                  Tear away to reveal your email field!
-                </p>
               </motion.div>
             ) : (
               <motion.div
