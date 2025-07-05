@@ -249,9 +249,9 @@ const Testimonials: React.FC = () => {
           </h2>
 
           <p className="text-2xl md:text-3xl text-black/80 font-bold max-w-3xl mx-auto leading-relaxed">
-            Real stories from clients who absolutely{" "}
+            Real stories from clients who{" "}
             <span
-              style={{ color: "rgba(220, 122, 18, 1)", paddingLeft: "2px" }}
+              style={{ color: "rgba(220, 122, 18, 1)", padding: "0 3px 0 2px" }}
             >
               adore
             </span>{" "}
@@ -271,14 +271,28 @@ const Testimonials: React.FC = () => {
       ))}
 
       {/* Following Content - End marker for pinning */}
-      <div className="following-content h-screen flex items-center justify-center bg-gradient-to-br from-festival-orange to-festival-pink">
-        <div className="text-center">
+      <div
+        className="following-content h-[717px] flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            "url(https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F84f10231392747c98c3aa24600cbfdbe)",
+        }}
+      >
+        <div className="text-center pt-[118px] flex flex-col">
           <h3 className="text-6xl font-black text-white mb-4 drop-shadow-lg">
-            Ready for your story?
+            <span style={{ color: "rgb(46, 46, 46)" }}>
+              Ready for your story?
+            </span>
           </h3>
           <button className="bg-white text-festival-orange font-black text-2xl px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 transform hover:-rotate-1">
             Join Our Happy Clients! 🚀
           </button>
+          <img
+            loading="lazy"
+            srcSet="https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=100 100w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=200 200w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=400 400w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=800 800w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=1200 1200w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=1600 1600w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084?width=2000 2000w, https://cdn.builder.io/api/v1/image/assets%2Facd55bb5271f4561b7d7bc5a988f49b5%2F181fa2e971fa4203bec6c049fb0e4084"
+            className="aspect-square object-cover object-center w-[53%] min-h-[20px] min-w-[20px] overflow-hidden mx-auto mt-[255px] mb-[-251px]"
+            alt=""
+          />
         </div>
       </div>
     </section>

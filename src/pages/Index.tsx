@@ -234,7 +234,7 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
       )}
       {animationsEnabled && (
         <motion.div
-          className="min-h-screen bg-festival-cream relative overflow-hidden flex flex-col pb-20 sm:pb-24"
+          className="min-h-[634px] bg-festival-cream relative overflow-hidden flex flex-col pb-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -1387,27 +1387,6 @@ const Index = ({ isLoadingComplete = false }: IndexProps) => {
               </div>
             </div>
           </footer>
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12 sm:mb-16">
-              <div className="inline-block mb-4 sm:mb-6 transform rotate-2">
-                <MessageCircle className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-retro-purple mx-auto" />
-              </div>
-              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-3 sm:mb-4">
-                <span style={{ color: "rgb(0, 0, 0)" }}>Get In Touch! 📞</span>
-              </h2>
-              <p
-                className="text-base sm:text-lg xl:text-xl max-w-2xl mx-auto px-4 sm:px-0"
-                style={{
-                  color: "rgba(12, 11, 12, 1)",
-                  fontFamily: "ADLaM Display, display",
-                }}
-              >
-                Have questions about our services? Need help with your project?
-                We're here to help make magic happen! ✨
-              </p>
-            </div>
-            <FestivalContactForm />
-          </div>
         </motion.div>
       )}
     </AnimatePresence>
