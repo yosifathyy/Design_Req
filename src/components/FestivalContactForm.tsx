@@ -157,18 +157,35 @@ const FestivalContactForm: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto py-1 px-4">
       <motion.h2
-        className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-center text-festival-pink mb-8 sm:mb-12 uppercase tracking-wide"
+        className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-center uppercase tracking-wide mb-8 sm:mb-12 mt-[-112px]"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         style={{
+          color: "rgba(18, 18, 17, 1)",
           textShadow: "4px 4px 0px hsl(var(--festival-orange))",
+          letterSpacing: "1.2px",
         }}
       >
-        Let's Create Magic! 🎨
+        <span style={{ color: "rgb(254, 130, 100)", letterSpacing: "1.2px" }}>
+          Get in Touch
+        </span>
       </motion.h2>
+
+      <p
+        className="text-lg lg:text-xl max-w-2xl self-start mx-auto mt-[-35px] mb-8"
+        style={{
+          color: "rgb(12, 11, 12)",
+          fontFamily: "ADLaM Display, display",
+          fontSize: "25px",
+          lineHeight: "36px",
+        }}
+      >
+        Have questions about our services? Need help with your project? We're
+        here to help make magic happen!
+      </p>
 
       <form
         ref={formRef}
