@@ -253,15 +253,15 @@ const HeroSectionNew: React.FC = () => {
           <div
             className="max-w-full h-auto mx-auto block"
             style={{
-              maxHeight: "300px",
-              width: "300px",
+              maxHeight: "330px",
+              width: "330px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
             }}
           >
             <Lottie
               animationData={null}
-              path="https://lottie.host/38ca9747-2de1-488c-b0f0-97af4f3b8cdd/HN4QyaXAP0.json"
+              path="https://lottie.host/23e5b5af-f3ed-46c6-8b5b-9f599d4272fc/qQhQdmmLVy.json"
               loop={true}
               autoplay={true}
               style={{
