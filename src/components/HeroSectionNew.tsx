@@ -265,8 +265,9 @@ const HeroSectionNew: React.FC = () => {
               loop={false}
               autoplay={true}
               style={{
-                width: "100%",
+                width: "112%",
                 height: "100%",
+                marginTop: "-15px",
               }}
               onLoadedData={() =>
                 console.log("Lottie animation loaded successfully")
@@ -283,10 +284,10 @@ const HeroSectionNew: React.FC = () => {
           ref={subtitleRef}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
           style={{
-            marginTop: "-116px",
+            marginTop: "-87px",
             marginBottom: "-4px",
             maxWidth: "727px",
-            margin: "-116px auto -4px",
+            margin: "-87px auto -4px",
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
