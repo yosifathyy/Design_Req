@@ -7,6 +7,7 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useClickSound } from "@/hooks/use-click-sound";
+import Lottie from "lottie-react";
 import {
   Sparkles,
   Rocket,
@@ -249,19 +250,32 @@ const HeroSectionNew: React.FC = () => {
             perspective: "1000px",
           }}
         >
-          <img
-            src="https://i.postimg.cc/JnS8wrG0/logo-image.png"
-            alt="Design Requests Logo"
+          <div
             className="max-w-full h-auto mx-auto block"
             style={{
               maxHeight: "300px",
-              width: "auto",
+              width: "300px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
             }}
-            onLoad={() => console.log("Logo loaded successfully")}
-            onError={(e) => console.error("Logo failed to load:", e)}
-          />
+          >
+            <Lottie
+              animationData={null}
+              path="https://lottie.host/38ca9747-2de1-488c-b0f0-97af4f3b8cdd/HN4QyaXAP0.json"
+              loop={true}
+              autoplay={true}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              onLoadedData={() =>
+                console.log("Lottie animation loaded successfully")
+              }
+              onError={(e) =>
+                console.error("Lottie animation failed to load:", e)
+              }
+            />
+          </div>
         </div>
 
         {/* Subtitle */}
