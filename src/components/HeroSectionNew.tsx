@@ -261,8 +261,8 @@ const HeroSectionNew: React.FC = () => {
           >
             <Lottie
               animationData={null}
-              path="https://lottie.host/23e5b5af-f3ed-46c6-8b5b-9f599d4272fc/qQhQdmmLVy.json"
-              loop={true}
+              path="https://lottie.host/5a86a820-9e8b-4de4-ab4c-97ac9b114c50/DA2tquMbp0.json"
+              loop={false}
               autoplay={true}
               style={{
                 width: "100%",
