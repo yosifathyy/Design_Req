@@ -7,6 +7,7 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useClickSound } from "@/hooks/use-click-sound";
+import Lottie from "lottie-react";
 import {
   Sparkles,
   Rocket,
@@ -238,28 +239,6 @@ const HeroSectionNew: React.FC = () => {
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
         style={{ zIndex: 10 }}
       >
-        {/* Badge */}
-        <motion.div
-          className="inline-flex items-center space-x-3 bg-gradient-to-r from-festival-orange to-festival-pink px-8 py-4 rounded-full my-[18px] mb-4 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-          whileHover={{
-            scale: 1.05,
-            rotate: 2,
-            boxShadow: "12px 12px 0px 0px rgba(0,0,0,1)",
-          }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <Palette className="w-6 h-6 text-white" />
-          </motion.div>
-          <span className="text-lg font-black text-white tracking-wide">
-            CREATIVE POWERHOUSE ��
-          </span>
-        </motion.div>
-
         {/* Main title */}
         <div
           ref={(el) => {
@@ -271,19 +250,33 @@ const HeroSectionNew: React.FC = () => {
             perspective: "1000px",
           }}
         >
-          <img
-            src="https://i.postimg.cc/JnS8wrG0/logo-image.png"
-            alt="Design Requests Logo"
+          <div
             className="max-w-full h-auto mx-auto block"
             style={{
-              maxHeight: "300px",
-              width: "auto",
+              maxHeight: "330px",
+              width: "330px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
             }}
-            onLoad={() => console.log("Logo loaded successfully")}
-            onError={(e) => console.error("Logo failed to load:", e)}
-          />
+          >
+            <Lottie
+              animationData={null}
+              path="https://lottie.host/5a86a820-9e8b-4de4-ab4c-97ac9b114c50/DA2tquMbp0.json"
+              loop={false}
+              autoplay={true}
+              style={{
+                width: "112%",
+                height: "100%",
+                marginTop: "-15px",
+              }}
+              onLoadedData={() =>
+                console.log("Lottie animation loaded successfully")
+              }
+              onError={(e) =>
+                console.error("Lottie animation failed to load:", e)
+              }
+            />
+          </div>
         </div>
 
         {/* Subtitle */}
@@ -291,10 +284,10 @@ const HeroSectionNew: React.FC = () => {
           ref={subtitleRef}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
           style={{
-            marginTop: "-116px",
+            marginTop: "-87px",
             marginBottom: "-4px",
             maxWidth: "727px",
-            margin: "-116px auto -4px",
+            margin: "-87px auto -4px",
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
