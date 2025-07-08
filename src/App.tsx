@@ -28,6 +28,7 @@ import NewRequest from "./pages/NewRequest";
 import Chat from "./pages/Chat";
 import Payments from "./pages/Payments";
 import Downloads from "./pages/Downloads";
+import Requests from "./pages/Requests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const AppContent = () => {
         <Route path="/chat" element={<Chat />} />
         <Route path="/payments" element={<Payments />} />
         <Route path="/downloads" element={<Downloads />} />
+        <Route path="/requests" element={<Requests />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/disputes" element={<Disputes />} />
