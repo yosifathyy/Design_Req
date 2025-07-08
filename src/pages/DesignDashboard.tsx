@@ -35,6 +35,8 @@ const DesignDashboard: React.FC = () => {
     },
   });
   const [loading, setLoading] = React.useState(true);
+  const [isCreatingProfile, setIsCreatingProfile] = React.useState(false);
+  const [profileSetupError, setProfileSetupError] = React.useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
