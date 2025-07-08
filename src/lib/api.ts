@@ -425,6 +425,62 @@ export const getChatByRequestId = async (requestId: string) => {
   }
 };
 
+export const getAllChatsForAdmin = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("chats")
+      .select(
+        `
+        *,
+        request:request_id(
+          id,
+          title,
+          user_id,
+          status,
+          created_at,
+          user:user_id(id, name, email, avatar_url)
+        ),
+        last_message:messages(content, created_at)
+      `,
+      )
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      if (error.message?.includes('relation "chats" does not exist')) {
+        console.warn("Chats table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+
+    // Process the data to get the latest message for each chat
+    const processedChats = (data || []).map((chat) => {
+      const lastMessage =
+        chat.last_message && chat.last_message.length > 0
+          ? chat.last_message[chat.last_message.length - 1]
+          : null;
+
+      return {
+        ...chat,
+        last_message: lastMessage,
+        last_message_at: lastMessage?.created_at || chat.created_at,
+      };
+    });
+
+    return processedChats;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      console.warn("Could not fetch chats, returning empty array");
+      return [];
+    }
+    throw error;
+  }
+};
+
 export const createChat = async (requestId: string, participants: string[]) => {
   try {
     // First create the chat
