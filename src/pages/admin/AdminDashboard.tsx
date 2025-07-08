@@ -32,8 +32,61 @@ const AdminDashboard: React.FC = () => {
   const metricsRef = useRef<HTMLDivElement>(null);
   const chartsRef = useRef<HTMLDivElement>(null);
 
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+
+  // Load dashboard data
   useEffect(() => {
-    if (!containerRef.current || !metricsRef.current || !chartsRef.current)
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchDashboardData();
+        setDashboardData(data);
+        setLastUpdated(new Date());
+      } catch (err: any) {
+        console.error("Failed to load dashboard data:", err);
+        setError(err.message || "Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
+  // Set up real-time subscriptions
+  useEffect(() => {
+    const cleanup = subscribeToAdminUpdates((update) => {
+      console.log("Real-time update received:", update);
+      // Refresh dashboard data when updates are received
+      if (dashboardData) {
+        fetchDashboardData()
+          .then((newData) => {
+            setDashboardData(newData);
+            setLastUpdated(new Date());
+          })
+          .catch((err) => {
+            console.error("Failed to refresh dashboard data:", err);
+          });
+      }
+    });
+
+    return cleanup;
+  }, [dashboardData]);
+
+  // GSAP animations
+  useEffect(() => {
+    if (
+      !containerRef.current ||
+      !metricsRef.current ||
+      !chartsRef.current ||
+      loading
+    )
       return;
 
     const tl = gsap.timeline();
@@ -72,17 +125,99 @@ const AdminDashboard: React.FC = () => {
       },
       "-=0.2",
     );
-  }, []);
+  }, [loading]);
 
-  const recentProjects = mockAdminProjects.slice(0, 5);
-  const pendingInvoices = mockAdminInvoices.filter(
-    (inv) => inv.status === "sent" || inv.status === "overdue",
+  const refreshData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchDashboardData();
+      setDashboardData(data);
+      setLastUpdated(new Date());
+    } catch (err: any) {
+      setError(err.message || "Failed to refresh data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading && !dashboardData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg font-medium text-black">
+            Loading dashboard data...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !dashboardData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Card className="border-4 border-red-500 shadow-[8px_8px_0px_0px_rgba(239,68,68,1)] bg-white p-8 text-center max-w-md">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h3 className="text-2xl font-bold text-black mb-2">
+            Dashboard Error
+          </h3>
+          <p className="text-black/70 mb-6">{error}</p>
+          <Button
+            onClick={refreshData}
+            className="bg-red-500 hover:bg-red-600 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Retry
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // Fallback to empty data if needed
+  const data = dashboardData || {
+    users: [],
+    projects: [],
+    invoices: [],
+    chats: [],
+    alerts: [],
+    analytics: {
+      clientEngagement: {
+        activeSessions: 0,
+        requestsPerWeek: 0,
+        averageProjectValue: 0,
+        clientRetentionRate: 0,
+      },
+      designerProductivity: {
+        averageTurnaroundTime: 0,
+        completedRequestsThisMonth: 0,
+        utilizationRate: 0,
+        customerSatisfaction: 0,
+      },
+      financialMetrics: {
+        monthlyRecurringRevenue: 0,
+        averageInvoiceSize: 0,
+        outstandingBalance: 0,
+        collectionRate: 0,
+      },
+      systemHealth: {
+        uptime: 0,
+        errorRate: 0,
+        averageLoadTime: 0,
+        activeUsers: 0,
+      },
+    },
+  };
+
+  const recentProjects = data.projects.slice(0, 5);
+  const pendingInvoices = data.invoices.filter(
+    (inv: any) => inv.status === "pending" || inv.status === "overdue",
   );
-  const criticalAlerts = mockSystemAlerts.filter(
-    (alert) => !alert.isRead && alert.type === "error",
+  const criticalAlerts = data.alerts.filter(
+    (alert: any) => !alert.is_read && alert.type === "error",
   );
-  const activeDesigners = mockAdminUsers.filter(
-    (user) => user.role === "designer" && user.status === "active",
+  const activeDesigners = data.users.filter(
+    (user: any) => user.role === "designer" && user.status === "active",
   ).length;
 
   const getStatusColor = (status: string) => {
