@@ -46,6 +46,20 @@ const DesignDashboard: React.FC = () => {
         const profile = await getUserProfile(user.id);
         setUserProfile(profile);
 
+        // If no profile found, use fallback data
+        if (!profile) {
+          console.warn("No user profile found, using fallback data");
+          setUserProfile({
+            id: user.id,
+            email: user.email,
+            name: user.email?.split("@")[0] || "User",
+            xp: 0,
+            level: 1,
+            role: "user",
+            status: "active",
+          });
+        }
+
         // Fetch requests
         const requests = await getDesignRequests(user.id);
 
@@ -56,7 +70,8 @@ const DesignDashboard: React.FC = () => {
         );
 
         // Calculate XP target based on level
-        const xpTarget = profile.level * 1000;
+        const currentProfile = profile || { level: 1, xp: 0 };
+        const xpTarget = currentProfile.level * 1000;
 
         // Update stats
         setStats({
@@ -64,9 +79,9 @@ const DesignDashboard: React.FC = () => {
           unreadChats: 0, // We'll implement this with real-time later
           dueInvoices: pendingInvoices.length,
           xpProgress: {
-            current: profile.xp,
+            current: currentProfile.xp,
             target: xpTarget,
-            level: profile.level,
+            level: currentProfile.level,
           },
         });
       } catch (error: any) {
