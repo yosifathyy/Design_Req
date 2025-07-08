@@ -9,7 +9,7 @@ import {
   sendMessage,
   getDesignRequestById,
 } from "@/lib/api";
-import DatabaseDiagnostic from "@/components/DatabaseDiagnostic";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -330,53 +330,6 @@ const Chat: React.FC = () => {
           {loading ? (
             <div className="flex justify-center items-center h-full">
               <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          ) : error ? (
-            <div className="flex justify-center items-center h-full">
-              <div className="max-w-4xl w-full">
-                <DatabaseDiagnostic
-                  onRetry={() => {
-                    setError(null);
-                    setLoading(true);
-                    // Re-initialize chat
-                    if (user && requestId) {
-                      const initializeChat = async () => {
-                        try {
-                          const requestData =
-                            await getDesignRequestById(requestId);
-                          setProjectDetails(requestData);
-
-                          let chat = await getChatByRequestId(requestId);
-
-                          if (!chat) {
-                            const participants = [user.id];
-                            if (requestData.designer_id) {
-                              participants.push(requestData.designer_id);
-                            }
-                            chat = await createChat(requestId, participants);
-                          }
-
-                          setChatId(chat.id);
-                          const chatMessages = await getMessages(chat.id);
-                          setMessages(chatMessages);
-                        } catch (error: any) {
-                          console.error(
-                            "Error initializing chat:",
-                            error?.message || error,
-                          );
-                          setError(
-                            error?.message ||
-                              "Failed to initialize chat functionality.",
-                          );
-                        } finally {
-                          setLoading(false);
-                        }
-                      };
-                      initializeChat();
-                    }
-                  }}
-                />
-              </div>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-black/50">
