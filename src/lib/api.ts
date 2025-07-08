@@ -541,6 +541,11 @@ export const sendMessage = async (
           "Messages table does not exist. Please run the database setup script.",
         );
       }
+      if (error.message?.includes("row-level security policy")) {
+        throw new Error(
+          "You do not have permission to send messages in this chat.",
+        );
+      }
       throw error;
     }
     return data;
