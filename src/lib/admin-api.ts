@@ -20,48 +20,52 @@ export interface DashboardData {
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
   try {
-    // Check if Supabase is configured
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    if (
-      !supabaseUrl ||
-      !supabaseAnonKey ||
-      supabaseUrl === "your-supabase-url" ||
-      supabaseAnonKey === "your-supabase-anon-key" ||
-      supabaseUrl.includes("placeholder")
-    ) {
-      console.warn("Supabase not configured - using fallback data");
+    // If Supabase is not configured, return mock data
+    if (!isSupabaseConfigured) {
+      console.warn(
+        "Supabase not configured - using development mode with sample data",
+      );
       return {
-        users: [],
-        projects: [],
+        users: await getAdminUsers(),
+        projects: await getAdminProjects(),
         invoices: [],
         chats: [],
-        alerts: [],
+        alerts: [
+          {
+            id: "alert-1",
+            type: "info",
+            title: "Development Mode Active",
+            message:
+              "Currently running in development mode. Configure Supabase to see real data.",
+            created_at: new Date().toISOString(),
+            is_read: false,
+            source: "system",
+          },
+        ],
         analytics: {
           clientEngagement: {
-            activeSessions: 0,
-            requestsPerWeek: 0,
-            averageProjectValue: 0,
-            clientRetentionRate: 0,
+            activeSessions: 2,
+            requestsPerWeek: 5,
+            averageProjectValue: 450,
+            clientRetentionRate: 0.8,
           },
           designerProductivity: {
-            averageTurnaroundTime: 0,
-            completedRequestsThisMonth: 0,
-            utilizationRate: 0,
-            customerSatisfaction: 0,
+            averageTurnaroundTime: 3.5,
+            completedRequestsThisMonth: 8,
+            utilizationRate: 0.75,
+            customerSatisfaction: 4.5,
           },
           financialMetrics: {
-            monthlyRecurringRevenue: 0,
-            averageInvoiceSize: 0,
-            outstandingBalance: 0,
-            collectionRate: 0,
+            monthlyRecurringRevenue: 2500,
+            averageInvoiceSize: 450,
+            outstandingBalance: 800,
+            collectionRate: 0.9,
           },
           systemHealth: {
-            uptime: 0,
-            errorRate: 0,
-            averageLoadTime: 0,
-            activeUsers: 0,
+            uptime: 0.999,
+            errorRate: 0.001,
+            averageLoadTime: 1.1,
+            activeUsers: 2,
           },
         },
       };
