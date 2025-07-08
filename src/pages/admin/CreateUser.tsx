@@ -112,7 +112,7 @@ const CreateUser = () => {
           email: newUser.email,
           role: newUser.role,
         },
-        user_id: "current-admin-id", // TODO: Get actual current admin ID
+        user_id: currentUser?.id || "anonymous",
       });
 
       toast({
