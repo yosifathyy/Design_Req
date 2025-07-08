@@ -193,14 +193,36 @@ export const updateUserXP = async (userId: string, xpAmount: number) => {
 
 // Design requests functions
 export const createDesignRequest = async (requestData: any) => {
-  const { data, error } = await supabase
-    .from("design_requests")
-    .insert([requestData])
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .insert([requestData])
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (
+        error.message?.includes('relation "design_requests" does not exist')
+      ) {
+        throw new Error(
+          "Design requests table does not exist. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
+    return data;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not create design request. Database table may not exist yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 export const getDesignRequests = async (userId: string, filter?: string) => {
@@ -272,33 +294,73 @@ export const updateDesignRequest = async (requestId: string, updates: any) => {
 
 // File upload functions
 export const uploadFile = async (file: File, path: string) => {
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-  const filePath = `${path}/${fileName}`;
+  try {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const filePath = `${path}/${fileName}`;
 
-  const { data, error } = await supabase.storage
-    .from("files")
-    .upload(filePath, file);
+    const { data, error } = await supabase.storage
+      .from("files")
+      .upload(filePath, file);
 
-  if (error) throw error;
+    if (error) {
+      if (error.message?.includes('bucket "files" does not exist')) {
+        throw new Error(
+          "File storage bucket does not exist. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
 
-  // Get public URL
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("files").getPublicUrl(filePath);
+    // Get public URL
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("files").getPublicUrl(filePath);
 
-  return { path: filePath, url: publicUrl };
+    return { path: filePath, url: publicUrl };
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("bucket") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not upload file. Storage may not be configured yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 export const saveFileMetadata = async (fileData: any) => {
-  const { data, error } = await supabase
-    .from("files")
-    .insert([fileData])
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("files")
+      .insert([fileData])
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "files" does not exist')) {
+        throw new Error(
+          "Files table does not exist. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
+    return data;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not save file metadata. Database table may not exist yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 // Chat and messages functions
