@@ -2,7 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { createDesignRequest, uploadFile, saveFileMetadata, updateUserXP } from "@/lib/api";
+import {
+  createDesignRequest,
+  uploadFile,
+  saveFileMetadata,
+  updateUserXP,
+} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -180,7 +185,7 @@ const NewRequest: React.FC = () => {
     }
 
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -193,17 +198,20 @@ const NewRequest: React.FC = () => {
         description: formData.description,
         category: formData.category,
         priority: formData.priority,
-        status: 'submitted',
+        status: "submitted",
         user_id: user.id,
         price: calculatePrice(formData.category, formData.priority),
       };
-      
+
       const newRequest = await createDesignRequest(requestData);
-      
+
       // 2. Upload files if any
       const filePromises = files.map(async (file) => {
-        const { path, url } = await uploadFile(file, `requests/${newRequest.id}`);
-        
+        const { path, url } = await uploadFile(
+          file,
+          `requests/${newRequest.id}`,
+        );
+
         // Save file metadata
         return saveFileMetadata({
           name: file.name,
@@ -214,21 +222,21 @@ const NewRequest: React.FC = () => {
           uploaded_by: user.id,
         });
       });
-      
+
       if (files.length > 0) {
         await Promise.all(filePromises);
       }
-      
+
       // 3. Award XP to the user
       await updateUserXP(user.id, 10);
-      
+
       // Success handling below
-    } catch (error) {
-      console.error('Error creating request:', error);
+    } catch (error: any) {
+      console.error("Error creating request:", error?.message || error);
       setIsSubmitting(false);
       return;
     }
-    
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Success animation
@@ -277,38 +285,38 @@ const NewRequest: React.FC = () => {
   // Calculate price based on category and priority
   const calculatePrice = (category: string, priority: string): number => {
     let basePrice = 0;
-    
+
     // Base price by category
     switch (category) {
-      case 'logo':
+      case "logo":
         basePrice = 299;
         break;
-      case 'web-design':
+      case "web-design":
         basePrice = 599;
         break;
-      case '3d':
+      case "3d":
         basePrice = 499;
         break;
-      case 'photoshop':
+      case "photoshop":
         basePrice = 150;
         break;
-      case 'branding':
+      case "branding":
         basePrice = 399;
         break;
-      case 'illustration':
+      case "illustration":
         basePrice = 249;
         break;
       default:
         basePrice = 199;
     }
-    
+
     // Adjust for priority
     switch (priority) {
-      case 'high':
+      case "high":
         return basePrice * 1.5;
-      case 'medium':
+      case "medium":
         return basePrice;
-      case 'low':
+      case "low":
         return basePrice * 0.8;
       default:
         return basePrice;
@@ -353,9 +361,11 @@ const NewRequest: React.FC = () => {
           </p>
           {!user && (
             <div className="mt-4 p-4 bg-yellow-100 border-4 border-black text-black">
-              <p className="font-bold">You need to be logged in to submit a request.</p>
-              <Button 
-                onClick={() => navigate('/login')}
+              <p className="font-bold">
+                You need to be logged in to submit a request.
+              </p>
+              <Button
+                onClick={() => navigate("/login")}
                 className="mt-2 bg-black text-white"
               >
                 Go to Login
