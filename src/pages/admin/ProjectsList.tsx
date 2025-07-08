@@ -205,42 +205,43 @@ const ProjectsList: React.FC = () => {
                   >
                     {project.status.replace("-", " ").toUpperCase()}
                   </Badge>
-                  <Badge
-                    className={`${getPriorityColor(project.priority)} text-white border-2 border-black`}
-                  >
-                    {project.priority.toUpperCase()}
-                  </Badge>
+                  {project.priority && (
+                    <Badge
+                      className={`${getPriorityColor(project.priority)} text-white border-2 border-black`}
+                    >
+                      {project.priority.toUpperCase()}
+                    </Badge>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-black/60" />
                     <span className="text-black/70">
-                      Client: {project.clientName}
+                      Client: {project.client?.name || "Unknown Client"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-black/60" />
                     <span className="text-black/70">
-                      Designer: {project.designerName || "Unassigned"}
+                      Designer: {project.designer?.name || "Unassigned"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-black/60" />
                     <span className="text-black/70">
-                      Due: {new Date(project.dueDate).toLocaleDateString()}
+                      Created: {new Date(project.created_at).toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-black/60" />
                     <span className="text-black/70">
-                      Budget: ${project.budget}
+                      Price: ${project.price || 0}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-black/70">
-                      Progress: {project.actualHours || 0}h /{" "}
-                      {project.estimatedHours || 0}h
+                      Status: {project.status?.replace("-", " ")?.toUpperCase() || "UNKNOWN"}
                     </span>
                   </div>
                 </div>
