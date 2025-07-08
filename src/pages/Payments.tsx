@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
+import { getInvoices, updateInvoice, updateUserXP } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,11 +24,34 @@ const Payments: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "paid" | "pending" | "overdue">(
     "all",
   );
+  const [invoices, setInvoices] = useState<any[]>([]);
   const [payingInvoice, setPayingInvoice] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const data = await getInvoices(user.id, filter !== 'all' ? filter : undefined);
+        setInvoices(data);
+      } catch (error) {
+        console.error('Error fetching invoices:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (user) {
+      fetchInvoices();
+    }
+  }, [user, filter]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -102,7 +127,7 @@ const Payments: React.FC = () => {
     }
   };
 
-  const filteredInvoices = mockInvoices.filter((invoice) => {
+  const filteredInvoices = invoices.filter((invoice) => {
     if (filter === "all") return true;
     return invoice.status === filter;
   });
@@ -110,8 +135,29 @@ const Payments: React.FC = () => {
   const handlePayment = async (invoiceId: string) => {
     setPayingInvoice(invoiceId);
 
-    // Simulate PayPal payment process
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Update invoice status to paid
+      await updateInvoice(invoiceId, {
+        status: 'paid',
+        paid_at: new Date().toISOString()
+      });
+      
+      // Award XP to the user
+      if (user) {
+        await updateUserXP(user.id, 25);
+      }
+      
+      // Update local state
+      setInvoices(prev => 
+        prev.map(invoice => 
+          invoice.id === invoiceId 
+            ? { ...invoice, status: 'paid', paid_at: new Date().toISOString() } 
+            : invoice
+        )
+      );
+    } catch (error) {
+      console.error('Error processing payment:', error);
+    }
 
     // Show success animation
     const successEl = document.createElement("div");
@@ -181,18 +227,18 @@ const Payments: React.FC = () => {
   };
 
   const getRequestTitle = (requestId: string) => {
-    const request = mockRequests.find((r) => r.id === requestId);
-    return request?.title || "Unknown Project";
+    const invoice = invoices.find(inv => inv.id === requestId);
+    return invoice?.request?.title || "Unknown Project";
   };
 
-  const totalAmount = filteredInvoices.reduce(
+  const totalAmount = invoices.reduce(
     (sum, invoice) => sum + invoice.amount,
     0,
   );
-  const paidAmount = filteredInvoices
+  const paidAmount = invoices
     .filter((invoice) => invoice.status === "paid")
     .reduce((sum, invoice) => sum + invoice.amount, 0);
-  const pendingAmount = filteredInvoices
+  const pendingAmount = invoices
     .filter((invoice) => invoice.status === "pending")
     .reduce((sum, invoice) => sum + invoice.amount, 0);
 
@@ -298,8 +344,13 @@ const Payments: React.FC = () => {
         </div>
 
         {/* Invoices List */}
-        <div ref={cardsRef} className="space-y-4">
-          {filteredInvoices.map((invoice) => {
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div ref={cardsRef} className="space-y-4">
+            {filteredInvoices.map((invoice) => {
             const statusConfig = getStatusConfig(invoice.status);
             const StatusIcon = statusConfig.icon;
 
@@ -390,10 +441,11 @@ const Payments: React.FC = () => {
                 </div>
               </Card>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
 
-        {filteredInvoices.length === 0 && (
+        {!loading && filteredInvoices.length === 0 && (
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
             <div className="text-6xl mb-4">💳</div>
             <h3 className="text-2xl font-bold text-black mb-2">

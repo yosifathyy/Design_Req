@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
+import { createDesignRequest, uploadFile, saveFileMetadata, updateUserXP } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +35,7 @@ const NewRequest: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const navigate = useNavigate();
+  const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -164,7 +167,7 @@ const NewRequest: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -176,9 +179,56 @@ const NewRequest: React.FC = () => {
       return;
     }
 
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate form submission
+    try {
+      // 1. Create the design request
+      const requestData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        priority: formData.priority,
+        status: 'submitted',
+        user_id: user.id,
+        price: calculatePrice(formData.category, formData.priority),
+      };
+      
+      const newRequest = await createDesignRequest(requestData);
+      
+      // 2. Upload files if any
+      const filePromises = files.map(async (file) => {
+        const { path, url } = await uploadFile(file, `requests/${newRequest.id}`);
+        
+        // Save file metadata
+        return saveFileMetadata({
+          name: file.name,
+          url,
+          type: file.type,
+          size: file.size,
+          request_id: newRequest.id,
+          uploaded_by: user.id,
+        });
+      });
+      
+      if (files.length > 0) {
+        await Promise.all(filePromises);
+      }
+      
+      // 3. Award XP to the user
+      await updateUserXP(user.id, 10);
+      
+      // Success handling below
+    } catch (error) {
+      console.error('Error creating request:', error);
+      setIsSubmitting(false);
+      return;
+    }
+    
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Success animation
@@ -224,6 +274,47 @@ const NewRequest: React.FC = () => {
     setIsSubmitting(false);
   };
 
+  // Calculate price based on category and priority
+  const calculatePrice = (category: string, priority: string): number => {
+    let basePrice = 0;
+    
+    // Base price by category
+    switch (category) {
+      case 'logo':
+        basePrice = 299;
+        break;
+      case 'web-design':
+        basePrice = 599;
+        break;
+      case '3d':
+        basePrice = 499;
+        break;
+      case 'photoshop':
+        basePrice = 150;
+        break;
+      case 'branding':
+        basePrice = 399;
+        break;
+      case 'illustration':
+        basePrice = 249;
+        break;
+      default:
+        basePrice = 199;
+    }
+    
+    // Adjust for priority
+    switch (priority) {
+      case 'high':
+        return basePrice * 1.5;
+      case 'medium':
+        return basePrice;
+      case 'low':
+        return basePrice * 0.8;
+      default:
+        return basePrice;
+    }
+  };
+
   const priorityColors = {
     low: "from-festival-yellow to-festival-amber",
     medium: "from-festival-orange to-festival-coral",
@@ -260,9 +351,20 @@ const NewRequest: React.FC = () => {
           <p className="text-xl text-black/70 font-medium">
             Tell us about your creative vision
           </p>
+          {!user && (
+            <div className="mt-4 p-4 bg-yellow-100 border-4 border-black text-black">
+              <p className="font-bold">You need to be logged in to submit a request.</p>
+              <Button 
+                onClick={() => navigate('/login')}
+                className="mt-2 bg-black text-white"
+              >
+                Go to Login
+              </Button>
+            </div>
+          )}
         </div>
 
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
+        <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-8">
           {/* Title Section */}
           <Card className="form-section border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6">
             <div className="space-y-4">

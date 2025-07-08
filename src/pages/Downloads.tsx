@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
+import { getDesignRequests } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -25,13 +27,38 @@ import {
 const Downloads: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [deliveredRequests, setDeliveredRequests] = useState<any[]>([]);
   const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(
     new Set(),
   );
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchDeliveredRequests = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const requests = await getDesignRequests(user.id);
+        // Filter only delivered requests
+        const delivered = requests.filter(req => req.status === 'delivered');
+        setDeliveredRequests(delivered);
+      } catch (error) {
+        console.error('Error fetching delivered requests:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (user) {
+      fetchDeliveredRequests();
+    }
+  }, [user]);
 
   const categories = [
     { id: "all", name: "All Designs", count: mockRequests.length },
@@ -81,8 +108,7 @@ const Downloads: React.FC = () => {
     }
   }, []);
 
-  const filteredRequests = mockRequests
-    .filter((request) => request.status === "delivered")
+  const filteredRequests = deliveredRequests
     .filter((request) => {
       if (selectedCategory === "all") return true;
       return request.category === selectedCategory;
@@ -259,11 +285,16 @@ const Downloads: React.FC = () => {
         </div>
 
         {/* Designs Grid */}
-        <div
-          ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {filteredRequests.map((request) => (
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {filteredRequests.map((request) => (
             <Card
               key={request.id}
               className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white overflow-hidden hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
@@ -378,9 +409,10 @@ const Downloads: React.FC = () => {
               </div>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
-        {filteredRequests.length === 0 && (
+        {!loading && filteredRequests.length === 0 && (
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
             <div className="text-6xl mb-4">📥</div>
             <h3 className="text-2xl font-bold text-black mb-2">

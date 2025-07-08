@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
+import { getDesignRequests } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -24,10 +26,34 @@ import {
 const Requests: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Fetch requests when component mounts or filter changes
+    const fetchRequests = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const data = await getDesignRequests(user.id, statusFilter !== 'all' ? statusFilter : undefined);
+        setRequests(data);
+      } catch (error) {
+        console.error('Error fetching requests:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (user) {
+      fetchRequests();
+    }
+  }, [user, statusFilter]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -142,6 +168,15 @@ const Requests: React.FC = () => {
     }
   };
 
+  const filteredProjects = requests.filter((request) =>
+    request.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const getProjectsByStatus = (status: string) => {
+    if (status === 'all') return filteredProjects;
+    return filteredProjects.filter((project) => project.status === status);
+  };
+
   const filteredRequests = mockRequests.filter((request) => {
     const matchesSearch = request.title
       .toLowerCase()
@@ -253,8 +288,13 @@ const Requests: React.FC = () => {
         </div>
 
         {/* Requests List */}
-        <div ref={cardsRef} className="space-y-4">
-          {filteredRequests.map((request) => {
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div ref={cardsRef} className="space-y-4">
+            {filteredProjects.map((request) => {
             const statusConfig = getStatusConfig(request.status);
             const categoryInfo = getCategoryInfo(request.category);
             const StatusIcon = statusConfig.icon;
@@ -403,10 +443,11 @@ const Requests: React.FC = () => {
                 </div>
               </Card>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
 
-        {filteredRequests.length === 0 && (
+        {!loading && filteredProjects.length === 0 && (
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
             <div className="text-6xl mb-4">📋</div>
             <h3 className="text-2xl font-bold text-black mb-2">

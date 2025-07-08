@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
+import { getUserProfile, getDesignRequests, getInvoices } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { XPProgress } from "@/components/dashboard/XPProgress";
@@ -15,9 +17,68 @@ import {
 } from "lucide-react";
 
 const DesignDashboard: React.FC = () => {
+  const [userProfile, setUserProfile] = React.useState<any>(null);
+  const [stats, setStats] = React.useState({
+    totalRequests: 0,
+    unreadChats: 0,
+    dueInvoices: 0,
+    xpProgress: {
+      current: 0,
+      target: 1000,
+      level: 1
+    }
+  });
+  const [loading, setLoading] = React.useState(true);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        
+        // Fetch user profile
+        const profile = await getUserProfile(user.id);
+        setUserProfile(profile);
+        
+        // Fetch requests
+        const requests = await getDesignRequests(user.id);
+        
+        // Fetch invoices
+        const invoices = await getInvoices(user.id);
+        const pendingInvoices = invoices.filter(inv => inv.status === 'pending');
+        
+        // Calculate XP target based on level
+        const xpTarget = profile.level * 1000;
+        
+        // Update stats
+        setStats({
+          totalRequests: requests.length,
+          unreadChats: 0, // We'll implement this with real-time later
+          dueInvoices: pendingInvoices.length,
+          xpProgress: {
+            current: profile.xp,
+            target: xpTarget,
+            level: profile.level
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!containerRef.current || !cardsRef.current || !buttonRef.current)
@@ -95,15 +156,21 @@ const DesignDashboard: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-festival-orange border-4 border-black rounded-full flex items-center justify-center">
-              <img
-                src={mockUser.avatar}
-                alt={mockUser.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
+              {userProfile?.avatar_url ? (
+                <img
+                  src={userProfile.avatar_url}
+                  alt={userProfile.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              ) : (
+                <span className="text-xl font-bold text-white">
+                  {userProfile?.name?.charAt(0) || '?'}
+                </span>
+              )}
             </div>
             <div>
               <h1 className="text-4xl font-display font-bold text-black">
-                Hello, {mockUser.name.split(" ")[0]}! 👋
+                Hello, {userProfile?.name?.split(" ")[0] || 'Designer'}! 👋
               </h1>
               <p className="text-lg text-black/70 font-medium">
                 Ready to create something amazing today?
@@ -118,45 +185,61 @@ const DesignDashboard: React.FC = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
           <Link to="/requests">
-            <StatsCard
-              title="Total Requests"
-              value={mockStats.totalRequests}
-              icon={FileText}
-              color="bg-festival-orange"
-              gradient="bg-gradient-to-br from-festival-orange to-festival-coral"
-              onClick={() => handleCardClick("/requests")}
-            />
+            {loading ? (
+              <div className="h-32 bg-gray-200 animate-pulse rounded-lg"></div>
+            ) : (
+              <StatsCard
+                title="Total Requests"
+                value={stats.totalRequests}
+                icon={FileText}
+                color="bg-festival-orange"
+                gradient="bg-gradient-to-br from-festival-orange to-festival-coral"
+                onClick={() => handleCardClick("/requests")}
+              />
+            )}
           </Link>
 
           <Link to="/chat">
-            <StatsCard
-              title="Unread Chats"
-              value={mockStats.unreadChats}
-              icon={MessageCircle}
-              color="bg-festival-pink"
-              gradient="bg-gradient-to-br from-festival-pink to-festival-magenta"
-              onClick={() => handleCardClick("/chat")}
-              badge={mockStats.unreadChats > 0 ? "NEW" : undefined}
-            />
+            {loading ? (
+              <div className="h-32 bg-gray-200 animate-pulse rounded-lg"></div>
+            ) : (
+              <StatsCard
+                title="Unread Chats"
+                value={stats.unreadChats}
+                icon={MessageCircle}
+                color="bg-festival-pink"
+                gradient="bg-gradient-to-br from-festival-pink to-festival-magenta"
+                onClick={() => handleCardClick("/chat")}
+                badge={stats.unreadChats > 0 ? "NEW" : undefined}
+              />
+            )}
           </Link>
 
           <Link to="/payments">
-            <StatsCard
-              title="Due Invoices"
-              value={mockStats.dueInvoices}
-              icon={CreditCard}
-              color="bg-festival-yellow"
-              gradient="bg-gradient-to-br from-festival-yellow to-festival-amber"
-              onClick={() => handleCardClick("/payments")}
-              badge={mockStats.dueInvoices > 0 ? "!" : undefined}
-            />
+            {loading ? (
+              <div className="h-32 bg-gray-200 animate-pulse rounded-lg"></div>
+            ) : (
+              <StatsCard
+                title="Due Invoices"
+                value={stats.dueInvoices}
+                icon={CreditCard}
+                color="bg-festival-yellow"
+                gradient="bg-gradient-to-br from-festival-yellow to-festival-amber"
+                onClick={() => handleCardClick("/payments")}
+                badge={stats.dueInvoices > 0 ? "!" : undefined}
+              />
+            )}
           </Link>
 
-          <XPProgress
-            current={mockStats.xpProgress.current}
-            target={mockStats.xpProgress.target}
-            level={mockStats.xpProgress.level}
-          />
+          {loading ? (
+            <div className="h-32 bg-gray-200 animate-pulse rounded-lg"></div>
+          ) : (
+            <XPProgress
+              current={stats.xpProgress.current}
+              target={stats.xpProgress.target}
+              level={stats.xpProgress.level}
+            />
+          )}
         </div>
 
         {/* Quick Actions */}
@@ -175,12 +258,12 @@ const DesignDashboard: React.FC = () => {
           <div className="flex items-center gap-4 text-sm text-black/60">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-festival-orange" />
-              <span>Level {mockUser.level} Designer</span>
+              <span>Level {userProfile?.level || 1} Designer</span>
             </div>
             <div className="w-1 h-1 bg-black rounded-full" />
-            <span>{mockUser.badges.length} Badges Earned</span>
+            <span>Member since {userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString() : 'recently'}</span>
             <div className="w-1 h-1 bg-black rounded-full" />
-            <span>Member since Jan 2024</span>
+            <span>XP: {userProfile?.xp || 0}</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
+import { getChatByRequestId, createChat, getMessages, sendMessage, getDesignRequestById } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -16,18 +18,69 @@ import {
   Video,
   File,
   Download,
+  MessageCircle,
 } from "lucide-react";
 
 const Chat: React.FC = () => {
   const [message, setMessage] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState(mockChat.messages);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [projectDetails, setProjectDetails] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Get request ID from URL query params
+  const requestId = new URLSearchParams(location.search).get('request');
+
+  useEffect(() => {
+    const initializeChat = async () => {
+      if (!user || !requestId) return;
+      
+      try {
+        setLoading(true);
+        
+        // Get project details
+        const requestData = await getDesignRequestById(requestId);
+        setProjectDetails(requestData);
+        
+        // Get or create chat
+        let chat = await getChatByRequestId(requestId);
+        
+        if (!chat) {
+          // Create new chat with user and designer (if assigned)
+          const participants = [user.id];
+          if (requestData.designer_id) {
+            participants.push(requestData.designer_id);
+          }
+          
+          chat = await createChat(requestId, participants);
+        }
+        
+        setChatId(chat.id);
+        
+        // Get messages
+        const chatMessages = await getMessages(chat.id);
+        setMessages(chatMessages);
+        
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (user && requestId) {
+      initializeChat();
+    }
+  }, [user, requestId]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -80,7 +133,7 @@ const Chat: React.FC = () => {
     return <File className="w-4 h-4" />;
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!message.trim()) return;
 
     const newMessage = {
@@ -92,8 +145,18 @@ const Chat: React.FC = () => {
       timestamp: new Date().toISOString(),
     };
 
+    // Add to UI immediately for better UX
     setMessages((prev) => [...prev, newMessage]);
     setMessage("");
+
+    // Send to backend
+    if (chatId && user) {
+      try {
+        await sendMessage(chatId, user.id, message.trim());
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    }
 
     // Animate new message
     setTimeout(() => {
@@ -113,20 +176,22 @@ const Chat: React.FC = () => {
       }
     }, 50);
 
-    // Simulate designer typing and response
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      const designerResponse = {
-        id: (messages.length + 2).toString(),
-        text: "Thanks for the feedback! I'll work on those changes right away. 👍",
-        senderId: "2",
-        senderName: "Sarah Chen",
-        senderType: "designer" as const,
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, designerResponse]);
-    }, 2000);
+    // Only simulate designer response if we're in demo mode
+    if (process.env.NODE_ENV === 'development' && projectDetails?.designer_id) {
+      setIsTyping(true);
+      setTimeout(() => {
+        setIsTyping(false);
+        const designerResponse = {
+          id: (messages.length + 2).toString(),
+          text: "Thanks for the feedback! I'll work on those changes right away. 👍",
+          senderId: projectDetails.designer_id,
+          senderName: "Designer",
+          senderType: "designer" as const,
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, designerResponse]);
+      }, 2000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -184,10 +249,14 @@ const Chat: React.FC = () => {
 
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-festival-orange border-4 border-black rounded-full flex items-center justify-center">
-                  <span className="text-lg font-bold">SC</span>
+                  <span className="text-lg font-bold">
+                    {projectDetails?.designer_id ? 'D' : '?'}
+                  </span>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-black">Sarah Chen</h2>
+                  <h2 className="text-xl font-bold text-black">
+                    {projectDetails?.designer_id ? 'Designer' : 'Waiting for assignment'}
+                  </h2>
                   <div className="flex items-center gap-2">
                     <Circle className="w-3 h-3 fill-green-500 text-green-500" />
                     <span className="text-sm text-black/70">
@@ -199,7 +268,7 @@ const Chat: React.FC = () => {
             </div>
 
             <div className="text-sm text-black/70">
-              Project: Modern Logo Design
+              Project: {projectDetails?.title || 'Loading...'}
             </div>
           </div>
         </div>
@@ -208,54 +277,66 @@ const Chat: React.FC = () => {
         <div
           ref={messagesRef}
           className="flex-1 overflow-y-auto p-4 space-y-4"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
+          style={{ height: "calc(100vh - 200px)" }}
         >
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.senderType === "user" ? "justify-end" : "justify-start"}`}
-            >
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-black/50">
+              <MessageCircle className="w-16 h-16 mb-4" />
+              <p className="text-lg font-medium">No messages yet</p>
+              <p className="text-sm">Start the conversation by sending a message</p>
+            </div>
+          ) : (
+            messages.map((msg) => (
               <div
-                className={`max-w-xs lg:max-w-md ${
-                  msg.senderType === "user"
-                    ? "bg-gradient-to-br from-festival-orange to-festival-coral"
-                    : "bg-gradient-to-br from-festival-cyan to-festival-yellow"
-                } border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                key={msg.id}
+                className={`flex ${msg.senderType === "user" ? "justify-end" : "justify-start"}`}
               >
-                <div className="font-medium text-black text-sm mb-1">
-                  {msg.senderName}
-                </div>
-                <div className="text-black font-medium">{msg.text}</div>
-
-                {msg.files && msg.files.length > 0 && (
-                  <div className="mt-3 space-y-2">
-                    {msg.files.map((file) => (
-                      <div
-                        key={file.id}
-                        className="flex items-center gap-2 p-2 bg-white border-2 border-black rounded-none"
-                      >
-                        {getFileIcon(file.name)}
-                        <span className="text-sm font-medium text-black flex-1 truncate">
-                          {file.name}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-6 w-6 p-0 border-2 border-black"
-                        >
-                          <Download className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
+                <div
+                  className={`max-w-xs lg:max-w-md ${
+                    msg.senderType === "user"
+                      ? "bg-gradient-to-br from-festival-orange to-festival-coral"
+                      : "bg-gradient-to-br from-festival-cyan to-festival-yellow"
+                  } border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                >
+                  <div className="font-medium text-black text-sm mb-1">
+                    {msg.senderName}
                   </div>
-                )}
+                  <div className="text-black font-medium">{msg.text}</div>
 
-                <div className="text-xs text-black/70 mt-2">
-                  {formatTime(msg.timestamp)}
+                  {msg.files && msg.files.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {msg.files.map((file) => (
+                        <div
+                          key={file.id}
+                          className="flex items-center gap-2 p-2 bg-white border-2 border-black rounded-none"
+                        >
+                          {getFileIcon(file.name)}
+                          <span className="text-sm font-medium text-black flex-1 truncate">
+                            {file.name}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 w-6 p-0 border-2 border-black"
+                          >
+                            <Download className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="text-xs text-black/70 mt-2">
+                    {formatTime(msg.timestamp)}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
 
           {isTyping && (
             <div className="flex justify-start">
@@ -314,7 +395,7 @@ const Chat: React.FC = () => {
 
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim()}
+              disabled={!message.trim() || !chatId || !user}
               className="h-12 px-6 bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="w-5 h-5" />

@@ -1,9 +1,11 @@
 import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Heart, Star } from "lucide-react";
+import { Send, Sparkles, Heart, Star, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { submitContactForm } from "@/lib/api";
+import { toast } from "@/components/ui/use-toast";
 
 // Define the form schema with Zod
 const contactFormSchema = z.object({
@@ -52,8 +54,22 @@ const FestivalContactForm: React.FC = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSubmitted(true);
+    try {
+      await submitContactForm(data);
+      setIsSubmitted(true);
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you soon.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast({
+        title: "Error sending message",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isSubmitted) {

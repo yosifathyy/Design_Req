@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +23,7 @@ const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,6 +36,8 @@ const Login: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+
+  const { signIn, signUp, loading: isLoading } = useAuth();
 
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
@@ -104,7 +107,7 @@ const Login: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -117,27 +120,38 @@ const Login: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Success animation
-    const successTl = gsap.timeline();
-    successTl.to(formRef.current, {
-      scale: 1.05,
-      duration: 0.2,
-      ease: "power2.out",
+    setErrorMessage(null);
+    
+    try {
+      if (isLogin) {
+        // Sign in
+        const { error } = await signIn(formData.email, formData.password);
+        if (error) throw error;
+      } else {
+        // Sign up
+        const { error } = await signUp(formData.email, formData.password, formData.name);
+        if (error) throw error;
+      }
+      
+      // Success animation
+      const successTl = gsap.timeline();
+      successTl.to(formRef.current, {
+        scale: 1.05,
+        duration: 0.2,
+        ease: "power2.out",
+      });
+      successTl.to(formRef.current, {
+        scale: 1,
+        duration: 0.3,
+        ease: "back.out(1.4)",
+      });
+      
+      navigate("/design-dashboard");
+    } catch (error: any) {
+      console.error("Authentication error:", error);
+      setErrorMessage(error.message || "Authentication failed. Please try again.");
+    }
     });
-    successTl.to(formRef.current, {
-      scale: 1,
-      duration: 0.3,
-      ease: "back.out(1.4)",
-    });
-
-    setIsLoading(false);
-    navigate("/design-dashboard");
-  };
 
   const handleGoogleSignIn = () => {
     // Add click animation
@@ -217,7 +231,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+            <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-6">
               {!isLogin && (
                 <div className="space-y-2">
                   <Label
@@ -332,6 +346,13 @@ const Login: React.FC = () => {
                       {errors.confirmPassword}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Error message */}
+              {errorMessage && (
+                <div className="p-3 bg-red-50 border-2 border-red-500 rounded-md">
+                  <p className="text-red-600 text-sm">{errorMessage}</p>
                 </div>
               )}
 

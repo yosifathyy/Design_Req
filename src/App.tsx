@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
+import { AuthProvider } from "@/hooks/useAuth";
 import CartoonyCursor from "@/components/CartoonyCursor";
 import GSAPCursor from "@/components/GSAPCursor";
 import RetroCursor from "@/components/RetroCursor";
@@ -130,10 +131,12 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
-        <AppContent />
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <AppContent />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
