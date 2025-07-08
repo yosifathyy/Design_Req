@@ -589,9 +589,13 @@ export const createChat = async (requestId: string, participants: string[]) => {
       user_id: userId,
     }));
 
+    console.log("Adding participants:", participantRecords);
+
     const { error: participantError } = await supabase
       .from("chat_participants")
       .insert(participantRecords);
+
+    console.log("Participants creation result:", { participantError });
 
     if (participantError) {
       console.error("Participant creation error:", participantError);
