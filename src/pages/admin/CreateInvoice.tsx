@@ -75,14 +75,66 @@ const CreateInvoice: React.FC = () => {
   );
 
   const handleSaveDraft = () => {
-    console.log("Saving draft...");
-    // Add save logic here
+    // Save invoice as draft
+    const invoiceData = {
+      projectId: selectedProject,
+      lineItems,
+      dueDate: invoiceData.dueDate,
+      notes: invoiceData.notes,
+      taxRate: invoiceData.taxRate,
+      total: calculateTotal(),
+      status: "draft",
+    };
+    localStorage.setItem("draftInvoice", JSON.stringify(invoiceData));
+
+    // Show success message
+    const notification = document.createElement("div");
+    notification.className =
+      "fixed bottom-4 right-4 bg-green-500 text-white p-4 border-4 border-black z-50";
+    notification.textContent = "Invoice saved as draft!";
+    document.body.appendChild(notification);
+    setTimeout(() => document.body.removeChild(notification), 3000);
   };
 
   const handleSendInvoice = () => {
-    console.log("Sending invoice...");
-    // Add send logic here
-    navigate("/admin/invoices");
+    if (!selectedProject) {
+      alert("Please select a project first");
+      return;
+    }
+    if (lineItems.some((item) => !item.description || item.rate <= 0)) {
+      alert("Please fill in all line items");
+      return;
+    }
+
+    // Send invoice
+    const invoiceData = {
+      projectId: selectedProject,
+      lineItems,
+      dueDate: invoiceData.dueDate,
+      notes: invoiceData.notes,
+      taxRate: invoiceData.taxRate,
+      total: calculateTotal(),
+      status: "sent",
+      sentDate: new Date().toISOString(),
+    };
+
+    // Show success animation and navigate
+    const successEl = document.createElement("div");
+    successEl.className =
+      "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
+    successEl.innerHTML = `
+      <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+        <div class="text-6xl mb-4">📧</div>
+        <h3 class="text-2xl font-bold text-black mb-2">Invoice Sent!</h3>
+        <p class="text-black/70">Invoice has been sent to the client</p>
+      </div>
+    `;
+    document.body.appendChild(successEl);
+
+    setTimeout(() => {
+      document.body.removeChild(successEl);
+      navigate("/admin/invoices");
+    }, 2000);
   };
 
   return (

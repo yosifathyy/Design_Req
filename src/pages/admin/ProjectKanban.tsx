@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ const ProjectKanban: React.FC = () => {
   const [projects, setProjects] = useState(mockAdminProjects);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
 
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
@@ -185,7 +187,10 @@ const ProjectKanban: React.FC = () => {
             Filters
           </Button>
 
-          <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1">
+          <Button
+            onClick={() => navigate("/admin/projects/create")}
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+          >
             <Plus className="w-4 h-4 mr-2" />
             New Project
           </Button>

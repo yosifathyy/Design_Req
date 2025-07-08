@@ -170,8 +170,8 @@ const Requests: React.FC = () => {
   };
 
   const handleViewDetails = (requestId: string) => {
-    // Navigate to detailed view or open modal
-    console.log("View details for request:", requestId);
+    // Navigate to detailed view
+    navigate(`/requests/${requestId}`);
   };
 
   return (

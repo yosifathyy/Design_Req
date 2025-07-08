@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { mockAdminUsers } from "@/lib/admin-data";
 import { Users, Plus, Settings, Zap, Shield } from "lucide-react";
 
 const TeamManagement: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,7 +50,10 @@ const TeamManagement: React.FC = () => {
             Organize and manage team structures
           </p>
         </div>
-        <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <Button
+          onClick={() => navigate("/admin/teams/create")}
+          className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Create Team
         </Button>

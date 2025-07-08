@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 
 const AdminContent: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -129,7 +131,10 @@ const AdminContent: React.FC = () => {
             <Upload className="w-4 h-4 mr-2" />
             Media Library
           </Button>
-          <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black">
+          <Button
+            onClick={() => navigate("/admin/content/create")}
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black"
+          >
             <Plus className="w-4 h-4 mr-2" />
             New Content
           </Button>

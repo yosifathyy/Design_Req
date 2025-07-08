@@ -76,11 +76,42 @@ const InvoiceReports: React.FC = () => {
     .slice(0, 5);
 
   const handleExportCSV = () => {
-    console.log("Exporting CSV report...");
+    const csvContent = mockAdminInvoices
+      .map(
+        (inv) =>
+          `${inv.id},${inv.projectTitle},${inv.clientName},${inv.amount},${inv.status},${inv.createdAt}`,
+      )
+      .join("\n");
+    const blob = new Blob(
+      [`ID,Project,Client,Amount,Status,Date\n${csvContent}`],
+      { type: "text/csv" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "invoice-report.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleExportPDF = () => {
-    console.log("Exporting PDF report...");
+    // Create a simple PDF report
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head><title>Invoice Report</title></head>
+          <body>
+            <h1>Invoice Report</h1>
+            <p>Total Revenue: $${totalRevenue.toLocaleString()}</p>
+            <p>Paid Revenue: $${paidRevenue.toLocaleString()}</p>
+            <p>Generated: ${new Date().toLocaleDateString()}</p>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
   };
 
   return (

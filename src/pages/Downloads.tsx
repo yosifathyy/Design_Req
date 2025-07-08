@@ -149,8 +149,8 @@ const Downloads: React.FC = () => {
   };
 
   const handleRequestRevision = (requestId: string) => {
-    // Navigate to revision request form or open modal
-    console.log("Request revision for:", requestId);
+    // Navigate to revision request form
+    navigate(`/requests/${requestId}/revision`);
   };
 
   const getStatusBadge = (status: string) => {

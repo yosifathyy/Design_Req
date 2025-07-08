@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { mockAdminProjects } from "@/lib/admin-data";
 import { MessageCircle, Search, Filter, Clock, User, Send } from "lucide-react";
 
 const AdminChat: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,7 +44,10 @@ const AdminChat: React.FC = () => {
             Unified communication center for all projects
           </p>
         </div>
-        <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black">
+        <Button
+          onClick={() => navigate("/admin/chat/create")}
+          className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black"
+        >
           <MessageCircle className="w-4 h-4 mr-2" />
           New Chat
         </Button>

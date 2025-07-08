@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ const UsersManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [users, setUsers] = useState(mockAdminUsers);
 
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -127,7 +129,8 @@ const UsersManagement: React.FC = () => {
 
     switch (action) {
       case "edit":
-        console.log("Edit user:", userId);
+        // Navigate to user edit page or open edit modal
+        navigate(`/admin/users/edit/${userId}`);
         break;
       case "suspend":
         setUsers((prev) =>
@@ -189,6 +192,19 @@ const UsersManagement: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <Button
+            onClick={() => {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = ".csv";
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  console.log("Importing CSV:", file.name);
+                  // Add CSV import logic here
+                }
+              };
+              input.click();
+            }}
             variant="outline"
             className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
           >
@@ -197,6 +213,23 @@ const UsersManagement: React.FC = () => {
           </Button>
 
           <Button
+            onClick={() => {
+              const csvContent = users
+                .map(
+                  (user) =>
+                    `${user.name},${user.email},${user.role},${user.status}`,
+                )
+                .join("\n");
+              const blob = new Blob([`Name,Email,Role,Status\n${csvContent}`], {
+                type: "text/csv",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "users-export.csv";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
             variant="outline"
             className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
           >
@@ -204,7 +237,10 @@ const UsersManagement: React.FC = () => {
             Export CSV
           </Button>
 
-          <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1">
+          <Button
+            onClick={() => navigate("/admin/users/create")}
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add User
           </Button>
