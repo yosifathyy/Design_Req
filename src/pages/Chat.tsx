@@ -34,6 +34,7 @@ const Chat: React.FC = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [projectDetails, setProjectDetails] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
