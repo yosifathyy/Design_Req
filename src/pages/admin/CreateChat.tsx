@@ -164,32 +164,42 @@ const CreateChat: React.FC = () => {
             <div className="p-6 space-y-4">
               <div>
                 <Label className="text-sm font-bold text-black">
-                  Chat Title *
+                  Related Project *
                 </Label>
-                <Input
-                  value={chatTitle}
-                  onChange={(e) => setChatTitle(e.target.value)}
-                  placeholder="Enter chat title..."
-                  className="border-4 border-black bg-festival-cream"
-                />
+                <select
+                  value={selectedProject}
+                  onChange={(e) => {
+                    setSelectedProject(e.target.value);
+                    // Auto-generate chat title based on project
+                    const project = projects.find(
+                      (p) => p.id === e.target.value,
+                    );
+                    if (project && !chatTitle) {
+                      setChatTitle(`Chat: ${project.title}`);
+                    }
+                  }}
+                  className="w-full p-3 border-4 border-black bg-festival-cream"
+                >
+                  <option value="">Select a project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.title} -{" "}
+                      {project.client?.name || "Unknown Client"}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
                 <Label className="text-sm font-bold text-black">
-                  Related Project (Optional)
+                  Chat Title
                 </Label>
-                <select
-                  value={selectedProject}
-                  onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full p-3 border-4 border-black bg-festival-cream"
-                >
-                  <option value="">No specific project</option>
-                  {mockAdminProjects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.title} - {project.clientName}
-                    </option>
-                  ))}
-                </select>
+                <Input
+                  value={chatTitle}
+                  onChange={(e) => setChatTitle(e.target.value)}
+                  placeholder="Chat title (auto-generated from project)..."
+                  className="border-4 border-black bg-festival-cream"
+                />
               </div>
 
               {selectedProjectData && (
