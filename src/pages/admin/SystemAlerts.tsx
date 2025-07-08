@@ -86,11 +86,9 @@ const SystemAlerts: React.FC = () => {
   const handleMarkAsRead = async (alertId: string) => {
     try {
       await markAlertAsRead(alertId);
-      setAlerts(
-        alerts.map((alert) =>
-          alert.id === alertId ? { ...alert, is_read: true } : alert,
-        ),
-      );
+      setAlerts(alerts.map(alert =>
+        alert.id === alertId ? { ...alert, is_read: true } : alert
+      ));
     } catch (error) {
       console.error("Failed to mark alert as read:", error);
     }
@@ -98,8 +96,10 @@ const SystemAlerts: React.FC = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await Promise.all(unreadAlerts.map((alert) => markAlertAsRead(alert.id)));
-      setAlerts(alerts.map((alert) => ({ ...alert, is_read: true })));
+      await Promise.all(
+        unreadAlerts.map(alert => markAlertAsRead(alert.id))
+      );
+      setAlerts(alerts.map(alert => ({ ...alert, is_read: true })));
     } catch (error) {
       console.error("Failed to mark all alerts as read:", error);
     }
@@ -123,9 +123,7 @@ const SystemAlerts: React.FC = () => {
             className="border-4 border-black"
             disabled={loading}
           >
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
-            />
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button
@@ -184,8 +182,24 @@ const SystemAlerts: React.FC = () => {
       </div>
 
       {/* Alerts List */}
-      <div className="space-y-4">
-        {mockSystemAlerts.map((alert) => (
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-festival-orange" />
+            <p className="text-lg font-medium text-black">Loading alerts...</p>
+          </div>
+        </div>
+      ) : alerts.length === 0 ? (
+        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-black mb-2">All Clear!</h3>
+          <p className="text-black/70">
+            No system alerts at the moment. Everything is running smoothly.
+          </p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {alerts.map((alert) => (
           <Card
             key={alert.id}
             className={`border-4 ${getAlertColor(alert.type)} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 ${
