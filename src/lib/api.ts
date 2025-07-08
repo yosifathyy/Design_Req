@@ -523,14 +523,34 @@ export const sendMessage = async (
   senderId: string,
   text: string,
 ) => {
-  const { data, error } = await supabase
-    .from("messages")
-    .insert([{ chat_id: chatId, sender_id: senderId, text }])
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("messages")
+      .insert([{ chat_id: chatId, sender_id: senderId, text }])
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "messages" does not exist')) {
+        throw new Error(
+          "Messages table does not exist. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
+    return data;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not send message. Database tables may not exist yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 // Invoice functions
