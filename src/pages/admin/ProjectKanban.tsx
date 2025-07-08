@@ -246,6 +246,9 @@ const ProjectKanban: React.FC = () => {
                         </h4>
                         <div className="flex items-center gap-1 ml-2">
                           <Button
+                            onClick={() =>
+                              navigate(`/admin/projects/${project.id}`)
+                            }
                             variant="outline"
                             size="sm"
                             className="h-6 w-6 p-0 border-2 border-black"
@@ -253,6 +256,9 @@ const ProjectKanban: React.FC = () => {
                             <Eye className="w-3 h-3" />
                           </Button>
                           <Button
+                            onClick={() =>
+                              navigate(`/admin/projects/${project.id}/edit`)
+                            }
                             variant="outline"
                             size="sm"
                             className="h-6 w-6 p-0 border-2 border-black"
@@ -260,6 +266,12 @@ const ProjectKanban: React.FC = () => {
                             <Edit className="w-3 h-3" />
                           </Button>
                           <Button
+                            onClick={() =>
+                              console.log(
+                                "More options for project:",
+                                project.id,
+                              )
+                            }
                             variant="outline"
                             size="sm"
                             className="h-6 w-6 p-0 border-2 border-black"

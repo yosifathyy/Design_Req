@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 const ProjectsList: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -146,6 +148,7 @@ const ProjectsList: React.FC = () => {
 
               <div className="flex gap-2">
                 <Button
+                  onClick={() => navigate(`/admin/projects/${project.id}`)}
                   variant="outline"
                   size="sm"
                   className="border-4 border-black"
@@ -154,6 +157,7 @@ const ProjectsList: React.FC = () => {
                   View
                 </Button>
                 <Button
+                  onClick={() => navigate(`/admin/projects/${project.id}/edit`)}
                   variant="outline"
                   size="sm"
                   className="border-4 border-black"

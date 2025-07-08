@@ -127,7 +127,11 @@ const AdminContent: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => navigate("/admin/content/media")}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <Upload className="w-4 h-4 mr-2" />
             Media Library
           </Button>
@@ -238,6 +242,7 @@ const AdminContent: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button
+                    onClick={() => navigate(`/admin/content/${item.id}/view`)}
                     variant="outline"
                     size="sm"
                     className="border-4 border-black"
@@ -245,6 +250,7 @@ const AdminContent: React.FC = () => {
                     <Eye className="w-3 h-3" />
                   </Button>
                   <Button
+                    onClick={() => navigate(`/admin/content/${item.id}/edit`)}
                     variant="outline"
                     size="sm"
                     className="border-4 border-black"
@@ -252,6 +258,13 @@ const AdminContent: React.FC = () => {
                     <Edit className="w-3 h-3" />
                   </Button>
                   <Button
+                    onClick={() => {
+                      if (
+                        confirm("Are you sure you want to delete this content?")
+                      ) {
+                        console.log("Deleting content item:", item.id);
+                      }
+                    }}
                     variant="outline"
                     size="sm"
                     className="border-4 border-red-500 text-red-500"
@@ -304,6 +317,7 @@ const AdminContent: React.FC = () => {
                 </div>
               </div>
               <Button
+                onClick={() => navigate("/admin/content/ab-testing/create")}
                 variant="outline"
                 className="w-full border-4 border-black"
               >
@@ -348,6 +362,7 @@ const AdminContent: React.FC = () => {
               </div>
               <div className="text-center">
                 <Button
+                  onClick={() => navigate("/admin/analytics/performance")}
                   variant="outline"
                   size="sm"
                   className="border-4 border-black"
@@ -379,6 +394,23 @@ const AdminContent: React.FC = () => {
                 </div>
               </div>
               <Button
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.multiple = true;
+                  input.accept = "image/*,video/*,.pdf";
+                  input.onchange = (e) => {
+                    const files = (e.target as HTMLInputElement).files;
+                    if (files) {
+                      console.log(
+                        "Uploading files:",
+                        Array.from(files).map((f) => f.name),
+                      );
+                      // Add file upload logic here
+                    }
+                  };
+                  input.click();
+                }}
                 variant="outline"
                 className="w-full border-4 border-black"
               >

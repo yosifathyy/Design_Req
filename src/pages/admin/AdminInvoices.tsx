@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 const AdminInvoices: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,11 +65,18 @@ const AdminInvoices: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => navigate("/admin/invoices/reports")}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black">
+          <Button
+            onClick={() => navigate("/admin/invoices/create")}
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black"
+          >
             <Plus className="w-4 h-4 mr-2" />
             New Invoice
           </Button>
@@ -188,6 +197,7 @@ const AdminInvoices: React.FC = () => {
 
               <div className="flex gap-2">
                 <Button
+                  onClick={() => navigate(`/admin/invoices/${invoice.id}`)}
                   variant="outline"
                   size="sm"
                   className="border-4 border-black"
@@ -196,6 +206,25 @@ const AdminInvoices: React.FC = () => {
                   View
                 </Button>
                 <Button
+                  onClick={() => {
+                    const printWindow = window.open("", "_blank");
+                    if (printWindow) {
+                      printWindow.document.write(`
+                        <html>
+                          <head><title>Invoice #${invoice.id}</title></head>
+                          <body>
+                            <h1>Invoice #${invoice.id}</h1>
+                            <p>Project: ${invoice.projectTitle}</p>
+                            <p>Client: ${invoice.clientName}</p>
+                            <p>Amount: $${invoice.amount}</p>
+                            <p>Status: ${invoice.status}</p>
+                          </body>
+                        </html>
+                      `);
+                      printWindow.document.close();
+                      printWindow.print();
+                    }
+                  }}
                   variant="outline"
                   size="sm"
                   className="border-4 border-black"

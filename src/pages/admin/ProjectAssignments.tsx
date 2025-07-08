@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { mockAdminProjects, mockAdminUsers } from "@/lib/admin-data";
 import { UserCheck, Clock, Zap, AlertTriangle } from "lucide-react";
 
 const ProjectAssignments: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -163,6 +165,9 @@ const ProjectAssignments: React.FC = () => {
                       </div>
                     </div>
                     <Button
+                      onClick={() =>
+                        navigate(`/admin/projects/${project.id}/assign`)
+                      }
                       size="sm"
                       className="bg-festival-orange border-2 border-black"
                     >
