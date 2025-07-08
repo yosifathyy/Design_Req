@@ -219,38 +219,38 @@ const AdminInvoices: React.FC = () => {
                   <div>
                     <p className="text-black/60">Project</p>
                     <p className="font-medium text-black">
-                      {invoice.projectTitle}
+                      {invoice.request?.title || "Unknown Project"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-black/60">Client</p>
+                    <p className="text-black/60">Request ID</p>
                     <p className="font-medium text-black">
-                      {invoice.clientName}
+                      {invoice.request_id || "N/A"}
                     </p>
                   </div>
                   <div>
                     <p className="text-black/60">Amount</p>
                     <p className="font-bold text-black text-lg">
-                      ${invoice.amount}
+                      ${invoice.amount || 0}
                     </p>
                   </div>
                   <div>
                     <p className="text-black/60">Created</p>
                     <p className="font-medium text-black">
-                      {new Date(invoice.createdAt).toLocaleDateString()}
+                      {new Date(invoice.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
                     <p className="text-black/60">Due Date</p>
                     <p className="font-medium text-black">
-                      {new Date(invoice.dueDate).toLocaleDateString()}
+                      {new Date(invoice.due_date).toLocaleDateString()}
                     </p>
                   </div>
-                  {invoice.paidAt && (
+                  {invoice.paid_at && (
                     <div>
                       <p className="text-black/60">Paid Date</p>
                       <p className="font-medium text-black">
-                        {new Date(invoice.paidAt).toLocaleDateString()}
+                        {new Date(invoice.paid_at).toLocaleDateString()}
                       </p>
                     </div>
                   )}
