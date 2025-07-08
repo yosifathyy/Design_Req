@@ -118,28 +118,24 @@ const SystemAlerts: React.FC = () => {
         </div>
         <div className="flex gap-3">
           <Button
-            onClick={() => {
-              console.log("Marking all alerts as read");
-              // Add mark all read logic here
-            }}
+            onClick={() => window.location.reload()}
             variant="outline"
             className="border-4 border-black"
+            disabled={loading}
           >
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Mark All Read
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
+            Refresh
           </Button>
           <Button
-            onClick={() => {
-              if (confirm("Are you sure you want to clear all alerts?")) {
-                console.log("Clearing all alerts");
-                // Add clear all logic here
-              }
-            }}
+            onClick={handleMarkAllAsRead}
             variant="outline"
             className="border-4 border-black"
+            disabled={unreadAlerts.length === 0}
           >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Clear All
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Mark All Read ({unreadAlerts.length})
           </Button>
         </div>
       </div>
