@@ -37,6 +37,23 @@ const AdminChat: React.FC = () => {
         setLoading(true);
         const chatsData = await getAllChatsForAdmin();
         setChats(chatsData);
+
+        // Auto-select chat if ID is provided in URL
+        if (chatId && chatsData.length > 0) {
+          // First try to find chat by ID
+          let targetChat = chatsData.find((chat: any) => chat.id === chatId);
+
+          // If not found, try to find by request_id (project ID)
+          if (!targetChat) {
+            targetChat = chatsData.find(
+              (chat: any) => chat.request_id === chatId,
+            );
+          }
+
+          if (targetChat) {
+            setSelectedChat(targetChat);
+          }
+        }
       } catch (error) {
         console.error("Failed to load chats:", error);
       } finally {
@@ -45,7 +62,7 @@ const AdminChat: React.FC = () => {
     };
 
     loadChats();
-  }, []);
+  }, [chatId]);
 
   // Load messages for selected chat
   useEffect(() => {
