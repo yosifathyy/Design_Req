@@ -215,25 +215,95 @@ const AdminChat: React.FC = () => {
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white h-96 flex flex-col">
             <div className="p-4 border-b-4 border-black">
               <h3 className="font-bold text-black">
-                Select a conversation to start chatting
+                {selectedChat
+                  ? selectedChat.request?.title || "Chat"
+                  : "Select a conversation to start chatting"}
               </h3>
-            </div>
-            <div className="flex-1 p-4 flex items-center justify-center">
-              <div className="text-center">
-                <MessageCircle className="w-16 h-16 text-black/30 mx-auto mb-4" />
-                <p className="text-black/50">
-                  Choose a conversation from the list to view messages
+              {selectedChat && (
+                <p className="text-sm text-black/70">
+                  Client: {selectedChat.request?.user?.name || "Unknown"}
                 </p>
-              </div>
+              )}
+            </div>
+            <div className="flex-1 p-4 overflow-y-auto">
+              {!selectedChat ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <MessageCircle className="w-16 h-16 text-black/30 mx-auto mb-4" />
+                    <p className="text-black/50">
+                      Choose a conversation from the list to view messages
+                    </p>
+                  </div>
+                </div>
+              ) : loadingMessages ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-festival-orange" />
+                    <p className="text-sm text-black/70">Loading messages...</p>
+                  </div>
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <MessageCircle className="w-12 h-12 text-black/30 mx-auto mb-2" />
+                    <p className="text-black/50">No messages yet</p>
+                    <p className="text-xs text-black/40">
+                      Start the conversation below
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${
+                        message.sender?.role === "admin" ||
+                        message.sender?.role === "super-admin"
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-xs lg:max-w-md px-3 py-2 rounded border-2 border-black ${
+                          message.sender?.role === "admin" ||
+                          message.sender?.role === "super-admin"
+                            ? "bg-festival-orange text-black"
+                            : "bg-white text-black"
+                        }`}
+                      >
+                        <p className="text-sm">
+                          {message.text || message.content}
+                        </p>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-xs opacity-70">
+                            {message.sender?.name || "Unknown"}
+                          </span>
+                          <span className="text-xs opacity-70">
+                            {new Date(message.created_at).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="p-4 border-t-4 border-black">
               <div className="flex gap-3">
                 <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
                   className="flex-1 border-4 border-black"
-                  disabled
+                  disabled={!selectedChat}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 />
-                <Button disabled className="border-4 border-black">
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!selectedChat || !newMessage.trim()}
+                  className="border-4 border-black bg-festival-orange hover:bg-festival-coral"
+                >
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
