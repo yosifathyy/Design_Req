@@ -86,9 +86,11 @@ const SystemAlerts: React.FC = () => {
   const handleMarkAsRead = async (alertId: string) => {
     try {
       await markAlertAsRead(alertId);
-      setAlerts(alerts.map(alert =>
-        alert.id === alertId ? { ...alert, is_read: true } : alert
-      ));
+      setAlerts(
+        alerts.map((alert) =>
+          alert.id === alertId ? { ...alert, is_read: true } : alert,
+        ),
+      );
     } catch (error) {
       console.error("Failed to mark alert as read:", error);
     }
@@ -96,10 +98,8 @@ const SystemAlerts: React.FC = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await Promise.all(
-        unreadAlerts.map(alert => markAlertAsRead(alert.id))
-      );
-      setAlerts(alerts.map(alert => ({ ...alert, is_read: true })));
+      await Promise.all(unreadAlerts.map((alert) => markAlertAsRead(alert.id)));
+      setAlerts(alerts.map((alert) => ({ ...alert, is_read: true })));
     } catch (error) {
       console.error("Failed to mark all alerts as read:", error);
     }
@@ -123,7 +123,9 @@ const SystemAlerts: React.FC = () => {
             className="border-4 border-black"
             disabled={loading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           <Button
@@ -200,90 +202,80 @@ const SystemAlerts: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {alerts.map((alert) => (
-          <Card
-            key={alert.id}
-            className={`border-4 ${getAlertColor(alert.type)} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 ${
-              !alert.isRead ? "border-l-8" : ""
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex gap-4 flex-1">
-                <div className="flex-shrink-0 mt-1">
-                  {getAlertIcon(alert.type)}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-bold text-black">
-                      {alert.title}
-                    </h3>
-                    <Badge
-                      className={`${
-                        alert.type === "error"
-                          ? "bg-red-500"
-                          : alert.type === "warning"
-                            ? "bg-yellow-500"
-                            : alert.type === "success"
-                              ? "bg-green-500"
-                              : "bg-blue-500"
-                      } text-white border-2 border-black`}
-                    >
-                      {alert.type.toUpperCase()}
-                    </Badge>
-                    {!alert.is_read && (
-                      <Badge className="bg-festival-orange text-black border-2 border-black">
-                        NEW
+            <Card
+              key={alert.id}
+              className={`border-4 ${getAlertColor(alert.type)} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 ${
+                !alert.isRead ? "border-l-8" : ""
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex gap-4 flex-1">
+                  <div className="flex-shrink-0 mt-1">
+                    {getAlertIcon(alert.type)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-bold text-black">
+                        {alert.title}
+                      </h3>
+                      <Badge
+                        className={`${
+                          alert.type === "error"
+                            ? "bg-red-500"
+                            : alert.type === "warning"
+                              ? "bg-yellow-500"
+                              : alert.type === "success"
+                                ? "bg-green-500"
+                                : "bg-blue-500"
+                        } text-white border-2 border-black`}
+                      >
+                        {alert.type.toUpperCase()}
                       </Badge>
-                    )}
-                  </div>
-                  <p className="text-black/70 mb-3">{alert.message}</p>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="text-black/60">
-                      Source: {alert.source}
-                    </span>
-                    <span className="text-black/60">
-                      {new Date(alert.created_at).toLocaleString()}
-                    </span>
+                      {!alert.is_read && (
+                        <Badge className="bg-festival-orange text-black border-2 border-black">
+                          NEW
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-black/70 mb-3">{alert.message}</p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="text-black/60">
+                        Source: {alert.source}
+                      </span>
+                      <span className="text-black/60">
+                        {new Date(alert.created_at).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <div className="flex gap-2">
+                  {alert.action_url && (
+                    <Button
+                      onClick={() => window.open(alert.action_url, "_blank")}
+                      variant="outline"
+                      size="sm"
+                      className="border-4 border-black"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
+                    </Button>
+                  )}
+                  {!alert.is_read && (
+                    <Button
+                      onClick={() => handleMarkAsRead(alert.id)}
+                      variant="outline"
+                      size="sm"
+                      className="border-4 border-black"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Mark Read
+                    </Button>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-2">
-                {alert.actionUrl && (
-                  <Button
-                    onClick={() => window.open(alert.actionUrl, "_blank")}
-                    variant="outline"
-                    size="sm"
-                    className="border-4 border-black"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View
-                  </Button>
-                )}
-                <Button
-                  onClick={() => {
-                    if (confirm("Delete this alert?")) {
-                      console.log("Deleting alert:", alert.id);
-                    }
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-4 border-black"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {mockSystemAlerts.length === 0 && (
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-black mb-2">All Clear!</h3>
-          <p className="text-black/70">
-            No system alerts at the moment. Everything is running smoothly.
-          </p>
-        </Card>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );
