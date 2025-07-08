@@ -580,21 +580,29 @@ export const createChat = async (requestId: string, participants: string[]) => {
       .insert(participantRecords);
 
     if (participantError) {
+      console.error("Participant creation error:", participantError);
+
       if (
         participantError.message?.includes(
           'relation "chat_participants" does not exist',
         )
       ) {
         throw new Error(
-          "Chat participants table does not exist. Please run the database setup script.",
+          "Chat participants table does not exist in the database.",
         );
       }
       if (participantError.message?.includes("row-level security policy")) {
         throw new Error(
-          "Cannot add participants to this chat. Please check your permissions.",
+          "Cannot add participants to this chat. Database security policies need configuration.",
         );
       }
-      throw participantError;
+
+      // Extract meaningful error message
+      const errorMsg =
+        participantError.message ||
+        participantError.details ||
+        "Unknown database error";
+      throw new Error(`Failed to add participants: ${errorMsg}`);
     }
 
     return chat;
