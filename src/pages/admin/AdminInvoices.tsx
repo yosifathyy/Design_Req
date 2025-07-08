@@ -21,14 +21,34 @@ const AdminInvoices: React.FC = () => {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    const loadInvoices = async () => {
+      try {
+        setLoading(true);
+        const invoicesData = await getAdminInvoices();
+        setInvoices(invoicesData);
+      } catch (error) {
+        console.error("Failed to load invoices:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInvoices();
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
