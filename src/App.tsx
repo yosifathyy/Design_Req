@@ -14,9 +14,9 @@ import GSAPScrollProgress from "@/components/GSAPScrollProgress";
 import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
 
-// Lazy load page components
-const Index = lazy(() => import("./pages/Index"));
-const StartProject = lazy(() => import("./pages/StartProject"));
+// Import main components eagerly to prevent loading screens
+import Index from "./pages/Index";
+import StartProject from "./pages/StartProject";
 const Services = lazy(() => import("./pages/Services"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const About = lazy(() => import("./pages/About"));
@@ -32,17 +32,26 @@ const Chat = lazy(() => import("./pages/Chat"));
 const Payments = lazy(() => import("./pages/Payments"));
 const Downloads = lazy(() => import("./pages/Downloads"));
 const Requests = lazy(() => import("./pages/Requests"));
+const RequestDetail = lazy(() => import("./pages/RequestDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Lazy load admin components
-const AdminLayout = lazy(() => import("./components/admin/AdminLayout").then(module => ({ default: module.AdminLayout })));
+const AdminLayout = lazy(() =>
+  import("./components/admin/AdminLayout").then((module) => ({
+    default: module.AdminLayout,
+  })),
+);
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const ProjectKanban = lazy(() => import("./pages/admin/ProjectKanban"));
 const UsersManagement = lazy(() => import("./pages/admin/UsersManagement"));
 const TeamManagement = lazy(() => import("./pages/admin/TeamManagement"));
-const PermissionsManagement = lazy(() => import("./pages/admin/PermissionsManagement"));
+const PermissionsManagement = lazy(
+  () => import("./pages/admin/PermissionsManagement"),
+);
 const ProjectsList = lazy(() => import("./pages/admin/ProjectsList"));
-const ProjectAssignments = lazy(() => import("./pages/admin/ProjectAssignments"));
+const ProjectAssignments = lazy(
+  () => import("./pages/admin/ProjectAssignments"),
+);
 const AdminChat = lazy(() => import("./pages/admin/AdminChat"));
 const AdminInvoices = lazy(() => import("./pages/admin/AdminInvoices"));
 const SystemAlerts = lazy(() => import("./pages/admin/SystemAlerts"));
@@ -54,6 +63,7 @@ const CreateInvoice = lazy(() => import("./pages/admin/CreateInvoice"));
 const InvoiceReports = lazy(() => import("./pages/admin/InvoiceReports"));
 const CreateChat = lazy(() => import("./pages/admin/CreateChat"));
 const CreateProject = lazy(() => import("./pages/admin/CreateProject"));
+const CreateUser = lazy(() => import("./pages/admin/CreateUser"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
@@ -61,7 +71,9 @@ const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-festival-cream">
     <div className="text-center">
       <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-lg font-medium text-black">Loading amazing content...</p>
+      <p className="text-lg font-medium text-black">
+        Loading amazing content...
+      </p>
     </div>
   </div>
 );
@@ -83,7 +95,7 @@ const AppContent = () => {
       <RetroCursor enabled={!isLoading} />
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Index isLoadingComplete={!isLoading} />} />
+          <Route path="/" element={<Index isLoadingComplete={true} />} />
           <Route path="/start-project" element={<StartProject />} />
           <Route path="/services" element={<Services />} />
           <Route path="/portfolio" element={<Portfolio />} />
@@ -97,15 +109,20 @@ const AppContent = () => {
           <Route path="/payments" element={<Payments />} />
           <Route path="/downloads" element={<Downloads />} />
           <Route path="/requests" element={<Requests />} />
+          <Route path="/requests/:id" element={<RequestDetail />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
+            <Route path="users/create" element={<CreateUser />} />
             <Route path="teams" element={<TeamManagement />} />
             <Route path="permissions" element={<PermissionsManagement />} />
             <Route path="projects" element={<ProjectsList />} />
             <Route path="projects/create" element={<CreateProject />} />
             <Route path="projects/kanban" element={<ProjectKanban />} />
-            <Route path="projects/assignments" element={<ProjectAssignments />} />
+            <Route
+              path="projects/assignments"
+              element={<ProjectAssignments />}
+            />
             <Route path="chat" element={<AdminChat />} />
             <Route path="chat/create" element={<CreateChat />} />
             <Route path="invoices" element={<AdminInvoices />} />

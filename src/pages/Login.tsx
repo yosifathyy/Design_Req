@@ -8,6 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  testSupabaseConnection,
+  checkDatabaseSchema,
+} from "@/lib/supabase-test";
+import SupabaseStatus from "@/components/SupabaseStatus";
+import AuthSetupHelper from "@/components/AuthSetupHelper";
+import {
   Eye,
   EyeOff,
   Mail,
@@ -17,6 +23,7 @@ import {
   Chrome,
   CheckCircle,
   AlertCircle,
+  Info,
 } from "lucide-react";
 
 const Login: React.FC = () => {
@@ -41,6 +48,19 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
+
+    // Test Supabase connection on load
+    testSupabaseConnection().then((result) => {
+      if (result.success) {
+        console.log("✅ Supabase connected successfully");
+      } else {
+        console.error("❌ Supabase connection issue:", result.error);
+      }
+    });
+
+    checkDatabaseSchema().then((results) => {
+      console.log("📋 Database schema check:", results);
+    });
 
     // Initial page animation
     const tl = gsap.timeline();
@@ -121,7 +141,7 @@ const Login: React.FC = () => {
     }
 
     setErrorMessage(null);
-    
+
     try {
       if (isLogin) {
         // Sign in
@@ -129,10 +149,14 @@ const Login: React.FC = () => {
         if (error) throw error;
       } else {
         // Sign up
-        const { error } = await signUp(formData.email, formData.password, formData.name);
+        const { error } = await signUp(
+          formData.email,
+          formData.password,
+          formData.name,
+        );
         if (error) throw error;
       }
-      
+
       // Success animation
       const successTl = gsap.timeline();
       successTl.to(formRef.current, {
@@ -145,11 +169,13 @@ const Login: React.FC = () => {
         duration: 0.3,
         ease: "back.out(1.4)",
       });
-      
+
       navigate("/design-dashboard");
     } catch (error: any) {
       console.error("Authentication error:", error);
-      setErrorMessage(error.message || "Authentication failed. Please try again.");
+      setErrorMessage(
+        error.message || "Authentication failed. Please try again.",
+      );
     }
   };
 
@@ -208,6 +234,11 @@ const Login: React.FC = () => {
       <div className="absolute top-32 right-20 w-12 h-12 bg-festival-pink rounded-full opacity-30" />
       <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-festival-orange transform rotate-12 opacity-30" />
 
+      {/* Supabase Status - Temporary for debugging */}
+      <div className="absolute top-4 right-4 w-80 z-50">
+        <SupabaseStatus />
+      </div>
+
       <div ref={containerRef} className="relative z-10 w-full max-w-md">
         <Card className="border-6 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white overflow-hidden">
           <div className="p-8">
@@ -231,7 +262,11 @@ const Login: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-6">
+            <form
+              ref={formRef}
+              onSubmit={handleFormSubmit}
+              className="space-y-6"
+            >
               {!isLogin && (
                 <div className="space-y-2">
                   <Label
@@ -351,10 +386,53 @@ const Login: React.FC = () => {
 
               {/* Error message */}
               {errorMessage && (
-                <div className="p-3 bg-red-50 border-2 border-red-500 rounded-md">
-                  <p className="text-red-600 text-sm">{errorMessage}</p>
+                <div className="space-y-3">
+                  <div className="p-3 bg-red-50 border-2 border-red-500 rounded-md">
+                    <p className="text-red-600 text-sm">{errorMessage}</p>
+                  </div>
+
+                  {/* Show setup helper for demo credential errors */}
+                  {errorMessage.includes("demo user") && <AuthSetupHelper />}
                 </div>
               )}
+
+              {/* Demo credentials notice for mock mode */}
+              {isLogin &&
+                (!import.meta.env.VITE_SUPABASE_URL ||
+                  import.meta.env.VITE_SUPABASE_URL.includes(
+                    "placeholder",
+                  )) && (
+                  <div className="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-bold text-blue-800 mb-1">
+                          🚧 Demo Mode
+                        </p>
+                        <p className="text-sm text-blue-700">
+                          Use these credentials to test:
+                        </p>
+                        <div className="mt-2 text-sm text-blue-700 font-mono bg-blue-100 p-2 rounded">
+                          <div>Email: admin@demo.com</div>
+                          <div>Password: demo123</div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              email: "admin@demo.com",
+                              password: "demo123",
+                            })
+                          }
+                          className="mt-2 text-xs bg-blue-200 hover:bg-blue-300 text-blue-800 px-2 py-1 rounded font-medium"
+                        >
+                          Fill Demo Credentials
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               {isLogin && (
                 <div className="flex items-center justify-between">

@@ -38,18 +38,21 @@ const Requests: React.FC = () => {
     // Fetch requests when component mounts or filter changes
     const fetchRequests = async () => {
       if (!user) return;
-      
+
       try {
         setLoading(true);
-        const data = await getDesignRequests(user.id, statusFilter !== 'all' ? statusFilter : undefined);
+        const data = await getDesignRequests(
+          user.id,
+          statusFilter !== "all" ? statusFilter : undefined,
+        );
         setRequests(data);
-      } catch (error) {
-        console.error('Error fetching requests:', error);
+      } catch (error: any) {
+        console.error("Error fetching requests:", error?.message || error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user) {
       fetchRequests();
     }
@@ -173,7 +176,7 @@ const Requests: React.FC = () => {
   );
 
   const getProjectsByStatus = (status: string) => {
-    if (status === 'all') return filteredProjects;
+    if (status === "all") return filteredProjects;
     return filteredProjects.filter((project) => project.status === status);
   };
 
@@ -295,154 +298,156 @@ const Requests: React.FC = () => {
         ) : (
           <div ref={cardsRef} className="space-y-4">
             {filteredProjects.map((request) => {
-            const statusConfig = getStatusConfig(request.status);
-            const categoryInfo = getCategoryInfo(request.category);
-            const StatusIcon = statusConfig.icon;
+              const statusConfig = getStatusConfig(request.status);
+              const categoryInfo = getCategoryInfo(request.category);
+              const StatusIcon = statusConfig.icon;
 
-            return (
-              <Card
-                key={request.id}
-                className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
-              >
-                <div className="p-6">
-                  {/* Header Row */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div
-                        className={`p-4 rounded border-4 border-black ${statusConfig.bgColor}`}
-                      >
-                        <StatusIcon
-                          className={`w-6 h-6 ${statusConfig.textColor}`}
-                        />
-                      </div>
-
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-bold text-black">
-                            {request.title}
-                          </h3>
-                          <Badge
-                            className={`${statusConfig.color} text-white border-2 border-black font-bold`}
-                          >
-                            {statusConfig.label}
-                          </Badge>
-                        </div>
-
-                        <p className="text-black/70 font-medium mb-3 line-clamp-2">
-                          {request.description}
-                        </p>
-
-                        <div className="flex items-center gap-4 text-sm text-black/60">
-                          <div className="flex items-center gap-2">
-                            <div
-                              className={`w-4 h-4 rounded ${categoryInfo.color}`}
-                            />
-                            <span>{categoryInfo.name}</span>
-                          </div>
-                          <div className="w-1 h-1 bg-black rounded-full" />
-                          <span>Created: {formatDate(request.createdAt)}</span>
-                          <div className="w-1 h-1 bg-black rounded-full" />
-                          <div
-                            className={`px-2 py-1 bg-gradient-to-r ${getPriorityColor(request.priority)} border-2 border-black text-black font-bold text-xs uppercase`}
-                          >
-                            {request.priority} Priority
-                          </div>
-                          <div className="w-1 h-1 bg-black rounded-full" />
-                          <span>${request.price}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="text-2xl mb-2">{categoryInfo.icon}</div>
-                      <div className="text-sm text-black/60">
-                        ID: #{request.id}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Progress Indicator */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-bold text-black">
-                        Progress:
-                      </span>
-                      <div className="flex-1 h-2 bg-black/20 border-2 border-black rounded-none overflow-hidden">
+              return (
+                <Card
+                  key={request.id}
+                  className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                >
+                  <div className="p-6">
+                    {/* Header Row */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start gap-4 flex-1">
                         <div
-                          className={`h-full bg-gradient-to-r ${getPriorityColor(request.priority)} transition-all duration-300`}
-                          style={{
-                            width:
-                              request.status === "draft"
-                                ? "10%"
-                                : request.status === "submitted"
-                                  ? "25%"
-                                  : request.status === "in-progress"
-                                    ? "60%"
-                                    : request.status === "completed"
-                                      ? "90%"
-                                      : "100%",
-                          }}
-                        />
+                          className={`p-4 rounded border-4 border-black ${statusConfig.bgColor}`}
+                        >
+                          <StatusIcon
+                            className={`w-6 h-6 ${statusConfig.textColor}`}
+                          />
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-xl font-bold text-black">
+                              {request.title}
+                            </h3>
+                            <Badge
+                              className={`${statusConfig.color} text-white border-2 border-black font-bold`}
+                            >
+                              {statusConfig.label}
+                            </Badge>
+                          </div>
+
+                          <p className="text-black/70 font-medium mb-3 line-clamp-2">
+                            {request.description}
+                          </p>
+
+                          <div className="flex items-center gap-4 text-sm text-black/60">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`w-4 h-4 rounded ${categoryInfo.color}`}
+                              />
+                              <span>{categoryInfo.name}</span>
+                            </div>
+                            <div className="w-1 h-1 bg-black rounded-full" />
+                            <span>
+                              Created: {formatDate(request.createdAt)}
+                            </span>
+                            <div className="w-1 h-1 bg-black rounded-full" />
+                            <div
+                              className={`px-2 py-1 bg-gradient-to-r ${getPriorityColor(request.priority)} border-2 border-black text-black font-bold text-xs uppercase`}
+                            >
+                              {request.priority} Priority
+                            </div>
+                            <div className="w-1 h-1 bg-black rounded-full" />
+                            <span>${request.price}</span>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-sm text-black/60">
-                        {request.status === "draft"
-                          ? "10%"
-                          : request.status === "submitted"
-                            ? "25%"
-                            : request.status === "in-progress"
-                              ? "60%"
-                              : request.status === "completed"
-                                ? "90%"
-                                : "100%"}
-                      </span>
+
+                      <div className="text-right">
+                        <div className="text-2xl mb-2">{categoryInfo.icon}</div>
+                        <div className="text-sm text-black/60">
+                          ID: #{request.id}
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => handleViewDetails(request.id)}
-                        variant="outline"
-                        size="sm"
-                        className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
-                      </Button>
+                    {/* Progress Indicator */}
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-bold text-black">
+                          Progress:
+                        </span>
+                        <div className="flex-1 h-2 bg-black/20 border-2 border-black rounded-none overflow-hidden">
+                          <div
+                            className={`h-full bg-gradient-to-r ${getPriorityColor(request.priority)} transition-all duration-300`}
+                            style={{
+                              width:
+                                request.status === "draft"
+                                  ? "10%"
+                                  : request.status === "submitted"
+                                    ? "25%"
+                                    : request.status === "in-progress"
+                                      ? "60%"
+                                      : request.status === "completed"
+                                        ? "90%"
+                                        : "100%",
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm text-black/60">
+                          {request.status === "draft"
+                            ? "10%"
+                            : request.status === "submitted"
+                              ? "25%"
+                              : request.status === "in-progress"
+                                ? "60%"
+                                : request.status === "completed"
+                                  ? "90%"
+                                  : "100%"}
+                        </span>
+                      </div>
+                    </div>
 
-                      {(request.status === "in-progress" ||
-                        request.status === "completed") && (
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-2">
                         <Button
-                          onClick={() => handleChatClick(request.id)}
+                          onClick={() => handleViewDetails(request.id)}
                           variant="outline"
                           size="sm"
                           className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
                         >
-                          <MessageCircle className="w-4 h-4 mr-2" />
-                          Chat
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
                         </Button>
-                      )}
 
-                      {request.status === "delivered" && (
-                        <Button
-                          onClick={() => handleDownloadClick(request.id)}
-                          className="bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
-                          size="sm"
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Download
-                        </Button>
-                      )}
-                    </div>
+                        {(request.status === "in-progress" ||
+                          request.status === "completed") && (
+                          <Button
+                            onClick={() => handleChatClick(request.id)}
+                            variant="outline"
+                            size="sm"
+                            className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                          >
+                            <MessageCircle className="w-4 h-4 mr-2" />
+                            Chat
+                          </Button>
+                        )}
 
-                    <div className="text-sm text-black/60">
-                      Updated: {formatDate(request.updatedAt)}
+                        {request.status === "delivered" && (
+                          <Button
+                            onClick={() => handleDownloadClick(request.id)}
+                            className="bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
+                            size="sm"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="text-sm text-black/60">
+                        Updated: {formatDate(request.updatedAt)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            );
+                </Card>
+              );
             })}
           </div>
         )}

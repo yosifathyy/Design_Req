@@ -2,11 +2,20 @@ import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserProfile, getDesignRequests, getInvoices } from "@/lib/api";
+import {
+  getUserProfile,
+  getDesignRequests,
+  getInvoices,
+  createUserProfileIfMissing,
+  findUserProfileByEmail,
+} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { XPProgress } from "@/components/dashboard/XPProgress";
 import { mockUser, mockStats } from "@/lib/dashboard-data";
+import ProfileSetupNotice from "@/components/ProfileSetupNotice";
+import IDMismatchNotice from "@/components/IDMismatchNotice";
+import AdminChatList from "@/components/AdminChatList";
 import {
   FileText,
   MessageCircle,
@@ -25,10 +34,16 @@ const DesignDashboard: React.FC = () => {
     xpProgress: {
       current: 0,
       target: 1000,
-      level: 1
-    }
+      level: 1,
+    },
   });
   const [loading, setLoading] = React.useState(true);
+  const [isCreatingProfile, setIsCreatingProfile] = React.useState(false);
+  const [profileSetupError, setProfileSetupError] = React.useState(false);
+  const [idMismatch, setIdMismatch] = React.useState<{
+    authId: string;
+    dbId: string;
+  } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -38,43 +53,95 @@ const DesignDashboard: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Fetch user profile
-        const profile = await getUserProfile(user.id);
+        let profile = await getUserProfile(user.id);
+
+        // If no profile found by ID, try finding by email (handles ID mismatches)
+        if (!profile && user.email) {
+          console.log("No user profile found by ID, checking by email...");
+          profile = await findUserProfileByEmail(user.email);
+
+          if (profile) {
+            console.log(
+              `Found existing profile by email with different ID: ${profile.id}`,
+            );
+            // Track ID mismatch for user notification
+            if (profile.id !== user.id) {
+              setIdMismatch({ authId: user.id, dbId: profile.id });
+            }
+          }
+        }
+
+        // If still no profile found, try to create one
+        if (!profile && user.email) {
+          console.log("No user profile found, attempting to create one...");
+          setIsCreatingProfile(true);
+          setProfileSetupError(false);
+
+          profile = await createUserProfileIfMissing(
+            user.id,
+            user.email,
+            user.user_metadata?.name || user.email.split("@")[0],
+          );
+
+          setIsCreatingProfile(false);
+
+          if (!profile) {
+            setProfileSetupError(true);
+          }
+        }
+
+        // If still no profile, use fallback data
+        if (!profile) {
+          console.warn("Could not create user profile, using fallback data");
+          profile = {
+            id: user.id,
+            email: user.email || "unknown@example.com",
+            name: user.email?.split("@")[0] || "User",
+            xp: 0,
+            level: 1,
+            role: "user",
+            status: "active",
+          };
+        }
+
         setUserProfile(profile);
-        
+
         // Fetch requests
         const requests = await getDesignRequests(user.id);
-        
+
         // Fetch invoices
         const invoices = await getInvoices(user.id);
-        const pendingInvoices = invoices.filter(inv => inv.status === 'pending');
-        
+        const pendingInvoices = invoices.filter(
+          (inv) => inv.status === "pending",
+        );
+
         // Calculate XP target based on level
-        const xpTarget = profile.level * 1000;
-        
+        const currentProfile = profile || { level: 1, xp: 0 };
+        const xpTarget = currentProfile.level * 1000;
+
         // Update stats
         setStats({
           totalRequests: requests.length,
           unreadChats: 0, // We'll implement this with real-time later
           dueInvoices: pendingInvoices.length,
           xpProgress: {
-            current: profile.xp,
+            current: currentProfile.xp,
             target: xpTarget,
-            level: profile.level
-          }
+            level: currentProfile.level,
+          },
         });
-        
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+      } catch (error: any) {
+        console.error("Error fetching user data:", error?.message || error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user) {
       fetchUserData();
     }
@@ -164,13 +231,13 @@ const DesignDashboard: React.FC = () => {
                 />
               ) : (
                 <span className="text-xl font-bold text-white">
-                  {userProfile?.name?.charAt(0) || '?'}
+                  {userProfile?.name?.charAt(0) || "?"}
                 </span>
               )}
             </div>
             <div>
               <h1 className="text-4xl font-display font-bold text-black">
-                Hello, {userProfile?.name?.split(" ")[0] || 'Designer'}! 👋
+                Hello, {userProfile?.name?.split(" ")[0] || "Designer"}! 👋
               </h1>
               <p className="text-lg text-black/70 font-medium">
                 Ready to create something amazing today?
@@ -242,6 +309,14 @@ const DesignDashboard: React.FC = () => {
           )}
         </div>
 
+        {/* Admin Chat List */}
+        {userProfile?.role === "admin" ||
+        userProfile?.role === "super-admin" ? (
+          <div className="mb-8">
+            <AdminChatList />
+          </div>
+        ) : null}
+
         {/* Quick Actions */}
         <div className="flex flex-col items-center gap-6">
           <Link to="/new-request">
@@ -261,7 +336,12 @@ const DesignDashboard: React.FC = () => {
               <span>Level {userProfile?.level || 1} Designer</span>
             </div>
             <div className="w-1 h-1 bg-black rounded-full" />
-            <span>Member since {userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString() : 'recently'}</span>
+            <span>
+              Member since{" "}
+              {userProfile?.created_at
+                ? new Date(userProfile.created_at).toLocaleDateString()
+                : "recently"}
+            </span>
             <div className="w-1 h-1 bg-black rounded-full" />
             <span>XP: {userProfile?.xp || 0}</span>
           </div>

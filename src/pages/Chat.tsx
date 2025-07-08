@@ -2,7 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { getChatByRequestId, createChat, getMessages, sendMessage, getDesignRequestById } from "@/lib/api";
+import {
+  getChatByRequestId,
+  createChat,
+  getMessages,
+  sendMessage,
+  getDesignRequestById,
+} from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -28,6 +36,7 @@ const Chat: React.FC = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [projectDetails, setProjectDetails] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,49 +47,187 @@ const Chat: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Get request ID from URL query params
-  const requestId = new URLSearchParams(location.search).get('request');
+  const requestId = new URLSearchParams(location.search).get("request");
 
   useEffect(() => {
     const initializeChat = async () => {
       if (!user || !requestId) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Get project details
         const requestData = await getDesignRequestById(requestId);
         setProjectDetails(requestData);
-        
+
         // Get or create chat
         let chat = await getChatByRequestId(requestId);
-        
+
         if (!chat) {
           // Create new chat with user and designer (if assigned)
           const participants = [user.id];
           if (requestData.designer_id) {
             participants.push(requestData.designer_id);
           }
-          
+
           chat = await createChat(requestId, participants);
         }
-        
+
         setChatId(chat.id);
-        
+
         // Get messages
         const chatMessages = await getMessages(chat.id);
         setMessages(chatMessages);
-        
-      } catch (error) {
-        console.error('Error initializing chat:', error);
+      } catch (error: any) {
+        console.error("Error initializing chat:", error?.message || error);
+
+        // Show user-friendly error message
+        const errorMessage =
+          error?.message || "Failed to initialize chat functionality.";
+
+        setError(errorMessage);
+
+        // Check if this is a policy setup issue
+        const isPolicyError =
+          errorMessage.includes("database policies need to be set up") ||
+          errorMessage.includes("row-level security policy");
+
+        if (isPolicyError) {
+          // Don't show the temporary notification for policy errors,
+          // as we'll show the setup helper instead
+          return;
+        }
+
+        // Create error notification
+        const errorEl = document.createElement("div");
+        errorEl.className =
+          "fixed top-4 right-4 z-50 bg-red-50 border-2 border-red-500 p-4 rounded-lg shadow-lg max-w-md";
+        errorEl.innerHTML = `
+          <div class="flex items-start gap-3">
+            <div class="text-red-500 text-xl">💬</div>
+            <div>
+              <h4 class="font-bold text-red-800 mb-1">Chat Unavailable</h4>
+              <p class="text-red-700 text-sm">${errorMessage}</p>
+              <p class="text-red-600 text-xs mt-2">Please check that your database chat tables are set up.</p>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(errorEl);
+
+        // Remove error after 5 seconds
+        setTimeout(() => {
+          errorEl.remove();
+        }, 5000);
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user && requestId) {
       initializeChat();
     }
   }, [user, requestId]);
+
+  // Realtime subscription for new messages
+  useEffect(() => {
+    if (!chatId || !user) return;
+
+    const messageSubscription = supabase
+      .channel(`messages-${chatId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `chat_id=eq.${chatId}`,
+        },
+        async (payload) => {
+          console.log("New message received:", payload);
+
+          // Add the new message to the UI
+          const newMessage = payload.new;
+
+          // Try to enrich with sender data
+          try {
+            const { data: sender } = await supabase
+              .from("users")
+              .select("id, name, email, avatar_url, role")
+              .eq("id", newMessage.sender_id)
+              .maybeSingle();
+
+            const enrichedMessage = {
+              ...newMessage,
+              sender: sender || {
+                id: newMessage.sender_id,
+                name: "Unknown User",
+                email: "",
+                avatar_url: null,
+                role: "user",
+              },
+            };
+
+            setMessages((prev) => {
+              // Check if message already exists to avoid duplicates
+              const messageExists = prev.some(
+                (msg) => msg.id === enrichedMessage.id,
+              );
+              if (messageExists) return prev;
+
+              return [...prev, enrichedMessage];
+            });
+
+            // Animate new message
+            setTimeout(() => {
+              const newMessageEl = messagesRef.current?.lastElementChild;
+              if (newMessageEl) {
+                gsap.fromTo(
+                  newMessageEl,
+                  { opacity: 0, x: 50, scale: 0.9 },
+                  {
+                    opacity: 1,
+                    x: 0,
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "back.out(1.2)",
+                  },
+                );
+              }
+            }, 50);
+          } catch (error) {
+            console.error("Error enriching message:", error);
+            // Add basic message if enrichment fails
+            setMessages((prev) => {
+              const messageExists = prev.some(
+                (msg) => msg.id === newMessage.id,
+              );
+              if (messageExists) return prev;
+
+              return [
+                ...prev,
+                {
+                  ...newMessage,
+                  sender: {
+                    id: newMessage.sender_id,
+                    name: "Unknown User",
+                    email: "",
+                    avatar_url: null,
+                    role: "user",
+                  },
+                },
+              ];
+            });
+          }
+        },
+      )
+      .subscribe();
+
+    // Cleanup subscription on unmount
+    return () => {
+      messageSubscription.unsubscribe();
+    };
+  }, [chatId, user]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -154,7 +301,7 @@ const Chat: React.FC = () => {
       try {
         await sendMessage(chatId, user.id, message.trim());
       } catch (error) {
-        console.error('Error sending message:', error);
+        console.error("Error sending message:", error);
       }
     }
 
@@ -177,7 +324,7 @@ const Chat: React.FC = () => {
     }, 50);
 
     // Only simulate designer response if we're in demo mode
-    if (process.env.NODE_ENV === 'development' && projectDetails?.designer_id) {
+    if (process.env.NODE_ENV === "development" && projectDetails?.designer_id) {
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
@@ -250,12 +397,14 @@ const Chat: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-festival-orange border-4 border-black rounded-full flex items-center justify-center">
                   <span className="text-lg font-bold">
-                    {projectDetails?.designer_id ? 'D' : '?'}
+                    {projectDetails?.designer_id ? "D" : "?"}
                   </span>
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-black">
-                    {projectDetails?.designer_id ? 'Designer' : 'Waiting for assignment'}
+                    {projectDetails?.designer_id
+                      ? "Designer"
+                      : "Waiting for assignment"}
                   </h2>
                   <div className="flex items-center gap-2">
                     <Circle className="w-3 h-3 fill-green-500 text-green-500" />
@@ -268,7 +417,7 @@ const Chat: React.FC = () => {
             </div>
 
             <div className="text-sm text-black/70">
-              Project: {projectDetails?.title || 'Loading...'}
+              Project: {projectDetails?.title || "Loading..."}
             </div>
           </div>
         </div>
@@ -287,7 +436,9 @@ const Chat: React.FC = () => {
             <div className="flex flex-col items-center justify-center h-full text-black/50">
               <MessageCircle className="w-16 h-16 mb-4" />
               <p className="text-lg font-medium">No messages yet</p>
-              <p className="text-sm">Start the conversation by sending a message</p>
+              <p className="text-sm">
+                Start the conversation by sending a message
+              </p>
             </div>
           ) : (
             messages.map((msg) => (

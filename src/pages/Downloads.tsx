@@ -41,20 +41,23 @@ const Downloads: React.FC = () => {
   useEffect(() => {
     const fetchDeliveredRequests = async () => {
       if (!user) return;
-      
+
       try {
         setLoading(true);
         const requests = await getDesignRequests(user.id);
         // Filter only delivered requests
-        const delivered = requests.filter(req => req.status === 'delivered');
+        const delivered = requests.filter((req) => req.status === "delivered");
         setDeliveredRequests(delivered);
-      } catch (error) {
-        console.error('Error fetching delivered requests:', error);
+      } catch (error: any) {
+        console.error(
+          "Error fetching delivered requests:",
+          error?.message || error,
+        );
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user) {
       fetchDeliveredRequests();
     }
@@ -295,120 +298,124 @@ const Downloads: React.FC = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {filteredRequests.map((request) => (
-            <Card
-              key={request.id}
-              className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white overflow-hidden hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
-            >
-              {/* Thumbnail */}
-              <div
-                className={`h-48 bg-gradient-to-br ${getCategoryColor(request.category)} border-b-4 border-black relative overflow-hidden`}
+              <Card
+                key={request.id}
+                className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white overflow-hidden hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-6xl opacity-50">
-                    {request.category === "logo" && "🎯"}
-                    {request.category === "web-design" && "💻"}
-                    {request.category === "photoshop" && "����"}
-                    {request.category === "3d" && "🎲"}
-                    {request.category === "branding" && "🏷️"}
-                    {request.category === "illustration" && "🎨"}
+                {/* Thumbnail */}
+                <div
+                  className={`h-48 bg-gradient-to-br ${getCategoryColor(request.category)} border-b-4 border-black relative overflow-hidden`}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-6xl opacity-50">
+                      {request.category === "logo" && "🎯"}
+                      {request.category === "web-design" && "💻"}
+                      {request.category === "photoshop" && "����"}
+                      {request.category === "3d" && "🎲"}
+                      {request.category === "branding" && "🏷️"}
+                      {request.category === "illustration" && "🎨"}
+                    </div>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    {getStatusBadge(request.status)}
+                  </div>
+                  <div className="absolute bottom-4 left-4">
+                    <Badge className="bg-black text-white border-2 border-black">
+                      {request.category.replace("-", " ").toUpperCase()}
+                    </Badge>
                   </div>
                 </div>
-                <div className="absolute top-4 right-4">
-                  {getStatusBadge(request.status)}
-                </div>
-                <div className="absolute bottom-4 left-4">
-                  <Badge className="bg-black text-white border-2 border-black">
-                    {request.category.replace("-", " ").toUpperCase()}
-                  </Badge>
-                </div>
-              </div>
 
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-black mb-2 line-clamp-2">
-                  {request.title}
-                </h3>
-                <p className="text-black/70 text-sm mb-4 line-clamp-3">
-                  {request.description}
-                </p>
-
-                {/* Files */}
-                <div className="space-y-2 mb-4">
-                  <p className="text-sm font-bold text-black">
-                    Files ({mockFiles.length})
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-black mb-2 line-clamp-2">
+                    {request.title}
+                  </h3>
+                  <p className="text-black/70 text-sm mb-4 line-clamp-3">
+                    {request.description}
                   </p>
-                  {mockFiles.slice(0, 2).map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-festival-cream border-2 border-black"
-                    >
-                      <div className="flex items-center gap-2">
-                        {getFileIcon(file.name)}
-                        <div>
-                          <p className="text-sm font-medium text-black truncate max-w-32">
-                            {file.name}
-                          </p>
-                          <p className="text-xs text-black/60">
-                            {file.size} • {file.type}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => handleDownload(request.id, file.name)}
-                        disabled={downloadingFiles.has(
-                          `${request.id}-${file.name}`,
-                        )}
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-festival-orange hover:bg-festival-coral border-2 border-black"
-                      >
-                        {downloadingFiles.has(`${request.id}-${file.name}`) ? (
-                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Download className="w-3 h-3" />
-                        )}
-                      </Button>
-                    </div>
-                  ))}
-                  {mockFiles.length > 2 && (
-                    <p className="text-xs text-black/60">
-                      +{mockFiles.length - 2} more files
+
+                  {/* Files */}
+                  <div className="space-y-2 mb-4">
+                    <p className="text-sm font-bold text-black">
+                      Files ({mockFiles.length})
                     </p>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleDownload(request.id, "all-files.zip")}
-                    disabled={downloadingFiles.has(
-                      `${request.id}-all-files.zip`,
-                    )}
-                    className="flex-1 bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
-                  >
-                    {downloadingFiles.has(`${request.id}-all-files.zip`) ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Downloading...
+                    {mockFiles.slice(0, 2).map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 bg-festival-cream border-2 border-black"
+                      >
+                        <div className="flex items-center gap-2">
+                          {getFileIcon(file.name)}
+                          <div>
+                            <p className="text-sm font-medium text-black truncate max-w-32">
+                              {file.name}
+                            </p>
+                            <p className="text-xs text-black/60">
+                              {file.size} • {file.type}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => handleDownload(request.id, file.name)}
+                          disabled={downloadingFiles.has(
+                            `${request.id}-${file.name}`,
+                          )}
+                          size="sm"
+                          className="h-8 w-8 p-0 bg-festival-orange hover:bg-festival-coral border-2 border-black"
+                        >
+                          {downloadingFiles.has(
+                            `${request.id}-${file.name}`,
+                          ) ? (
+                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Download className="w-3 h-3" />
+                          )}
+                        </Button>
                       </div>
-                    ) : (
-                      <>
-                        <Download className="w-4 h-4 mr-2" />
-                        Download All
-                      </>
+                    ))}
+                    {mockFiles.length > 2 && (
+                      <p className="text-xs text-black/60">
+                        +{mockFiles.length - 2} more files
+                      </p>
                     )}
-                  </Button>
+                  </div>
 
-                  <Button
-                    onClick={() => handleRequestRevision(request.id)}
-                    variant="outline"
-                    className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                  </Button>
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() =>
+                        handleDownload(request.id, "all-files.zip")
+                      }
+                      disabled={downloadingFiles.has(
+                        `${request.id}-all-files.zip`,
+                      )}
+                      className="flex-1 bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
+                    >
+                      {downloadingFiles.has(`${request.id}-all-files.zip`) ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Downloading...
+                        </div>
+                      ) : (
+                        <>
+                          <Download className="w-4 h-4 mr-2" />
+                          Download All
+                        </>
+                      )}
+                    </Button>
+
+                    <Button
+                      onClick={() => handleRequestRevision(request.id)}
+                      variant="outline"
+                      className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            ))}
           </div>
         )}
 

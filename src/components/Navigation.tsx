@@ -259,7 +259,7 @@ const Navigation = () => {
     // If we're not on the home page, navigate there first
     if (location.pathname !== "/") {
       navigate("/");
-      // Wait for navigation to complete, then scroll
+      // Since Index component is now preloaded, use a shorter delay or scroll immediately
       setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -268,7 +268,7 @@ const Navigation = () => {
             block: "start",
           });
         }
-      }, 100);
+      }, 50); // Reduced delay since home page is preloaded
     } else {
       // We're already on home page, just scroll
       const element = document.getElementById(sectionId);

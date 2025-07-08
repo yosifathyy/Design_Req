@@ -2,7 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { createDesignRequest, uploadFile, saveFileMetadata, updateUserXP } from "@/lib/api";
+import {
+  createDesignRequest,
+  uploadFile,
+  saveFileMetadata,
+  updateUserXP,
+} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -180,7 +185,7 @@ const NewRequest: React.FC = () => {
     }
 
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -193,17 +198,20 @@ const NewRequest: React.FC = () => {
         description: formData.description,
         category: formData.category,
         priority: formData.priority,
-        status: 'submitted',
+        status: "submitted",
         user_id: user.id,
         price: calculatePrice(formData.category, formData.priority),
       };
-      
+
       const newRequest = await createDesignRequest(requestData);
-      
+
       // 2. Upload files if any
       const filePromises = files.map(async (file) => {
-        const { path, url } = await uploadFile(file, `requests/${newRequest.id}`);
-        
+        const { path, url } = await uploadFile(
+          file,
+          `requests/${newRequest.id}`,
+        );
+
         // Save file metadata
         return saveFileMetadata({
           name: file.name,
@@ -214,21 +222,49 @@ const NewRequest: React.FC = () => {
           uploaded_by: user.id,
         });
       });
-      
+
       if (files.length > 0) {
         await Promise.all(filePromises);
       }
-      
+
       // 3. Award XP to the user
       await updateUserXP(user.id, 10);
-      
+
       // Success handling below
-    } catch (error) {
-      console.error('Error creating request:', error);
+    } catch (error: any) {
+      console.error("Error creating request:", error?.message || error);
       setIsSubmitting(false);
+
+      // Show user-friendly error message
+      const errorMessage =
+        error?.message ||
+        "An unexpected error occurred while creating your request.";
+
+      // Create error notification
+      const errorEl = document.createElement("div");
+      errorEl.className =
+        "fixed top-4 right-4 z-50 bg-red-50 border-2 border-red-500 p-4 rounded-lg shadow-lg max-w-md";
+      errorEl.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="text-red-500 text-xl">⚠️</div>
+          <div>
+            <h4 class="font-bold text-red-800 mb-1">Request Creation Failed</h4>
+            <p class="text-red-700 text-sm">${errorMessage}</p>
+            <p class="text-red-600 text-xs mt-2">Please check that your database is properly set up.</p>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(errorEl);
+
+      // Remove error after 5 seconds
+      setTimeout(() => {
+        errorEl.remove();
+      }, 5000);
+
       return;
     }
-    
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Success animation
@@ -277,38 +313,38 @@ const NewRequest: React.FC = () => {
   // Calculate price based on category and priority
   const calculatePrice = (category: string, priority: string): number => {
     let basePrice = 0;
-    
+
     // Base price by category
     switch (category) {
-      case 'logo':
+      case "logo":
         basePrice = 299;
         break;
-      case 'web-design':
+      case "web-design":
         basePrice = 599;
         break;
-      case '3d':
+      case "3d":
         basePrice = 499;
         break;
-      case 'photoshop':
+      case "photoshop":
         basePrice = 150;
         break;
-      case 'branding':
+      case "branding":
         basePrice = 399;
         break;
-      case 'illustration':
+      case "illustration":
         basePrice = 249;
         break;
       default:
         basePrice = 199;
     }
-    
+
     // Adjust for priority
     switch (priority) {
-      case 'high':
+      case "high":
         return basePrice * 1.5;
-      case 'medium':
+      case "medium":
         return basePrice;
-      case 'low':
+      case "low":
         return basePrice * 0.8;
       default:
         return basePrice;
@@ -353,9 +389,11 @@ const NewRequest: React.FC = () => {
           </p>
           {!user && (
             <div className="mt-4 p-4 bg-yellow-100 border-4 border-black text-black">
-              <p className="font-bold">You need to be logged in to submit a request.</p>
-              <Button 
-                onClick={() => navigate('/login')}
+              <p className="font-bold">
+                You need to be logged in to submit a request.
+              </p>
+              <Button
+                onClick={() => navigate("/login")}
                 className="mt-2 bg-black text-white"
               >
                 Go to Login
