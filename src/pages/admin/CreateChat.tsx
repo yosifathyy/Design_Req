@@ -323,7 +323,7 @@ const CreateChat: React.FC = () => {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {selectedUsers.map((userId) => {
-                      const user = mockAdminUsers.find((u) => u.id === userId);
+                      const user = users.find((u) => u.id === userId);
                       return (
                         <span
                           key={userId}
