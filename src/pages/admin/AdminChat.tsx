@@ -149,38 +149,63 @@ const AdminChat: React.FC = () => {
               <h3 className="font-bold text-black">Active Conversations</h3>
             </div>
             <div className="space-y-2 p-4 max-h-96 overflow-y-auto">
-              {mockChats.map((chat) => (
-                <div
-                  key={chat.id}
-                  className="p-3 bg-festival-cream border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-bold text-sm text-black line-clamp-1">
-                      {chat.projectTitle}
-                    </h4>
-                    {chat.unreadCount > 0 && (
-                      <Badge className="bg-festival-orange text-black border-2 border-black">
-                        {chat.unreadCount}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs">
-                      <User className="w-3 h-3" />
-                      <span className="text-black/70">{chat.clientName}</span>
-                    </div>
-                    <p className="text-xs text-black/60 line-clamp-2">
-                      {chat.lastMessage}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-black/50">
-                      <Clock className="w-3 h-3" />
-                      <span>
-                        {new Date(chat.lastActivity).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
+              {loading ? (
+                <div className="text-center py-8">
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-festival-orange" />
+                  <p className="text-sm text-black/70">Loading chats...</p>
                 </div>
-              ))}
+              ) : filteredChats.length === 0 ? (
+                <div className="text-center py-8">
+                  <MessageCircle className="w-8 h-8 mx-auto mb-2 text-black/30" />
+                  <p className="text-sm text-black/70">
+                    {searchQuery
+                      ? "No chats match your search"
+                      : "No active chats"}
+                  </p>
+                </div>
+              ) : (
+                filteredChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    onClick={() => setSelectedChat(chat)}
+                    className={`p-3 border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-colors ${
+                      selectedChat?.id === chat.id
+                        ? "bg-festival-orange/30"
+                        : "bg-festival-cream"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-bold text-sm text-black line-clamp-1">
+                        {chat.request?.title || "Untitled Project"}
+                      </h4>
+                      {chat.unread_count > 0 && (
+                        <Badge className="bg-festival-orange text-black border-2 border-black">
+                          {chat.unread_count}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-xs">
+                        <User className="w-3 h-3" />
+                        <span className="text-black/70">
+                          {chat.request?.user?.name || "Unknown User"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-black/60 line-clamp-2">
+                        {chat.last_message?.content || "No messages yet"}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-black/50">
+                        <Clock className="w-3 h-3" />
+                        <span>
+                          {new Date(
+                            chat.last_message_at || chat.created_at,
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </div>
