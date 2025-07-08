@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { mockAdminUsers } from "@/lib/admin-data";
+import { getAdminUsers, updateAdminUser } from "@/lib/api";
+import { updateUserRole, suspendUser, activateUser } from "@/lib/admin-api";
 import {
   Search,
   Plus,
@@ -25,6 +26,7 @@ import {
   Phone,
   MapPin,
   Calendar,
+  RefreshCw,
 } from "lucide-react";
 
 const UsersManagement: React.FC = () => {
