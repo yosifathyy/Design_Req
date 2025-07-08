@@ -125,9 +125,15 @@ const CreateUser = () => {
         user_id: currentUser?.id || "anonymous",
       });
 
+      // Check if we're in mock mode
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const isMockMode = !supabaseUrl || supabaseUrl.includes("placeholder");
+
       toast({
         title: "User Created Successfully",
-        description: `${newUser.name} has been added to the system`,
+        description: isMockMode
+          ? `${newUser.name} has been added (mock mode - no database connected)`
+          : `${newUser.name} has been added to the system`,
         action: (
           <div className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
