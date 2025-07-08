@@ -56,19 +56,47 @@ export const createDesignRequest = async (requestData: any) => {
 };
 
 export const getDesignRequests = async (userId: string, filter?: string) => {
-  let query = supabase
-    .from("design_requests")
-    .select("*, files(*)")
-    .eq("user_id", userId);
+  try {
+    let query = supabase
+      .from("design_requests")
+      .select("*, files(*)")
+      .eq("user_id", userId);
 
-  if (filter && filter !== "all") {
-    query = query.eq("status", filter);
+    if (filter && filter !== "all") {
+      query = query.eq("status", filter);
+    }
+
+    const { data, error } = await query.order("created_at", {
+      ascending: false,
+    });
+
+    if (error) {
+      // If table doesn't exist, return empty array instead of throwing
+      if (
+        error.message?.includes('relation "design_requests" does not exist')
+      ) {
+        console.warn(
+          "design_requests table does not exist yet. Returning empty array.",
+        );
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      console.warn(
+        "Could not fetch design requests (table may not exist):",
+        error.message,
+      );
+      return [];
+    }
+    throw error;
   }
-
-  const { data, error } = await query.order("created_at", { ascending: false });
-
-  if (error) throw error;
-  return data;
 };
 
 export const getDesignRequestById = async (requestId: string) => {
@@ -200,23 +228,50 @@ export const sendMessage = async (
 
 // Invoice functions
 export const getInvoices = async (userId: string, status?: string) => {
-  let query = supabase
-    .from("invoices")
-    .select(
-      `
-      *,
-      request:request_id(id, title, user_id, designer_id)
-    `,
-    )
-    .eq("request.user_id", userId);
+  try {
+    let query = supabase
+      .from("invoices")
+      .select(
+        `
+        *,
+        request:request_id(id, title, user_id, designer_id)
+      `,
+      )
+      .eq("request.user_id", userId);
 
-  if (status && status !== "all") {
-    query = query.eq("status", status);
+    if (status && status !== "all") {
+      query = query.eq("status", status);
+    }
+
+    const { data, error } = await query.order("created_at", {
+      ascending: false,
+    });
+
+    if (error) {
+      // If table doesn't exist, return empty array instead of throwing
+      if (error.message?.includes('relation "invoices" does not exist')) {
+        console.warn(
+          "invoices table does not exist yet. Returning empty array.",
+        );
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      console.warn(
+        "Could not fetch invoices (table may not exist):",
+        error.message,
+      );
+      return [];
+    }
+    throw error;
   }
-
-  const { data, error } = await query.order("created_at", { ascending: false });
-
-  if (error) throw error;
   return data;
 };
 
