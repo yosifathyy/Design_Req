@@ -83,6 +83,8 @@ const Chat: React.FC = () => {
         const errorMessage =
           error?.message || "Failed to initialize chat functionality.";
 
+        setError(errorMessage);
+
         // Create error notification
         const errorEl = document.createElement("div");
         errorEl.className =
