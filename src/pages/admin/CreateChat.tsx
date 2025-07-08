@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  getAdminUsers,
-  getAdminProjects,
-  createChat,
-  sendMessage,
-} from "@/lib/api";
+import { getAdminUsers, getAdminProjects, createChat, sendMessage } from "@/lib/api";
 import {
   ArrowLeft,
   MessageCircle,
@@ -121,6 +116,7 @@ const CreateChat: React.FC = () => {
         document.body.removeChild(successEl);
         navigate(chat ? `/admin/chat/${chat.id}` : "/admin/chat");
       }, 2000);
+
     } catch (error: any) {
       console.error("Failed to create chat:", error);
       alert(`Failed to create chat: ${error.message}`);
@@ -129,7 +125,9 @@ const CreateChat: React.FC = () => {
     }
   };
 
-  const selectedProjectData = projects.find((p) => p.id === selectedProject);
+  const selectedProjectData = projects.find(
+    (p) => p.id === selectedProject,
+  );
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -171,9 +169,7 @@ const CreateChat: React.FC = () => {
                   onChange={(e) => {
                     setSelectedProject(e.target.value);
                     // Auto-generate chat title based on project
-                    const project = projects.find(
-                      (p) => p.id === e.target.value,
-                    );
+                    const project = projects.find(p => p.id === e.target.value);
                     if (project && !chatTitle) {
                       setChatTitle(`Chat: ${project.title}`);
                     }
@@ -183,8 +179,7 @@ const CreateChat: React.FC = () => {
                   <option value="">Select a project</option>
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
-                      {project.title} -{" "}
-                      {project.client?.name || "Unknown Client"}
+                      {project.title} - {project.client?.name || 'Unknown Client'}
                     </option>
                   ))}
                 </select>
@@ -208,15 +203,9 @@ const CreateChat: React.FC = () => {
                     {selectedProjectData.title}
                   </h4>
                   <div className="text-sm text-black/70">
-                    <p>
-                      Client:{" "}
-                      {selectedProjectData.client?.name || "Unknown Client"}
-                    </p>
+                    <p>Client: {selectedProjectData.client?.name || 'Unknown Client'}</p>
                     <p>Status: {selectedProjectData.status}</p>
-                    <p>
-                      Designer:{" "}
-                      {selectedProjectData.designer?.name || "Unassigned"}
-                    </p>
+                    <p>Designer: {selectedProjectData.designer?.name || 'Unassigned'}</p>
                   </div>
                 </div>
               )}
@@ -264,7 +253,20 @@ const CreateChat: React.FC = () => {
               </div>
 
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {availableUsers.map((user) => (
+                {loading ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-festival-orange" />
+                    <p className="text-sm text-black/70">Loading users...</p>
+                  </div>
+                ) : availableUsers.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Users className="w-8 h-8 mx-auto mb-2 text-black/30" />
+                    <p className="text-sm text-black/70">
+                      {searchQuery ? 'No users match your search' : 'No users available'}
+                    </p>
+                  </div>
+                ) : (
+                  availableUsers.map((user) => (
                   <div
                     key={user.id}
                     className={`p-3 border-2 border-black cursor-pointer transition-all duration-200 ${
