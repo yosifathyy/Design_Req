@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { getAdminUsers, getAdminProjects, createChat, sendMessage } from "@/lib/api";
+import {
+  getAdminUsers,
+  getAdminProjects,
+  createChat,
+  sendMessage,
+} from "@/lib/api";
 import {
   ArrowLeft,
   MessageCircle,
@@ -116,7 +121,6 @@ const CreateChat: React.FC = () => {
         document.body.removeChild(successEl);
         navigate(chat ? `/admin/chat/${chat.id}` : "/admin/chat");
       }, 2000);
-
     } catch (error: any) {
       console.error("Failed to create chat:", error);
       alert(`Failed to create chat: ${error.message}`);
@@ -125,9 +129,7 @@ const CreateChat: React.FC = () => {
     }
   };
 
-  const selectedProjectData = projects.find(
-    (p) => p.id === selectedProject,
-  );
+  const selectedProjectData = projects.find((p) => p.id === selectedProject);
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -169,7 +171,9 @@ const CreateChat: React.FC = () => {
                   onChange={(e) => {
                     setSelectedProject(e.target.value);
                     // Auto-generate chat title based on project
-                    const project = projects.find(p => p.id === e.target.value);
+                    const project = projects.find(
+                      (p) => p.id === e.target.value,
+                    );
                     if (project && !chatTitle) {
                       setChatTitle(`Chat: ${project.title}`);
                     }
@@ -179,7 +183,8 @@ const CreateChat: React.FC = () => {
                   <option value="">Select a project</option>
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
-                      {project.title} - {project.client?.name || 'Unknown Client'}
+                      {project.title} -{" "}
+                      {project.client?.name || "Unknown Client"}
                     </option>
                   ))}
                 </select>
@@ -203,9 +208,15 @@ const CreateChat: React.FC = () => {
                     {selectedProjectData.title}
                   </h4>
                   <div className="text-sm text-black/70">
-                    <p>Client: {selectedProjectData.client?.name || 'Unknown Client'}</p>
+                    <p>
+                      Client:{" "}
+                      {selectedProjectData.client?.name || "Unknown Client"}
+                    </p>
                     <p>Status: {selectedProjectData.status}</p>
-                    <p>Designer: {selectedProjectData.designer?.name || 'Unassigned'}</p>
+                    <p>
+                      Designer:{" "}
+                      {selectedProjectData.designer?.name || "Unassigned"}
+                    </p>
                   </div>
                 </div>
               )}
@@ -262,44 +273,47 @@ const CreateChat: React.FC = () => {
                   <div className="text-center py-8">
                     <Users className="w-8 h-8 mx-auto mb-2 text-black/30" />
                     <p className="text-sm text-black/70">
-                      {searchQuery ? 'No users match your search' : 'No users available'}
+                      {searchQuery
+                        ? "No users match your search"
+                        : "No users available"}
                     </p>
                   </div>
                 ) : (
                   availableUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className={`p-3 border-2 border-black cursor-pointer transition-all duration-200 ${
-                      selectedUsers.includes(user.id)
-                        ? "bg-festival-orange"
-                        : "bg-festival-cream hover:bg-festival-yellow/50"
-                    }`}
-                    onClick={() => handleUserToggle(user.id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-black">
-                          {user.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-black">{user.name}</p>
-                        <p className="text-sm text-black/70">{user.email}</p>
-                        <p className="text-xs text-black/50 uppercase">
-                          {user.role}
-                        </p>
-                      </div>
-                      {selectedUsers.includes(user.id) && (
-                        <div className="w-6 h-6 bg-green-500 border-2 border-black rounded-full flex items-center justify-center">
-                          <span className="text-xs text-white">✓</span>
+                    <div
+                      key={user.id}
+                      className={`p-3 border-2 border-black cursor-pointer transition-all duration-200 ${
+                        selectedUsers.includes(user.id)
+                          ? "bg-festival-orange"
+                          : "bg-festival-cream hover:bg-festival-yellow/50"
+                      }`}
+                      onClick={() => handleUserToggle(user.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
+                          <span className="text-sm font-bold text-black">
+                            {user.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </span>
                         </div>
-                      )}
+                        <div className="flex-1">
+                          <p className="font-bold text-black">{user.name}</p>
+                          <p className="text-sm text-black/70">{user.email}</p>
+                          <p className="text-xs text-black/50 uppercase">
+                            {user.role}
+                          </p>
+                        </div>
+                        {selectedUsers.includes(user.id) && (
+                          <div className="w-6 h-6 bg-green-500 border-2 border-black rounded-full flex items-center justify-center">
+                            <span className="text-xs text-white">✓</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
 
               {selectedUsers.length > 0 && (
