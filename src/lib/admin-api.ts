@@ -126,67 +126,81 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
 
 // Real-time subscription hooks
 export const subscribeToAdminUpdates = (callback: (data: any) => void) => {
+  // If Supabase is not configured, return a no-op cleanup function
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - real-time updates disabled");
+    return () => {};
+  }
+
   const subscriptions: any[] = [];
 
-  // Subscribe to users table changes
-  const usersSubscription = supabase
-    .channel("admin-users")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "users" },
-      (payload) => {
-        callback({ type: "users", payload });
-      },
-    )
-    .subscribe();
+  try {
+    // Subscribe to users table changes
+    const usersSubscription = supabase
+      .channel("admin-users")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "users" },
+        (payload) => {
+          callback({ type: "users", payload });
+        },
+      )
+      .subscribe();
 
-  // Subscribe to design_requests table changes
-  const projectsSubscription = supabase
-    .channel("admin-projects")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "design_requests" },
-      (payload) => {
-        callback({ type: "projects", payload });
-      },
-    )
-    .subscribe();
+    // Subscribe to design_requests table changes
+    const projectsSubscription = supabase
+      .channel("admin-projects")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "design_requests" },
+        (payload) => {
+          callback({ type: "projects", payload });
+        },
+      )
+      .subscribe();
 
-  // Subscribe to messages table changes
-  const messagesSubscription = supabase
-    .channel("admin-messages")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "messages" },
-      (payload) => {
-        callback({ type: "messages", payload });
-      },
-    )
-    .subscribe();
+    // Subscribe to messages table changes
+    const messagesSubscription = supabase
+      .channel("admin-messages")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        (payload) => {
+          callback({ type: "messages", payload });
+        },
+      )
+      .subscribe();
 
-  // Subscribe to system_alerts table changes
-  const alertsSubscription = supabase
-    .channel("admin-alerts")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "system_alerts" },
-      (payload) => {
-        callback({ type: "alerts", payload });
-      },
-    )
-    .subscribe();
+    // Subscribe to system_alerts table changes
+    const alertsSubscription = supabase
+      .channel("admin-alerts")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "system_alerts" },
+        (payload) => {
+          callback({ type: "alerts", payload });
+        },
+      )
+      .subscribe();
 
-  subscriptions.push(
-    usersSubscription,
-    projectsSubscription,
-    messagesSubscription,
-    alertsSubscription,
-  );
+    subscriptions.push(
+      usersSubscription,
+      projectsSubscription,
+      messagesSubscription,
+      alertsSubscription,
+    );
+  } catch (error) {
+    console.warn("Failed to set up real-time subscriptions:", error);
+  }
 
   // Return cleanup function
   return () => {
     subscriptions.forEach((sub) => {
-      supabase.removeChannel(sub);
+      try {
+        supabase.removeChannel(sub);
+      } catch (error) {
+        console.warn("Failed to remove subscription:", error);
+      }
     });
   };
 };
