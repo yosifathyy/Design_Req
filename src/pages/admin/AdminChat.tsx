@@ -69,7 +69,7 @@ const AdminChat: React.FC = () => {
     };
 
     loadChats();
-  }, [chatId]);
+  }, [chatId, lastUpdate]); // Re-load when real-time updates occur
 
   // Load messages for selected chat
   useEffect(() => {
