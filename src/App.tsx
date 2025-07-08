@@ -46,6 +46,7 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminContent from "./pages/admin/AdminContent";
 import CreateInvoice from "./pages/admin/CreateInvoice";
 import InvoiceReports from "./pages/admin/InvoiceReports";
+import CreateChat from "./pages/admin/CreateChat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -90,6 +91,7 @@ const AppContent = () => {
           <Route path="projects/kanban" element={<ProjectKanban />} />
           <Route path="projects/assignments" element={<ProjectAssignments />} />
           <Route path="chat" element={<AdminChat />} />
+          <Route path="chat/create" element={<CreateChat />} />
           <Route path="invoices" element={<AdminInvoices />} />
           <Route path="invoices/create" element={<CreateInvoice />} />
           <Route path="invoices/reports" element={<InvoiceReports />} />
