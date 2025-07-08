@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { mockAdminInvoices } from "@/lib/admin-data";
+import { getAdminInvoices } from "@/lib/api";
 import {
   CreditCard,
   Search,
@@ -14,6 +14,7 @@ import {
   DollarSign,
   Calendar,
   Eye,
+  RefreshCw,
 } from "lucide-react";
 
 const AdminInvoices: React.FC = () => {
