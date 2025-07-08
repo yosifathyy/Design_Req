@@ -98,6 +98,16 @@ const CreateUser = () => {
         role: formData.role as "user" | "designer" | "admin" | "super-admin",
         status: formData.status as "active" | "inactive" | "suspended",
         avatar_url: avatarUrl || null,
+        bio: formData.bio.trim() || null,
+        skills: formData.skills
+          ? formData.skills
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s)
+          : null,
+        hourly_rate: formData.hourlyRate
+          ? parseFloat(formData.hourlyRate)
+          : null,
       };
 
       const newUser = await createAdminUser(userData);

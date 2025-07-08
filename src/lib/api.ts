@@ -329,6 +329,9 @@ export const createAdminUser = async (userData: {
   role: "user" | "designer" | "admin" | "super-admin";
   status?: "active" | "inactive" | "suspended";
   avatar_url?: string;
+  bio?: string;
+  skills?: string[];
+  hourly_rate?: number;
 }) => {
   const { data, error } = await supabase
     .from("users")
