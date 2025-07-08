@@ -196,6 +196,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
       }
 
+      // Special handling for demo credentials - if auth fails but user exists in users table
+      if (
+        authError &&
+        (email === "admin@demo.com" || email === "designer@demo.com") &&
+        password === "demo123"
+      ) {
+        console.warn(
+          "Demo user auth failed, checking if user exists in database...",
+        );
+
+        try {
+          // Check if user exists in users table
+          const { data: userProfile, error: profileError } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", email)
+            .single();
+
+          if (userProfile && !profileError) {
+            console.warn(
+              "Demo user found in database but no auth account. Please run create_demo_auth_users.sql",
+            );
+            setLoading(false);
+            return {
+              data: null,
+              error: new Error(
+                "Demo user exists but needs authentication setup. Please contact admin to run create_demo_auth_users.sql",
+              ),
+            };
+          }
+        } catch (err) {
+          console.error("Error checking user profile:", err);
+        }
+      }
+
       if (authError) {
         setLoading(false);
         return { data: null, error: authError };
