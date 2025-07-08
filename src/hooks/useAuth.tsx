@@ -98,6 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      if (!data) {
+        console.warn(`No user profile found for ID: ${userId}`);
+        setProfile(null);
+        return;
+      }
+
       setProfile(data);
     } catch (error: any) {
       console.error("Error fetching user profile:", error?.message || error);
