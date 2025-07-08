@@ -7,6 +7,7 @@ import {
   getDesignRequests,
   getInvoices,
   createUserProfileIfMissing,
+  findUserProfileByEmail,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
@@ -53,7 +54,19 @@ const DesignDashboard: React.FC = () => {
         // Fetch user profile
         let profile = await getUserProfile(user.id);
 
-        // If no profile found, try to create one
+        // If no profile found by ID, try finding by email (handles ID mismatches)
+        if (!profile && user.email) {
+          console.log("No user profile found by ID, checking by email...");
+          profile = await findUserProfileByEmail(user.email);
+
+          if (profile) {
+            console.log(
+              `Found existing profile by email with different ID: ${profile.id}`,
+            );
+          }
+        }
+
+        // If still no profile found, try to create one
         if (!profile && user.email) {
           console.log("No user profile found, attempting to create one...");
           setIsCreatingProfile(true);
