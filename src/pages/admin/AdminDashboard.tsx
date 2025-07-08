@@ -404,7 +404,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="p-6 space-y-4">
-            {recentProjects.map((project) => (
+            {recentProjects.map((project: any) => (
               <div
                 key={project.id}
                 className="flex items-center justify-between p-3 bg-festival-cream border-2 border-black"
@@ -420,12 +420,12 @@ const AdminDashboard: React.FC = () => {
                       {project.status.replace("-", " ").toUpperCase()}
                     </Badge>
                     <span className="text-xs text-black/60">
-                      {project.clientName}
+                      {project.client?.name || "Unknown Client"}
                     </span>
                   </div>
                 </div>
                 <div
-                  className={`w-3 h-3 rounded-full bg-gradient-to-r ${getPriorityColor(project.priority)}`}
+                  className={`w-3 h-3 rounded-full bg-gradient-to-r ${getPriorityColor(project.priority || "medium")}`}
                 />
               </div>
             ))}
