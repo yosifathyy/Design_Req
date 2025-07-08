@@ -309,6 +309,14 @@ const DesignDashboard: React.FC = () => {
           )}
         </div>
 
+        {/* Admin Chat List */}
+        {userProfile?.role === "admin" ||
+        userProfile?.role === "super-admin" ? (
+          <div className="mb-8">
+            <AdminChatList />
+          </div>
+        ) : null}
+
         {/* Quick Actions */}
         <div className="flex flex-col items-center gap-6">
           <Link to="/new-request">
