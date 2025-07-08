@@ -329,6 +329,11 @@ const CreateUser = () => {
                           ))}
                         </SelectContent>
                       </Select>
+                      {errors.role && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.role}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label
