@@ -32,6 +32,7 @@ const Chat = lazy(() => import("./pages/Chat"));
 const Payments = lazy(() => import("./pages/Payments"));
 const Downloads = lazy(() => import("./pages/Downloads"));
 const Requests = lazy(() => import("./pages/Requests"));
+const RequestDetail = lazy(() => import("./pages/RequestDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Lazy load admin components
@@ -108,6 +109,7 @@ const AppContent = () => {
           <Route path="/payments" element={<Payments />} />
           <Route path="/downloads" element={<Downloads />} />
           <Route path="/requests" element={<Requests />} />
+          <Route path="/requests/:id" element={<RequestDetail />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
