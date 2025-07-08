@@ -31,6 +31,8 @@ import Downloads from "./pages/Downloads";
 import Requests from "./pages/Requests";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProjectKanban from "./pages/admin/ProjectKanban";
+import UsersManagement from "./pages/admin/UsersManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +70,8 @@ const AppContent = () => {
         <Route path="/requests" element={<Requests />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
+          <Route path="projects/kanban" element={<ProjectKanban />} />
+          <Route path="users" element={<UsersManagement />} />
         </Route>
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
