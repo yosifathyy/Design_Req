@@ -14,6 +14,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { XPProgress } from "@/components/dashboard/XPProgress";
 import { mockUser, mockStats } from "@/lib/dashboard-data";
 import ProfileSetupNotice from "@/components/ProfileSetupNotice";
+import IDMismatchNotice from "@/components/IDMismatchNotice";
 import {
   FileText,
   MessageCircle,
@@ -38,6 +39,10 @@ const DesignDashboard: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [isCreatingProfile, setIsCreatingProfile] = React.useState(false);
   const [profileSetupError, setProfileSetupError] = React.useState(false);
+  const [idMismatch, setIdMismatch] = React.useState<{
+    authId: string;
+    dbId: string;
+  } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -63,6 +68,10 @@ const DesignDashboard: React.FC = () => {
             console.log(
               `Found existing profile by email with different ID: ${profile.id}`,
             );
+            // Track ID mismatch for user notification
+            if (profile.id !== user.id) {
+              setIdMismatch({ authId: user.id, dbId: profile.id });
+            }
           }
         }
 
