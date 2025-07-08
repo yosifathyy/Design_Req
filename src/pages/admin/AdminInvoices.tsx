@@ -155,10 +155,23 @@ const AdminInvoices: React.FC = () => {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-5 h-5" />
           <Input
-            placeholder="Search invoices..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search invoices by ID or project..."
             className="pl-12 h-12 border-4 border-black bg-white"
           />
         </div>
+        <Button
+          onClick={() => window.location.reload()}
+          variant="outline"
+          className="border-4 border-black"
+          disabled={loading}
+        >
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
+          Refresh
+        </Button>
       </div>
 
       <div className="space-y-4">
