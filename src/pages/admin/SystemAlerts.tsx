@@ -229,7 +229,7 @@ const SystemAlerts: React.FC = () => {
                     >
                       {alert.type.toUpperCase()}
                     </Badge>
-                    {!alert.isRead && (
+                    {!alert.is_read && (
                       <Badge className="bg-festival-orange text-black border-2 border-black">
                         NEW
                       </Badge>
@@ -241,7 +241,7 @@ const SystemAlerts: React.FC = () => {
                       Source: {alert.source}
                     </span>
                     <span className="text-black/60">
-                      {new Date(alert.timestamp).toLocaleString()}
+                      {new Date(alert.created_at).toLocaleString()}
                     </span>
                   </div>
                 </div>
