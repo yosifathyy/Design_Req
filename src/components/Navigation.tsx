@@ -1,6 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import NeubrutalistDock from "@/components/ui/dock";
-import { lazy, useEffect } from "react";
 import {
   motion,
   MotionValue,
@@ -29,7 +28,7 @@ import {
   Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef, lazy } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useClickSound } from "@/hooks/use-click-sound";
 
 const DOCK_HEIGHT = 128;
@@ -40,15 +39,6 @@ const MOBILE_DOCK_HEIGHT = 80;
 const MOBILE_MAGNIFICATION = 60;
 const MOBILE_DISTANCE = 100;
 const MOBILE_PANEL_HEIGHT = 48;
-
-// Preload all main pages
-const preloadPages = [
-  lazy(() => import("@/pages/Index")),
-  lazy(() => import("@/pages/Services")),
-  lazy(() => import("@/pages/Portfolio")),
-  lazy(() => import("@/pages/About")),
-  lazy(() => import("@/pages/Contact"))
-];
 
 type DockProps = {
   children: React.ReactNode;
@@ -264,39 +254,13 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const scrollTimeoutRef = useRef<number | null>(null);
-  
-  // Preload all main navigation pages when dock is mounted
-  useEffect(() => {
-    const preloadAllPages = async () => {
-      try {
-        // This will trigger the dynamic imports in the background
-        const preloadPromises = preloadPages.map(component => {
-          // Access the displayName or name to trigger the import
-          return component.displayName || component.name;
-        });
-        
-        console.log("Navigation pages preloading initiated");
-      } catch (error) {
-        console.error("Error preloading navigation pages:", error);
-      }
-    };
-    
-    preloadAllPages();
-  }, []);
 
   const scrollToSection = (sectionId: string) => {
-    // Clear any existing timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-    
     // If we're not on the home page, navigate there first
     if (location.pathname !== "/") {
       navigate("/");
       // Wait for navigation to complete, then scroll
-      // Use a longer timeout to ensure the page has fully loaded
-      scrollTimeoutRef.current = window.setTimeout(() => {
+      setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({
@@ -304,8 +268,7 @@ const Navigation = () => {
             block: "start",
           });
         }
-      }, 500);
-      
+      }, 100);
     } else {
       // We're already on home page, just scroll
       const element = document.getElementById(sectionId);
@@ -317,15 +280,6 @@ const Navigation = () => {
       }
     }
   };
-
-  // Clean up timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const scrollToHome = () => {
     if (location.pathname !== "/") {
