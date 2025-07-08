@@ -79,13 +79,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    // Handle email not confirmed error
+    if (authError?.message === 'Email not confirmed') {
+      setLoading(false);
+      return { 
+        data: null, 
+        error: new Error('Please check your email and click the confirmation link before signing in.') 
+      };
+    }
+
+    if (authError) {
+      setLoading(false);
+      return { data: null, error: authError };
+    }
+
     // Update last login timestamp
-    if (data.session?.user) {
+    if (data?.session?.user) {
       await supabase
         .from('users')
         .update({ last_login: new Date().toISOString() })
@@ -93,21 +107,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setLoading(false);
-    return { data: data.session, error };
+    return { data: data?.session || null, error: null };
   };
 
   const signUp = async (email: string, password: string, name: string) => {
     setLoading(true);
     
     // Create auth user
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error || !data.user) {
+    if (authError || !data.user) {
       setLoading(false);
-      return { data: null, error: error || new Error('User creation failed') };
+      return { data: null, error: authError || new Error('User creation failed') };
     }
 
     // Create profile in users table
@@ -125,11 +139,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (profileError) {
       console.error('Error creating user profile:', profileError);
-      // Consider handling this case (e.g., delete auth user)
+      setLoading(false);
+      return { data: null, error: new Error('Failed to create user profile. Please try again.') };
     }
 
     setLoading(false);
-    return { data: data.session, error: profileError };
+    return { 
+      data: data.session, 
+      error: null 
+    };
   };
 
   const signOut = async () => {
