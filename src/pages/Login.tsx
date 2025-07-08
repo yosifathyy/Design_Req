@@ -121,7 +121,7 @@ const Login: React.FC = () => {
     }
 
     setErrorMessage(null);
-    
+
     try {
       if (isLogin) {
         // Sign in
@@ -129,10 +129,14 @@ const Login: React.FC = () => {
         if (error) throw error;
       } else {
         // Sign up
-        const { error } = await signUp(formData.email, formData.password, formData.name);
+        const { error } = await signUp(
+          formData.email,
+          formData.password,
+          formData.name,
+        );
         if (error) throw error;
       }
-      
+
       // Success animation
       const successTl = gsap.timeline();
       successTl.to(formRef.current, {
@@ -145,11 +149,13 @@ const Login: React.FC = () => {
         duration: 0.3,
         ease: "back.out(1.4)",
       });
-      
+
       navigate("/design-dashboard");
     } catch (error: any) {
       console.error("Authentication error:", error);
-      setErrorMessage(error.message || "Authentication failed. Please try again.");
+      setErrorMessage(
+        error.message || "Authentication failed. Please try again.",
+      );
     }
   };
 
@@ -231,7 +237,11 @@ const Login: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-6">
+            <form
+              ref={formRef}
+              onSubmit={handleFormSubmit}
+              className="space-y-6"
+            >
               {!isLogin && (
                 <div className="space-y-2">
                   <Label
@@ -355,6 +365,31 @@ const Login: React.FC = () => {
                   <p className="text-red-600 text-sm">{errorMessage}</p>
                 </div>
               )}
+
+              {/* Demo credentials notice for mock mode */}
+              {isLogin &&
+                (!import.meta.env.VITE_SUPABASE_URL ||
+                  import.meta.env.VITE_SUPABASE_URL.includes(
+                    "placeholder",
+                  )) && (
+                  <div className="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-bold text-blue-800 mb-1">
+                          🚧 Demo Mode
+                        </p>
+                        <p className="text-sm text-blue-700">
+                          Use these credentials to test:
+                        </p>
+                        <div className="mt-2 text-sm text-blue-700 font-mono bg-blue-100 p-2 rounded">
+                          <div>Email: admin@demo.com</div>
+                          <div>Password: demo123</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               {isLogin && (
                 <div className="flex items-center justify-between">
