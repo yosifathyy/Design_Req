@@ -841,6 +841,60 @@ export const getAdminUsers = async () => {
 };
 
 export const getAdminProjects = async () => {
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock projects");
+    return [
+      {
+        id: "project-1",
+        title: "Logo Design for Tech Startup",
+        description: "Modern logo design for a technology startup",
+        category: "logo",
+        priority: "high",
+        status: "in-progress",
+        price: 299,
+        user_id: "user-1",
+        designer_id: "admin-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        client: {
+          id: "user-1",
+          name: "Test User",
+          email: "user@example.com",
+          avatar_url: null,
+        },
+        designer: {
+          id: "admin-1",
+          name: "Development Admin",
+          email: "admin@example.com",
+          avatar_url: null,
+        },
+        files: [],
+      },
+      {
+        id: "project-2",
+        title: "Website Redesign",
+        description: "Complete website redesign for e-commerce site",
+        category: "web",
+        priority: "medium",
+        status: "submitted",
+        price: 599,
+        user_id: "user-1",
+        designer_id: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        client: {
+          id: "user-1",
+          name: "Test User",
+          email: "user@example.com",
+          avatar_url: null,
+        },
+        designer: null,
+        files: [],
+      },
+    ];
+  }
+
   try {
     const { data, error } = await supabase
       .from("design_requests")
