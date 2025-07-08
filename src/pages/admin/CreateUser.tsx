@@ -242,7 +242,7 @@ const CreateUser = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Users
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-display font-bold text-black">
               Create New User
             </h1>
@@ -250,6 +250,14 @@ const CreateUser = () => {
               Add a new user to the system with appropriate permissions
             </p>
           </div>
+          {(!import.meta.env.VITE_SUPABASE_URL ||
+            import.meta.env.VITE_SUPABASE_URL.includes("placeholder")) && (
+            <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-3">
+              <p className="text-sm font-medium text-yellow-800">
+                🚧 Demo Mode - No database connected
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
