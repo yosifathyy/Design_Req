@@ -120,13 +120,28 @@ const AdminChat: React.FC = () => {
   return (
     <div ref={containerRef} className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-display font-bold text-black mb-2">
-            CHAT HUB
-          </h1>
-          <p className="text-xl text-black/70 font-medium">
-            Unified communication center for all projects
-          </p>
+        <div className="flex items-center gap-4">
+          {chatId && (
+            <Button
+              onClick={() => navigate("/admin/chat")}
+              variant="outline"
+              className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+            >
+              ← All Chats
+            </Button>
+          )}
+          <div>
+            <h1 className="text-4xl font-display font-bold text-black mb-2">
+              {chatId && selectedChat
+                ? `CHAT: ${selectedChat.request?.title || "Project Chat"}`
+                : "CHAT HUB"}
+            </h1>
+            <p className="text-xl text-black/70 font-medium">
+              {chatId && selectedChat
+                ? `Client: ${selectedChat.request?.user?.name || "Unknown"}`
+                : "Unified communication center for all projects"}
+            </p>
+          </div>
         </div>
         <Button
           onClick={() => navigate("/admin/chat/create")}
