@@ -48,6 +48,51 @@ export const getUserProfile = async (userId: string) => {
   }
 };
 
+export const createUserProfileIfMissing = async (
+  userId: string,
+  email: string,
+  name?: string,
+) => {
+  try {
+    // Check if profile already exists
+    const existingProfile = await getUserProfile(userId);
+    if (existingProfile) {
+      return existingProfile;
+    }
+
+    // Create new profile
+    const newProfile = {
+      id: userId,
+      email: email,
+      name: name || email.split("@")[0] || "User",
+      role: "user",
+      status: "active",
+      xp: 0,
+      level: 1,
+      bio: null,
+      skills: null,
+      hourly_rate: null,
+    };
+
+    const { data, error } = await supabase
+      .from("users")
+      .insert([newProfile])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Failed to create user profile:", error.message);
+      return null;
+    }
+
+    console.log(`Created user profile for ${email}`);
+    return data;
+  } catch (error: any) {
+    console.error("Error creating user profile:", error.message);
+    return null;
+  }
+};
+
 export const updateUserXP = async (userId: string, xpAmount: number) => {
   // First get current XP and level
   const { data: user, error: fetchError } = await supabase
