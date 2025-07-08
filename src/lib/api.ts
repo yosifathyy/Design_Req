@@ -2,6 +2,26 @@ import { supabase, isSupabaseConfigured } from "./supabase";
 
 // User related functions
 export const getUserProfile = async (userId: string) => {
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock user profile");
+    return {
+      id: userId,
+      email: "developer@example.com",
+      name: "Development User",
+      role: "user",
+      status: "active",
+      xp: 100,
+      level: 1,
+      created_at: new Date().toISOString(),
+      avatar_url: null,
+      bio: null,
+      skills: null,
+      hourly_rate: null,
+      last_login: null,
+    };
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
