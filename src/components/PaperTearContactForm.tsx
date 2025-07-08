@@ -1,64 +1,38 @@
-import React, { useState, useRef, FormEvent } from "react";
+import React, { useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-interface FormState {
-  name: string;
-  email: string;
-  message: string;
-}
+// Define the form schema with Zod
+const contactFormSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters" }),
+});
 
-interface ScrapState {
-  name: boolean;
-  email: boolean;
-  message: boolean;
-}
-
-interface ValidationState {
-  name: boolean | null;
-  email: boolean | null;
-  message: boolean | null;
-}
+// Type for our form data
+type ContactFormData = z.infer<typeof contactFormSchema>;
 
 const PaperTearContactForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormState>({
-    name: "",
-    email: "",
-    message: "",
-  });
-
-  const [tornScraps, setTornScraps] = useState<ScrapState>({
+  // State for torn paper effect
+  const [tornScraps, setTornScraps] = React.useState({
     name: false,
     email: false,
     message: false,
   });
 
-  const [validation, setValidation] = useState<ValidationState>({
-    name: null,
-    email: null,
-    message: null,
-  });
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateField = (field: keyof FormState, value: string): boolean => {
-    switch (field) {
-      case "name":
-        return value.trim().length >= 2;
-      case "email":
-        return validateEmail(value.trim());
-      case "message":
-        return value.trim().length >= 10;
-      default:
-        return false;
-    }
-  };
+  // Initialize react-hook-form with zod validation
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors, isSubmitting } 
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema)
+  });
 
   const handleScrapClick = (field: keyof ScrapState) => {
     setTornScraps((prev) => ({
@@ -67,46 +41,9 @@ const PaperTearContactForm: React.FC = () => {
     }));
   };
 
-  const handleInputChange = (field: keyof FormState, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleInputBlur = (field: keyof FormState) => {
-    const value = formData[field];
-    const isValid = validateField(field, value);
-    setValidation((prev) => ({
-      ...prev,
-      [field]: isValid,
-    }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    // Validate all fields
-    const nameValid = validateField("name", formData.name);
-    const emailValid = validateField("email", formData.email);
-    const messageValid = validateField("message", formData.message);
-
-    setValidation({
-      name: nameValid,
-      email: emailValid,
-      message: messageValid,
-    });
-
-    if (!nameValid || !emailValid || !messageValid) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
+  const onSubmit = async (data: ContactFormData) => {
     // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setIsSubmitting(false);
     setIsSubmitted(true);
   };
 
@@ -167,7 +104,7 @@ const PaperTearContactForm: React.FC = () => {
       <div className="form-wrapper">
         <h1 className="form-title">CONTACT US</h1>
 
-        <form ref={formRef} onSubmit={handleSubmit} className="contact-form">
+        <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="contact-form">
           {/* Name Scrap */}
           <div className="field-container">
             {!tornScraps.name ? (
@@ -188,17 +125,14 @@ const PaperTearContactForm: React.FC = () => {
                 <input
                   id="name"
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  onBlur={() => handleInputBlur("name")}
-                  className={`contact-input ${validation.name === true ? "valid" : validation.name === false ? "invalid" : ""}`}
+                  {...register("name")}
+                  className={`contact-input ${errors.name ? "invalid" : tornScraps.name ? "valid" : ""}`}
                   placeholder="Your name..."
-                  required
                   aria-describedby="name-error"
                 />
-                {validation.name === false && (
+                {errors.name && (
                   <span id="name-error" className="error-text">
-                    Name must be at least 2 characters
+                    {errors.name.message}
                   </span>
                 )}
               </div>
@@ -227,17 +161,14 @@ const PaperTearContactForm: React.FC = () => {
                 <input
                   id="email"
                   type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  onBlur={() => handleInputBlur("email")}
-                  className={`contact-input ${validation.email === true ? "valid" : validation.email === false ? "invalid" : ""}`}
+                  {...register("email")}
+                  className={`contact-input ${errors.email ? "invalid" : tornScraps.email ? "valid" : ""}`}
                   placeholder="your@email.com"
-                  required
                   aria-describedby="email-error"
                 />
-                {validation.email === false && (
+                {errors.email && (
                   <span id="email-error" className="error-text">
-                    Please enter a valid email address
+                    {errors.email.message}
                   </span>
                 )}
               </div>
@@ -265,18 +196,15 @@ const PaperTearContactForm: React.FC = () => {
                 </label>
                 <textarea
                   id="message"
-                  value={formData.message}
-                  onChange={(e) => handleInputChange("message", e.target.value)}
-                  onBlur={() => handleInputBlur("message")}
-                  className={`contact-input message-input ${validation.message === true ? "valid" : validation.message === false ? "invalid" : ""}`}
+                  {...register("message")}
+                  className={`contact-input message-input ${errors.message ? "invalid" : tornScraps.message ? "valid" : ""}`}
                   placeholder="Your message..."
-                  required
                   rows={6}
                   aria-describedby="message-error"
                 />
-                {validation.message === false && (
+                {errors.message && (
                   <span id="message-error" className="error-text">
-                    Message must be at least 10 characters
+                    {errors.message.message}
                   </span>
                 )}
               </div>
