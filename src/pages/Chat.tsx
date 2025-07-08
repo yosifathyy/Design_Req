@@ -9,6 +9,7 @@ import {
   sendMessage,
   getDesignRequestById,
 } from "@/lib/api";
+import ChatPolicySetupHelper from "@/components/ChatPolicySetupHelper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -84,6 +85,17 @@ const Chat: React.FC = () => {
           error?.message || "Failed to initialize chat functionality.";
 
         setError(errorMessage);
+
+        // Check if this is a policy setup issue
+        const isPolicyError =
+          errorMessage.includes("database policies need to be set up") ||
+          errorMessage.includes("row-level security policy");
+
+        if (isPolicyError) {
+          // Don't show the temporary notification for policy errors,
+          // as we'll show the setup helper instead
+          return;
+        }
 
         // Create error notification
         const errorEl = document.createElement("div");
