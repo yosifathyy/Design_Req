@@ -354,10 +354,10 @@ const AdminDashboard: React.FC = () => {
             </p>
             <p className="text-3xl font-display font-bold text-black">
               $
-              {mockAnalyticsData.financialMetrics.monthlyRecurringRevenue.toLocaleString()}
+              {data.analytics.financialMetrics.monthlyRecurringRevenue.toLocaleString()}
             </p>
             <p className="text-sm text-black/70">
-              ${mockAnalyticsData.financialMetrics.outstandingBalance} pending
+              ${data.analytics.financialMetrics.outstandingBalance} pending
             </p>
           </div>
         </Card>
