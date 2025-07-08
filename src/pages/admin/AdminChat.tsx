@@ -25,11 +25,17 @@ const AdminChat: React.FC = () => {
 
   const [chats, setChats] = useState<any[]>([]);
   const [selectedChat, setSelectedChat] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMessages, setLoadingMessages] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Real-time chat hooks
+  const {
+    messages,
+    loading: loadingMessages,
+    refreshMessages,
+  } = useRealTimeChat(selectedChat?.id || null);
+  const { lastUpdate, triggerRefresh } = useRealTimeChatList();
 
   // Load chats
   useEffect(() => {
