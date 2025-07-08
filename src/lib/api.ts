@@ -54,13 +54,43 @@ export const createUserProfileIfMissing = async (
   name?: string,
 ) => {
   try {
-    // Check if profile already exists
+    // Check if profile already exists by ID
     const existingProfile = await getUserProfile(userId);
     if (existingProfile) {
       return existingProfile;
     }
 
-    // Create new profile
+    // Check if a user already exists with this email (different ID)
+    const { data: emailProfile, error: emailError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (emailProfile && !emailError) {
+      console.log(
+        `User with email ${email} already exists with different ID. Updating ID to match auth user.`,
+      );
+
+      // Update the existing user's ID to match the auth user ID
+      const { data: updatedProfile, error: updateError } = await supabase
+        .from("users")
+        .update({ id: userId })
+        .eq("email", email)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error("Failed to update user ID:", updateError.message);
+        // If update fails, try to return the existing profile as-is
+        return emailProfile;
+      }
+
+      console.log(`Updated user profile ID for ${email} to match auth user`);
+      return updatedProfile;
+    }
+
+    // Create new profile if none exists
     const newProfile = {
       id: userId,
       email: email,
@@ -81,6 +111,26 @@ export const createUserProfileIfMissing = async (
       .single();
 
     if (error) {
+      // Handle duplicate email constraint error
+      if (
+        error.message?.includes(
+          "duplicate key value violates unique constraint",
+        )
+      ) {
+        console.warn(
+          `Email ${email} already exists. Attempting to fetch existing profile.`,
+        );
+
+        // Try to get the existing profile by email
+        const { data: existingByEmail } = await supabase
+          .from("users")
+          .select("*")
+          .eq("email", email)
+          .single();
+
+        return existingByEmail || null;
+      }
+
       console.error("Failed to create user profile:", error.message);
       return null;
     }
