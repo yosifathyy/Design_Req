@@ -7,7 +7,7 @@ export const getUserProfile = async (userId: string) => {
       .from("users")
       .select("*")
       .eq("id", userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows
 
     if (error) {
       if (error.message?.includes('relation "users" does not exist')) {
@@ -16,6 +16,15 @@ export const getUserProfile = async (userId: string) => {
       }
       throw error;
     }
+
+    // If no user found, return null
+    if (!data) {
+      console.warn(
+        `No user profile found for ID: ${userId}. User may need to complete profile setup.`,
+      );
+      return null;
+    }
+
     return data;
   } catch (error: any) {
     if (
@@ -26,6 +35,12 @@ export const getUserProfile = async (userId: string) => {
       console.warn(
         "Could not fetch user profile (table may not exist):",
         error.message,
+      );
+      return null;
+    }
+    if (error.message?.includes("JSON object requested, multiple")) {
+      console.warn(
+        `Multiple users found with ID: ${userId}. This indicates a data integrity issue.`,
       );
       return null;
     }
