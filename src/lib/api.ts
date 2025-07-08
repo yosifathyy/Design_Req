@@ -607,16 +607,37 @@ export const createChat = async (requestId: string, participants: string[]) => {
 
     return chat;
   } catch (error: any) {
+    console.error("CreateChat final error:", error);
+
+    // If it's already a properly formatted error, re-throw it
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    // Handle network errors
     if (
       error.message?.includes("Failed to fetch") ||
+      error.message?.includes("NetworkError") ||
+      !navigator.onLine
+    ) {
+      throw new Error(
+        "Network error: Could not connect to the database. Please check your internet connection.",
+      );
+    }
+
+    // Handle database errors
+    if (
       error.message?.includes("relation") ||
       error.message?.includes("does not exist")
     ) {
       throw new Error(
-        "Could not create chat. Database tables may not exist yet.",
+        "Database error: Required tables are not set up. Please contact your administrator.",
       );
     }
-    throw error;
+
+    // Generic error handling
+    const errorMsg = error.message || error.details || error.toString();
+    throw new Error(`Unexpected error: ${errorMsg}`);
   }
 };
 
