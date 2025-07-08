@@ -59,19 +59,19 @@ const CreateChat: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
-  const availableUsers = mockAdminUsers.filter(
+  const availableUsers = users.filter(
     (user) =>
       user.role !== "super-admin" &&
-      (user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())),
+      (user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const handleUserToggle = (userId: string) => {
