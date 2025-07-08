@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { mockAdminProjects } from "@/lib/admin-data";
+import { getAdminProjects } from "@/lib/api";
 import {
   Search,
   Filter,
@@ -14,6 +14,8 @@ import {
   Calendar,
   DollarSign,
   User,
+  RefreshCw,
+  Plus,
 } from "lucide-react";
 
 const ProjectsList: React.FC = () => {
