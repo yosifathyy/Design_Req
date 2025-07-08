@@ -65,14 +65,20 @@ const AdminInvoices: React.FC = () => {
     }
   };
 
-  const totalRevenue = mockAdminInvoices.reduce(
-    (sum, inv) => sum + inv.amount,
+  const filteredInvoices = invoices.filter(
+    (invoice) =>
+      invoice.request?.title
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      invoice.id?.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const totalRevenue = invoices.reduce(
+    (sum, inv) => sum + (inv.amount || 0),
     0,
   );
-  const paidInvoices = mockAdminInvoices.filter((inv) => inv.status === "paid");
-  const pendingInvoices = mockAdminInvoices.filter(
-    (inv) => inv.status === "sent",
-  );
+  const paidInvoices = invoices.filter((inv) => inv.status === "paid");
+  const pendingInvoices = invoices.filter((inv) => inv.status === "pending");
 
   return (
     <div ref={containerRef} className="space-y-6">
