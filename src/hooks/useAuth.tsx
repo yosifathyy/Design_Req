@@ -99,8 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setProfile(data);
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
+    } catch (error: any) {
+      console.error("Error fetching user profile:", error?.message || error);
       setProfile(null);
     }
   };
@@ -226,8 +226,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               ),
             };
           }
-        } catch (err) {
-          console.error("Error checking user profile:", err);
+        } catch (err: any) {
+          console.error("Error checking user profile:", err?.message || err);
         }
       }
 
@@ -352,7 +352,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       if (profileError) {
-        console.error("Error creating user profile:", profileError);
+        console.error(
+          "Error creating user profile:",
+          profileError?.message || profileError,
+        );
         setLoading(false);
         return {
           data: null,
@@ -396,8 +399,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       try {
         await supabase.auth.signOut();
-      } catch (error) {
-        console.error("Error signing out:", error);
+      } catch (error: any) {
+        console.error("Error signing out:", error?.message || error);
       }
     }
 
