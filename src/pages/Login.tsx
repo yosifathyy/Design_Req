@@ -386,6 +386,19 @@ const Login: React.FC = () => {
                           <div>Email: admin@demo.com</div>
                           <div>Password: demo123</div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              email: "admin@demo.com",
+                              password: "demo123",
+                            })
+                          }
+                          className="mt-2 text-xs bg-blue-200 hover:bg-blue-300 text-blue-800 px-2 py-1 rounded font-medium"
+                        >
+                          Fill Demo Credentials
+                        </button>
                       </div>
                     </div>
                   </div>
