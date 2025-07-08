@@ -20,26 +20,83 @@ const AdminChat: React.FC = () => {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [chats, setChats] = useState<any[]>([]);
+  const [selectedChat, setSelectedChat] = useState<any>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [newMessage, setNewMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Load chats
   useEffect(() => {
-    if (!containerRef.current) return;
+    const loadChats = async () => {
+      try {
+        setLoading(true);
+        const chatsData = await getAllChatsForAdmin();
+        setChats(chatsData);
+      } catch (error) {
+        console.error("Failed to load chats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadChats();
+  }, []);
+
+  // Load messages for selected chat
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!selectedChat) {
+        setMessages([]);
+        return;
+      }
+
+      try {
+        setLoadingMessages(true);
+        const messagesData = await getMessages(selectedChat.id);
+        setMessages(messagesData);
+      } catch (error) {
+        console.error("Failed to load messages:", error);
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+
+    loadMessages();
+  }, [selectedChat]);
+
+  useEffect(() => {
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
-  const mockChats = mockAdminProjects.map((project, index) => ({
-    id: `chat-${project.id}`,
-    projectId: project.id,
-    projectTitle: project.title,
-    clientName: project.clientName,
-    designerName: project.designerName || "Unassigned",
-    lastMessage: `Latest update on ${project.title}`,
-    lastActivity: new Date(Date.now() - index * 3600000).toISOString(),
-    unreadCount: Math.floor(Math.random() * 5),
-    status: project.status,
-  }));
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedChat) return;
+
+    try {
+      await respondToChat(selectedChat.id, newMessage, "current-admin-id");
+      setNewMessage("");
+      // Reload messages
+      const updatedMessages = await getMessages(selectedChat.id);
+      setMessages(updatedMessages);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  };
+
+  const filteredChats = chats.filter(
+    (chat) =>
+      chat.request?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.request?.user?.name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <div ref={containerRef} className="space-y-6">
