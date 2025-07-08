@@ -253,13 +253,37 @@ const AdminDashboard: React.FC = () => {
   return (
     <div ref={containerRef} className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-display font-bold text-black mb-2">
-          ADMIN DASHBOARD
-        </h1>
-        <p className="text-xl text-black/70 font-medium">
-          Complete system overview and management center
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-display font-bold text-black mb-2">
+            ADMIN DASHBOARD
+          </h1>
+          <p className="text-xl text-black/70 font-medium">
+            Complete system overview and management center
+          </p>
+          <p className="text-sm text-black/50">
+            Last updated: {lastUpdated.toLocaleTimeString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {loading && (
+            <div className="flex items-center gap-2 text-festival-orange">
+              <RefreshCw className="w-4 h-4 animate-spin" />
+              <span className="text-sm font-medium">Updating...</span>
+            </div>
+          )}
+          <Button
+            onClick={refreshData}
+            variant="outline"
+            disabled={loading}
+            className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+          >
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Key Metrics */}
