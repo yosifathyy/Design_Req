@@ -528,6 +528,16 @@ export const getAllChatsForAdmin = async () => {
 };
 
 export const createChat = async (requestId: string, participants: string[]) => {
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock chat");
+    return {
+      id: `chat_${Date.now()}`,
+      request_id: requestId,
+      created_at: new Date().toISOString(),
+    };
+  }
+
   try {
     // First create the chat
     const { data: chat, error: chatError } = await supabase
@@ -537,17 +547,26 @@ export const createChat = async (requestId: string, participants: string[]) => {
       .single();
 
     if (chatError) {
+      console.error("Chat creation error:", chatError);
+
       if (chatError.message?.includes('relation "chats" does not exist')) {
         throw new Error(
-          "Chat functionality is not available. Please run the database setup script.",
+          "Chat functionality is not available. The chats table does not exist in the database.",
         );
       }
       if (chatError.message?.includes("row-level security policy")) {
         throw new Error(
-          "Permission denied: Cannot create chat. The database policies need to be set up. Please run the fix_chat_policies_simple.sql script.",
+          "Permission denied: Cannot create chat. Database security policies need to be configured.",
         );
       }
-      throw chatError;
+      if (chatError.code === "23505") {
+        throw new Error("A chat already exists for this project.");
+      }
+
+      // Extract meaningful error message
+      const errorMsg =
+        chatError.message || chatError.details || "Unknown database error";
+      throw new Error(`Database error: ${errorMsg}`);
     }
 
     // Then add participants
