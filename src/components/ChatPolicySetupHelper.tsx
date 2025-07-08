@@ -35,7 +35,7 @@ CREATE POLICY "Users can create chats for their requests"
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM design_requests
-      WHERE design_requests.id = request_id 
+      WHERE design_requests.id = request_id
       AND (design_requests.user_id = auth.uid() OR design_requests.designer_id = auth.uid())
     )
   );
@@ -59,11 +59,49 @@ SELECT 'Chat INSERT policies added successfully!' as status;`;
 
   const copyToClipboard = async (text: string, type: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopiedScript(type);
-      setTimeout(() => setCopiedScript(null), 2000);
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        setCopiedScript(type);
+        setTimeout(() => setCopiedScript(null), 2000);
+      } else {
+        // Fallback: create a temporary textarea and select the text
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand("copy");
+          setCopiedScript(type);
+          setTimeout(() => setCopiedScript(null), 2000);
+        } catch (fallbackError) {
+          // If all copy methods fail, just select the text so user can copy manually
+          const codeElement = document.querySelector("pre code");
+          if (codeElement) {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(codeElement);
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+          alert(
+            "Copy failed. The SQL script has been selected - please copy it manually with Ctrl+C (or Cmd+C on Mac).",
+          );
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
     } catch (err) {
       console.error("Failed to copy:", err);
+      // Show user-friendly error
+      alert(
+        "Copy not available in this environment. Please manually select and copy the SQL script below.",
+      );
     }
   };
 
