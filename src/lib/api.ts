@@ -539,6 +539,16 @@ export const createChat = async (requestId: string, participants: string[]) => {
   }
 
   try {
+    // Validate that the project exists
+    const { data: project, error: projectError } = await supabase
+      .from("design_requests")
+      .select("id")
+      .eq("id", requestId)
+      .single();
+
+    if (projectError || !project) {
+      throw new Error(`Project with ID ${requestId} does not exist.`);
+    }
     // First create the chat
     const { data: chat, error: chatError } = await supabase
       .from("chats")
