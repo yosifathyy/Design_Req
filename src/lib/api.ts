@@ -493,15 +493,10 @@ export const createChat = async (requestId: string, participants: string[]) => {
 
 export const getMessages = async (chatId: string) => {
   try {
+    // Start with basic messages query
     const { data, error } = await supabase
       .from("messages")
-      .select(
-        `
-        *,
-        sender:sender_id(id, name, email, avatar_url, role),
-        files(*)
-      `,
-      )
+      .select("*")
       .eq("chat_id", chatId)
       .order("created_at", { ascending: true });
 
@@ -513,6 +508,60 @@ export const getMessages = async (chatId: string) => {
       }
       throw error;
     }
+
+    // If we have messages, try to enrich with sender data
+    if (data && data.length > 0) {
+      try {
+        const enrichedMessages = await Promise.all(
+          data.map(async (message) => {
+            try {
+              const { data: sender } = await supabase
+                .from("users")
+                .select("id, name, email, avatar_url, role")
+                .eq("id", message.sender_id)
+                .maybeSingle();
+
+              return {
+                ...message,
+                sender: sender || {
+                  id: message.sender_id,
+                  name: "Unknown User",
+                  email: "",
+                  avatar_url: null,
+                  role: "user",
+                },
+              };
+            } catch {
+              // If sender lookup fails, use fallback
+              return {
+                ...message,
+                sender: {
+                  id: message.sender_id,
+                  name: "Unknown User",
+                  email: "",
+                  avatar_url: null,
+                  role: "user",
+                },
+              };
+            }
+          }),
+        );
+        return enrichedMessages;
+      } catch {
+        // If enrichment fails, return basic messages
+        return data.map((message) => ({
+          ...message,
+          sender: {
+            id: message.sender_id,
+            name: "Unknown User",
+            email: "",
+            avatar_url: null,
+            role: "user",
+          },
+        }));
+      }
+    }
+
     return data || [];
   } catch (error: any) {
     if (
@@ -520,9 +569,9 @@ export const getMessages = async (chatId: string) => {
       error.message?.includes("relation") ||
       error.message?.includes("does not exist")
     ) {
-      throw new Error(
-        "Could not fetch messages. Database tables may not exist yet.",
-      );
+      // Return empty array instead of throwing error - let chat work without messages
+      console.warn("Messages table not accessible, starting with empty chat");
+      return [];
     }
     throw error;
   }
