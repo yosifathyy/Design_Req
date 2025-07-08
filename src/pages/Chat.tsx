@@ -9,7 +9,7 @@ import {
   sendMessage,
   getDesignRequestById,
 } from "@/lib/api";
-import ChatPolicySetupHelper from "@/components/ChatPolicySetupHelper";
+import DatabaseDiagnostic from "@/components/DatabaseDiagnostic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
