@@ -22,6 +22,8 @@ import Dashboard from "./pages/Dashboard";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Disputes from "./pages/Disputes";
+import Login from "./pages/Login";
+import DesignDashboard from "./pages/DesignDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/design-dashboard" element={<DesignDashboard />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/disputes" element={<Disputes />} />
