@@ -75,13 +75,35 @@ const SystemAlerts: React.FC = () => {
     }
   };
 
-  const criticalAlerts = mockSystemAlerts.filter(
-    (alert) => alert.type === "error" && !alert.isRead,
+  const criticalAlerts = alerts.filter(
+    (alert) => alert.type === "error" && !alert.is_read,
   );
-  const warningAlerts = mockSystemAlerts.filter(
-    (alert) => alert.type === "warning" && !alert.isRead,
+  const warningAlerts = alerts.filter(
+    (alert) => alert.type === "warning" && !alert.is_read,
   );
-  const unreadAlerts = mockSystemAlerts.filter((alert) => !alert.isRead);
+  const unreadAlerts = alerts.filter((alert) => !alert.is_read);
+
+  const handleMarkAsRead = async (alertId: string) => {
+    try {
+      await markAlertAsRead(alertId);
+      setAlerts(
+        alerts.map((alert) =>
+          alert.id === alertId ? { ...alert, is_read: true } : alert,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to mark alert as read:", error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await Promise.all(unreadAlerts.map((alert) => markAlertAsRead(alert.id)));
+      setAlerts(alerts.map((alert) => ({ ...alert, is_read: true })));
+    } catch (error) {
+      console.error("Failed to mark all alerts as read:", error);
+    }
+  };
 
   return (
     <div ref={containerRef} className="space-y-6">
