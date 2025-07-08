@@ -313,14 +313,44 @@ export const getAuditLogs = async () => {
 };
 
 export const createAuditLog = async (logData: any) => {
-  const { data, error } = await supabase
-    .from("audit_logs")
-    .insert([logData])
-    .select()
-    .single();
+  // Check if Supabase is properly configured
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  if (error) throw error;
-  return data;
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl === "your-supabase-url" ||
+    supabaseAnonKey === "your-supabase-anon-key" ||
+    supabaseUrl.includes("placeholder")
+  ) {
+    // Return mock audit log for development
+    console.warn("Supabase not configured - skipping audit log");
+    return {
+      id: `audit_${Date.now()}`,
+      ...logData,
+      created_at: new Date().toISOString(),
+    };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("audit_logs")
+      .insert([logData])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    // Don't fail user creation if audit log fails
+    console.error("Failed to create audit log:", error);
+    return {
+      id: `audit_${Date.now()}`,
+      ...logData,
+      created_at: new Date().toISOString(),
+    };
+  }
 };
 
 export const createAdminUser = async (userData: {
@@ -333,21 +363,56 @@ export const createAdminUser = async (userData: {
   skills?: string[];
   hourly_rate?: number;
 }) => {
-  const { data, error } = await supabase
-    .from("users")
-    .insert([
-      {
-        ...userData,
-        status: userData.status || "active",
-        xp: 0,
-        level: 1,
-      },
-    ])
-    .select()
-    .single();
+  // Check if Supabase is properly configured
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  if (error) throw error;
-  return data;
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl === "your-supabase-url" ||
+    supabaseAnonKey === "your-supabase-anon-key" ||
+    supabaseUrl.includes("placeholder")
+  ) {
+    // Return mock data for development when Supabase is not configured
+    const mockUser = {
+      id: `user_${Date.now()}`,
+      ...userData,
+      status: userData.status || "active",
+      xp: 0,
+      level: 1,
+      created_at: new Date().toISOString(),
+      last_login: null,
+    };
+
+    console.warn("Supabase not configured - returning mock user data");
+    return mockUser;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .insert([
+        {
+          ...userData,
+          status: userData.status || "active",
+          xp: 0,
+          level: 1,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    if (error.message?.includes("Failed to fetch")) {
+      throw new Error(
+        "Unable to connect to database. Please check your internet connection or contact support.",
+      );
+    }
+    throw error;
+  }
 };
 
 export const updateAdminUser = async (
@@ -372,21 +437,46 @@ export const updateAdminUser = async (
 };
 
 export const uploadUserAvatar = async (file: File, userId: string) => {
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${userId}/avatar.${fileExt}`;
+  // Check if Supabase is properly configured
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  const { data, error } = await supabase.storage
-    .from("avatars")
-    .upload(fileName, file, {
-      cacheControl: "3600",
-      upsert: true,
-    });
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl === "your-supabase-url" ||
+    supabaseAnonKey === "your-supabase-anon-key" ||
+    supabaseUrl.includes("placeholder")
+  ) {
+    // Return mock avatar URL for development
+    console.warn("Supabase not configured - returning mock avatar URL");
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`;
+  }
 
-  if (error) throw error;
+  try {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${userId}/avatar.${fileExt}`;
 
-  const { data: urlData } = supabase.storage
-    .from("avatars")
-    .getPublicUrl(fileName);
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
 
-  return urlData.publicUrl;
+    if (error) throw error;
+
+    const { data: urlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  } catch (error: any) {
+    if (error.message?.includes("Failed to fetch")) {
+      throw new Error(
+        "Unable to upload avatar. Please check your internet connection or contact support.",
+      );
+    }
+    throw error;
+  }
 };
