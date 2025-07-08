@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 
 const AdminAnalytics: React.FC = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,11 +44,38 @@ const AdminAnalytics: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => {
+              console.log("Opening date range picker");
+              // Add date range picker functionality
+            }}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <Calendar className="w-4 h-4 mr-2" />
             Date Range
           </Button>
-          <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black">
+          <Button
+            onClick={() => {
+              const reportData = `Analytics Report
+Generated: ${new Date().toLocaleDateString()}
+
+Key Metrics:
+- Active Sessions: ${analytics.clientEngagement.activeSessions}
+- Requests/Week: ${analytics.clientEngagement.requestsPerWeek}
+- Monthly Revenue: $${analytics.financialMetrics.monthlyRecurringRevenue}
+- System Uptime: ${(analytics.systemHealth.uptime * 100).toFixed(2)}%`;
+
+              const blob = new Blob([reportData], { type: "text/plain" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "analytics-report.txt";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black"
+          >
             <Download className="w-4 h-4 mr-2" />
             Export Report
           </Button>

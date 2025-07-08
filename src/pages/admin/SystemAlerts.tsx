@@ -76,11 +76,27 @@ const SystemAlerts: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => {
+              console.log("Marking all alerts as read");
+              // Add mark all read logic here
+            }}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <CheckCircle className="w-4 h-4 mr-2" />
             Mark All Read
           </Button>
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => {
+              if (confirm("Are you sure you want to clear all alerts?")) {
+                console.log("Clearing all alerts");
+                // Add clear all logic here
+              }
+            }}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <Trash2 className="w-4 h-4 mr-2" />
             Clear All
           </Button>
@@ -182,6 +198,7 @@ const SystemAlerts: React.FC = () => {
               <div className="flex gap-2">
                 {alert.actionUrl && (
                   <Button
+                    onClick={() => window.open(alert.actionUrl, "_blank")}
                     variant="outline"
                     size="sm"
                     className="border-4 border-black"
@@ -191,6 +208,11 @@ const SystemAlerts: React.FC = () => {
                   </Button>
                 )}
                 <Button
+                  onClick={() => {
+                    if (confirm("Delete this alert?")) {
+                      console.log("Deleting alert:", alert.id);
+                    }
+                  }}
                   variant="outline"
                   size="sm"
                   className="border-4 border-black"

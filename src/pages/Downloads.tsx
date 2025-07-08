@@ -276,7 +276,7 @@ const Downloads: React.FC = () => {
                   <div className="text-6xl opacity-50">
                     {request.category === "logo" && "🎯"}
                     {request.category === "web-design" && "💻"}
-                    {request.category === "photoshop" && "📸"}
+                    {request.category === "photoshop" && "����"}
                     {request.category === "3d" && "🎲"}
                     {request.category === "branding" && "🏷️"}
                     {request.category === "illustration" && "🎨"}

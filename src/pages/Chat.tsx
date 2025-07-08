@@ -141,8 +141,26 @@ const Chat: React.FC = () => {
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Handle file upload logic here
-    console.log("Files selected:", e.target.files);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files);
+      console.log(
+        "Files selected:",
+        fileArray.map((f) => f.name),
+      );
+
+      // Create new message with files
+      const newMessage = {
+        id: (messages.length + 1).toString(),
+        text: `Sent ${fileArray.length} file(s): ${fileArray.map((f) => f.name).join(", ")}`,
+        senderId: mockUser.id,
+        senderName: mockUser.name,
+        senderType: "user" as const,
+        timestamp: new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, newMessage]);
+    }
   };
 
   return (

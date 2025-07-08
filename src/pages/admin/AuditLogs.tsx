@@ -68,11 +68,39 @@ const AuditLogs: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => {
+              console.log("Opening audit log filters");
+              // Add filter functionality here
+            }}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <Filter className="w-4 h-4 mr-2" />
             Filters
           </Button>
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => {
+              const csvContent = mockAuditLogs
+                .map(
+                  (log) =>
+                    `${log.timestamp},${log.userName},${log.action},${log.resource},${log.severity},${log.ipAddress}`,
+                )
+                .join("\n");
+              const blob = new Blob(
+                [`Timestamp,User,Action,Resource,Severity,IP\n${csvContent}`],
+                { type: "text/csv" },
+              );
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "audit-logs.csv";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <Download className="w-4 h-4 mr-2" />
             Export Logs
           </Button>

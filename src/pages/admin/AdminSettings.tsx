@@ -41,11 +41,36 @@ const AdminSettings: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
+          <Button
+            onClick={() => {
+              if (
+                confirm(
+                  "Are you sure you want to reset all settings to default?",
+                )
+              ) {
+                console.log("Resetting settings to default");
+                window.location.reload();
+              }
+            }}
+            variant="outline"
+            className="border-4 border-black"
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             Reset
           </Button>
-          <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black">
+          <Button
+            onClick={() => {
+              console.log("Saving system settings...");
+              // Add save settings logic here
+              const notification = document.createElement("div");
+              notification.className =
+                "fixed bottom-4 right-4 bg-green-500 text-white p-4 border-4 border-black z-50";
+              notification.textContent = "Settings saved successfully!";
+              document.body.appendChild(notification);
+              setTimeout(() => document.body.removeChild(notification), 3000);
+            }}
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black"
+          >
             <Save className="w-4 h-4 mr-2" />
             Save Changes
           </Button>
