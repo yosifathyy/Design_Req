@@ -127,9 +127,17 @@ const CreateChat: React.FC = () => {
       // Create chat with participants
       const chat = await createChat(selectedProject, selectedUsers);
 
+      console.log("Chat created successfully:", chat);
+
       // Send initial message if provided
       if (initialMessage.trim() && chat) {
-        await sendMessage(chat.id, "current-admin-id", initialMessage);
+        try {
+          await sendMessage(chat.id, "current-admin-id", initialMessage);
+          console.log("Initial message sent successfully");
+        } catch (messageError) {
+          console.warn("Failed to send initial message:", messageError);
+          // Don't fail the entire operation if just the message fails
+        }
       }
 
       // Show success animation
