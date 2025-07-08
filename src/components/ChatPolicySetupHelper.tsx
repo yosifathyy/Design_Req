@@ -1,37 +1,33 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import {
-  CheckCircle,
-  ExternalLink,
-  Copy,
-  MessageCircle,
   AlertTriangle,
-  ArrowRight,
+  Copy,
+  Check,
   Database,
+  Shield,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
 
-export const ChatPolicySetupHelper = () => {
-  const [copiedStep, setCopiedStep] = useState<number | null>(null);
+interface ChatPolicySetupHelperProps {
+  error?: string;
+  onRetry?: () => void;
+}
 
-  const copyToClipboard = (text: string, stepNumber: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedStep(stepNumber);
-    setTimeout(() => setCopiedStep(null), 2000);
-  };
+const ChatPolicySetupHelper: React.FC<ChatPolicySetupHelperProps> = ({
+  error,
+  onRetry,
+}) => {
+  const [copiedScript, setCopiedScript] = useState<string | null>(null);
 
-  const supabaseUrl =
-    "https://supabase.com/dashboard/project/dnmygswmvzxnkqhcslhc/sql";
+  const sqlScript = `-- =====================================================
+-- SIMPLE FIX FOR CHAT POLICIES
+-- =====================================================
+-- Add the missing INSERT policy for chats table
 
-  const simplePolicySQL = `-- Add missing chat policies
+-- Allow users to create chats for requests they own or are assigned to
 DROP POLICY IF EXISTS "Users can create chats for their requests" ON chats;
 CREATE POLICY "Users can create chats for their requests"
   ON chats FOR INSERT
@@ -44,6 +40,7 @@ CREATE POLICY "Users can create chats for their requests"
     )
   );
 
+-- Allow users to add participants to chats they can access
 DROP POLICY IF EXISTS "Users can add participants to their chats" ON chat_participants;
 CREATE POLICY "Users can add participants to their chats"
   ON chat_participants FOR INSERT
@@ -57,148 +54,125 @@ CREATE POLICY "Users can add participants to their chats"
     )
   );
 
-SELECT 'Chat policies created successfully!' as status;`;
+-- Verify the fix
+SELECT 'Chat INSERT policies added successfully!' as status;`;
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedScript(type);
+      setTimeout(() => setCopiedScript(null), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const isPolicyError =
+    error?.includes("database policies need to be set up") ||
+    error?.includes("row-level security policy") ||
+    error?.includes("Permission denied");
+
+  if (!isPolicyError) {
+    return null;
+  }
 
   return (
-    <Card className="border-2 border-orange-200 bg-orange-50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-orange-800">
-          <MessageCircle className="w-5 h-5" />
-          Chat Setup Required
-        </CardTitle>
-        <CardDescription className="text-orange-700">
-          Chat functionality needs database policies to be set up
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert className="border-orange-200 bg-orange-100">
-          <AlertTriangle className="w-4 h-4" />
-          <AlertDescription className="text-orange-800">
-            The chat tables have security policies enabled, but the necessary
-            permissions for creating chats are missing.
-          </AlertDescription>
-        </Alert>
-
-        <div className="space-y-4">
-          <h4 className="font-semibold text-orange-800 flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            Quick Fix - Add Chat Policies:
-          </h4>
-
-          {/* Step 1 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              1
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Go to Supabase SQL Editor
-              </p>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="border-orange-300 text-orange-700 hover:bg-orange-100"
-              >
-                <a href={supabaseUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Open SQL Editor
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          {/* Step 2 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              2
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Copy and paste this SQL policy script
-              </p>
-              <div className="space-y-2">
-                <div className="bg-gray-900 text-green-400 p-3 rounded text-xs font-mono overflow-x-auto max-h-32">
-                  <pre>{simplePolicySQL}</pre>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyToClipboard(simplePolicySQL, 1)}
-                  className="border-orange-300 text-orange-700 hover:bg-orange-100"
-                >
-                  {copiedStep === 1 ? (
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
-                  ) : (
-                    <Copy className="w-4 h-4 mr-2" />
-                  )}
-                  {copiedStep === 1 ? "Copied!" : "Copy SQL"}
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 3 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              3
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Click "Run" in the SQL Editor
-              </p>
-              <p className="text-sm text-orange-700">
-                You should see: "Chat policies created successfully!"
-              </p>
-            </div>
-          </div>
-
-          {/* Step 4 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              4
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Try opening the chat again
-              </p>
-              <p className="text-sm text-orange-700">
-                The chat should now initialize without errors.
-              </p>
-            </div>
+    <Card className="border-4 border-red-500 bg-red-50 p-6 shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0">
+          <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-6 h-6 text-white" />
           </div>
         </div>
 
-        <Alert className="border-green-200 bg-green-50">
-          <CheckCircle className="w-4 h-4" />
-          <AlertDescription className="text-green-800">
-            <strong>What this does:</strong> Adds security policies that allow
-            users to create chats for requests they own or are assigned to as
-            designers.
-          </AlertDescription>
-        </Alert>
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-red-800 mb-2">
+            Database Setup Required
+          </h3>
 
-        <Alert className="border-blue-200 bg-blue-50">
-          <AlertTriangle className="w-4 h-4" />
-          <AlertDescription className="text-blue-800">
-            <strong>Need help?</strong> If you're still having issues, check
-            that you're logged in as a user who owns the request or is assigned
-            as the designer.
-          </AlertDescription>
-        </Alert>
-      </CardContent>
+          <p className="text-red-700 mb-4">
+            The chat feature requires Row Level Security (RLS) policies to be
+            set up in your Supabase database. This is a one-time setup that
+            enables secure chat functionality.
+          </p>
+
+          <div className="bg-white border-2 border-red-300 rounded-lg p-4 mb-4">
+            <h4 className="font-bold text-red-800 mb-2 flex items-center gap-2">
+              <Database className="w-4 h-4" />
+              Quick Fix Steps:
+            </h4>
+
+            <ol className="list-decimal list-inside space-y-2 text-red-700 text-sm">
+              <li>Open your Supabase dashboard</li>
+              <li>Go to the SQL Editor</li>
+              <li>Copy and run the SQL script below</li>
+              <li>Click "Retry" to test the chat functionality</li>
+            </ol>
+          </div>
+
+          <div className="bg-gray-900 rounded-lg p-4 mb-4 relative">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-green-400" />
+                <span className="text-green-400 font-mono text-sm">
+                  fix_chat_policies_simple.sql
+                </span>
+              </div>
+              <Button
+                onClick={() => copyToClipboard(sqlScript, "script")}
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+              >
+                {copiedScript === "script" ? (
+                  <>
+                    <Check className="w-3 h-3 mr-1" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3 mr-1" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <pre className="text-green-400 text-xs overflow-x-auto">
+              <code>{sqlScript}</code>
+            </pre>
+          </div>
+
+          <div className="flex items-center gap-3 mb-4">
+            <Button
+              onClick={() =>
+                window.open("https://supabase.com/dashboard", "_blank")
+              }
+              variant="outline"
+              className="border-2 border-red-500 text-red-700 hover:bg-red-100"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Open Supabase Dashboard
+            </Button>
+
+            {onRetry && (
+              <Button
+                onClick={onRetry}
+                className="bg-red-500 hover:bg-red-600 text-white border-2 border-red-600"
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Retry Chat Setup
+              </Button>
+            )}
+          </div>
+
+          <div className="text-xs text-red-600 bg-red-100 border border-red-300 rounded p-2">
+            <strong>Note:</strong> This setup only needs to be done once. After
+            running the SQL script, the chat feature will work for all users in
+            your application.
+          </div>
+        </div>
+      </div>
     </Card>
   );
 };
