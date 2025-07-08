@@ -25,8 +25,8 @@ const DesignDashboard: React.FC = () => {
     xpProgress: {
       current: 0,
       target: 1000,
-      level: 1
-    }
+      level: 1,
+    },
   });
   const [loading, setLoading] = React.useState(true);
 
@@ -38,24 +38,26 @@ const DesignDashboard: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Fetch user profile
         const profile = await getUserProfile(user.id);
         setUserProfile(profile);
-        
+
         // Fetch requests
         const requests = await getDesignRequests(user.id);
-        
+
         // Fetch invoices
         const invoices = await getInvoices(user.id);
-        const pendingInvoices = invoices.filter(inv => inv.status === 'pending');
-        
+        const pendingInvoices = invoices.filter(
+          (inv) => inv.status === "pending",
+        );
+
         // Calculate XP target based on level
         const xpTarget = profile.level * 1000;
-        
+
         // Update stats
         setStats({
           totalRequests: requests.length,
@@ -64,17 +66,16 @@ const DesignDashboard: React.FC = () => {
           xpProgress: {
             current: profile.xp,
             target: xpTarget,
-            level: profile.level
-          }
+            level: profile.level,
+          },
         });
-        
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+      } catch (error: any) {
+        console.error("Error fetching user data:", error?.message || error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user) {
       fetchUserData();
     }
@@ -164,13 +165,13 @@ const DesignDashboard: React.FC = () => {
                 />
               ) : (
                 <span className="text-xl font-bold text-white">
-                  {userProfile?.name?.charAt(0) || '?'}
+                  {userProfile?.name?.charAt(0) || "?"}
                 </span>
               )}
             </div>
             <div>
               <h1 className="text-4xl font-display font-bold text-black">
-                Hello, {userProfile?.name?.split(" ")[0] || 'Designer'}! 👋
+                Hello, {userProfile?.name?.split(" ")[0] || "Designer"}! 👋
               </h1>
               <p className="text-lg text-black/70 font-medium">
                 Ready to create something amazing today?
@@ -261,7 +262,12 @@ const DesignDashboard: React.FC = () => {
               <span>Level {userProfile?.level || 1} Designer</span>
             </div>
             <div className="w-1 h-1 bg-black rounded-full" />
-            <span>Member since {userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString() : 'recently'}</span>
+            <span>
+              Member since{" "}
+              {userProfile?.created_at
+                ? new Date(userProfile.created_at).toLocaleDateString()
+                : "recently"}
+            </span>
             <div className="w-1 h-1 bg-black rounded-full" />
             <span>XP: {userProfile?.xp || 0}</span>
           </div>
