@@ -130,6 +130,7 @@ const AppContent = () => {
               element={<ProjectAssignments />}
             />
             <Route path="chat" element={<AdminChat />} />
+            <Route path="chat/:id" element={<AdminChat />} />
             <Route path="chat/create" element={<CreateChat />} />
             <Route path="invoices" element={<AdminInvoices />} />
             <Route path="invoices/create" element={<CreateInvoice />} />
