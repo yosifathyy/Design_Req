@@ -95,23 +95,19 @@ interface IndexProps {
   isLoadingComplete?: boolean;
 }
 
-const Index = ({ isLoadingComplete = false }: IndexProps) => {
+const Index = ({ isLoadingComplete = true }: IndexProps) => {
   // State for image shuffle
   const [imageOrder, setImageOrder] = useState([0, 1, 2, 3]);
   const [isShuffling, setIsShuffling] = useState(false);
-  const [animationsEnabled, setAnimationsEnabled] = useState(false);
+  // Enable animations immediately for instant navigation
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const { playClickSound, playHoverSound } = useClickSound();
 
-  // Enable animations only after loading is complete
+  // Enable animations immediately for instant navigation experience
   useEffect(() => {
-    if (isLoadingComplete) {
-      // Small delay to ensure smooth transition
-      const timer = setTimeout(() => {
-        setAnimationsEnabled(true);
-      }, 200);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoadingComplete]);
+    // Remove any artificial loading delays for instant navigation
+    setAnimationsEnabled(true);
+  }, []);
 
   const images = [
     "https://cdn.prod.website-files.com/682310547ba9eeb97324a89e/6824aaddd793e76751328121_event-image-1.avif",
