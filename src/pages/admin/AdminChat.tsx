@@ -186,7 +186,11 @@ const AdminChat: React.FC = () => {
                 filteredChats.map((chat) => (
                   <div
                     key={chat.id}
-                    onClick={() => setSelectedChat(chat)}
+                    onClick={() => {
+                      setSelectedChat(chat);
+                      // Update URL to reflect selected chat
+                      navigate(`/admin/chat/${chat.id}`, { replace: true });
+                    }}
                     className={`p-3 border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-colors ${
                       selectedChat?.id === chat.id
                         ? "bg-festival-orange/30"
