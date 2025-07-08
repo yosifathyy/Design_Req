@@ -42,10 +42,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
-import { lazy } from "react";
-
-// Preload the Index component
-const Index = lazy(() => import("./Index"));
 
 const StartProject = () => {
   const [step, setStep] = useState(1);
