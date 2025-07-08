@@ -440,6 +440,11 @@ export const createChat = async (requestId: string, participants: string[]) => {
           "Chat functionality is not available. Please run the database setup script.",
         );
       }
+      if (chatError.message?.includes("row-level security policy")) {
+        throw new Error(
+          "Permission denied: Cannot create chat. The database policies need to be set up. Please run the fix_chat_policies_simple.sql script.",
+        );
+      }
       throw chatError;
     }
 
