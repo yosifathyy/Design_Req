@@ -305,7 +305,7 @@ const AdminDashboard: React.FC = () => {
               Total Users
             </p>
             <p className="text-3xl font-display font-bold text-black">
-              {mockAdminUsers.length}
+              {data.users.length}
             </p>
             <p className="text-sm text-black/70">
               {activeDesigners} designers active
