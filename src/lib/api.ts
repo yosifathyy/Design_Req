@@ -69,25 +69,22 @@ export const createUserProfileIfMissing = async (
 
     if (emailProfile && !emailError) {
       console.log(
-        `User with email ${email} already exists with different ID. Updating ID to match auth user.`,
+        `User with email ${email} already exists with ID: ${emailProfile.id}`,
       );
+      console.log(`Auth user ID: ${userId}`);
 
-      // Update the existing user's ID to match the auth user ID
-      const { data: updatedProfile, error: updateError } = await supabase
-        .from("users")
-        .update({ id: userId })
-        .eq("email", email)
-        .select()
-        .single();
-
-      if (updateError) {
-        console.error("Failed to update user ID:", updateError.message);
-        // If update fails, try to return the existing profile as-is
-        return emailProfile;
+      // If IDs don't match, we have a mismatch between auth and database
+      if (emailProfile.id !== userId) {
+        console.warn(
+          `ID mismatch detected. Database ID: ${emailProfile.id}, Auth ID: ${userId}`,
+        );
+        console.warn(
+          `Using existing profile with database ID. Consider consolidating accounts.`,
+        );
       }
 
-      console.log(`Updated user profile ID for ${email} to match auth user`);
-      return updatedProfile;
+      // Return the existing profile as-is to avoid constraint violations
+      return emailProfile;
     }
 
     // Create new profile if none exists
