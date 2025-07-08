@@ -57,8 +57,7 @@ const ProjectsList: React.FC = () => {
       project.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.client?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.designer?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || project.status === statusFilter;
+    const matchesStatus = statusFilter === "all" || project.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -122,9 +121,7 @@ const ProjectsList: React.FC = () => {
             className="border-4 border-black"
             disabled={loading}
           >
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
-            />
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button
@@ -161,8 +158,38 @@ const ProjectsList: React.FC = () => {
         </select>
       </div>
 
-      <div className="space-y-4">
-        {mockAdminProjects.map((project) => (
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-festival-orange" />
+            <p className="text-lg font-medium text-black">Loading projects...</p>
+          </div>
+        </div>
+      ) : filteredProjects.length === 0 ? (
+        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
+          <div className="text-6xl mb-4">📁</div>
+          <h3 className="text-2xl font-bold text-black mb-2">
+            {searchQuery || statusFilter !== "all" ? "No projects found" : "No projects yet"}
+          </h3>
+          <p className="text-black/70 mb-6">
+            {searchQuery || statusFilter !== "all"
+              ? "Try adjusting your search or filters"
+              : "Create your first project to get started"
+            }
+          </p>
+          {!searchQuery && statusFilter === "all" && (
+            <Button
+              onClick={() => navigate("/admin/projects/create")}
+              className="bg-gradient-to-r from-festival-orange to-festival-coral border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create First Project
+            </Button>
+          )}
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredProjects.map((project) => (
           <Card
             key={project.id}
             className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6"
