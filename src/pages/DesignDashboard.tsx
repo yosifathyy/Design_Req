@@ -15,6 +15,7 @@ import { XPProgress } from "@/components/dashboard/XPProgress";
 import { mockUser, mockStats } from "@/lib/dashboard-data";
 import ProfileSetupNotice from "@/components/ProfileSetupNotice";
 import IDMismatchNotice from "@/components/IDMismatchNotice";
+import AdminChatList from "@/components/AdminChatList";
 import {
   FileText,
   MessageCircle,
