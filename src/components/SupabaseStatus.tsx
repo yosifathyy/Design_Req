@@ -1,174 +1,67 @@
-import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  testSupabaseConnection,
-  checkDatabaseSchema,
-} from "@/lib/supabase-test";
-import {
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Database,
-  Loader2,
-} from "lucide-react";
+import React from "react";
+import { Badge } from "./ui/badge";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { Database, Wifi, WifiOff, ExternalLink } from "lucide-react";
 
-export const SupabaseStatus = () => {
-  const [connectionStatus, setConnectionStatus] = useState<any>(null);
-  const [schemaStatus, setSchemaStatus] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const runTests = async () => {
-    setIsLoading(true);
-    try {
-      const connResult = await testSupabaseConnection();
-      setConnectionStatus(connResult);
-
-      const schemaResult = await checkDatabaseSchema();
-      setSchemaStatus(schemaResult);
-    } catch (error) {
-      console.error("Test failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    runTests();
-  }, []);
-
-  const isConnected = connectionStatus?.success;
-  const hasAllTables =
-    schemaStatus &&
-    !schemaStatus.error &&
-    Object.values(schemaStatus).every((table: any) => table.exists);
+export const SupabaseStatus: React.FC = () => {
+  if (isSupabaseConfigured) {
+    return (
+      <Badge className="bg-green-100 text-green-800 border-2 border-green-500">
+        <Database className="w-3 h-3 mr-1" />
+        Connected to Supabase
+      </Badge>
+    );
+  }
 
   return (
-    <Card className="border-2 border-black shadow-lg">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Database className="w-5 h-5" />
-          Supabase Connection Status
-        </CardTitle>
-        <CardDescription>
-          Real-time database connection and schema status
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Connection Status */}
-        <div className="flex items-center justify-between">
-          <span className="font-medium">Database Connection:</span>
-          <Badge
-            variant={isConnected ? "default" : "destructive"}
-            className={isConnected ? "bg-green-500" : "bg-red-500"}
-          >
-            {isLoading ? (
-              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-            ) : isConnected ? (
-              <CheckCircle className="w-3 h-3 mr-1" />
-            ) : (
-              <XCircle className="w-3 h-3 mr-1" />
-            )}
-            {isLoading ? "Testing..." : isConnected ? "Connected" : "Failed"}
-          </Badge>
+    <Card className="border-4 border-yellow-500 bg-yellow-50 p-4 mb-6">
+      <div className="flex items-start gap-3">
+        <WifiOff className="w-6 h-6 text-yellow-600 mt-0.5" />
+        <div className="flex-1">
+          <h3 className="font-bold text-yellow-800 mb-2">Development Mode</h3>
+          <p className="text-sm text-yellow-700 mb-3">
+            Supabase is not configured. The app is running with mock data for
+            development.
+          </p>
+          <div className="space-y-2 text-xs text-yellow-600">
+            <p>To connect to a real database:</p>
+            <ol className="list-decimal list-inside space-y-1 ml-2">
+              <li>
+                Create a Supabase project at{" "}
+                <a
+                  href="https://supabase.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  supabase.com
+                </a>
+              </li>
+              <li>
+                Update your{" "}
+                <code className="bg-yellow-100 px-1 rounded">.env</code> file
+                with your project URL and API key
+              </li>
+              <li>Restart the development server</li>
+            </ol>
+          </div>
+          <div className="mt-3 flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-2 border-yellow-600 text-yellow-800 hover:bg-yellow-100"
+              onClick={() =>
+                window.open("https://supabase.com/dashboard", "_blank")
+              }
+            >
+              <ExternalLink className="w-3 h-3 mr-1" />
+              Supabase Dashboard
+            </Button>
+          </div>
         </div>
-
-        {/* Schema Status */}
-        <div className="flex items-center justify-between">
-          <span className="font-medium">Database Schema:</span>
-          <Badge
-            variant={hasAllTables ? "default" : "destructive"}
-            className={hasAllTables ? "bg-green-500" : "bg-yellow-500"}
-          >
-            {hasAllTables ? (
-              <CheckCircle className="w-3 h-3 mr-1" />
-            ) : (
-              <XCircle className="w-3 h-3 mr-1" />
-            )}
-            {hasAllTables ? "Complete" : "Incomplete"}
-          </Badge>
-        </div>
-
-        {/* User Count */}
-        {isConnected && connectionStatus?.userCount !== undefined && (
-          <div className="flex items-center justify-between">
-            <span className="font-medium">Users in Database:</span>
-            <Badge variant="outline">{connectionStatus.userCount}</Badge>
-          </div>
-        )}
-
-        {/* Error Details */}
-        {!isConnected && connectionStatus?.error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
-            <p className="text-sm text-red-800 font-medium">
-              Connection Error:
-            </p>
-            <p className="text-sm text-red-600">{connectionStatus.error}</p>
-          </div>
-        )}
-
-        {/* Schema Details */}
-        {schemaStatus && !schemaStatus.error && (
-          <div className="mt-4">
-            <p className="text-sm font-medium mb-2">Table Status:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {Object.entries(schemaStatus).map(
-                ([table, status]: [string, any]) => (
-                  <div
-                    key={table}
-                    className="flex items-center justify-between"
-                  >
-                    <span>{table}:</span>
-                    {status.exists ? (
-                      <CheckCircle className="w-3 h-3 text-green-500" />
-                    ) : (
-                      <XCircle className="w-3 h-3 text-red-500" />
-                    )}
-                  </div>
-                ),
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Refresh Button */}
-        <Button
-          onClick={runTests}
-          disabled={isLoading}
-          variant="outline"
-          size="sm"
-          className="w-full mt-4"
-        >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <RefreshCw className="w-4 h-4 mr-2" />
-          )}
-          {isLoading ? "Testing..." : "Refresh Status"}
-        </Button>
-
-        {/* Setup Instructions */}
-        {!hasAllTables && (
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
-            <p className="text-sm font-medium text-blue-800 mb-2">
-              Setup Required:
-            </p>
-            <p className="text-sm text-blue-600">
-              Run the database setup script in your Supabase SQL Editor. Check{" "}
-              <code>SUPABASE_SETUP.md</code> for instructions.
-            </p>
-          </div>
-        )}
-      </CardContent>
+      </div>
     </Card>
   );
 };
-
-export default SupabaseStatus;
