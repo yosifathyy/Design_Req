@@ -17,6 +17,7 @@ import {
   Chrome,
   CheckCircle,
   AlertCircle,
+  Info,
 } from "lucide-react";
 
 const Login: React.FC = () => {
