@@ -394,60 +394,128 @@ export const saveFileMetadata = async (fileData: any) => {
 
 // Chat and messages functions
 export const getChatByRequestId = async (requestId: string) => {
-  const { data, error } = await supabase
-    .from("chats")
-    .select("*")
-    .eq("request_id", requestId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("chats")
+      .select("*")
+      .eq("request_id", requestId)
+      .maybeSingle();
 
-  if (error && error.code !== "PGRST116") {
-    // PGRST116 is "no rows returned"
+    if (error) {
+      if (error.message?.includes('relation "chats" does not exist')) {
+        throw new Error(
+          "Chat functionality is not available. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not access chat. Database tables may not exist yet.",
+      );
+    }
     throw error;
   }
-
-  return data;
 };
 
 export const createChat = async (requestId: string, participants: string[]) => {
-  // First create the chat
-  const { data: chat, error: chatError } = await supabase
-    .from("chats")
-    .insert([{ request_id: requestId }])
-    .select()
-    .single();
+  try {
+    // First create the chat
+    const { data: chat, error: chatError } = await supabase
+      .from("chats")
+      .insert([{ request_id: requestId }])
+      .select()
+      .single();
 
-  if (chatError) throw chatError;
+    if (chatError) {
+      if (chatError.message?.includes('relation "chats" does not exist')) {
+        throw new Error(
+          "Chat functionality is not available. Please run the database setup script.",
+        );
+      }
+      throw chatError;
+    }
 
-  // Then add participants
-  const participantRecords = participants.map((userId) => ({
-    chat_id: chat.id,
-    user_id: userId,
-  }));
+    // Then add participants
+    const participantRecords = participants.map((userId) => ({
+      chat_id: chat.id,
+      user_id: userId,
+    }));
 
-  const { error: participantError } = await supabase
-    .from("chat_participants")
-    .insert(participantRecords);
+    const { error: participantError } = await supabase
+      .from("chat_participants")
+      .insert(participantRecords);
 
-  if (participantError) throw participantError;
+    if (participantError) {
+      if (
+        participantError.message?.includes(
+          'relation "chat_participants" does not exist',
+        )
+      ) {
+        throw new Error(
+          "Chat participants table does not exist. Please run the database setup script.",
+        );
+      }
+      throw participantError;
+    }
 
-  return chat;
+    return chat;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not create chat. Database tables may not exist yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 export const getMessages = async (chatId: string) => {
-  const { data, error } = await supabase
-    .from("messages")
-    .select(
-      `
-      *,
-      sender:sender_id(id, name, email, avatar_url, role),
-      files(*)
-    `,
-    )
-    .eq("chat_id", chatId)
-    .order("created_at", { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from("messages")
+      .select(
+        `
+        *,
+        sender:sender_id(id, name, email, avatar_url, role),
+        files(*)
+      `,
+      )
+      .eq("chat_id", chatId)
+      .order("created_at", { ascending: true });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "messages" does not exist')) {
+        throw new Error(
+          "Messages table does not exist. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not fetch messages. Database tables may not exist yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 export const sendMessage = async (
