@@ -66,6 +66,7 @@ const CreateProject = lazy(() => import("./pages/admin/CreateProject"));
 const CreateUser = lazy(() => import("./pages/admin/CreateUser"));
 const EditProject = lazy(() => import("./pages/admin/EditProject"));
 const EditUser = lazy(() => import("./pages/admin/EditUser"));
+const ProjectDetail = lazy(() => import("./pages/admin/ProjectDetail"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
