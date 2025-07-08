@@ -17,15 +17,33 @@ import {
 
 const SystemAlerts: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const loadAlerts = async () => {
+      try {
+        setLoading(true);
+        const alertsData = await getSystemAlerts();
+        setAlerts(alertsData);
+      } catch (error) {
+        console.error("Failed to load alerts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAlerts();
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
   const getAlertIcon = (type: string) => {
     switch (type) {
