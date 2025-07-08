@@ -140,6 +140,26 @@ export const createUserProfileIfMissing = async (
   }
 };
 
+export const findUserProfileByEmail = async (email: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error finding user by email:", error.message);
+      return null;
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error("Error finding user by email:", error.message);
+    return null;
+  }
+};
+
 export const updateUserXP = async (userId: string, xpAmount: number) => {
   // First get current XP and level
   const { data: user, error: fetchError } = await supabase
