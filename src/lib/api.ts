@@ -73,6 +73,26 @@ export const createUserProfileIfMissing = async (
   email: string,
   name?: string,
 ) => {
+  // If Supabase is not configured, return mock profile
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock user profile");
+    return {
+      id: userId,
+      email: email,
+      name: name || email.split("@")[0] || "User",
+      role: "user",
+      status: "active",
+      xp: 0,
+      level: 1,
+      bio: null,
+      skills: null,
+      hourly_rate: null,
+      created_at: new Date().toISOString(),
+      last_login: null,
+      avatar_url: null,
+    };
+  }
+
   try {
     // Check if profile already exists by ID
     const existingProfile = await getUserProfile(userId);
