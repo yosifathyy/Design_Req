@@ -29,6 +29,8 @@ import Chat from "./pages/Chat";
 import Payments from "./pages/Payments";
 import Downloads from "./pages/Downloads";
 import Requests from "./pages/Requests";
+import { AdminLayout } from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +66,9 @@ const AppContent = () => {
         <Route path="/payments" element={<Payments />} />
         <Route path="/downloads" element={<Downloads />} />
         <Route path="/requests" element={<Requests />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+        </Route>
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/disputes" element={<Disputes />} />
