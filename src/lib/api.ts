@@ -463,6 +463,11 @@ export const createChat = async (requestId: string, participants: string[]) => {
           "Chat participants table does not exist. Please run the database setup script.",
         );
       }
+      if (participantError.message?.includes("row-level security policy")) {
+        throw new Error(
+          "Cannot add participants to this chat. Please check your permissions.",
+        );
+      }
       throw participantError;
     }
 
