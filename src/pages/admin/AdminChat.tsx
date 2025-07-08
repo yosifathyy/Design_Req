@@ -19,6 +19,7 @@ import {
 
 const AdminChat: React.FC = () => {
   const navigate = useNavigate();
+  const { id: chatId } = useParams<{ id?: string }>();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [chats, setChats] = useState<any[]>([]);
