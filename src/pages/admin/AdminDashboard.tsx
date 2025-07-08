@@ -376,10 +376,10 @@ const AdminDashboard: React.FC = () => {
               System Health
             </p>
             <p className="text-3xl font-display font-bold text-black">
-              {(mockAnalyticsData.systemHealth.uptime * 100).toFixed(2)}%
+              {(data.analytics.systemHealth.uptime * 100).toFixed(2)}%
             </p>
             <p className="text-sm text-black/70">
-              {mockAnalyticsData.systemHealth.activeUsers} users online
+              {data.analytics.systemHealth.activeUsers} users online
             </p>
           </div>
         </Card>
