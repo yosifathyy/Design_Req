@@ -1,16 +1,14 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  mockAnalyticsData,
-  mockAdminProjects,
-  mockAdminInvoices,
-  mockSystemAlerts,
-  mockAdminUsers,
-} from "@/lib/admin-data";
+  fetchDashboardData,
+  subscribeToAdminUpdates,
+  type DashboardData,
+} from "@/lib/admin-api";
 import {
   Users,
   FolderKanban,
@@ -25,6 +23,7 @@ import {
   Shield,
   Eye,
   ArrowRight,
+  RefreshCw,
 } from "lucide-react";
 
 const AdminDashboard: React.FC = () => {
