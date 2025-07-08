@@ -116,10 +116,12 @@ const AppContent = () => {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
             <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/edit/:id" element={<EditUser />} />
             <Route path="teams" element={<TeamManagement />} />
             <Route path="permissions" element={<PermissionsManagement />} />
             <Route path="projects" element={<ProjectsList />} />
             <Route path="projects/create" element={<CreateProject />} />
+            <Route path="projects/:id/edit" element={<EditProject />} />
             <Route path="projects/kanban" element={<ProjectKanban />} />
             <Route
               path="projects/assignments"
