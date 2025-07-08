@@ -141,10 +141,24 @@ const ProjectsList: React.FC = () => {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-5 h-5" />
           <Input
-            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search projects, clients, designers..."
             className="pl-12 h-12 border-4 border-black bg-white"
           />
         </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-4 py-2 border-4 border-black bg-white font-medium"
+        >
+          <option value="all">All Status</option>
+          <option value="draft">Draft</option>
+          <option value="submitted">Submitted</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="delivered">Delivered</option>
+        </select>
       </div>
 
       <div className="space-y-4">
