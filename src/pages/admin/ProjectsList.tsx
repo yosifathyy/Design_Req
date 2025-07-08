@@ -116,9 +116,23 @@ const ProjectsList: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-4 border-black">
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
+          <Button
+            onClick={refreshProjects}
+            variant="outline"
+            className="border-4 border-black"
+            disabled={loading}
+          >
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </Button>
+          <Button
+            onClick={() => navigate("/admin/projects/create")}
+            className="bg-gradient-to-r from-festival-orange to-festival-coral border-4 border-black"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Project
           </Button>
         </div>
       </div>
