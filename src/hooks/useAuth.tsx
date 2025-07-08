@@ -1,18 +1,25 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { Session, User } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 type AuthContextType = {
   session: Session | null;
   user: User | null;
   profile: any | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{
     error: Error | null;
     data: Session | null;
   }>;
-  signUp: (email: string, password: string, name: string) => Promise<{
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+  ) => Promise<{
     error: Error | null;
     data: Session | null;
   }>;
@@ -44,18 +51,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
-        }
-        setLoading(false);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
       }
-    );
+      setLoading(false);
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -67,27 +74,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+    if (
+      !supabaseUrl ||
+      !supabaseAnonKey ||
+      supabaseUrl === "your-supabase-url" ||
+      supabaseAnonKey === "your-supabase-anon-key" ||
+      supabaseUrl.includes("placeholder")
+    ) {
       // Don't fetch profile in mock mode, it's already set
       return;
     }
 
     try {
       const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
+        .from("users")
+        .select("*")
+        .eq("id", userId)
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching user profile:', error);
+        console.error("Error fetching user profile:", error);
         setProfile(null);
         return;
       }
 
       setProfile(data);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error("Error fetching user profile:", error);
       setProfile(null);
     }
   };
@@ -99,17 +112,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+    if (
+      !supabaseUrl ||
+      !supabaseAnonKey ||
+      supabaseUrl === "your-supabase-url" ||
+      supabaseAnonKey === "your-supabase-anon-key" ||
+      supabaseUrl.includes("placeholder")
+    ) {
       // Mock authentication for development
-      console.warn('Supabase not configured - using mock authentication');
+      console.warn("Supabase not configured - using mock authentication");
 
       // Simple validation for demo
-      if (email === 'admin@demo.com' && password === 'demo123') {
+      if (email === "admin@demo.com" && password === "demo123") {
         const mockUser = {
-          id: 'mock-admin-user',
-          email: 'admin@demo.com',
-          aud: 'authenticated',
-          role: 'authenticated',
+          id: "mock-admin-user",
+          email: "admin@demo.com",
+          aud: "authenticated",
+          role: "authenticated",
           email_confirmed_at: new Date().toISOString(),
           app_metadata: {},
           user_metadata: {},
@@ -118,25 +137,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         const mockSession = {
-          access_token: 'mock-access-token',
-          refresh_token: 'mock-refresh-token',
+          access_token: "mock-access-token",
+          refresh_token: "mock-refresh-token",
           expires_in: 3600,
           expires_at: Math.floor(Date.now() / 1000) + 3600,
-          token_type: 'bearer',
+          token_type: "bearer",
           user: mockUser,
         };
 
         const mockProfile = {
-          id: 'mock-admin-user',
-          email: 'admin@demo.com',
-          name: 'Demo Admin',
-          role: 'admin',
-          status: 'active',
-          avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
+          id: "mock-admin-user",
+          email: "admin@demo.com",
+          name: "Demo Admin",
+          role: "admin",
+          status: "active",
+          avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
           xp: 100,
           level: 5,
-          bio: 'Demo admin user for testing',
-          skills: ['Admin', 'Management'],
+          bio: "Demo admin user for testing",
+          skills: ["Admin", "Management"],
           hourly_rate: null,
           created_at: new Date().toISOString(),
           last_login: new Date().toISOString(),
@@ -153,23 +172,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         return {
           data: null,
-          error: new Error('Invalid credentials. Try admin@demo.com / demo123')
+          error: new Error("Invalid credentials. Try admin@demo.com / demo123"),
         };
       }
     }
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error: authError } = await supabase.auth.signInWithPassword(
+        {
+          email,
+          password,
+        },
+      );
 
       // Handle email not confirmed error
-      if (authError?.message === 'Email not confirmed') {
+      if (authError?.message === "Email not confirmed") {
         setLoading(false);
         return {
           data: null,
-          error: new Error('Please check your email and click the confirmation link before signing in.')
+          error: new Error(
+            "Please check your email and click the confirmation link before signing in.",
+          ),
         };
       }
 
@@ -181,19 +204,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Update last login timestamp
       if (data?.session?.user) {
         await supabase
-          .from('users')
+          .from("users")
           .update({ last_login: new Date().toISOString() })
-          .eq('id', data.session.user.id);
+          .eq("id", data.session.user.id);
       }
 
       setLoading(false);
       return { data: data?.session || null, error: null };
     } catch (error: any) {
       setLoading(false);
-      if (error.message?.includes('Failed to fetch')) {
+      if (error.message?.includes("Failed to fetch")) {
         return {
           data: null,
-          error: new Error('Unable to connect to authentication service. Please check your internet connection.')
+          error: new Error(
+            "Unable to connect to authentication service. Please check your internet connection.",
+          ),
         };
       }
       return { data: null, error };
@@ -207,15 +232,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+    if (
+      !supabaseUrl ||
+      !supabaseAnonKey ||
+      supabaseUrl === "your-supabase-url" ||
+      supabaseAnonKey === "your-supabase-anon-key" ||
+      supabaseUrl.includes("placeholder")
+    ) {
       // Mock sign up for development
-      console.warn('Supabase not configured - using mock sign up');
+      console.warn("Supabase not configured - using mock sign up");
 
       const mockUser = {
         id: `mock-user-${Date.now()}`,
         email: email,
-        aud: 'authenticated',
-        role: 'authenticated',
+        aud: "authenticated",
+        role: "authenticated",
         email_confirmed_at: new Date().toISOString(),
         app_metadata: {},
         user_metadata: {},
@@ -224,11 +255,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
       const mockSession = {
-        access_token: 'mock-access-token',
-        refresh_token: 'mock-refresh-token',
+        access_token: "mock-access-token",
+        refresh_token: "mock-refresh-token",
         expires_in: 3600,
         expires_at: Math.floor(Date.now() / 1000) + 3600,
-        token_type: 'bearer',
+        token_type: "bearer",
         user: mockUser,
       };
 
@@ -236,8 +267,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: mockUser.id,
         email: email,
         name: name,
-        role: 'user',
-        status: 'active',
+        role: "user",
+        status: "active",
         avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
         xp: 0,
         level: 1,
@@ -266,33 +297,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (authError || !data.user) {
         setLoading(false);
-        return { data: null, error: authError || new Error('User creation failed') };
+        return {
+          data: null,
+          error: authError || new Error("User creation failed"),
+        };
       }
 
       // Create profile in users table
-      const { error: profileError } = await supabase.from('users').insert([
-      {
-        id: data.user.id,
-        email,
-        name,
-        role: 'user',
-        status: 'active',
-        xp: 0,
-        level: 1,
-      },
-    ]);
+      const { error: profileError } = await supabase.from("users").insert([
+        {
+          id: data.user.id,
+          email,
+          name,
+          role: "user",
+          status: "active",
+          xp: 0,
+          level: 1,
+        },
+      ]);
 
-    if (profileError) {
-      console.error('Error creating user profile:', profileError);
+      if (profileError) {
+        console.error("Error creating user profile:", profileError);
+        setLoading(false);
+        return {
+          data: null,
+          error: new Error("Failed to create user profile. Please try again."),
+        };
+      }
+
       setLoading(false);
-      return { data: null, error: new Error('Failed to create user profile. Please try again.') };
+      return {
+        data: data.session,
+        error: null,
+      };
+    } catch (error: any) {
+      setLoading(false);
+      if (error.message?.includes("Failed to fetch")) {
+        return {
+          data: null,
+          error: new Error(
+            "Unable to connect to authentication service. Please check your internet connection.",
+          ),
+        };
+      }
+      return { data: null, error };
     }
-
-    setLoading(false);
-    return {
-      data: data.session,
-      error: null
-    };
   };
 
   const signOut = async () => {
@@ -300,45 +349,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+    if (
+      !supabaseUrl ||
+      !supabaseAnonKey ||
+      supabaseUrl === "your-supabase-url" ||
+      supabaseAnonKey === "your-supabase-anon-key" ||
+      supabaseUrl.includes("placeholder")
+    ) {
       // Mock sign out
-      console.warn('Supabase not configured - using mock sign out');
+      console.warn("Supabase not configured - using mock sign out");
     } else {
       try {
         await supabase.auth.signOut();
       } catch (error) {
-        console.error('Error signing out:', error);
+        console.error("Error signing out:", error);
       }
     }
 
     setSession(null);
     setUser(null);
     setProfile(null);
-    navigate('/');
+    navigate("/");
   };
 
   const updateProfile = async (updates: any) => {
     if (!user) {
-      return { data: null, error: new Error('User not authenticated') };
+      return { data: null, error: new Error("User not authenticated") };
     }
 
     // Check if Supabase is properly configured
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+    if (
+      !supabaseUrl ||
+      !supabaseAnonKey ||
+      supabaseUrl === "your-supabase-url" ||
+      supabaseAnonKey === "your-supabase-anon-key" ||
+      supabaseUrl.includes("placeholder")
+    ) {
       // Mock profile update
-      console.warn('Supabase not configured - using mock profile update');
-      const updatedProfile = { ...profile, ...updates, updated_at: new Date().toISOString() };
+      console.warn("Supabase not configured - using mock profile update");
+      const updatedProfile = {
+        ...profile,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      };
       setProfile(updatedProfile);
       return { data: updatedProfile, error: null };
     }
 
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from("users")
         .update(updates)
-        .eq('id', user.id)
+        .eq("id", user.id)
         .select()
         .single();
 
@@ -348,10 +413,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { data, error };
     } catch (error: any) {
-      if (error.message?.includes('Failed to fetch')) {
+      if (error.message?.includes("Failed to fetch")) {
         return {
           data: null,
-          error: new Error('Unable to update profile. Please check your internet connection.')
+          error: new Error(
+            "Unable to update profile. Please check your internet connection.",
+          ),
         };
       }
       return { data: null, error };
@@ -375,7 +442,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
