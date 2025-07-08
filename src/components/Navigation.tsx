@@ -29,7 +29,7 @@ import {
   Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useState, useRef, lazy } from "react";
 import { useClickSound } from "@/hooks/use-click-sound";
 
 const DOCK_HEIGHT = 128;
@@ -264,6 +264,7 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const scrollTimeoutRef = useRef<number | null>(null);
   
   // Preload all main navigation pages when dock is mounted
   useEffect(() => {
@@ -285,12 +286,17 @@ const Navigation = () => {
   }, []);
 
   const scrollToSection = (sectionId: string) => {
+    // Clear any existing timeout
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    
     // If we're not on the home page, navigate there first
     if (location.pathname !== "/") {
       navigate("/");
       // Wait for navigation to complete, then scroll
       // Use a longer timeout to ensure the page has fully loaded
-      const timer = setTimeout(() => {
+      scrollTimeoutRef.current = window.setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({
@@ -298,10 +304,8 @@ const Navigation = () => {
             block: "start",
           });
         }
-      }, 300);
+      }, 500);
       
-      // Clean up the timer if the component unmounts
-      return () => clearTimeout(timer);
     } else {
       // We're already on home page, just scroll
       const element = document.getElementById(sectionId);
@@ -313,6 +317,15 @@ const Navigation = () => {
       }
     }
   };
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const scrollToHome = () => {
     if (location.pathname !== "/") {
