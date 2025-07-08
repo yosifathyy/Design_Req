@@ -62,6 +62,7 @@ const CreateInvoice = lazy(() => import("./pages/admin/CreateInvoice"));
 const InvoiceReports = lazy(() => import("./pages/admin/InvoiceReports"));
 const CreateChat = lazy(() => import("./pages/admin/CreateChat"));
 const CreateProject = lazy(() => import("./pages/admin/CreateProject"));
+const CreateUser = lazy(() => import("./pages/admin/CreateUser"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
@@ -110,6 +111,7 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
+            <Route path="users/create" element={<CreateUser />} />
             <Route path="teams" element={<TeamManagement />} />
             <Route path="permissions" element={<PermissionsManagement />} />
             <Route path="projects" element={<ProjectsList />} />
