@@ -33,6 +33,14 @@ import { AdminLayout } from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProjectKanban from "./pages/admin/ProjectKanban";
 import UsersManagement from "./pages/admin/UsersManagement";
+import TeamManagement from "./pages/admin/TeamManagement";
+import PermissionsManagement from "./pages/admin/PermissionsManagement";
+import ProjectsList from "./pages/admin/ProjectsList";
+import ProjectAssignments from "./pages/admin/ProjectAssignments";
+import AdminChat from "./pages/admin/AdminChat";
+import AdminInvoices from "./pages/admin/AdminInvoices";
+import SystemAlerts from "./pages/admin/SystemAlerts";
+import AuditLogs from "./pages/admin/AuditLogs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -70,8 +78,16 @@ const AppContent = () => {
         <Route path="/requests" element={<Requests />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="projects/kanban" element={<ProjectKanban />} />
           <Route path="users" element={<UsersManagement />} />
+          <Route path="teams" element={<TeamManagement />} />
+          <Route path="permissions" element={<PermissionsManagement />} />
+          <Route path="projects" element={<ProjectsList />} />
+          <Route path="projects/kanban" element={<ProjectKanban />} />
+          <Route path="projects/assignments" element={<ProjectAssignments />} />
+          <Route path="chat" element={<AdminChat />} />
+          <Route path="invoices" element={<AdminInvoices />} />
+          <Route path="alerts" element={<SystemAlerts />} />
+          <Route path="audit" element={<AuditLogs />} />
         </Route>
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
