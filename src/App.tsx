@@ -41,6 +41,9 @@ import AdminChat from "./pages/admin/AdminChat";
 import AdminInvoices from "./pages/admin/AdminInvoices";
 import SystemAlerts from "./pages/admin/SystemAlerts";
 import AuditLogs from "./pages/admin/AuditLogs";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminContent from "./pages/admin/AdminContent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -88,6 +91,9 @@ const AppContent = () => {
           <Route path="invoices" element={<AdminInvoices />} />
           <Route path="alerts" element={<SystemAlerts />} />
           <Route path="audit" element={<AuditLogs />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="content" element={<AdminContent />} />
         </Route>
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
