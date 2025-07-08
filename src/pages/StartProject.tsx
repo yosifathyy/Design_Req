@@ -41,8 +41,6 @@ import {
   Heart,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
-
 const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
@@ -56,23 +54,6 @@ const StartProject = () => {
     budget: "",
     files: [] as File[],
   });
-
-  // Preload the Index component when StartProject mounts
-  useEffect(() => {
-    // This will trigger the dynamic import of the Index component
-    // and load it in the background for instant navigation
-    const preloadIndex = async () => {
-      try {
-        // Load the Index component in the background
-        await import("./Index");
-        console.log("Home page components preloaded successfully");
-      } catch (error) {
-        console.error("Failed to preload home page components:", error);
-      }
-    };
-
-    preloadIndex();
-  }, []);
 
   const projectTypes = [
     {

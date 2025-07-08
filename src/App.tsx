@@ -14,9 +14,9 @@ import GSAPScrollProgress from "@/components/GSAPScrollProgress";
 import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
 
-// Import Index component eagerly to prevent loading screens when navigating from start-project
+// Import main components eagerly to prevent loading screens
 import Index from "./pages/Index";
-const StartProject = lazy(() => import("./pages/StartProject"));
+import StartProject from "./pages/StartProject";
 const Services = lazy(() => import("./pages/Services"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const About = lazy(() => import("./pages/About"));
