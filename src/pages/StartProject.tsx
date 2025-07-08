@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useClickSound } from "@/hooks/use-click-sound";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,11 +41,17 @@ import {
   Heart,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { lazy } from "react";
+
+// Preload the Index component
+const Index = lazy(() => import("./Index"));
 
 const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
   const { playClickSound, playHoverSound } = useClickSound();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     projectName: "",
     description: "",
@@ -54,6 +60,23 @@ const StartProject = () => {
     budget: "",
     files: [] as File[],
   });
+  
+  // Preload the Index component when StartProject mounts
+  useEffect(() => {
+    // This will trigger the dynamic import of the Index component
+    // and load it in the background
+    const preloadIndex = async () => {
+      try {
+        // This will load the Index component in the background
+        await import("./Index");
+        console.log("Home page components preloaded successfully");
+      } catch (error) {
+        console.error("Failed to preload home page components:", error);
+      }
+    };
+    
+    preloadIndex();
+  }, []);
 
   const projectTypes = [
     {
