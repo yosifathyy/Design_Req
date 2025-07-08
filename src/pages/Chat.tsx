@@ -129,6 +129,106 @@ const Chat: React.FC = () => {
     }
   }, [user, requestId]);
 
+  // Realtime subscription for new messages
+  useEffect(() => {
+    if (!chatId || !user) return;
+
+    const messageSubscription = supabase
+      .channel(`messages-${chatId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `chat_id=eq.${chatId}`,
+        },
+        async (payload) => {
+          console.log("New message received:", payload);
+
+          // Add the new message to the UI
+          const newMessage = payload.new;
+
+          // Try to enrich with sender data
+          try {
+            const { data: sender } = await supabase
+              .from("users")
+              .select("id, name, email, avatar_url, role")
+              .eq("id", newMessage.sender_id)
+              .maybeSingle();
+
+            const enrichedMessage = {
+              ...newMessage,
+              sender: sender || {
+                id: newMessage.sender_id,
+                name: "Unknown User",
+                email: "",
+                avatar_url: null,
+                role: "user",
+              },
+            };
+
+            setMessages((prev) => {
+              // Check if message already exists to avoid duplicates
+              const messageExists = prev.some(
+                (msg) => msg.id === enrichedMessage.id,
+              );
+              if (messageExists) return prev;
+
+              return [...prev, enrichedMessage];
+            });
+
+            // Animate new message
+            setTimeout(() => {
+              const newMessageEl = messagesRef.current?.lastElementChild;
+              if (newMessageEl) {
+                gsap.fromTo(
+                  newMessageEl,
+                  { opacity: 0, x: 50, scale: 0.9 },
+                  {
+                    opacity: 1,
+                    x: 0,
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "back.out(1.2)",
+                  },
+                );
+              }
+            }, 50);
+          } catch (error) {
+            console.error("Error enriching message:", error);
+            // Add basic message if enrichment fails
+            setMessages((prev) => {
+              const messageExists = prev.some(
+                (msg) => msg.id === newMessage.id,
+              );
+              if (messageExists) return prev;
+
+              return [
+                ...prev,
+                {
+                  ...newMessage,
+                  sender: {
+                    id: newMessage.sender_id,
+                    name: "Unknown User",
+                    email: "",
+                    avatar_url: null,
+                    role: "user",
+                  },
+                },
+              ];
+            });
+          }
+        },
+      )
+      .subscribe();
+
+    // Cleanup subscription on unmount
+    return () => {
+      messageSubscription.unsubscribe();
+    };
+  }, [chatId, user]);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
