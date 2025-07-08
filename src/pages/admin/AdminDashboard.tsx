@@ -327,11 +327,11 @@ const AdminDashboard: React.FC = () => {
               Active Projects
             </p>
             <p className="text-3xl font-display font-bold text-black">
-              {mockAdminProjects.length}
+              {data.projects.length}
             </p>
             <p className="text-sm text-black/70">
               {
-                mockAdminProjects.filter((p) => p.status === "in-progress")
+                data.projects.filter((p: any) => p.status === "in-progress")
                   .length
               }{" "}
               in progress
