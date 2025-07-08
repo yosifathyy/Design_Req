@@ -29,8 +29,34 @@ const CreateChat: React.FC = () => {
   const [initialMessage, setInitialMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Load users and projects
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [usersData, projectsData] = await Promise.all([
+          getAdminUsers(),
+          getAdminProjects(),
+        ]);
+        setUsers(usersData);
+        setProjects(projectsData);
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
