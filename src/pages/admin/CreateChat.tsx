@@ -208,8 +208,15 @@ const CreateChat: React.FC = () => {
                     {selectedProjectData.title}
                   </h4>
                   <div className="text-sm text-black/70">
-                    <p>Client: {selectedProjectData.clientName}</p>
+                    <p>
+                      Client:{" "}
+                      {selectedProjectData.client?.name || "Unknown Client"}
+                    </p>
                     <p>Status: {selectedProjectData.status}</p>
+                    <p>
+                      Designer:{" "}
+                      {selectedProjectData.designer?.name || "Unassigned"}
+                    </p>
                   </div>
                 </div>
               )}
