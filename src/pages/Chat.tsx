@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { getChatByRequestId, createChat, getMessages, sendMessage, getDesignRequestById } from "@/lib/api";
+import {
+  getChatByRequestId,
+  createChat,
+  getMessages,
+  sendMessage,
+  getDesignRequestById,
+} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -38,45 +44,44 @@ const Chat: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Get request ID from URL query params
-  const requestId = new URLSearchParams(location.search).get('request');
+  const requestId = new URLSearchParams(location.search).get("request");
 
   useEffect(() => {
     const initializeChat = async () => {
       if (!user || !requestId) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Get project details
         const requestData = await getDesignRequestById(requestId);
         setProjectDetails(requestData);
-        
+
         // Get or create chat
         let chat = await getChatByRequestId(requestId);
-        
+
         if (!chat) {
           // Create new chat with user and designer (if assigned)
           const participants = [user.id];
           if (requestData.designer_id) {
             participants.push(requestData.designer_id);
           }
-          
+
           chat = await createChat(requestId, participants);
         }
-        
+
         setChatId(chat.id);
-        
+
         // Get messages
         const chatMessages = await getMessages(chat.id);
         setMessages(chatMessages);
-        
-      } catch (error) {
-        console.error('Error initializing chat:', error);
+      } catch (error: any) {
+        console.error("Error initializing chat:", error?.message || error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user && requestId) {
       initializeChat();
     }
@@ -154,7 +159,7 @@ const Chat: React.FC = () => {
       try {
         await sendMessage(chatId, user.id, message.trim());
       } catch (error) {
-        console.error('Error sending message:', error);
+        console.error("Error sending message:", error);
       }
     }
 
@@ -177,7 +182,7 @@ const Chat: React.FC = () => {
     }, 50);
 
     // Only simulate designer response if we're in demo mode
-    if (process.env.NODE_ENV === 'development' && projectDetails?.designer_id) {
+    if (process.env.NODE_ENV === "development" && projectDetails?.designer_id) {
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
@@ -250,12 +255,14 @@ const Chat: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-festival-orange border-4 border-black rounded-full flex items-center justify-center">
                   <span className="text-lg font-bold">
-                    {projectDetails?.designer_id ? 'D' : '?'}
+                    {projectDetails?.designer_id ? "D" : "?"}
                   </span>
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-black">
-                    {projectDetails?.designer_id ? 'Designer' : 'Waiting for assignment'}
+                    {projectDetails?.designer_id
+                      ? "Designer"
+                      : "Waiting for assignment"}
                   </h2>
                   <div className="flex items-center gap-2">
                     <Circle className="w-3 h-3 fill-green-500 text-green-500" />
@@ -268,7 +275,7 @@ const Chat: React.FC = () => {
             </div>
 
             <div className="text-sm text-black/70">
-              Project: {projectDetails?.title || 'Loading...'}
+              Project: {projectDetails?.title || "Loading..."}
             </div>
           </div>
         </div>
@@ -287,7 +294,9 @@ const Chat: React.FC = () => {
             <div className="flex flex-col items-center justify-center h-full text-black/50">
               <MessageCircle className="w-16 h-16 mb-4" />
               <p className="text-lg font-medium">No messages yet</p>
-              <p className="text-sm">Start the conversation by sending a message</p>
+              <p className="text-sm">
+                Start the conversation by sending a message
+              </p>
             </div>
           ) : (
             messages.map((msg) => (
