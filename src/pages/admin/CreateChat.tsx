@@ -83,6 +83,7 @@ const CreateChat: React.FC = () => {
   };
 
   const handleCreateChat = async () => {
+    // Enhanced validation
     if (selectedUsers.length === 0) {
       alert("Please select at least one participant");
       return;
@@ -93,8 +94,35 @@ const CreateChat: React.FC = () => {
       return;
     }
 
+    // Validate that the selected project exists
+    const projectExists = projects.some((p) => p.id === selectedProject);
+    if (!projectExists) {
+      alert(
+        "Selected project not found. Please refresh the page and try again.",
+      );
+      return;
+    }
+
+    // Validate that all selected users exist
+    const invalidUsers = selectedUsers.filter(
+      (userId) => !users.some((u) => u.id === userId),
+    );
+    if (invalidUsers.length > 0) {
+      alert(
+        "Some selected users are no longer available. Please refresh and try again.",
+      );
+      return;
+    }
+
     try {
       setCreating(true);
+
+      console.log("Creating chat with:", {
+        projectId: selectedProject,
+        participants: selectedUsers,
+        project: projects.find((p) => p.id === selectedProject),
+        users: selectedUsers.map((id) => users.find((u) => u.id === id)),
+      });
 
       // Create chat with participants
       const chat = await createChat(selectedProject, selectedUsers);
