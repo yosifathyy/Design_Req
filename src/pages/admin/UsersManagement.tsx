@@ -33,11 +33,32 @@ const UsersManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [users, setUsers] = useState(mockAdminUsers);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
+
+  // Load users data
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const usersData = await getAdminUsers();
+        setUsers(usersData);
+      } catch (err: any) {
+        console.error("Failed to load users:", err);
+        setError(err.message || "Failed to load users");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current || !tableRef.current) return;
