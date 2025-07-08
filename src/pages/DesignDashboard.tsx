@@ -2,7 +2,12 @@ import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserProfile, getDesignRequests, getInvoices } from "@/lib/api";
+import {
+  getUserProfile,
+  getDesignRequests,
+  getInvoices,
+  createUserProfileIfMissing,
+} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { XPProgress } from "@/components/dashboard/XPProgress";
@@ -43,22 +48,33 @@ const DesignDashboard: React.FC = () => {
         setLoading(true);
 
         // Fetch user profile
-        const profile = await getUserProfile(user.id);
-        setUserProfile(profile);
+        let profile = await getUserProfile(user.id);
 
-        // If no profile found, use fallback data
+        // If no profile found, try to create one
+        if (!profile && user.email) {
+          console.log("No user profile found, attempting to create one...");
+          profile = await createUserProfileIfMissing(
+            user.id,
+            user.email,
+            user.user_metadata?.name || user.email.split("@")[0],
+          );
+        }
+
+        // If still no profile, use fallback data
         if (!profile) {
-          console.warn("No user profile found, using fallback data");
-          setUserProfile({
+          console.warn("Could not create user profile, using fallback data");
+          profile = {
             id: user.id,
-            email: user.email,
+            email: user.email || "unknown@example.com",
             name: user.email?.split("@")[0] || "User",
             xp: 0,
             level: 1,
             role: "user",
             status: "active",
-          });
+          };
         }
+
+        setUserProfile(profile);
 
         // Fetch requests
         const requests = await getDesignRequests(user.id);
