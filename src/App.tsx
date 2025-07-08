@@ -122,6 +122,7 @@ const AppContent = () => {
             <Route path="permissions" element={<PermissionsManagement />} />
             <Route path="projects" element={<ProjectsList />} />
             <Route path="projects/create" element={<CreateProject />} />
+            <Route path="projects/:id" element={<ProjectDetail />} />
             <Route path="projects/:id/edit" element={<EditProject />} />
             <Route path="projects/kanban" element={<ProjectKanban />} />
             <Route
