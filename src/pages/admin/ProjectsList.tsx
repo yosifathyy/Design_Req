@@ -57,7 +57,8 @@ const ProjectsList: React.FC = () => {
       project.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.client?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.designer?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || project.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" || project.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -121,7 +122,9 @@ const ProjectsList: React.FC = () => {
             className="border-4 border-black"
             disabled={loading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           <Button
@@ -162,20 +165,23 @@ const ProjectsList: React.FC = () => {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-festival-orange" />
-            <p className="text-lg font-medium text-black">Loading projects...</p>
+            <p className="text-lg font-medium text-black">
+              Loading projects...
+            </p>
           </div>
         </div>
       ) : filteredProjects.length === 0 ? (
         <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
           <div className="text-6xl mb-4">📁</div>
           <h3 className="text-2xl font-bold text-black mb-2">
-            {searchQuery || statusFilter !== "all" ? "No projects found" : "No projects yet"}
+            {searchQuery || statusFilter !== "all"
+              ? "No projects found"
+              : "No projects yet"}
           </h3>
           <p className="text-black/70 mb-6">
             {searchQuery || statusFilter !== "all"
               ? "Try adjusting your search or filters"
-              : "Create your first project to get started"
-            }
+              : "Create your first project to get started"}
           </p>
           {!searchQuery && statusFilter === "all" && (
             <Button
@@ -190,87 +196,93 @@ const ProjectsList: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {filteredProjects.map((project) => (
-          <Card
-            key={project.id}
-            className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6"
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-xl font-bold text-black">
-                    {project.title}
-                  </h3>
-                  <Badge
-                    className={`${getStatusColor(project.status)} text-white border-2 border-black`}
-                  >
-                    {project.status.replace("-", " ").toUpperCase()}
-                  </Badge>
-                  {project.priority && (
+            <Card
+              key={project.id}
+              className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <h3 className="text-xl font-bold text-black">
+                      {project.title}
+                    </h3>
                     <Badge
-                      className={`${getPriorityColor(project.priority)} text-white border-2 border-black`}
+                      className={`${getStatusColor(project.status)} text-white border-2 border-black`}
                     >
-                      {project.priority.toUpperCase()}
+                      {project.status.replace("-", " ").toUpperCase()}
                     </Badge>
-                  )}
+                    {project.priority && (
+                      <Badge
+                        className={`${getPriorityColor(project.priority)} text-white border-2 border-black`}
+                      >
+                        {project.priority.toUpperCase()}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-black/60" />
+                      <span className="text-black/70">
+                        Client: {project.client?.name || "Unknown Client"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-black/60" />
+                      <span className="text-black/70">
+                        Designer: {project.designer?.name || "Unassigned"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-black/60" />
+                      <span className="text-black/70">
+                        Created:{" "}
+                        {new Date(project.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-black/60" />
+                      <span className="text-black/70">
+                        Price: ${project.price || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-black/70">
+                        Status:{" "}
+                        {project.status?.replace("-", " ")?.toUpperCase() ||
+                          "UNKNOWN"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-black/60" />
-                    <span className="text-black/70">
-                      Client: {project.client?.name || "Unknown Client"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-black/60" />
-                    <span className="text-black/70">
-                      Designer: {project.designer?.name || "Unassigned"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-black/60" />
-                    <span className="text-black/70">
-                      Created: {new Date(project.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-black/60" />
-                    <span className="text-black/70">
-                      Price: ${project.price || 0}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-black/70">
-                      Status: {project.status?.replace("-", " ")?.toUpperCase() || "UNKNOWN"}
-                    </span>
-                  </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => navigate(`/admin/projects/${project.id}`)}
+                    variant="outline"
+                    size="sm"
+                    className="border-4 border-black"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      navigate(`/admin/projects/${project.id}/edit`)
+                    }
+                    variant="outline"
+                    size="sm"
+                    className="border-4 border-black"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => navigate(`/admin/projects/${project.id}`)}
-                  variant="outline"
-                  size="sm"
-                  className="border-4 border-black"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View
-                </Button>
-                <Button
-                  onClick={() => navigate(`/admin/projects/${project.id}/edit`)}
-                  variant="outline"
-                  size="sm"
-                  className="border-4 border-black"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
