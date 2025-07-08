@@ -8,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  testSupabaseConnection,
+  checkDatabaseSchema,
+} from "@/lib/supabase-test";
+import {
   Eye,
   EyeOff,
   Mail,
@@ -42,6 +46,19 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
+
+    // Test Supabase connection on load
+    testSupabaseConnection().then((result) => {
+      if (result.success) {
+        console.log("✅ Supabase connected successfully");
+      } else {
+        console.error("❌ Supabase connection issue:", result.error);
+      }
+    });
+
+    checkDatabaseSchema().then((results) => {
+      console.log("📋 Database schema check:", results);
+    });
 
     // Initial page animation
     const tl = gsap.timeline();
