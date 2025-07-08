@@ -270,14 +270,43 @@ export const getDesignRequests = async (userId: string, filter?: string) => {
 };
 
 export const getDesignRequestById = async (requestId: string) => {
-  const { data, error } = await supabase
-    .from("design_requests")
-    .select("*, files(*)")
-    .eq("id", requestId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .select("*, files(*)")
+      .eq("id", requestId)
+      .maybeSingle();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (
+        error.message?.includes('relation "design_requests" does not exist')
+      ) {
+        throw new Error(
+          "Design requests table does not exist. Please run the database setup script.",
+        );
+      }
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error(
+        "Request not found or you do not have permission to view it.",
+      );
+    }
+
+    return data;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      throw new Error(
+        "Could not fetch request details. Database table may not exist yet.",
+      );
+    }
+    throw error;
+  }
 };
 
 export const updateDesignRequest = async (requestId: string, updates: any) => {
