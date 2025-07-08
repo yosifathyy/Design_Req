@@ -22,14 +22,57 @@ const ProjectsList: React.FC = () => {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    const loadProjects = async () => {
+      try {
+        setLoading(true);
+        const projectsData = await getAdminProjects();
+        setProjects(projectsData);
+      } catch (error) {
+        console.error("Failed to load projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
+
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
+      project.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.client?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.designer?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || project.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const refreshProjects = async () => {
+    try {
+      setLoading(true);
+      const projectsData = await getAdminProjects();
+      setProjects(projectsData);
+    } catch (error) {
+      console.error("Failed to refresh projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
