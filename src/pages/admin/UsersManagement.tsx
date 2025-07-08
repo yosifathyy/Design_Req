@@ -138,7 +138,7 @@ const UsersManagement: React.FC = () => {
     }
   };
 
-  const handleUserAction = (userId: string, action: string) => {
+  const handleUserAction = async (userId: string, action: string) => {
     const userCard = document.querySelector(`[data-user-id="${userId}"]`);
     if (userCard) {
       gsap.to(userCard, {
@@ -150,38 +150,67 @@ const UsersManagement: React.FC = () => {
       });
     }
 
-    switch (action) {
-      case "edit":
-        // Navigate to user edit page or open edit modal
-        navigate(`/admin/users/edit/${userId}`);
-        break;
-      case "suspend":
-        setUsers((prev) =>
-          prev.map((user) =>
-            user.id === userId
-              ? { ...user, status: "suspended" as const }
-              : user,
-          ),
-        );
-        break;
-      case "activate":
-        setUsers((prev) =>
-          prev.map((user) =>
-            user.id === userId ? { ...user, status: "active" as const } : user,
-          ),
-        );
-        break;
-      case "delete":
-        gsap.to(userCard, {
-          x: 100,
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.in",
-          onComplete: () => {
-            setUsers((prev) => prev.filter((user) => user.id !== userId));
-          },
-        });
-        break;
+    try {
+      switch (action) {
+        case "edit":
+          // Navigate to user edit page or open edit modal
+          navigate(`/admin/users/edit/${userId}`);
+          break;
+        case "suspend":
+          await suspendUser(userId, "current-admin-id"); // TODO: Get real admin ID
+          setUsers((prev) =>
+            prev.map((user) =>
+              user.id === userId
+                ? { ...user, status: "suspended" as const }
+                : user,
+            ),
+          );
+          break;
+        case "activate":
+          await activateUser(userId, "current-admin-id"); // TODO: Get real admin ID
+          setUsers((prev) =>
+            prev.map((user) =>
+              user.id === userId
+                ? { ...user, status: "active" as const }
+                : user,
+            ),
+          );
+          break;
+        case "delete":
+          if (
+            confirm(
+              "Are you sure you want to delete this user? This action cannot be undone.",
+            )
+          ) {
+            gsap.to(userCard, {
+              x: 100,
+              opacity: 0,
+              duration: 0.3,
+              ease: "power2.in",
+              onComplete: () => {
+                setUsers((prev) => prev.filter((user) => user.id !== userId));
+              },
+            });
+            // TODO: Implement real user deletion API call
+          }
+          break;
+      }
+    } catch (err: any) {
+      console.error(`Failed to ${action} user:`, err);
+      alert(`Failed to ${action} user: ${err.message}`);
+    }
+  };
+
+  const refreshUsers = async () => {
+    try {
+      setLoading(true);
+      const usersData = await getAdminUsers();
+      setUsers(usersData);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message || "Failed to refresh users");
+    } finally {
+      setLoading(false);
     }
   };
 
