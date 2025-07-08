@@ -93,7 +93,7 @@ const AppContent = () => {
       <RetroCursor enabled={!isLoading} />
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Index isLoadingComplete={!isLoading} />} />
+          <Route path="/" element={<Index isLoadingComplete={true} />} />
           <Route path="/start-project" element={<StartProject />} />
           <Route path="/services" element={<Services />} />
           <Route path="/portfolio" element={<Portfolio />} />
