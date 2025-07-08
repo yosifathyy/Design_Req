@@ -296,8 +296,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
+    // Check if Supabase is properly configured
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+      // Mock sign out
+      console.warn('Supabase not configured - using mock sign out');
+    } else {
+      try {
+        await supabase.auth.signOut();
+      } catch (error) {
+        console.error('Error signing out:', error);
+      }
+    }
+
+    setSession(null);
+    setUser(null);
+    setProfile(null);
+    navigate('/');
   };
 
   const updateProfile = async (updates: any) => {
@@ -305,18 +322,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { data: null, error: new Error('User not authenticated') };
     }
 
-    const { data, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', user.id)
-      .select()
-      .single();
+    // Check if Supabase is properly configured
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!error) {
-      setProfile(data);
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your-supabase-url' || supabaseAnonKey === 'your-supabase-anon-key' || supabaseUrl.includes('placeholder')) {
+      // Mock profile update
+      console.warn('Supabase not configured - using mock profile update');
+      const updatedProfile = { ...profile, ...updates, updated_at: new Date().toISOString() };
+      setProfile(updatedProfile);
+      return { data: updatedProfile, error: null };
     }
 
-    return { data, error };
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', user.id)
+        .select()
+        .single();
+
+      if (!error) {
+        setProfile(data);
+      }
+
+      return { data, error };
+    } catch (error: any) {
+      if (error.message?.includes('Failed to fetch')) {
+        return {
+          data: null,
+          error: new Error('Unable to update profile. Please check your internet connection.')
+        };
+      }
+      return { data: null, error };
+    }
   };
 
   const value = {
