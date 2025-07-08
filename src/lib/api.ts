@@ -763,55 +763,352 @@ export const submitContactForm = async (formData: {
 
 // Admin functions
 export const getAdminUsers = async () => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "users" does not exist')) {
+        console.warn("Users table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch users:", error.message);
+    return [];
+  }
 };
 
 export const getAdminProjects = async () => {
-  const { data, error } = await supabase
-    .from("design_requests")
-    .select(
-      `
-      *,
-      client:user_id(id, name, email),
-      designer:designer_id(id, name, email),
-      files(*)
-    `,
-    )
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .select(
+        `
+        *,
+        client:user_id(id, name, email, avatar_url),
+        designer:designer_id(id, name, email, avatar_url),
+        files(*)
+      `,
+      )
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (
+        error.message?.includes('relation "design_requests" does not exist')
+      ) {
+        console.warn("Design requests table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch projects:", error.message);
+    return [];
+  }
+};
+
+export const getAdminInvoices = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("invoices")
+      .select(
+        `
+        *,
+        request:request_id(id, title, user_id)
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      if (error.message?.includes('relation "invoices" does not exist')) {
+        console.warn("Invoices table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch invoices:", error.message);
+    return [];
+  }
 };
 
 export const getSystemAlerts = async () => {
-  const { data, error } = await supabase
-    .from("system_alerts")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("system_alerts")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "system_alerts" does not exist')) {
+        console.warn("System alerts table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch system alerts:", error.message);
+    return [];
+  }
 };
 
 export const getAuditLogs = async () => {
-  const { data, error } = await supabase
-    .from("audit_logs")
-    .select(
-      `
-      *,
-      user:user_id(name)
-    `,
-    )
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("audit_logs")
+      .select(
+        `
+        *,
+        user:user_id(name)
+      `,
+      )
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "audit_logs" does not exist')) {
+        console.warn("Audit logs table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch audit logs:", error.message);
+    return [];
+  }
+};
+
+export const getAdminAnalytics = async () => {
+  try {
+    // Get basic counts and metrics from the database
+    const [usersResult, projectsResult, invoicesResult] =
+      await Promise.allSettled([
+        supabase.from("users").select("*"),
+        supabase.from("design_requests").select("*"),
+        supabase.from("invoices").select("*"),
+      ]);
+
+    // Extract data or fallback to empty arrays
+    const users =
+      usersResult.status === "fulfilled" ? usersResult.value.data || [] : [];
+    const projects =
+      projectsResult.status === "fulfilled"
+        ? projectsResult.value.data || []
+        : [];
+    const invoices =
+      invoicesResult.status === "fulfilled"
+        ? invoicesResult.value.data || []
+        : [];
+
+    // Calculate analytics metrics
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const recentProjects = projects.filter(
+      (p) => new Date(p.created_at) >= thirtyDaysAgo,
+    );
+    const completedProjects = projects.filter((p) => p.status === "completed");
+    const activeProjects = projects.filter((p) =>
+      ["submitted", "in-progress"].includes(p.status),
+    );
+    const paidInvoices = invoices.filter((i) => i.status === "paid");
+    const pendingInvoices = invoices.filter((i) => i.status === "pending");
+    const activeUsers = users.filter((u) => u.status === "active");
+    const designers = users.filter(
+      (u) => u.role === "designer" && u.status === "active",
+    );
+
+    // Calculate financial metrics
+    const totalRevenue = paidInvoices.reduce(
+      (sum, inv) => sum + (inv.amount || 0),
+      0,
+    );
+    const pendingRevenue = pendingInvoices.reduce(
+      (sum, inv) => sum + (inv.amount || 0),
+      0,
+    );
+    const averageInvoiceSize =
+      paidInvoices.length > 0 ? totalRevenue / paidInvoices.length : 0;
+
+    // Calculate average turnaround time (simplified)
+    const avgTurnaroundTime =
+      completedProjects.length > 0
+        ? completedProjects.reduce((sum, p) => {
+            const created = new Date(p.created_at);
+            const updated = new Date(p.updated_at);
+            return sum + (updated.getTime() - created.getTime());
+          }, 0) /
+          completedProjects.length /
+          (1000 * 60 * 60 * 24)
+        : 0; // Convert to days
+
+    return {
+      clientEngagement: {
+        activeSessions: activeUsers.length,
+        requestsPerWeek: Math.round(recentProjects.length / 4),
+        averageProjectValue:
+          projects.length > 0
+            ? projects.reduce((sum, p) => sum + (p.price || 0), 0) /
+              projects.length
+            : 0,
+        clientRetentionRate:
+          users.length > 0 ? activeUsers.length / users.length : 0,
+      },
+      designerProductivity: {
+        averageTurnaroundTime: Math.round(avgTurnaroundTime * 10) / 10,
+        completedRequestsThisMonth: recentProjects.filter(
+          (p) => p.status === "completed",
+        ).length,
+        utilizationRate:
+          designers.length > 0
+            ? activeProjects.length / designers.length / 10
+            : 0, // Rough estimate
+        customerSatisfaction: 4.5, // Could be calculated from ratings if available
+      },
+      financialMetrics: {
+        monthlyRecurringRevenue: Math.round(totalRevenue),
+        averageInvoiceSize: Math.round(averageInvoiceSize),
+        outstandingBalance: Math.round(pendingRevenue),
+        collectionRate:
+          invoices.length > 0 ? paidInvoices.length / invoices.length : 0,
+      },
+      systemHealth: {
+        uptime: 0.999, // Mock value - would need real monitoring
+        errorRate: 0.003, // Mock value - would need real monitoring
+        averageLoadTime: 1.2, // Mock value - would need real monitoring
+        activeUsers: activeUsers.length,
+      },
+    };
+  } catch (error: any) {
+    console.warn("Could not fetch analytics data:", error.message);
+    // Return fallback data
+    return {
+      clientEngagement: {
+        activeSessions: 0,
+        requestsPerWeek: 0,
+        averageProjectValue: 0,
+        clientRetentionRate: 0,
+      },
+      designerProductivity: {
+        averageTurnaroundTime: 0,
+        completedRequestsThisMonth: 0,
+        utilizationRate: 0,
+        customerSatisfaction: 0,
+      },
+      financialMetrics: {
+        monthlyRecurringRevenue: 0,
+        averageInvoiceSize: 0,
+        outstandingBalance: 0,
+        collectionRate: 0,
+      },
+      systemHealth: {
+        uptime: 0,
+        errorRate: 0,
+        averageLoadTime: 0,
+        activeUsers: 0,
+      },
+    };
+  }
+};
+
+export const assignProjectToDesigner = async (
+  projectId: string,
+  designerId: string,
+) => {
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .update({ designer_id: designerId, status: "in-progress" })
+      .eq("id", projectId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Log the assignment
+    await createAuditLog({
+      user_id: designerId,
+      action: "project.assigned",
+      resource: "design_request",
+      resource_id: projectId,
+      details: { projectId, designerId },
+      ip_address: "127.0.0.1", // Should get real IP
+      user_agent: navigator.userAgent,
+      severity: "low",
+    });
+
+    return data;
+  } catch (error: any) {
+    console.error("Failed to assign project:", error.message);
+    throw error;
+  }
+};
+
+export const updateProjectStatus = async (
+  projectId: string,
+  status: string,
+) => {
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", projectId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    console.error("Failed to update project status:", error.message);
+    throw error;
+  }
+};
+
+export const createSystemAlert = async (alertData: {
+  type: "info" | "warning" | "error" | "success";
+  title: string;
+  message: string;
+  source: "system" | "payment" | "user" | "project";
+  action_url?: string;
+}) => {
+  try {
+    const { data, error } = await supabase
+      .from("system_alerts")
+      .insert([{ ...alertData, is_read: false }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    console.warn("Could not create system alert:", error.message);
+    return null;
+  }
+};
+
+export const markAlertAsRead = async (alertId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("system_alerts")
+      .update({ is_read: true })
+      .eq("id", alertId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    console.warn("Could not mark alert as read:", error.message);
+    return null;
+  }
 };
 
 export const createAuditLog = async (logData: any) => {
