@@ -2,14 +2,35 @@ import { supabase } from "./supabase";
 
 // User related functions
 export const getUserProfile = async (userId: string) => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", userId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "users" does not exist')) {
+        console.warn("users table does not exist yet");
+        return null;
+      }
+      throw error;
+    }
+    return data;
+  } catch (error: any) {
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("relation") ||
+      error.message?.includes("does not exist")
+    ) {
+      console.warn(
+        "Could not fetch user profile (table may not exist):",
+        error.message,
+      );
+      return null;
+    }
+    throw error;
+  }
 };
 
 export const updateUserXP = async (userId: string, xpAmount: number) => {
