@@ -331,13 +331,10 @@ const Chat: React.FC = () => {
             <div className="flex justify-center items-center h-full">
               <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
             </div>
-          ) : error &&
-            (error.includes("database policies need to be set up") ||
-              error.includes("Permission denied")) ? (
+          ) : error ? (
             <div className="flex justify-center items-center h-full">
-              <div className="max-w-2xl w-full">
-                <ChatPolicySetupHelper
-                  error={error}
+              <div className="max-w-4xl w-full">
+                <DatabaseDiagnostic
                   onRetry={() => {
                     setError(null);
                     setLoading(true);
