@@ -234,6 +234,34 @@ const NewRequest: React.FC = () => {
     } catch (error: any) {
       console.error("Error creating request:", error?.message || error);
       setIsSubmitting(false);
+
+      // Show user-friendly error message
+      const errorMessage =
+        error?.message ||
+        "An unexpected error occurred while creating your request.";
+
+      // Create error notification
+      const errorEl = document.createElement("div");
+      errorEl.className =
+        "fixed top-4 right-4 z-50 bg-red-50 border-2 border-red-500 p-4 rounded-lg shadow-lg max-w-md";
+      errorEl.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="text-red-500 text-xl">⚠️</div>
+          <div>
+            <h4 class="font-bold text-red-800 mb-1">Request Creation Failed</h4>
+            <p class="text-red-700 text-sm">${errorMessage}</p>
+            <p class="text-red-600 text-xs mt-2">Please check that your database is properly set up.</p>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(errorEl);
+
+      // Remove error after 5 seconds
+      setTimeout(() => {
+        errorEl.remove();
+      }, 5000);
+
       return;
     }
 
