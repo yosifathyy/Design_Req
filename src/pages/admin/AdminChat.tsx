@@ -1,12 +1,20 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { mockAdminProjects } from "@/lib/admin-data";
-import { MessageCircle, Search, Filter, Clock, User, Send } from "lucide-react";
+import { getAllChatsForAdmin, getMessages, respondToChat } from "@/lib/api";
+import {
+  MessageCircle,
+  Search,
+  Filter,
+  Clock,
+  User,
+  Send,
+  RefreshCw,
+} from "lucide-react";
 
 const AdminChat: React.FC = () => {
   const navigate = useNavigate();
