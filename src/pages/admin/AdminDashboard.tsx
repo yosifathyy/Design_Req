@@ -449,7 +449,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="p-6 space-y-4">
-            {mockSystemAlerts.slice(0, 4).map((alert) => (
+            {data.alerts.slice(0, 4).map((alert: any) => (
               <div
                 key={alert.id}
                 className={`p-3 border-2 border-black ${
@@ -478,12 +478,19 @@ const AdminDashboard: React.FC = () => {
                       {alert.message}
                     </p>
                     <span className="text-xs text-black/50">
-                      {new Date(alert.timestamp).toLocaleTimeString()}
+                      {new Date(alert.created_at).toLocaleTimeString()}
                     </span>
                   </div>
                 </div>
               </div>
             ))}
+
+            {data.alerts.length === 0 && (
+              <div className="p-6 text-center text-black/50">
+                <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500" />
+                <p className="text-sm">No alerts at this time</p>
+              </div>
+            )}
           </div>
         </Card>
 
