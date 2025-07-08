@@ -181,6 +181,12 @@ export const createUserProfileIfMissing = async (
 };
 
 export const findUserProfileByEmail = async (email: string) => {
+  // If Supabase is not configured, return null
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - cannot find user by email");
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
