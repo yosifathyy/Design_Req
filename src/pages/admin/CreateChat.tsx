@@ -342,12 +342,23 @@ const CreateChat: React.FC = () => {
           <div className="flex justify-center">
             <Button
               onClick={handleCreateChat}
-              disabled={selectedUsers.length === 0 || !chatTitle.trim()}
+              disabled={
+                selectedUsers.length === 0 || !selectedProject || creating
+              }
               className="text-xl font-display font-bold px-8 py-4 h-auto bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <MessageCircle className="w-6 h-6 mr-3" />
-              CREATE CHAT
-              <Send className="w-6 h-6 ml-3" />
+              {creating ? (
+                <>
+                  <RefreshCw className="w-6 h-6 mr-3 animate-spin" />
+                  CREATING...
+                </>
+              ) : (
+                <>
+                  <MessageCircle className="w-6 h-6 mr-3" />
+                  CREATE CHAT
+                  <Send className="w-6 h-6 ml-3" />
+                </>
+              )}
             </Button>
           </div>
         </div>
