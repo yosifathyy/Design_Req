@@ -122,20 +122,43 @@ const CreateChat: React.FC = () => {
         navigate(chat ? `/admin/chat/${chat.id}` : "/admin/chat");
       }, 2000);
     } catch (error: any) {
-      console.error("Failed to create chat:", error);
+      console.error("Failed to create chat - Full error object:", error);
+      console.error("Error type:", typeof error);
+      console.error("Error constructor:", error?.constructor?.name);
+      console.error("Error keys:", Object.keys(error || {}));
 
-      // Better error message extraction
+      // Comprehensive error message extraction
       let errorMessage = "Unknown error occurred";
-      if (typeof error === "string") {
-        errorMessage = error;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      } else if (error?.error_description) {
-        errorMessage = error.error_description;
-      } else if (error?.details) {
-        errorMessage = error.details;
-      } else {
-        errorMessage = JSON.stringify(error);
+
+      try {
+        if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (error?.message) {
+          errorMessage = error.message;
+        } else if (error?.error_description) {
+          errorMessage = error.error_description;
+        } else if (error?.details) {
+          errorMessage = error.details;
+        } else if (error?.hint) {
+          errorMessage = error.hint;
+        } else if (error?.code) {
+          errorMessage = `Database error (${error.code}): ${error.message || "Unknown error"}`;
+        } else if (error?.statusText) {
+          errorMessage = `HTTP error: ${error.statusText}`;
+        } else {
+          // Last resort: try to extract meaningful info
+          const errorStr = JSON.stringify(error, null, 2);
+          console.error("Error JSON:", errorStr);
+          errorMessage =
+            errorStr.length > 200
+              ? `Complex error occurred. Check console for details.`
+              : errorStr;
+        }
+      } catch (stringifyError) {
+        console.error("Error stringifying error:", stringifyError);
+        errorMessage = "Error occurred but could not be displayed";
       }
 
       alert(`Failed to create chat: ${errorMessage}`);
