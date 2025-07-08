@@ -1,9 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mockSystemAlerts } from "@/lib/admin-data";
+import { getSystemAlerts, markAlertAsRead } from "@/lib/api";
 import {
   AlertTriangle,
   Info,
@@ -12,6 +12,7 @@ import {
   Bell,
   Trash2,
   Eye,
+  RefreshCw,
 } from "lucide-react";
 
 const SystemAlerts: React.FC = () => {
