@@ -65,3 +65,5 @@ const SupabaseStatus: React.FC = () => {
     </Card>
   );
 };
+
+export default SupabaseStatus;
