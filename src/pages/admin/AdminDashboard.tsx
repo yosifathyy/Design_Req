@@ -568,28 +568,34 @@ const AdminDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="text-3xl font-display font-bold text-black mb-2">
-                {mockAnalyticsData.designerProductivity.averageTurnaroundTime}d
+                {data.analytics.designerProductivity.averageTurnaroundTime.toFixed(
+                  1,
+                )}
+                d
               </div>
               <div className="text-sm text-black/70">Avg. Turnaround</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-display font-bold text-black mb-2">
-                {mockAnalyticsData.designerProductivity.customerSatisfaction}/5
+                {data.analytics.designerProductivity.customerSatisfaction.toFixed(
+                  1,
+                )}
+                /5
               </div>
               <div className="text-sm text-black/70">Customer Rating</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-display font-bold text-black mb-2">
-                {(
-                  mockAnalyticsData.financialMetrics.collectionRate * 100
-                ).toFixed(0)}
+                {(data.analytics.financialMetrics.collectionRate * 100).toFixed(
+                  0,
+                )}
                 %
               </div>
               <div className="text-sm text-black/70">Collection Rate</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-display font-bold text-black mb-2">
-                {(mockAnalyticsData.systemHealth.errorRate * 100).toFixed(2)}%
+                {(data.analytics.systemHealth.errorRate * 100).toFixed(2)}%
               </div>
               <div className="text-sm text-black/70">Error Rate</div>
             </div>
