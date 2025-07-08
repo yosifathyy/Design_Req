@@ -65,18 +65,12 @@ const AdminInvoices: React.FC = () => {
     }
   };
 
-  const filteredInvoices = invoices.filter(
-    (invoice) =>
-      invoice.request?.title
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      invoice.id?.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredInvoices = invoices.filter((invoice) =>
+    invoice.request?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    invoice.id?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalRevenue = invoices.reduce(
-    (sum, inv) => sum + (inv.amount || 0),
-    0,
-  );
+  const totalRevenue = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
   const paidInvoices = invoices.filter((inv) => inv.status === "paid");
   const pendingInvoices = invoices.filter((inv) => inv.status === "pending");
 
@@ -167,15 +161,43 @@ const AdminInvoices: React.FC = () => {
           className="border-4 border-black"
           disabled={loading}
         >
-          <RefreshCw
-            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>
 
-      <div className="space-y-4">
-        {mockAdminInvoices.map((invoice) => (
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-festival-orange" />
+            <p className="text-lg font-medium text-black">Loading invoices...</p>
+          </div>
+        </div>
+      ) : filteredInvoices.length === 0 ? (
+        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
+          <div className="text-6xl mb-4">📄</div>
+          <h3 className="text-2xl font-bold text-black mb-2">
+            {searchQuery ? "No invoices found" : "No invoices yet"}
+          </h3>
+          <p className="text-black/70 mb-6">
+            {searchQuery
+              ? "Try adjusting your search terms"
+              : "Create your first invoice to get started"
+            }
+          </p>
+          {!searchQuery && (
+            <Button
+              onClick={() => navigate("/admin/invoices/create")}
+              className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create First Invoice
+            </Button>
+          )}
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredInvoices.map((invoice) => (
           <Card
             key={invoice.id}
             className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6"
