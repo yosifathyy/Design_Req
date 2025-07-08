@@ -67,17 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     if (error) {
-      // Check if the error is due to no rows returned (PGRST116)
-      if (error.code === 'PGRST116') {
-        // No user profile found - this is expected for some users
-        setProfile(null);
-        return;
-      }
-      
-      // Log other errors
       console.error('Error fetching user profile:', error);
       setProfile(null);
       return;
