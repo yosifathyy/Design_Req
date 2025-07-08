@@ -783,6 +783,43 @@ export const submitContactForm = async (formData: {
 
 // Admin functions
 export const getAdminUsers = async () => {
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock admin users");
+    return [
+      {
+        id: "admin-1",
+        name: "Development Admin",
+        email: "admin@example.com",
+        role: "admin",
+        status: "active",
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        avatar_url: null,
+        bio: "Development mode admin user",
+        skills: ["Admin", "Management"],
+        hourly_rate: null,
+        xp: 1000,
+        level: 5,
+      },
+      {
+        id: "user-1",
+        name: "Test User",
+        email: "user@example.com",
+        role: "user",
+        status: "active",
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        avatar_url: null,
+        bio: null,
+        skills: null,
+        hourly_rate: null,
+        xp: 100,
+        level: 1,
+      },
+    ];
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
