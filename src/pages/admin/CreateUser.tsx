@@ -30,6 +30,7 @@ import {
 const CreateUser = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
