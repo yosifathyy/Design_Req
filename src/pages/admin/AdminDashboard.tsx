@@ -253,6 +253,9 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div ref={containerRef} className="space-y-8">
+      {/* Supabase Status */}
+      <SupabaseStatus />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
