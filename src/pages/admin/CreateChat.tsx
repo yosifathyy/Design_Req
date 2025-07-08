@@ -82,43 +82,51 @@ const CreateChat: React.FC = () => {
     );
   };
 
-  const handleCreateChat = () => {
+  const handleCreateChat = async () => {
     if (selectedUsers.length === 0) {
       alert("Please select at least one participant");
       return;
     }
 
-    if (!chatTitle.trim()) {
-      alert("Please enter a chat title");
+    if (!selectedProject) {
+      alert("Please select a project for this chat");
       return;
     }
 
-    // Create chat logic
-    const chatData = {
-      title: chatTitle,
-      participants: selectedUsers,
-      projectId: selectedProject,
-      initialMessage,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      setCreating(true);
 
-    // Show success animation
-    const successEl = document.createElement("div");
-    successEl.className =
-      "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
-    successEl.innerHTML = `
-      <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-        <div class="text-6xl mb-4">💬</div>
-        <h3 class="text-2xl font-bold text-black mb-2">Chat Created!</h3>
-        <p class="text-black/70">New conversation started successfully</p>
-      </div>
-    `;
-    document.body.appendChild(successEl);
+      // Create chat with participants
+      const chat = await createChat(selectedProject, selectedUsers);
 
-    setTimeout(() => {
-      document.body.removeChild(successEl);
-      navigate("/admin/chat");
-    }, 2000);
+      // Send initial message if provided
+      if (initialMessage.trim() && chat) {
+        await sendMessage(chat.id, "current-admin-id", initialMessage);
+      }
+
+      // Show success animation
+      const successEl = document.createElement("div");
+      successEl.className =
+        "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
+      successEl.innerHTML = `
+        <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+          <div class="text-6xl mb-4">💬</div>
+          <h3 class="text-2xl font-bold text-black mb-2">Chat Created!</h3>
+          <p class="text-black/70">New conversation started successfully</p>
+        </div>
+      `;
+      document.body.appendChild(successEl);
+
+      setTimeout(() => {
+        document.body.removeChild(successEl);
+        navigate(chat ? `/admin/chat/${chat.id}` : "/admin/chat");
+      }, 2000);
+    } catch (error: any) {
+      console.error("Failed to create chat:", error);
+      alert(`Failed to create chat: ${error.message}`);
+    } finally {
+      setCreating(false);
+    }
   };
 
   const selectedProjectData = mockAdminProjects.find(
