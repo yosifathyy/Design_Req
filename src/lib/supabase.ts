@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "./database.types";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -23,17 +23,59 @@ if (!isSupabaseConfigured) {
   console.warn("VITE_SUPABASE_ANON_KEY=your-supabase-anon-key");
 }
 
-// Create Supabase client with fallback values for development
-export const supabase = createClient<Database>(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder-key",
-  {
+// Create a mock Supabase client for development mode
+const createMockSupabaseClient = (): SupabaseClient<Database> => {
+  const mockClient = {
+    from: () => ({
+      select: () => Promise.resolve({ data: [], error: null }),
+      insert: () => Promise.resolve({ data: null, error: null }),
+      update: () => Promise.resolve({ data: null, error: null }),
+      delete: () => Promise.resolve({ data: null, error: null }),
+      eq: function () {
+        return this;
+      },
+      order: function () {
+        return this;
+      },
+      single: () => Promise.resolve({ data: null, error: null }),
+      maybeSingle: () => Promise.resolve({ data: null, error: null }),
+    }),
     auth: {
-      persistSession: isSupabaseConfigured,
-      autoRefreshToken: isSupabaseConfigured,
+      getSession: () =>
+        Promise.resolve({ data: { session: null }, error: null }),
+      signInWithPassword: () =>
+        Promise.resolve({ data: { user: null, session: null }, error: null }),
+      signUp: () =>
+        Promise.resolve({ data: { user: null, session: null }, error: null }),
+      signOut: () => Promise.resolve({ error: null }),
+      onAuthStateChange: () => ({
+        data: { subscription: { unsubscribe: () => {} } },
+      }),
     },
-    global: {
-      headers: isSupabaseConfigured ? {} : { "X-Development-Mode": "true" },
+    storage: {
+      from: () => ({
+        upload: () => Promise.resolve({ data: null, error: null }),
+        getPublicUrl: () => ({ data: { publicUrl: "/placeholder.svg" } }),
+      }),
     },
-  },
-);
+    channel: () => ({
+      on: function () {
+        return this;
+      },
+      subscribe: () => "mock-subscription",
+    }),
+    removeChannel: () => {},
+  } as any;
+
+  return mockClient;
+};
+
+// Create Supabase client only if properly configured, otherwise use mock
+export const supabase: SupabaseClient<Database> = isSupabaseConfigured
+  ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    })
+  : createMockSupabaseClient();
