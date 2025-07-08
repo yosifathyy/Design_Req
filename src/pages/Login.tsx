@@ -151,7 +151,7 @@ const Login: React.FC = () => {
       console.error("Authentication error:", error);
       setErrorMessage(error.message || "Authentication failed. Please try again.");
     }
-    });
+  };
 
   const handleGoogleSignIn = () => {
     // Add click animation
