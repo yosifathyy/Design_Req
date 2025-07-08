@@ -14,10 +14,22 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Upload, User, Shield, Briefcase } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { createAdminUser, uploadUserAvatar, createAuditLog } from "@/lib/api";
+import {
+  ArrowLeft,
+  Save,
+  Upload,
+  User,
+  Shield,
+  Briefcase,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 const CreateUser = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,21 +40,144 @@ const CreateUser = () => {
     hourlyRate: "",
     avatar: "",
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+
+    if (!formData.role) {
+      newErrors.role = "Role is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors below",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      let avatarUrl = "";
+
+      // Upload avatar if provided
+      if (avatarFile) {
+        // Generate a temporary ID for avatar upload
+        const tempId = Date.now().toString();
+        avatarUrl = await uploadUserAvatar(avatarFile, tempId);
+      }
+
+      // Create user in database
+      const userData = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        role: formData.role as "user" | "designer" | "admin" | "super-admin",
+        status: formData.status as "active" | "inactive" | "suspended",
+        avatar_url: avatarUrl || null,
+      };
+
+      const newUser = await createAdminUser(userData);
+
+      // Create audit log
+      await createAuditLog({
+        action: "create_user",
+        target_type: "user",
+        target_id: newUser.id,
+        details: {
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+        },
+        user_id: "current-admin-id", // TODO: Get actual current admin ID
+      });
+
+      toast({
+        title: "User Created Successfully",
+        description: `${newUser.name} has been added to the system`,
+        action: (
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4" />
+            <span>Success</span>
+          </div>
+        ),
+      });
+
       navigate("/admin/users");
-    }, 1000);
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      toast({
+        title: "Error Creating User",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+        action: (
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" />
+            <span>Error</span>
+          </div>
+        ),
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setAvatarFile(file);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, avatar: previewUrl }));
+    }
   };
 
   const roleOptions = [
@@ -127,9 +262,14 @@ const CreateUser = () => {
                           handleInputChange("name", e.target.value)
                         }
                         placeholder="Enter full name"
-                        className="border-2 border-black"
+                        className={`border-2 ${errors.name ? "border-red-500" : "border-black"}`}
                         required
                       />
+                      {errors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.name}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label
@@ -146,9 +286,14 @@ const CreateUser = () => {
                           handleInputChange("email", e.target.value)
                         }
                         placeholder="Enter email address"
-                        className="border-2 border-black"
+                        className={`border-2 ${errors.email ? "border-red-500" : "border-black"}`}
                         required
                       />
+                      {errors.email && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.email}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -166,7 +311,9 @@ const CreateUser = () => {
                           handleInputChange("role", value)
                         }
                       >
-                        <SelectTrigger className="border-2 border-black">
+                        <SelectTrigger
+                          className={`border-2 ${errors.role ? "border-red-500" : "border-black"}`}
+                        >
                           <SelectValue placeholder="Select user role" />
                         </SelectTrigger>
                         <SelectContent>
@@ -295,17 +442,32 @@ const CreateUser = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div>
+                    <input
+                      type="file"
+                      id="avatar-upload"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                    />
                     <Button
                       type="button"
                       variant="outline"
                       className="border-2 border-black w-full"
+                      onClick={() =>
+                        document.getElementById("avatar-upload")?.click()
+                      }
                     >
                       <Upload className="w-4 h-4 mr-2" />
-                      Upload Image
+                      {avatarFile ? "Change Image" : "Upload Image"}
                     </Button>
                     <p className="text-xs text-festival-black/60 mt-2">
                       PNG, JPG up to 5MB
                     </p>
+                    {avatarFile && (
+                      <p className="text-xs text-green-600 mt-1">
+                        ✓ {avatarFile.name}
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
