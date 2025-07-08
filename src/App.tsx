@@ -47,6 +47,7 @@ import AdminContent from "./pages/admin/AdminContent";
 import CreateInvoice from "./pages/admin/CreateInvoice";
 import InvoiceReports from "./pages/admin/InvoiceReports";
 import CreateChat from "./pages/admin/CreateChat";
+import CreateProject from "./pages/admin/CreateProject";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -88,6 +89,7 @@ const AppContent = () => {
           <Route path="teams" element={<TeamManagement />} />
           <Route path="permissions" element={<PermissionsManagement />} />
           <Route path="projects" element={<ProjectsList />} />
+          <Route path="projects/create" element={<CreateProject />} />
           <Route path="projects/kanban" element={<ProjectKanban />} />
           <Route path="projects/assignments" element={<ProjectAssignments />} />
           <Route path="chat" element={<AdminChat />} />
