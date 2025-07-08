@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { XPProgress } from "@/components/dashboard/XPProgress";
 import { mockUser, mockStats } from "@/lib/dashboard-data";
+import ProfileSetupNotice from "@/components/ProfileSetupNotice";
 import {
   FileText,
   MessageCircle,
@@ -53,11 +54,20 @@ const DesignDashboard: React.FC = () => {
         // If no profile found, try to create one
         if (!profile && user.email) {
           console.log("No user profile found, attempting to create one...");
+          setIsCreatingProfile(true);
+          setProfileSetupError(false);
+
           profile = await createUserProfileIfMissing(
             user.id,
             user.email,
             user.user_metadata?.name || user.email.split("@")[0],
           );
+
+          setIsCreatingProfile(false);
+
+          if (!profile) {
+            setProfileSetupError(true);
+          }
         }
 
         // If still no profile, use fallback data
