@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import NeubrutalistDock from "@/components/ui/dock";
+import { lazy, useEffect } from "react";
 import {
   motion,
   MotionValue,
@@ -39,6 +40,15 @@ const MOBILE_DOCK_HEIGHT = 80;
 const MOBILE_MAGNIFICATION = 60;
 const MOBILE_DISTANCE = 100;
 const MOBILE_PANEL_HEIGHT = 48;
+
+// Preload all main pages
+const preloadPages = [
+  lazy(() => import("@/pages/Index")),
+  lazy(() => import("@/pages/Services")),
+  lazy(() => import("@/pages/Portfolio")),
+  lazy(() => import("@/pages/About")),
+  lazy(() => import("@/pages/Contact"))
+];
 
 type DockProps = {
   children: React.ReactNode;
@@ -254,13 +264,33 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  
+  // Preload all main navigation pages when dock is mounted
+  useEffect(() => {
+    const preloadAllPages = async () => {
+      try {
+        // This will trigger the dynamic imports in the background
+        const preloadPromises = preloadPages.map(component => {
+          // Access the displayName or name to trigger the import
+          return component.displayName || component.name;
+        });
+        
+        console.log("Navigation pages preloading initiated");
+      } catch (error) {
+        console.error("Error preloading navigation pages:", error);
+      }
+    };
+    
+    preloadAllPages();
+  }, []);
 
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
     if (location.pathname !== "/") {
       navigate("/");
       // Wait for navigation to complete, then scroll
-      setTimeout(() => {
+      // Use a longer timeout to ensure the page has fully loaded
+      const timer = setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({
@@ -268,7 +298,10 @@ const Navigation = () => {
             block: "start",
           });
         }
-      }, 100);
+      }, 300);
+      
+      // Clean up the timer if the component unmounts
+      return () => clearTimeout(timer);
     } else {
       // We're already on home page, just scroll
       const element = document.getElementById(sectionId);

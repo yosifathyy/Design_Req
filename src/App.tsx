@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
 import { AuthProvider } from "@/hooks/useAuth";
 import CartoonyCursor from "@/components/CartoonyCursor";
@@ -60,17 +60,46 @@ const queryClient = new QueryClient();
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-festival-cream">
     <div className="text-center">
-      <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-lg font-medium text-black">Loading amazing content...</p>
+      <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-4 shadow-lg"></div>
+      <p className="text-lg font-medium text-black">Getting ready...</p>
     </div>
   </div>
 );
+
 const AppContent = () => {
   const [isLoading, setIsLoading] = useState(false); // Disabled preloader
+  const location = useLocation();
 
   useEffect(() => {
     initializeGSAP();
   }, []);
+
+  // Preload critical pages based on current location
+  useEffect(() => {
+    const preloadCriticalPages = async () => {
+      // Always preload Index for navigation dock
+      if (location.pathname !== '/') {
+        try {
+          await import("./pages/Index");
+          console.log("Home page preloaded");
+        } catch (error) {
+          console.error("Failed to preload home page:", error);
+        }
+      }
+      
+      // Preload dashboard if on login page
+      if (location.pathname === '/login') {
+        try {
+          await import("./pages/DesignDashboard");
+          console.log("Dashboard preloaded");
+        } catch (error) {
+          console.error("Failed to preload dashboard:", error);
+        }
+      }
+    };
+    
+    preloadCriticalPages();
+  }, [location.pathname]);
 
   const handleLoadComplete = () => {
     setIsLoading(false);

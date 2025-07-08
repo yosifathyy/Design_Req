@@ -43,6 +43,7 @@ import {
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { lazy } from "react";
+import { useLocation } from "react-router-dom";
 
 // Preload the Index component
 const Index = lazy(() => import("./Index"));
@@ -52,6 +53,7 @@ const StartProject = () => {
   const [projectType, setProjectType] = useState("");
   const { playClickSound, playHoverSound } = useClickSound();
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     projectName: "",
     description: "",
@@ -63,20 +65,56 @@ const StartProject = () => {
   
   // Preload the Index component when StartProject mounts
   useEffect(() => {
-    // This will trigger the dynamic import of the Index component
-    // and load it in the background
     const preloadIndex = async () => {
       try {
-        // This will load the Index component in the background
-        await import("./Index");
-        console.log("Home page components preloaded successfully");
+        // Preload Index component
+        const IndexModule = await import("./Index");
+        
+        // Preload all other main navigation pages
+        const preloadPromises = [
+          import("./Services"),
+          import("./Portfolio"),
+          import("./About"),
+          import("./Contact")
+        ];
+        
+        await Promise.all(preloadPromises);
+        console.log("All main navigation pages preloaded successfully");
       } catch (error) {
-        console.error("Failed to preload home page components:", error);
+        console.error("Failed to preload navigation pages:", error);
       }
     };
     
     preloadIndex();
-  }, []);
+    
+    // Preload the section that each dock button would navigate to
+    const preloadHomePageSections = () => {
+      // Create an invisible iframe to load the home page in the background
+      // This ensures all scripts and components are fully loaded
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      iframe.style.position = 'absolute';
+      iframe.style.left = '-9999px';
+      iframe.style.top = '-9999px';
+      iframe.src = '/';
+      
+      // Remove the iframe after it has loaded to free up resources
+      iframe.onload = () => {
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 5000); // Keep it loaded for 5 seconds to ensure all scripts initialize
+      };
+      
+      document.body.appendChild(iframe);
+    };
+    
+    // Only run the iframe preloading in production to avoid development issues
+    if (process.env.NODE_ENV === 'production') {
+      preloadHomePageSections();
+    }
+  }, [location.pathname]);
 
   const projectTypes = [
     {
