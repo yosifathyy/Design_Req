@@ -11,6 +11,7 @@ import {
   testSupabaseConnection,
   checkDatabaseSchema,
 } from "@/lib/supabase-test";
+import SupabaseStatus from "@/components/SupabaseStatus";
 import {
   Eye,
   EyeOff,
@@ -231,6 +232,11 @@ const Login: React.FC = () => {
       <div className="absolute top-20 left-10 w-16 h-16 bg-festival-yellow transform rotate-45 opacity-30" />
       <div className="absolute top-32 right-20 w-12 h-12 bg-festival-pink rounded-full opacity-30" />
       <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-festival-orange transform rotate-12 opacity-30" />
+
+      {/* Supabase Status - Temporary for debugging */}
+      <div className="absolute top-4 right-4 w-80 z-50">
+        <SupabaseStatus />
+      </div>
 
       <div ref={containerRef} className="relative z-10 w-full max-w-md">
         <Card className="border-6 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white overflow-hidden">
