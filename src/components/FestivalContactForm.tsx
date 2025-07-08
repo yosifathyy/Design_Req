@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles } from "lucide-react";
+import { Send, Sparkles, Heart, Star } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,6 +14,13 @@ const contactFormSchema = z.object({
 
 // Type for our form data
 type ContactFormData = z.infer<typeof contactFormSchema>;
+
+// Type for scrap state
+type ScrapState = {
+  name: boolean;
+  email: boolean;
+  message: boolean;
+};
 
 const FestivalContactForm: React.FC = () => {
   // State for torn paper effect
