@@ -9,7 +9,7 @@ import {
   subscribeToAdminUpdates,
   type DashboardData,
 } from "@/lib/admin-api";
-import { SupabaseStatus } from "@/components/SupabaseStatus";
+import SupabaseStatus from "@/components/SupabaseStatus";
 import {
   Users,
   FolderKanban,
