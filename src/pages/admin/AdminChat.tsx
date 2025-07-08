@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { getAllChatsForAdmin, getMessages, respondToChat } from "@/lib/api";
+import { getAllChatsForAdmin, getMessages } from "@/lib/api";
+import { respondToChat } from "@/lib/admin-api";
 import {
   MessageCircle,
   Search,
