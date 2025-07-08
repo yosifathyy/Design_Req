@@ -129,9 +129,7 @@ const CreateChat: React.FC = () => {
     }
   };
 
-  const selectedProjectData = mockAdminProjects.find(
-    (p) => p.id === selectedProject,
-  );
+  const selectedProjectData = projects.find((p) => p.id === selectedProject);
 
   return (
     <div ref={containerRef} className="space-y-6">
