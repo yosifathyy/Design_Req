@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { Database, Wifi, WifiOff, ExternalLink } from "lucide-react";
 
-export const SupabaseStatus: React.FC = () => {
+const SupabaseStatus: React.FC = () => {
   if (isSupabaseConfigured) {
     return (
       <Badge className="bg-green-100 text-green-800 border-2 border-green-500">
