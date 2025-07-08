@@ -136,7 +136,7 @@ const Login: React.FC = () => {
     });
 
     setIsLoading(false);
-    navigate("/dashboard");
+    navigate("/design-dashboard");
   };
 
   const handleGoogleSignIn = () => {

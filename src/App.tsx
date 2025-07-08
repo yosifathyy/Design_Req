@@ -24,6 +24,8 @@ import Privacy from "./pages/Privacy";
 import Disputes from "./pages/Disputes";
 import Login from "./pages/Login";
 import DesignDashboard from "./pages/DesignDashboard";
+import NewRequest from "./pages/NewRequest";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +56,8 @@ const AppContent = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/design-dashboard" element={<DesignDashboard />} />
+        <Route path="/new-request" element={<NewRequest />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/disputes" element={<Disputes />} />
