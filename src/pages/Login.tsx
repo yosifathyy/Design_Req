@@ -12,6 +12,7 @@ import {
   checkDatabaseSchema,
 } from "@/lib/supabase-test";
 import SupabaseStatus from "@/components/SupabaseStatus";
+import AuthSetupHelper from "@/components/AuthSetupHelper";
 import {
   Eye,
   EyeOff,
@@ -385,8 +386,13 @@ const Login: React.FC = () => {
 
               {/* Error message */}
               {errorMessage && (
-                <div className="p-3 bg-red-50 border-2 border-red-500 rounded-md">
-                  <p className="text-red-600 text-sm">{errorMessage}</p>
+                <div className="space-y-3">
+                  <div className="p-3 bg-red-50 border-2 border-red-500 rounded-md">
+                    <p className="text-red-600 text-sm">{errorMessage}</p>
+                  </div>
+
+                  {/* Show setup helper for demo credential errors */}
+                  {errorMessage.includes("demo user") && <AuthSetupHelper />}
                 </div>
               )}
 
