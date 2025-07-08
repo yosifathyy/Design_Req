@@ -331,6 +331,56 @@ const Chat: React.FC = () => {
             <div className="flex justify-center items-center h-full">
               <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
             </div>
+          ) : error &&
+            (error.includes("database policies need to be set up") ||
+              error.includes("Permission denied")) ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="max-w-2xl w-full">
+                <ChatPolicySetupHelper
+                  error={error}
+                  onRetry={() => {
+                    setError(null);
+                    setLoading(true);
+                    // Re-initialize chat
+                    if (user && requestId) {
+                      const initializeChat = async () => {
+                        try {
+                          const requestData =
+                            await getDesignRequestById(requestId);
+                          setProjectDetails(requestData);
+
+                          let chat = await getChatByRequestId(requestId);
+
+                          if (!chat) {
+                            const participants = [user.id];
+                            if (requestData.designer_id) {
+                              participants.push(requestData.designer_id);
+                            }
+                            chat = await createChat(requestId, participants);
+                          }
+
+                          setChatId(chat.id);
+                          const chatMessages = await getMessages(chat.id);
+                          setMessages(chatMessages);
+                        } catch (error: any) {
+                          console.error(
+                            "Error initializing chat:",
+                            error?.message || error,
+                          );
+                          setError(
+                            error?.message ||
+                              "Failed to initialize chat functionality.",
+                          );
+                        } finally {
+                          setLoading(false);
+                        }
+                      };
+                      initializeChat();
+                    }
+                  }}
+                />
+              </div>
+            </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-black/50">
               <MessageCircle className="w-16 h-16 mb-4" />
