@@ -477,27 +477,32 @@ const Payments: React.FC = () => {
         )}
 
         {!loading && filteredInvoices.length === 0 && (
-          <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
-            <div className="text-6xl mb-4">💳</div>
-            <h3 className="text-2xl font-bold text-black mb-2">
-              No invoices found
-            </h3>
-            <p className="text-black/70 mb-4">
-              {filter === "all"
-                ? "You don't have any invoices yet. They will appear here when sent to you."
-                : `No ${filter === "sent" ? "pending" : filter} invoices at the moment.`}
-            </p>
-            {invoices.length === 0 && (
-              <div className="mt-6">
-                <Button
-                  onClick={() => navigate("/design-dashboard")}
-                  className="bg-festival-orange hover:bg-festival-amber border-4 border-black"
-                >
-                  Go to Dashboard
-                </Button>
-              </div>
-            )}
-          </Card>
+          <div className="space-y-6">
+            <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
+              <div className="text-6xl mb-4">💳</div>
+              <h3 className="text-2xl font-bold text-black mb-2">
+                No invoices found
+              </h3>
+              <p className="text-black/70 mb-4">
+                {filter === "all"
+                  ? "You don't have any invoices yet. They will appear here when sent to you."
+                  : `No ${filter === "sent" ? "pending" : filter} invoices at the moment.`}
+              </p>
+              {invoices.length === 0 && (
+                <div className="mt-6">
+                  <Button
+                    onClick={() => navigate("/design-dashboard")}
+                    className="bg-festival-orange hover:bg-festival-amber border-4 border-black"
+                  >
+                    Go to Dashboard
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+            {/* Debug section - only show when no invoices */}
+            <InvoiceDebugger />
+          </div>
         )}
       </div>
     </div>
