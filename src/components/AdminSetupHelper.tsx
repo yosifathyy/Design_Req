@@ -333,6 +333,19 @@ export const AdminSetupHelper: React.FC = () => {
             {user && (
               <>
                 <Button
+                  onClick={syncCurrentUser}
+                  disabled={loading}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <User className="w-4 h-4 mr-2" />
+                  )}
+                  2. Sync User to Database
+                </Button>
+
+                <Button
                   onClick={checkDatabase}
                   disabled={loading}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white"
@@ -342,7 +355,7 @@ export const AdminSetupHelper: React.FC = () => {
                   ) : (
                     <Database className="w-4 h-4 mr-2" />
                   )}
-                  2. Check Database Tables
+                  3. Check Database Tables
                 </Button>
 
                 <Button
