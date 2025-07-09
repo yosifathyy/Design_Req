@@ -216,83 +216,164 @@ const DesignDashboard: React.FC = () => {
     if (!containerRef.current || loading) return;
 
     const ctx = gsap.context(() => {
-      // Initial page load animation
-      const tl = gsap.timeline();
+      // Enhanced page load animation sequence
+      const mainTl = gsap.timeline();
 
-      // Hero section animation
-      if (heroRef.current) {
-        tl.fromTo(
-          heroRef.current,
-          { opacity: 0, y: 50, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.2)" },
-        );
+      // Background elements entrance
+      const backgroundElements = containerRef.current?.querySelectorAll(".floating-element");
+      if (backgroundElements) {
+        gsap.set(backgroundElements, { opacity: 0, scale: 0 });
+        gsap.to(backgroundElements, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "back.out(1.4)",
+        });
       }
 
-      // Stats cards stagger animation
-      if (statsRef.current) {
-        const statCards = statsRef.current.querySelectorAll(".stat-card");
-        tl.fromTo(
-          statCards,
-          { opacity: 0, y: 60, rotateX: -15 },
+      // Hero section with dramatic entrance
+      if (heroRef.current) {
+        mainTl.fromTo(
+          heroRef.current,
+          {
+            opacity: 0,
+            y: -30,
+            scale: 0.9,
+            rotateX: -15
+          },
           {
             opacity: 1,
             y: 0,
+            scale: 1,
             rotateX: 0,
             duration: 0.8,
-            stagger: 0.15,
-            ease: "power3.out",
+            ease: "power3.out"
           },
-          "-=0.6",
         );
       }
 
-      // Quick actions animation
-      if (actionsRef.current) {
-        tl.fromTo(
-          actionsRef.current.children,
-          { opacity: 0, scale: 0.8, rotation: -5 },
+      // Stats cards with enhanced stagger and physics
+      if (statsRef.current) {
+        const statCards = statsRef.current.querySelectorAll(".stat-card");
+        mainTl.fromTo(
+          statCards,
+          {
+            opacity: 0,
+            y: 40,
+            scale: 0.8,
+            rotateY: -30,
+            z: -100
+          },
           {
             opacity: 1,
+            y: 0,
             scale: 1,
-            rotation: 0,
+            rotateY: 0,
+            z: 0,
             duration: 0.6,
-            stagger: 0.1,
-            ease: "back.out(1.4)",
+            stagger: 0.08,
+            ease: "back.out(1.2)",
           },
           "-=0.4",
         );
       }
 
-      // Projects section
-      if (projectsRef.current) {
-        tl.fromTo(
-          projectsRef.current,
-          { opacity: 0, y: 40 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
+      // Action cards with spring physics
+      if (actionsRef.current) {
+        const actionCards = actionsRef.current.querySelectorAll(".action-card");
+        mainTl.fromTo(
+          actionCards,
+          {
+            opacity: 0,
+            scale: 0.7,
+            rotation: -10,
+            x: -50
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            x: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "elastic.out(1, 0.5)",
+          },
           "-=0.3",
         );
       }
 
-      // Floating animations for decorative elements
+      // Projects section with slide-in effect
+      if (projectsRef.current) {
+        mainTl.fromTo(
+          projectsRef.current,
+          {
+            opacity: 0,
+            x: 50,
+            scale: 0.95
+          },
+          {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "power2.out"
+          },
+          "-=0.4",
+        );
+
+        // Animate project items when they appear
+        const projectItems = projectsRef.current.querySelectorAll(".project-item");
+        if (projectItems.length > 0) {
+          gsap.fromTo(
+            projectItems,
+            { opacity: 0, x: 20 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: 0.4,
+              stagger: 0.1,
+              ease: "power2.out",
+              delay: 0.5,
+            }
+          );
+        }
+      }
+
+      // Enhanced floating animations with varied movement
       gsap.to(".floating-element", {
-        y: "random(-20, 20)",
-        x: "random(-10, 10)",
-        rotation: "random(-15, 15)",
-        duration: "random(3, 6)",
+        y: "random(-30, 30)",
+        x: "random(-20, 20)",
+        rotation: "random(-20, 20)",
+        scale: "random(0.8, 1.2)",
+        duration: "random(4, 8)",
         repeat: -1,
         yoyo: true,
-        ease: "power1.inOut",
-        stagger: 0.5,
+        ease: "sine.inOut",
+        stagger: {
+          amount: 2,
+          from: "random"
+        },
       });
 
-      // Hover animations for stat cards
-      const statCards = document.querySelectorAll(".stat-card");
-      statCards.forEach((card) => {
+      // Enhanced hover interactions for all cards
+      const allCards = document.querySelectorAll(".stat-card, .action-card");
+      allCards.forEach((card, index) => {
+        // Subtle breathing animation
+        gsap.to(card, {
+          scale: 1.01,
+          duration: 3 + index * 0.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+
         card.addEventListener("mouseenter", () => {
           gsap.to(card, {
-            scale: 1.05,
-            rotateY: 5,
-            z: 50,
+            scale: 1.03,
+            rotateY: 3,
+            z: 20,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
             duration: 0.3,
             ease: "power2.out",
           });
@@ -300,18 +381,30 @@ const DesignDashboard: React.FC = () => {
 
         card.addEventListener("mouseleave", () => {
           gsap.to(card, {
-            scale: 1,
+            scale: 1.01,
             rotateY: 0,
             z: 0,
+            boxShadow: "3px 3px 0px 0px rgba(0,0,0,1)",
             duration: 0.3,
             ease: "power2.out",
           });
         });
       });
+
+      // Periodic subtle animations to keep interface alive
+      gsap.to(".stat-card", {
+        y: "random(-2, 2)",
+        duration: "random(2, 4)",
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: 0.2,
+      });
+
     }, containerRef);
 
     return () => ctx.revert();
-  }, [loading]);
+  }, [loading, requests.length]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -371,28 +464,32 @@ const DesignDashboard: React.FC = () => {
 
       <div
         ref={containerRef}
-        className="min-h-screen bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream relative overflow-hidden flex flex-col"
+        className="h-screen bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream relative overflow-hidden"
+        style={{
+          backgroundImage:
+            "url(https://cdn.builder.io/api/v1/image/assets%2F847ced7118144d42aa3c3a20eefb4087%2Fb37ab6171c61405ab176b52f9c1859bb)",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+        }}
       >
-        {/* Animated Background Elements */}
+        {/* Enhanced Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="floating-element absolute top-20 left-10 w-32 h-32 bg-festival-orange/20 transform rotate-45 rounded-lg"></div>
-          <div className="floating-element absolute top-40 right-20 w-24 h-24 bg-festival-pink/20 rounded-full"></div>
-          <div className="floating-element absolute bottom-32 left-1/4 w-28 h-28 bg-festival-yellow/20 transform rotate-12 rounded-lg"></div>
-          <div className="floating-element absolute bottom-20 right-1/3 w-20 h-20 bg-festival-magenta/20 rounded-full"></div>
-          <div className="floating-element absolute top-1/2 left-20 w-16 h-16 bg-festival-coral/20 transform rotate-45"></div>
-          <div className="floating-element absolute top-60 right-40 w-12 h-12 bg-festival-amber/20 rounded-full"></div>
+          <div className="floating-element absolute top-10 left-5 w-16 h-16 bg-festival-orange/30 transform rotate-45 rounded-lg blur-sm"></div>
+          <div className="floating-element absolute top-20 right-10 w-12 h-12 bg-festival-pink/40 rounded-full blur-sm"></div>
+          <div className="floating-element absolute bottom-20 left-1/4 w-14 h-14 bg-festival-yellow/30 transform rotate-12 rounded-lg blur-sm"></div>
+          <div className="floating-element absolute bottom-10 right-1/3 w-10 h-10 bg-festival-magenta/40 rounded-full blur-sm"></div>
+          <div className="floating-element absolute top-1/2 left-10 w-8 h-8 bg-festival-coral/30 transform rotate-45 blur-sm"></div>
+          <div className="floating-element absolute top-40 right-20 w-6 h-6 bg-festival-amber/40 rounded-full blur-sm"></div>
+          <div className="floating-element absolute top-60 left-1/3 w-20 h-20 bg-festival-orange/20 rounded-full blur-md opacity-50"></div>
+          <div className="floating-element absolute bottom-40 right-1/4 w-24 h-24 bg-festival-pink/20 transform rotate-12 rounded-lg blur-md opacity-50"></div>
         </div>
 
-        <div
-          className="relative z-10 w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 flex flex-col min-h-screen"
-          style={{
-            backgroundImage:
-              "url(https://cdn.builder.io/api/v1/image/assets%2F847ced7118144d42aa3c3a20eefb4087%2Fb37ab6171c61405ab176b52f9c1859bb)",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          }}
-        >
+        {/* Overlay for better content visibility */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20 backdrop-blur-[0.5px]"></div>
+
+        <div className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl mx-auto">
           {/* Notices */}
           {profileSetupError && <ProfileSetupNotice />}
           {idMismatch && (
@@ -402,288 +499,286 @@ const DesignDashboard: React.FC = () => {
             />
           )}
 
-          {/* Hero Section */}
+          {/* Compact Hero Section */}
           <div
             ref={heroRef}
-            className="mb-4 sm:mb-6 relative bg-white/80 backdrop-blur-sm rounded-2xl border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-3 sm:p-4 lg:p-6"
+            className="mb-2 relative bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-3"
           >
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full lg:w-auto">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
                 <div className="relative">
-                  <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     <AvatarImage
                       src={userProfile?.avatar_url}
                       alt={userProfile?.name}
                     />
-                    <AvatarFallback className="bg-festival-orange text-white text-xl sm:text-2xl font-bold">
+                    <AvatarFallback className="bg-festival-orange text-white text-sm sm:text-base font-bold">
                       {userProfile?.name?.charAt(0) || "?"}
                     </AvatarFallback>
                   </Avatar>
                   {stats.xpProgress.level >= 5 && (
-                    <Crown className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+                    <Crown className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
                   )}
                 </div>
-                <div className="text-center sm:text-left">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-black mb-2">
-                    Welcome back,{" "}
-                    {userProfile?.name?.split(" ")[0] || "Creator"}!
+                <div>
+                  <h1 className="text-lg sm:text-xl lg:text-2xl font-display font-bold text-black leading-tight">
+                    Hey, {userProfile?.name?.split(" ")[0] || "Creator"}! ✨
                   </h1>
-                  <p className="text-lg sm:text-xl text-black/70 font-medium mb-3">
-                    Ready to bring amazing ideas to life? ✨
-                  </p>
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4">
-                    <Badge className="bg-festival-orange text-black border-2 border-black font-bold">
-                      <Star className="w-4 h-4 mr-1" />
-                      Level {stats.xpProgress.level} Creator
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge className="bg-festival-orange text-black border border-black font-bold text-xs px-2 py-0.5">
+                      <Star className="w-3 h-3 mr-1" />
+                      Level {stats.xpProgress.level}
                     </Badge>
-                    <Badge className="bg-festival-pink text-black border-2 border-black font-bold">
-                      <Zap className="w-4 h-4 mr-1" />
+                    <Badge className="bg-festival-pink text-black border border-black font-bold text-xs px-2 py-0.5">
+                      <Zap className="w-3 h-3 mr-1" />
                       {stats.xpProgress.current} XP
                     </Badge>
                   </div>
                 </div>
               </div>
-              <div className="text-center lg:text-right w-full lg:w-auto">
-                <div className="text-sm text-black/60 mb-2">
-                  Member since{" "}
-                  {userProfile?.created_at
-                    ? new Date(userProfile.created_at).toLocaleDateString()
-                    : "recently"}
-                </div>
-                <div className="w-full sm:w-64 lg:w-48 mx-auto lg:mx-0">
-                  <div className="flex justify-between text-sm font-medium mb-1">
-                    <span>XP Progress</span>
-                    <span>
-                      {stats.xpProgress.current}/{stats.xpProgress.target}
-                    </span>
+              <div className="hidden sm:block text-right">
+                <div className="w-32 lg:w-40">
+                  <div className="flex justify-between text-xs font-medium mb-1">
+                    <span>XP</span>
+                    <span>{stats.xpProgress.current}/{stats.xpProgress.target}</span>
                   </div>
                   <Progress
-                    value={
-                      (stats.xpProgress.current / stats.xpProgress.target) * 100
-                    }
-                    className="h-3 border-2 border-black bg-gray-200"
+                    value={(stats.xpProgress.current / stats.xpProgress.target) * 100}
+                    className="h-2 border border-black bg-gray-200"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Stats Grid */}
+          {/* Compact Stats Grid */}
           <div
             ref={statsRef}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-2"
           >
             {/* Total Requests */}
             <Link to="/requests">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
-                <div className="flex items-center justify-between mb-2">
-                  <FileText className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30 text-xs">
-                    All Time
+              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
+                <div className="flex items-center justify-between mb-1">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                    Total
                   </Badge>
                 </div>
-                <div className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
+                <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
                   {stats.totalRequests}
                 </div>
-                <div className="text-white/90 font-medium text-sm">
-                  Total Projects
+                <div className="text-white/90 font-medium text-xs">
+                  Projects
                 </div>
-                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </Link>
 
             {/* Unread Chats */}
             <div onClick={() => setShowMessagesInbox(true)}>
-              <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
-                <div className="flex items-center justify-between mb-2">
-                  <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+              <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
+                <div className="flex items-center justify-between mb-1">
+                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   {unreadCount > 0 && (
-                    <Badge className="bg-red-500 text-white border-2 border-white animate-pulse text-xs">
-                      {unreadCount} New!
+                    <Badge className="bg-red-500 text-white border border-white animate-pulse text-[10px] px-1 py-0.5">
+                      {unreadCount}!
                     </Badge>
                   )}
                 </div>
-                <div className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
+                <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
                   {unreadCount}
                 </div>
-                <div className="text-white/90 font-medium text-sm">
-                  Unread Messages
+                <div className="text-white/90 font-medium text-xs">
+                  Messages
                 </div>
-                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </div>
 
             {/* Active Projects */}
             <Link to="/requests?filter=active">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-yellow to-festival-amber border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
-                <div className="flex items-center justify-between mb-2">
-                  <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
-                  <Badge className="bg-black/20 text-black border-black/30 text-xs">
-                    In Progress
+              <Card className="stat-card group relative bg-gradient-to-br from-festival-yellow to-festival-amber border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
+                <div className="flex items-center justify-between mb-1">
+                  <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+                  <Badge className="bg-black/20 text-black border-black/30 text-[10px] px-1 py-0.5">
+                    Active
                   </Badge>
                 </div>
-                <div className="text-2xl sm:text-3xl font-display font-bold text-black mb-1">
+                <div className="text-xl sm:text-2xl font-display font-bold text-black leading-none mb-0.5">
                   {stats.activeProjects}
                 </div>
-                <div className="text-black/80 font-medium text-sm">
-                  Active Projects
+                <div className="text-black/80 font-medium text-xs">
+                  In Progress
                 </div>
-                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-black/60 group-hover:text-black transition-colors" />
+                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-black/60 group-hover:text-black transition-colors" />
               </Card>
             </Link>
 
             {/* Completed Projects */}
             <Link to="/requests?filter=completed">
-              <Card className="stat-card group relative bg-gradient-to-br from-green-400 to-green-600 border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
-                <div className="flex items-center justify-between mb-2">
-                  <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30 text-xs">
-                    Success!
+              <Card className="stat-card group relative bg-gradient-to-br from-green-400 to-green-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
+                <div className="flex items-center justify-between mb-1">
+                  <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                    Done
                   </Badge>
                 </div>
-                <div className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
+                <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
                   {stats.completedProjects}
                 </div>
-                <div className="text-white/90 font-medium text-sm">
-                  Completed Projects
+                <div className="text-white/90 font-medium text-xs">
+                  Completed
                 </div>
-                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </Link>
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex-1 flex flex-col gap-3 sm:gap-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 h-full">
-              {/* Left Column - Action Cards */}
-              <div className="flex flex-col gap-3 sm:gap-4">
-                <div
-                  onClick={() => setShowProjectSelection(true)}
-                  className="flex-1"
-                >
-                  <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-4 sm:p-6 h-full min-h-[120px]">
-                    <MessageCircle className="w-12 h-12 sm:w-16 sm:h-16 text-white mx-auto mb-2 sm:mb-4" />
-                    <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-1 sm:mb-2">
-                      Chat with Designer
-                    </h3>
-                    <p className="text-white/80 font-medium text-sm">
-                      Choose project to chat about
-                    </p>
+          {/* Compact Main Content Grid */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-2 min-h-0">
+            {/* Action Cards - Compact Row */}
+            <div
+              ref={actionsRef}
+              className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2"
+            >
+              <div
+                onClick={() => setShowProjectSelection(true)}
+                className="action-card"
+              >
+                <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                  <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                    <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                    <div className="flex-1 sm:text-center lg:text-left">
+                      <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                        Chat Designer
+                      </h3>
+                      <p className="text-white/80 text-xs hidden sm:block lg:hidden">
+                        Start conversation
+                      </p>
+                    </div>
                     {unreadCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white border-2 border-white animate-bounce text-xs">
+                      <Badge className="absolute -top-1 -right-1 bg-red-500 text-white border border-white animate-bounce text-[10px] px-1 py-0.5">
                         {unreadCount}
                       </Badge>
                     )}
-                  </Card>
-                </div>
+                  </div>
+                </Card>
+              </div>
 
-                <Link to="/new-request" className="flex-1">
-                  <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-4 sm:p-6 h-full min-h-[120px]">
-                    <Plus className="w-12 h-12 sm:w-16 sm:h-16 text-white mx-auto mb-2 sm:mb-4" />
-                    <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-1 sm:mb-2">
-                      Start New Project
-                    </h3>
-                    <p className="text-white/80 font-medium text-sm">
-                      Create something amazing
-                    </p>
-                  </Card>
-                </Link>
+              <Link to="/new-request" className="action-card">
+                <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                  <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                    <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                    <div className="flex-1 sm:text-center lg:text-left">
+                      <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                        New Project
+                      </h3>
+                      <p className="text-white/80 text-xs hidden sm:block lg:hidden">
+                        Create amazing
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
 
-                <Link to="/payments" className="flex-1">
-                  <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-4 sm:p-6 h-full min-h-[120px]">
-                    <CreditCard className="w-12 h-12 sm:w-16 sm:h-16 text-white mx-auto mb-2 sm:mb-4" />
-                    <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-1 sm:mb-2">
-                      View Invoices
-                    </h3>
-                    <p className="text-white/80 font-medium text-sm">
-                      Manage payments and billing
-                    </p>
+              <Link to="/payments" className="action-card">
+                <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                  <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                    <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                    <div className="flex-1 sm:text-center lg:text-left">
+                      <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                        Invoices
+                      </h3>
+                      <p className="text-white/80 text-xs hidden sm:block lg:hidden">
+                        Payments
+                      </p>
+                    </div>
                     {stats.dueInvoices > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black border-2 border-white text-xs">
+                      <Badge className="absolute -top-1 -right-1 bg-yellow-500 text-black border border-white text-[10px] px-1 py-0.5">
                         {stats.dueInvoices}
                       </Badge>
                     )}
-                  </Card>
-                </Link>
-              </div>
+                  </div>
+                </Card>
+              </Link>
+            </div>
 
-              {/* Right Column - Projects */}
-              <div className="flex flex-col">
-                <div
-                  ref={projectsRef}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col p-4 sm:p-6 h-full min-h-[400px]"
-                >
-                  <div className="flex items-center justify-between mb-4 sm:mb-6">
-                    <h2 className="text-xl sm:text-2xl font-display font-bold text-black flex items-center gap-2">
-                      <Palette className="w-6 h-6 sm:w-8 sm:h-8 text-festival-orange" />
+            {/* Projects Section - Takes up remaining space */}
+            <div className="lg:col-span-2 flex flex-col min-h-0">
+              <div
+                ref={projectsRef}
+                className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col p-3 h-full min-h-[300px] lg:min-h-0"
+              >
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-base sm:text-lg font-display font-bold text-black flex items-center gap-2">
+                      <Palette className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
                       Recent Projects
                     </h2>
                     <Link to="/requests">
-                      <Button className="bg-festival-orange hover:bg-festival-coral border-2 border-black font-bold text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-2">
+                      <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
                         View All
-                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
+                        <ArrowRight className="w-3 h-3 ml-1" />
                       </Button>
                     </Link>
                   </div>
 
                   {requests.length > 0 ? (
-                    <div className="grid gap-2 sm:gap-3 flex-1 overflow-y-auto">
-                      {requests.slice(0, 3).map((request, index) => (
+                    <div className="flex-1 overflow-y-auto space-y-1">
+                      {requests.slice(0, 4).map((request, index) => (
                         <Link
                           key={request.id}
                           to={`/requests/${request.id}`}
-                          className="group"
+                          className="project-item group block"
                         >
-                          <Card className="border-2 border-black/20 hover:border-black hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 p-3 sm:p-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-festival-orange/20 rounded-full flex items-center justify-center border-2 border-festival-orange/30">
-                                  {request.category === "logo" && (
-                                    <PaintBucket className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
-                                  )}
-                                  {request.category === "web" && (
-                                    <Brush className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
-                                  )}
-                                  {request.category === "brand" && (
-                                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
-                                  )}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="text-sm sm:text-base font-bold text-black group-hover:text-festival-orange transition-colors truncate">
-                                    {request.title}
-                                  </h3>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Badge
-                                      className={`${getStatusColor(request.status)} text-white border-0 text-xs`}
-                                    >
-                                      {request.status}
-                                    </Badge>
-                                    <Badge
-                                      className={`${getPriorityColor(request.priority)} border-0 text-xs`}
-                                    >
-                                      {request.priority}
-                                    </Badge>
-                                  </div>
+                          <Card className="border border-black/20 hover:border-festival-orange hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] transition-all duration-200 p-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 bg-festival-orange/20 rounded-full flex items-center justify-center border border-festival-orange/30 flex-shrink-0">
+                                {request.category === "logo" && (
+                                  <PaintBucket className="w-3 h-3 text-festival-orange" />
+                                )}
+                                {request.category === "web" && (
+                                  <Brush className="w-3 h-3 text-festival-orange" />
+                                )}
+                                {request.category === "brand" && (
+                                  <Sparkles className="w-3 h-3 text-festival-orange" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-xs sm:text-sm font-bold text-black group-hover:text-festival-orange transition-colors truncate leading-tight">
+                                  {request.title}
+                                </h3>
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  <Badge
+                                    className={`${getStatusColor(request.status)} text-white border-0 text-[10px] px-1 py-0.5`}
+                                  >
+                                    {request.status}
+                                  </Badge>
+                                  <Badge
+                                    className={`${getPriorityColor(request.priority)} border-0 text-[10px] px-1 py-0.5`}
+                                  >
+                                    {request.priority}
+                                  </Badge>
                                 </div>
                               </div>
-                              <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-festival-orange transition-colors flex-shrink-0" />
+                              <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-festival-orange transition-colors flex-shrink-0" />
                             </div>
                           </Card>
                         </Link>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-6 sm:py-8 flex-1 flex flex-col justify-center">
-                      <Gift className="w-12 h-12 sm:w-16 sm:h-16 text-festival-orange/50 mx-auto mb-3" />
-                      <h3 className="text-lg sm:text-xl font-bold text-black/60 mb-2">
+                    <div className="text-center py-4 flex-1 flex flex-col justify-center">
+                      <Gift className="w-8 h-8 text-festival-orange/50 mx-auto mb-2" />
+                      <h3 className="text-sm font-bold text-black/60 mb-1">
                         No projects yet
                       </h3>
-                      <p className="text-black/50 mb-4 text-sm sm:text-base">
+                      <p className="text-black/50 mb-3 text-xs">
                         Start your first design project!
                       </p>
                       <Link to="/new-request">
-                        <Button className="bg-festival-orange hover:bg-festival-coral border-2 border-black font-bold text-sm sm:text-base px-3 sm:px-4 py-2">
-                          <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
+                          <Plus className="w-3 h-3 mr-1" />
                           Create Project
                         </Button>
                       </Link>
