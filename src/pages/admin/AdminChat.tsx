@@ -5,17 +5,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { getAllChatsForAdmin } from "@/lib/api";
-import { respondToChat } from "@/lib/admin-api";
-import { useRealTimeChat, useRealTimeChatList } from "@/hooks/useRealTimeChat";
+import { useRealtimeChatRooms, useRealtimeChat } from "@/hooks/useRealtimeChat";
 import {
   MessageCircle,
   Search,
-  Filter,
   Clock,
   User,
   Send,
   RefreshCw,
+  ArrowLeft,
 } from "lucide-react";
 
 const AdminChat: React.FC = () => {
