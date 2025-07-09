@@ -132,33 +132,6 @@ const Chat: React.FC = () => {
     }
   };
 
-  const handleFileAttach = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      console.log(
-        "Files selected:",
-        fileArray.map((f) => f.name),
-      );
-
-      // Create new message with files
-      const newMessage = {
-        id: (messages.length + 1).toString(),
-        text: `Sent ${fileArray.length} file(s): ${fileArray.map((f) => f.name).join(", ")}`,
-        senderId: mockUser.id,
-        senderName: mockUser.name,
-        senderType: "user" as const,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, newMessage]);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-festival-cream flex flex-col">
       <div
