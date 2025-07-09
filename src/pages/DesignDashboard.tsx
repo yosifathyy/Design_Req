@@ -717,7 +717,16 @@ const DesignDashboard: React.FC = () => {
       {/* Messages Inbox Modal */}
       <MessagesInbox
         isOpen={showMessagesInbox}
-        onClose={() => setShowMessagesInbox(false)}
+        onClose={() => {
+          setShowMessagesInbox(false);
+          // Force refresh of unread count when closing messages inbox
+          setTimeout(() => {
+            console.log(
+              "🔄 Refreshing unread count after closing messages inbox",
+            );
+            window.dispatchEvent(new CustomEvent("refreshUnreadCount"));
+          }, 500);
+        }}
         onOpenChat={(projectId) => {
           navigate(`/chat?request=${projectId}`);
         }}
