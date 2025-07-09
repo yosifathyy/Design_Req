@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,215 +9,332 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import {
-  CheckCircle,
-  ExternalLink,
-  Copy,
-  Users,
-  AlertTriangle,
-  ArrowRight,
-} from "lucide-react";
+import { CheckCircle, AlertCircle, Copy } from "lucide-react";
 
-export const AuthSetupHelper = () => {
-  const [copiedStep, setCopiedStep] = useState<number | null>(null);
+function AuthSetupHelper() {
+  const [authStatus, setAuthStatus] = useState<{
+    configured: boolean;
+    hasUsers: boolean;
+    hasAuthUsers: boolean;
+    error?: string;
+  }>({ configured: false, hasUsers: false, hasAuthUsers: false });
 
-  const copyToClipboard = (text: string, stepNumber: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedStep(stepNumber);
-    setTimeout(() => setCopiedStep(null), 2000);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    checkAuthSetup();
+  }, []);
+
+  const checkAuthSetup = async () => {
+    setChecking(true);
+    try {
+      if (!isSupabaseConfigured) {
+        setAuthStatus({
+          configured: false,
+          hasUsers: false,
+          hasAuthUsers: false,
+          error: "Supabase not configured",
+        });
+        setChecking(false);
+        return;
+      }
+
+      // Check if users table has data
+      const { data: users, error: usersError } = await supabase
+        .from("users")
+        .select("email")
+        .limit(5);
+
+      if (usersError) {
+        setAuthStatus({
+          configured: true,
+          hasUsers: false,
+          hasAuthUsers: false,
+          error: `Users table error: ${usersError.message}`,
+        });
+        setChecking(false);
+        return;
+      }
+
+      // Try to sign in with demo credentials to test auth
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: "admin@demo.com",
+          password: "demo123",
+        });
+
+      // If sign in was successful, sign out immediately to not affect current session
+      if (authData?.session) {
+        await supabase.auth.signOut();
+      }
+
+      setAuthStatus({
+        configured: true,
+        hasUsers: users && users.length > 0,
+        hasAuthUsers: !authError && authData?.user != null,
+        error: authError?.message,
+      });
+    } catch (error: any) {
+      setAuthStatus({
+        configured: true,
+        hasUsers: false,
+        hasAuthUsers: false,
+        error: error.message,
+      });
+    }
+    setChecking(false);
   };
 
-  const supabaseUrl =
-    "https://supabase.com/dashboard/project/dnmygswmvzxnkqhcslhc/auth/users";
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  const sqlScript = `-- =====================================================
+-- CREATE DEMO AUTH USERS IN SUPABASE
+-- =====================================================
+-- Run this in your Supabase SQL Editor
+
+-- Insert demo admin auth user
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  created_at,
+  updated_at,
+  confirmation_token,
+  email_change,
+  email_change_token_new,
+  recovery_token
+) VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  '00000000-0000-0000-0000-000000000001',
+  'authenticated',
+  'authenticated',
+  'admin@demo.com',
+  crypt('demo123', gen_salt('bf')),
+  NOW(),
+  NOW(),
+  NOW(),
+  '',
+  '',
+  '',
+  ''
+) ON CONFLICT (email) DO NOTHING;
+
+-- Insert demo designer auth user  
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  created_at,
+  updated_at,
+  confirmation_token,
+  email_change,
+  email_change_token_new,
+  recovery_token
+) VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  '00000000-0000-0000-0000-000000000002',
+  'authenticated',
+  'authenticated',
+  'designer@demo.com',
+  crypt('demo123', gen_salt('bf')),
+  NOW(),
+  NOW(),
+  NOW(),
+  '',
+  '',
+  '',
+  ''
+) ON CONFLICT (email) DO NOTHING;
+
+-- Create identities for the users
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  identity_data,
+  provider,
+  provider_id,
+  created_at,
+  updated_at
+) VALUES (
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000001',
+  '{"sub": "00000000-0000-0000-0000-000000000001", "email": "admin@demo.com"}',
+  'email',
+  '00000000-0000-0000-0000-000000000001',
+  NOW(),
+  NOW()
+) ON CONFLICT (provider_id, provider) DO NOTHING;
+
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  identity_data,
+  provider,
+  provider_id,
+  created_at,
+  updated_at
+) VALUES (
+  '00000000-0000-0000-0000-000000000002',
+  '00000000-0000-0000-0000-000000000002',
+  '{"sub": "00000000-0000-0000-0000-000000000002", "email": "designer@demo.com"}',
+  'email',
+  '00000000-0000-0000-0000-000000000002',
+  NOW(),
+  NOW()
+) ON CONFLICT (provider_id, provider) DO NOTHING;
+
+SELECT 'Demo auth users created successfully!' as status;`;
+
+  if (checking) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Checking Authentication Setup...</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse">
+            Checking Supabase configuration...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="border-2 border-orange-200 bg-orange-50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-orange-800">
-          <AlertTriangle className="w-5 h-5" />
-          Authentication Setup Required
-        </CardTitle>
-        <CardDescription className="text-orange-700">
-          Demo users exist in the database but need authentication accounts
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert className="border-orange-200 bg-orange-100">
-          <AlertTriangle className="w-4 h-4" />
-          <AlertDescription className="text-orange-800">
-            The demo users <code>admin@demo.com</code> and{" "}
-            <code>designer@demo.com</code>
-            exist in your users table but don't have Supabase authentication
-            accounts.
-          </AlertDescription>
-        </Alert>
+    <div className="w-full max-w-4xl mx-auto space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Authentication Setup Status
+            {authStatus.configured &&
+            authStatus.hasUsers &&
+            authStatus.hasAuthUsers ? (
+              <CheckCircle className="h-5 w-5 text-green-500" />
+            ) : (
+              <AlertCircle className="h-5 w-5 text-yellow-500" />
+            )}
+          </CardTitle>
+          <CardDescription>
+            Current status of your Supabase authentication setup
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-2">
+              {authStatus.configured ? (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              ) : (
+                <AlertCircle className="h-4 w-4 text-red-500" />
+              )}
+              <span>Supabase Configured</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {authStatus.hasUsers ? (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              ) : (
+                <AlertCircle className="h-4 w-4 text-red-500" />
+              )}
+              <span>User Profiles Exist</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {authStatus.hasAuthUsers ? (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              ) : (
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+              )}
+              <span>Auth Accounts Exist</span>
+            </div>
+          </div>
 
-        <div className="space-y-4">
-          <h4 className="font-semibold text-orange-800 flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Quick Fix - Create Auth Users:
-          </h4>
+          {authStatus.error && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{authStatus.error}</AlertDescription>
+            </Alert>
+          )}
 
-          {/* Step 1 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              1
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Go to Supabase Authentication Dashboard
-              </p>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="border-orange-300 text-orange-700 hover:bg-orange-100"
-              >
-                <a href={supabaseUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Open Supabase Auth Dashboard
-                </a>
+          {authStatus.configured &&
+            authStatus.hasUsers &&
+            authStatus.hasAuthUsers && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>
+                  ✅ Authentication is fully set up! You can sign in with:
+                  <br />
+                  <strong>admin@demo.com</strong> / demo123
+                  <br />
+                  <strong>designer@demo.com</strong> / demo123
+                </AlertDescription>
+              </Alert>
+            )}
+
+          {authStatus.configured &&
+            authStatus.hasUsers &&
+            !authStatus.hasAuthUsers && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  User profiles exist but authentication accounts are missing.
+                  Please run the SQL script below in your Supabase SQL Editor.
+                </AlertDescription>
+              </Alert>
+            )}
+        </CardContent>
+      </Card>
+
+      {authStatus.configured &&
+        authStatus.hasUsers &&
+        !authStatus.hasAuthUsers && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Setup Authentication Accounts</CardTitle>
+              <CardDescription>
+                Run this SQL script in your Supabase Dashboard → SQL Editor to
+                create authentication accounts for demo users.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="relative">
+                <pre className="bg-muted p-4 rounded-md text-sm overflow-x-auto max-h-96">
+                  {sqlScript}
+                </pre>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-2 right-2"
+                  onClick={() => copyToClipboard(sqlScript)}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium">Steps:</h4>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                  <li>Go to your Supabase Dashboard</li>
+                  <li>Navigate to SQL Editor</li>
+                  <li>Copy and paste the SQL script above</li>
+                  <li>Run the script</li>
+                  <li>Refresh this page to verify setup</li>
+                </ol>
+              </div>
+              <Button onClick={checkAuthSetup} variant="outline">
+                Check Setup Again
               </Button>
-            </div>
-          </div>
-
-          {/* Step 2 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              2
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Click "Add user" and create admin user
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <code className="bg-orange-100 px-2 py-1 rounded text-sm">
-                    admin@demo.com
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard("admin@demo.com", 1)}
-                    className="h-6 px-2"
-                  >
-                    {copiedStep === 1 ? (
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    ) : (
-                      <Copy className="w-3 h-3" />
-                    )}
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <code className="bg-orange-100 px-2 py-1 rounded text-sm">
-                    demo123
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard("demo123", 2)}
-                    className="h-6 px-2"
-                  >
-                    {copiedStep === 2 ? (
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    ) : (
-                      <Copy className="w-3 h-3" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 3 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              3
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Create designer user (optional)
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <code className="bg-orange-100 px-2 py-1 rounded text-sm">
-                    designer@demo.com
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard("designer@demo.com", 3)}
-                    className="h-6 px-2"
-                  >
-                    {copiedStep === 3 ? (
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    ) : (
-                      <Copy className="w-3 h-3" />
-                    )}
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <code className="bg-orange-100 px-2 py-1 rounded text-sm">
-                    demo123
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard("demo123", 4)}
-                    className="h-6 px-2"
-                  >
-                    {copiedStep === 4 ? (
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    ) : (
-                      <Copy className="w-3 h-3" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 4 */}
-          <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-orange-200">
-            <Badge
-              variant="outline"
-              className="bg-orange-100 text-orange-800 font-bold"
-            >
-              4
-            </Badge>
-            <div className="flex-1">
-              <p className="font-medium text-orange-800 mb-2">
-                Test login on this page
-              </p>
-              <p className="text-sm text-orange-700">
-                Once created, you should be able to login with the demo
-                credentials.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <Alert className="border-green-200 bg-green-50">
-          <CheckCircle className="w-4 h-4" />
-          <AlertDescription className="text-green-800">
-            <strong>Alternative:</strong> You can also sign up for new accounts
-            using the app's registration form, then update their roles in the
-            database.
-          </AlertDescription>
-        </Alert>
-      </CardContent>
-    </Card>
+            </CardContent>
+          </Card>
+        )}
+    </div>
   );
-};
+}
 
 export default AuthSetupHelper;

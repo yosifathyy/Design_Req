@@ -47,6 +47,7 @@ const AdminRedirectHandler = () => {
 // Import main components eagerly to prevent loading screens
 import Index from "./pages/Index";
 import StartProject from "./pages/StartProject";
+import Login from "./pages/Login";
 const Services = lazy(() => import("./pages/Services"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const About = lazy(() => import("./pages/About"));
@@ -55,7 +56,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disputes = lazy(() => import("./pages/Disputes"));
-const Login = lazy(() => import("./pages/Login"));
+// Login is now imported eagerly above
 const DesignDashboard = lazy(() => import("./pages/DesignDashboard"));
 const NewRequest = lazy(() => import("./pages/NewRequest"));
 const Chat = lazy(() => import("./pages/Chat"));
@@ -99,6 +100,8 @@ const EditUser = lazy(() => import("./pages/admin/EditUser"));
 const ProjectDetail = lazy(() => import("./pages/admin/ProjectDetail"));
 const AdminDebugTest = lazy(() => import("./components/AdminDebugTest"));
 const AdminSetupHelper = lazy(() => import("./components/AdminSetupHelper"));
+const AuthSetupHelper = lazy(() => import("./components/AuthSetupHelper"));
+const AuthStatus = lazy(() => import("./pages/AuthStatus"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
@@ -148,6 +151,8 @@ const AppContent = () => {
           <Route path="/requests/:id" element={<RequestDetail />} />
           <Route path="/admin-debug" element={<AdminDebugTest />} />
           <Route path="/admin-setup" element={<AdminSetupHelper />} />
+          <Route path="/auth-setup" element={<AuthSetupHelper />} />
+          <Route path="/auth-status" element={<AuthStatus />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />

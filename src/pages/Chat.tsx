@@ -6,12 +6,17 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 import QuickConnectionTest from "@/components/QuickConnectionTest";
 import ChatConnectionFixer from "@/components/ChatConnectionFixer";
 import ChatErrorDebugger from "@/components/ChatErrorDebugger";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import UserSyncFix from "@/components/UserSyncFix";
+import UserCreationDebugger from "@/components/UserCreationDebugger";
+import RLSFixGuide from "@/components/RLSFixGuide";
+import UserIDMismatchFixer from "@/components/UserIDMismatchFixer";
+import DatabaseDiagnostic from "@/components/DatabaseDiagnostic";
 import {
   MessageCircle,
   Send,
@@ -56,16 +61,47 @@ const Chat: React.FC = () => {
   };
 
   // Load project details
+  const [projectError, setProjectError] = useState<string | null>(null);
+
+  // Function to mark messages as read when chat is opened
+  const markChatAsRead = async (chatId: string) => {
+    if (!user || !chatId) return;
+
+    try {
+      // Use the Supabase function to mark chat as read
+      const { error } = await supabase.rpc("mark_chat_as_read", {
+        p_chat_id: chatId,
+        p_user_id: user.id,
+      });
+
+      if (error) {
+        console.error(`Error marking chat ${chatId} as read:`, error);
+        // Fallback to direct update if function doesn't exist
+        await supabase
+          .from("chat_participants")
+          .update({ last_read_at: new Date().toISOString() })
+          .eq("chat_id", chatId)
+          .eq("user_id", user.id);
+      }
+
+      console.log("✅ Marked chat as read:", chatId);
+    } catch (error) {
+      console.error("Error marking chat as read:", error);
+    }
+  };
+
   useEffect(() => {
     const loadProjectDetails = async () => {
       if (!projectId) return;
 
       try {
         setProjectLoading(true);
+        setProjectError(null);
         const requestData = await getDesignRequestById(projectId);
         setProjectDetails(requestData);
       } catch (error: any) {
         console.error("Error loading project:", error);
+        setProjectError(error.message || "Unknown error loading project");
       } finally {
         setProjectLoading(false);
       }
@@ -76,7 +112,7 @@ const Chat: React.FC = () => {
     }
   }, [projectId]);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive and mark as read
   useEffect(() => {
     if (messages.length > 0 && messagesRef.current) {
       const scrollElement = messagesRef.current;
@@ -90,8 +126,18 @@ const Chat: React.FC = () => {
           scrollElement.scrollTop = scrollElement.scrollHeight;
         }, 50);
       }
+
+      // Mark messages as read when they're loaded/viewed
+      if (projectId) {
+        // Get the chat ID from the useRealtimeChat hook if possible
+        // For now, we'll trigger mark as read when messages are loaded
+        const chatId = messages[0]?.chat_id;
+        if (chatId) {
+          markChatAsRead(chatId);
+        }
+      }
     }
-  }, [messages.length]);
+  }, [messages.length, projectId]);
 
   // Focus input on load
   useEffect(() => {
@@ -160,6 +206,14 @@ const Chat: React.FC = () => {
 
   return (
     <div className="h-screen bg-festival-cream flex flex-col">
+      {/* Show project error with diagnostics */}
+      {projectError && (
+        <div className="p-4 space-y-4">
+          <ErrorDisplay error={projectError} title="Project Loading Error" />
+          <DatabaseDiagnostic />
+        </div>
+      )}
+
       {/* Show connection fixer if there's a problem loading messages */}
       {error && error.includes("Failed to fetch") && (
         <div className="p-4">
@@ -172,9 +226,20 @@ const Chat: React.FC = () => {
         <div className="p-4 space-y-4">
           <ErrorDisplay error={error} title="Chat Message Error" />
 
-          {/* Show UserSyncFix for foreign key errors */}
-          {error.includes("foreign key") ||
-            (error.includes("not present in table") && <UserSyncFix />)}
+          <DatabaseDiagnostic />
+
+          {/* Show UserSyncFix for user-related errors */}
+          {(error.includes("foreign key") ||
+            error.includes("not present in table") ||
+            error.includes("User account mismatch") ||
+            error.includes("sender_id")) && (
+            <>
+              <UserIDMismatchFixer />
+              <RLSFixGuide />
+              <UserSyncFix />
+              <UserCreationDebugger />
+            </>
+          )}
 
           <ChatErrorDebugger projectId={projectId} error={error} />
           <QuickConnectionTest />

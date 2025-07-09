@@ -42,22 +42,14 @@ export const UserSyncFix: React.FC = () => {
           .single();
 
       if (existingUserByEmail && !checkByEmailError) {
-        // User exists with email but different ID - update the ID
-        setResult("Found existing user with different ID, updating...");
+        // User exists with email but different ID - we need to handle this carefully
+        setResult(
+          `Found existing user with ID ${existingUserByEmail.id}, but auth user has ID ${user.id}. Attempting to fix...`,
+        );
 
-        const { data: updatedUser, error: updateError } = await supabase
-          .from("users")
-          .update({
-            id: user.id,
-            last_login: new Date().toISOString(),
-          })
-          .eq("email", user.email)
-          .select()
-          .single();
-
-        if (updateError) {
-          // If update fails, try deleting old record and creating new one
-          setResult("Updating failed, recreating user record...");
+        // Option 1: Try to delete old record and create new one with correct ID
+        try {
+          setResult("Deleting old user record and creating new one...");
 
           const { error: deleteError } = await supabase
             .from("users")
@@ -65,23 +57,36 @@ export const UserSyncFix: React.FC = () => {
             .eq("email", user.email);
 
           if (deleteError) {
-            throw new Error(
-              `Could not remove old user record: ${deleteError.message}`,
+            setResult(
+              `Delete failed: ${deleteError.message}. Trying update approach...`,
             );
-          }
 
-          // Now create new record
-          await createNewUserRecord();
-        } else {
-          setResult(
-            "✅ User ID updated successfully! You can now send messages.",
-          );
-          // Refresh the page after a short delay
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+            // Option 2: If delete fails, try direct ID update (this might not work due to constraints)
+            const { error: updateError } = await supabase
+              .from("users")
+              .update({
+                id: user.id,
+                last_login: new Date().toISOString(),
+              })
+              .eq("email", user.email);
+
+            if (updateError) {
+              throw new Error(
+                `Both delete and update failed. Delete error: ${deleteError.message}, Update error: ${updateError.message}`,
+              );
+            } else {
+              setResult("✅ User ID updated successfully via direct update!");
+              setTimeout(() => window.location.reload(), 2000);
+              return;
+            }
+          } else {
+            // Delete succeeded, now create new record
+            await createNewUserRecord();
+            return;
+          }
+        } catch (error: any) {
+          throw new Error(`Failed to fix user ID mismatch: ${error.message}`);
         }
-        return;
       }
 
       // User doesn't exist at all, create new record
@@ -119,6 +124,40 @@ export const UserSyncFix: React.FC = () => {
       .single();
 
     if (createError) {
+      // Log detailed error information
+      const errorDetails = {
+        message: createError.message,
+        details: createError.details,
+        hint: createError.hint,
+        code: createError.code,
+      };
+      console.error("User creation failed:", errorDetails);
+      console.error(
+        "Full create error:",
+        JSON.stringify(createError, Object.getOwnPropertyNames(createError), 2),
+      );
+
+      // Check for RLS permission issues
+      if (
+        createError.code === "42501" ||
+        createError.message?.includes("permission denied") ||
+        createError.message?.includes("RLS")
+      ) {
+        throw new Error(
+          `Permission denied: Row Level Security policies are preventing user creation. Please contact admin to disable RLS on users table or create proper insert policies. Error: ${createError.message}`,
+        );
+      }
+
+      // Check for duplicate user
+      if (
+        createError.code === "23505" ||
+        createError.message?.includes("duplicate")
+      ) {
+        throw new Error(
+          `User record may already exist with this ID or email. Try refreshing the page. Error: ${createError.message}`,
+        );
+      }
+
       throw createError;
     }
 
@@ -157,6 +196,15 @@ export const UserSyncFix: React.FC = () => {
       checkUserStatus();
     }
   }, [user]);
+
+  // Auto-fix capability - can be triggered by parent components
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("autofix") === "user" && user && !profile) {
+      // Automatically attempt to fix user record if autofix parameter is present
+      setTimeout(() => fixUserRecord(), 1000);
+    }
+  }, [user, profile]);
 
   if (!user) {
     return (

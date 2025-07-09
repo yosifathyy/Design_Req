@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        fetchProfile(session.user.id, session);
       }
       setLoading(false);
     });
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        fetchProfile(session.user.id, session);
       } else {
         setProfile(null);
       }
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, userSession?: Session | null) => {
     // Check if Supabase is properly configured
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -102,29 +102,136 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error?.details ||
           error?.hint ||
           JSON.stringify(error);
-        console.error("Error fetching user profile:", errorMessage);
 
-        // Run diagnostics if it's a network error
+        // Check if this is a network connectivity issue
         if (
           errorMessage.includes("Failed to fetch") ||
-          errorMessage.includes("Network")
+          errorMessage.includes("Network") ||
+          errorMessage.includes("TypeError: Failed to fetch")
         ) {
+          console.error("Network error fetching user profile:", errorMessage);
           console.log("Running connection diagnostics due to network error...");
           runConnectionDiagnostics().then(printDiagnostics);
+          setProfile(null);
+          return;
+        }
+
+        // For other errors, log but don't run diagnostics
+        console.error("Error fetching user profile:", errorMessage);
+        setProfile(null);
+        return;
+      }
+
+      if (!data) {
+        console.warn(
+          `No user profile found for ID: ${userId}, attempting to create one...`,
+        );
+
+        // Attempt to auto-create user record
+        try {
+          const currentUser = userSession?.user || session?.user;
+          if (currentUser) {
+            // First check if user exists by email
+            const { data: existingUser, error: checkError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("email", currentUser.email)
+              .single();
+
+            if (existingUser && !checkError) {
+              console.log(
+                "User exists with different ID, attempting to delete old record...",
+              );
+
+              // Try to delete the old record and create new one
+              const { error: deleteError } = await supabase
+                .from("users")
+                .delete()
+                .eq("email", currentUser.email);
+
+              if (deleteError) {
+                console.error(
+                  "Could not delete existing user record:",
+                  deleteError,
+                );
+                setProfile(null);
+                return;
+              }
+              console.log("Old user record deleted successfully");
+            }
+
+            const userData = {
+              id: userId,
+              email: currentUser.email,
+              name:
+                currentUser.user_metadata?.name ||
+                currentUser.email?.split("@")[0] ||
+                "User",
+              role: currentUser.email === "admin@demo.com" ? "admin" : "user",
+              status: "active",
+              xp: 0,
+              level: 1,
+              avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.email}`,
+              created_at: new Date().toISOString(),
+              last_login: new Date().toISOString(),
+            };
+
+            console.log("Auto-creating user record:", userData);
+
+            const { data: newUser, error: createError } = await supabase
+              .from("users")
+              .insert([userData])
+              .select()
+              .single();
+
+            if (createError) {
+              const errorDetails = {
+                message: createError.message,
+                details: createError.details,
+                hint: createError.hint,
+                code: createError.code,
+              };
+              console.error("Failed to auto-create user record:", errorDetails);
+              console.error(
+                "Full error object:",
+                JSON.stringify(
+                  createError,
+                  Object.getOwnPropertyNames(createError),
+                  2,
+                ),
+              );
+              setProfile(null);
+              return;
+            }
+
+            console.log("User record auto-created successfully:", newUser);
+            setProfile(newUser);
+            return;
+          }
+        } catch (autoCreateError: any) {
+          console.error("Auto-create user failed:", autoCreateError);
         }
 
         setProfile(null);
         return;
       }
 
-      if (!data) {
-        console.warn(`No user profile found for ID: ${userId}`);
+      console.log("User profile fetched successfully:", data);
+      setProfile(data);
+    } catch (error: any) {
+      // Handle network errors specifically
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch")
+      ) {
+        console.error("Network connectivity error:", error.message);
+        console.log(
+          "Please check your internet connection and Supabase configuration",
+        );
         setProfile(null);
         return;
       }
 
-      setProfile(data);
-    } catch (error: any) {
       const errorMessage =
         error?.message ||
         error?.details ||
@@ -275,12 +382,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { data: null, error: authError };
       }
 
-      // Update last login timestamp
+      // Update last login timestamp or create user record
       if (data?.session?.user) {
-        await supabase
+        const { error: updateError } = await supabase
           .from("users")
           .update({ last_login: new Date().toISOString() })
           .eq("id", data.session.user.id);
+
+        // If update fails, user might not exist - create the record
+        if (updateError && updateError.message?.includes("No rows found")) {
+          console.log("User record not found during login, creating...");
+          try {
+            const userData = {
+              id: data.session.user.id,
+              email: data.session.user.email,
+              name:
+                data.session.user.user_metadata?.name ||
+                data.session.user.email?.split("@")[0] ||
+                "User",
+              role:
+                data.session.user.email === "admin@demo.com" ? "admin" : "user",
+              status: "active",
+              xp: 0,
+              level: 1,
+              avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.session.user.email}`,
+              created_at: new Date().toISOString(),
+              last_login: new Date().toISOString(),
+            };
+
+            const { error: createError } = await supabase
+              .from("users")
+              .insert([userData]);
+
+            if (createError) {
+              const errorDetails = {
+                message: createError.message,
+                details: createError.details,
+                hint: createError.hint,
+                code: createError.code,
+              };
+              console.error(
+                "Failed to create user record during login:",
+                errorDetails,
+              );
+              console.error(
+                "Full login create error:",
+                JSON.stringify(
+                  createError,
+                  Object.getOwnPropertyNames(createError),
+                  2,
+                ),
+              );
+            } else {
+              console.log("User record created successfully during login");
+            }
+          } catch (userCreateError) {
+            console.error("Error creating user during login:", userCreateError);
+          }
+        }
       }
 
       setLoading(false);

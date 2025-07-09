@@ -316,14 +316,57 @@ export const getDesignRequests = async (userId: string, filter?: string) => {
 };
 
 export const getDesignRequestById = async (requestId: string) => {
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock project data");
+    return {
+      id: requestId,
+      title: "Mock Project",
+      description: "This is a mock project for development",
+      category: "logo",
+      priority: "medium",
+      status: "in-progress",
+      price: 299,
+      user_id: "mock-user",
+      designer_id: "mock-designer",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      files: [],
+    };
+  }
+
   try {
+    // First check if user is authenticated
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
+
+    if (authError) {
+      console.error("Auth error in getDesignRequestById:", authError);
+      throw new Error("Authentication error. Please log in and try again.");
+    }
+
+    if (!session) {
+      throw new Error("You must be logged in to view project details.");
+    }
+
+    const userId = session.user.id;
+    console.log(`Fetching project ${requestId} for user ${userId}`);
+
+    // Try to get the request with user permission check
     const { data, error } = await supabase
       .from("design_requests")
       .select("*, files(*)")
       .eq("id", requestId)
+      .or(`user_id.eq.${userId},designer_id.eq.${userId}`) // Allow access if user is client or designer
       .maybeSingle();
 
+    console.log("Query result:", { data, error });
+
     if (error) {
+      console.error("Database error in getDesignRequestById:", error);
+
       if (
         error.message?.includes('relation "design_requests" does not exist')
       ) {
@@ -331,24 +374,69 @@ export const getDesignRequestById = async (requestId: string) => {
           "Design requests table does not exist. Please run the database setup script.",
         );
       }
-      throw error;
-    }
-
-    if (!data) {
+      if (error.message?.includes("row-level security policy")) {
+        throw new Error(
+          "Access denied. You don't have permission to view this project.",
+        );
+      }
+      // Re-throw the original error with more context
       throw new Error(
-        "Request not found or you do not have permission to view it.",
+        `Database error: ${error.message || error.details || "Unknown error"}`,
       );
     }
 
+    if (!data) {
+      console.log("No data returned, checking if project exists...");
+      // Check if the request exists at all (without user filter)
+      const { data: existsData, error: existsError } = await supabase
+        .from("design_requests")
+        .select("id, user_id, designer_id")
+        .eq("id", requestId)
+        .maybeSingle();
+
+      console.log("Exists check result:", { existsData, existsError });
+
+      if (existsError) {
+        console.error("Error checking project existence:", existsError);
+        throw new Error(
+          `Error checking project existence: ${existsError.message}`,
+        );
+      }
+
+      if (!existsData) {
+        throw new Error(
+          `Project with ID "${requestId}" does not exist. It may have been deleted or the link is invalid.`,
+        );
+      } else {
+        throw new Error(
+          "Access denied. You don't have permission to view this project. Only the project client and assigned designer can access it.",
+        );
+      }
+    }
+
+    console.log("Successfully fetched project:", data.title);
     return data;
   } catch (error: any) {
+    console.error("Final error in getDesignRequestById:", error);
+
+    // Don't catch and re-wrap errors that are already user-friendly
+    if (
+      error.message?.includes("Authentication error") ||
+      error.message?.includes("You must be logged in") ||
+      error.message?.includes("Access denied") ||
+      error.message?.includes("Project with ID") ||
+      error.message?.includes("Database error:")
+    ) {
+      throw error;
+    }
+
     if (
       error.message?.includes("Failed to fetch") ||
       error.message?.includes("relation") ||
       error.message?.includes("does not exist")
     ) {
       throw new Error(
-        "Could not fetch request details. Database table may not exist yet.",
+        `Could not fetch request details. Original error: ${error.message}`,
       );
     }
     throw error;

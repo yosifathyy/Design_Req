@@ -62,34 +62,38 @@ const RetroFlipGrid: React.FC = () => {
       });
 
       // Header animation
-      gsap.to(headerRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 1.2,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      if (headerRef.current) {
+        gsap.to(headerRef.current, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
 
       // Grid section animation with stagger
-      gsap.to(gridSectionRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 1.5,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: gridSectionRef.current,
-          start: "top 75%",
-          end: "bottom 25%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      if (gridSectionRef.current) {
+        gsap.to(gridSectionRef.current, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: gridSectionRef.current,
+            start: "top 75%",
+            end: "bottom 25%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
 
       // Individual grid rows animation
       const rows = gridSectionRef.current?.querySelectorAll(".grid-row");
@@ -128,22 +132,32 @@ const RetroFlipGrid: React.FC = () => {
         start: "top bottom",
         end: "bottom top",
         onLeave: () => {
-          gsap.to([headerRef.current, gridSectionRef.current], {
-            opacity: 0,
-            y: -50,
-            scale: 0.95,
-            duration: 0.6,
-            ease: "power2.in",
-          });
+          const elements = [headerRef.current, gridSectionRef.current].filter(
+            Boolean,
+          );
+          if (elements.length > 0) {
+            gsap.to(elements, {
+              opacity: 0,
+              y: -50,
+              scale: 0.95,
+              duration: 0.6,
+              ease: "power2.in",
+            });
+          }
         },
         onEnterBack: () => {
-          gsap.to([headerRef.current, gridSectionRef.current], {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-          });
+          const elements = [headerRef.current, gridSectionRef.current].filter(
+            Boolean,
+          );
+          if (elements.length > 0) {
+            gsap.to(elements, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              ease: "back.out(1.7)",
+            });
+          }
         },
       });
     }, containerRef);

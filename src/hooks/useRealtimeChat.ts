@@ -101,6 +101,32 @@ export const useRealtimeChat = (projectId: string | null) => {
 
         console.log("Loaded messages via Supabase client:", messagesData);
         setMessages(messagesData || []);
+
+        // TODO: Mark this chat as read when messages are loaded
+        // Mark this chat as read when messages are loaded
+        if (user && chatId) {
+          try {
+            // Use the Supabase function to mark chat as read
+            const { error } = await supabase.rpc("mark_chat_as_read", {
+              p_chat_id: chatId,
+              p_user_id: user.id,
+            });
+
+            if (error) {
+              console.error(`Error marking chat ${chatId} as read:`, error);
+              // Fallback to direct update if function doesn't exist
+              await supabase
+                .from("chat_participants")
+                .update({ last_read_at: new Date().toISOString() })
+                .eq("chat_id", chatId)
+                .eq("user_id", user.id);
+            }
+
+            console.log("✅ Marked chat as read:", chatId);
+          } catch (error) {
+            console.error("Error marking chat as read:", error);
+          }
+        }
       } catch (error: any) {
         console.error("Failed to load messages for chat:", error);
         setMessages([]);
@@ -386,8 +412,154 @@ export const useRealtimeChat = (projectId: string | null) => {
             errorMessage =
               "❌ Permission denied - Row Level Security is blocking access. Please disable RLS.";
           } else if (err.message.includes("foreign key")) {
-            errorMessage =
-              "❌ Invalid reference - chat or user not found. Check project/user IDs.";
+            // Check if it's specifically a user foreign key issue
+            if (
+              err.message.includes("sender_id") &&
+              err.message.includes("users")
+            ) {
+              // Attempt automatic user creation
+              console.log("Attempting automatic user creation...");
+              try {
+                // First check if user exists by email
+                const { data: existingUser, error: checkError } = await supabase
+                  .from("users")
+                  .select("*")
+                  .eq("email", user.email)
+                  .single();
+
+                if (existingUser && !checkError) {
+                  console.log(
+                    "User exists with different ID, deleting old record...",
+                  );
+
+                  // Try to delete the old record first
+                  const { error: deleteError } = await supabase
+                    .from("users")
+                    .delete()
+                    .eq("email", user.email);
+
+                  if (deleteError) {
+                    console.error(
+                      "Could not delete existing user record:",
+                      deleteError,
+                    );
+                    throw new Error(
+                      `Could not delete existing user: ${deleteError.message}`,
+                    );
+                  }
+                  console.log("Old user record deleted successfully");
+                }
+
+                const userData = {
+                  id: user.id,
+                  email: user.email,
+                  name:
+                    user.user_metadata?.name ||
+                    user.email?.split("@")[0] ||
+                    "User",
+                  role: user.email === "admin@demo.com" ? "admin" : "user",
+                  status: "active",
+                  xp: 0,
+                  level: 1,
+                  avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
+                  created_at: new Date().toISOString(),
+                  last_login: new Date().toISOString(),
+                };
+
+                const { error: createError } = await supabase
+                  .from("users")
+                  .insert([userData]);
+
+                if (createError) {
+                  const errorDetails = {
+                    message: createError.message,
+                    details: createError.details,
+                    hint: createError.hint,
+                    code: createError.code,
+                  };
+                  console.error(
+                    "Auto-creation failed in message send:",
+                    errorDetails,
+                  );
+                  console.error(
+                    "Full message auto-create error:",
+                    JSON.stringify(
+                      createError,
+                      Object.getOwnPropertyNames(createError),
+                      2,
+                    ),
+                  );
+                } else {
+                  console.log(
+                    "User record created automatically, retrying message...",
+                  );
+                  // Retry sending the message
+                  const { data: retryMessage, error: retryError } =
+                    await supabase
+                      .from("messages")
+                      .insert([
+                        {
+                          chat_id: chatId,
+                          sender_id: user.id,
+                          text: message.trim(),
+                        },
+                      ])
+                      .select(
+                        `
+                      id,
+                      chat_id,
+                      sender_id,
+                      text,
+                      created_at,
+                      sender:users!sender_id(id, name, email, role, avatar_url)
+                    `,
+                      )
+                      .single();
+
+                  if (!retryError && retryMessage) {
+                    console.log(
+                      "Message sent successfully after user creation",
+                    );
+                    setMessages((prev) => {
+                      if (prev.some((msg) => msg.id === retryMessage.id)) {
+                        return prev;
+                      }
+                      return [...prev, retryMessage].sort(
+                        (a, b) =>
+                          new Date(a.created_at).getTime() -
+                          new Date(b.created_at).getTime(),
+                      );
+                    });
+                    return true; // Exit early on success
+                  }
+                }
+              } catch (autoCreateError: any) {
+                const errorDetails = {
+                  message: autoCreateError?.message,
+                  details: autoCreateError?.details,
+                  hint: autoCreateError?.hint,
+                  code: autoCreateError?.code,
+                };
+                console.error(
+                  "Automatic user creation exception:",
+                  errorDetails,
+                );
+                console.error(
+                  "Full auto-create exception:",
+                  JSON.stringify(
+                    autoCreateError,
+                    Object.getOwnPropertyNames(autoCreateError),
+                    2,
+                  ),
+                );
+              }
+
+              errorMessage =
+                "❌ User account mismatch - Attempted auto-fix. If this persists, use the 'Fix User Record' button.";
+            } else {
+              errorMessage =
+                "❌ Invalid reference - chat or user not found. Check project/user IDs.";
+            }
           } else if (err.message.includes("violates not-null constraint")) {
             errorMessage =
               "❌ Missing required field - check that all message data is provided.";
@@ -409,7 +581,16 @@ export const useRealtimeChat = (projectId: string | null) => {
               codeDescription = "Column does not exist";
               break;
             case "23503":
-              codeDescription = "Foreign key violation";
+              // Check if it's a user foreign key violation
+              if (
+                err.details?.includes("sender_id") &&
+                err.details?.includes("users")
+              ) {
+                codeDescription =
+                  "User account mismatch - Fix your user record";
+              } else {
+                codeDescription = "Foreign key violation";
+              }
               break;
             case "23502":
               codeDescription = "Not null violation";
@@ -711,39 +892,179 @@ export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { user } = useAuth();
 
-  useEffect(() => {
+  // Function to manually refresh unread count
+  const refreshUnreadCount = useCallback(async () => {
     if (!user || !isSupabaseConfigured) {
+      setUnreadCount(0);
+      return;
+    }
+
+    console.log("🔄 Manually refreshing unread count...");
+
+    try {
+      const { data: userChats, error: chatsError } = await supabase
+        .from("chat_participants")
+        .select("chat_id, last_read_at")
+        .eq("user_id", user.id);
+
+      if (chatsError) {
+        const errorMessage =
+          chatsError?.message ||
+          chatsError?.details ||
+          chatsError?.hint ||
+          JSON.stringify(chatsError);
+        console.error("Error fetching user chats:", errorMessage);
+        setUnreadCount(0);
+        return;
+      }
+
+      if (!userChats || userChats.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
+      let totalUnread = 0;
+      for (const chat of userChats) {
+        const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
+
+        const { count, error: messagesError } = await supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .eq("chat_id", chat.chat_id)
+          .neq("sender_id", user.id)
+          .gt("created_at", lastReadAt);
+
+        if (!messagesError) {
+          totalUnread += count || 0;
+        }
+      }
+
+      setUnreadCount(totalUnread);
+    } catch (error: any) {
+      console.error("Error refreshing unread count:", error);
+      setUnreadCount(0);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      console.warn("Supabase not configured, setting unread count to 0");
+      setUnreadCount(0);
       return;
     }
 
     const loadUnreadCount = async () => {
       try {
-        // Get all chats the user is involved in
-        const { data: userChats } = await supabase
-          .from("chats")
-          .select("id")
-          .or(`user_id.eq.${user.id},designer_id.eq.${user.id}`);
+        console.log("🔄 Loading unread count for user:", user.id);
 
-        if (!userChats) {
+        // Get all chats the user is involved in via chat_participants with last_read_at
+        const { data: userChats, error: chatsError } = await supabase
+          .from("chat_participants")
+          .select("chat_id, last_read_at")
+          .eq("user_id", user.id);
+
+        if (chatsError) {
+          const errorMessage =
+            chatsError?.message ||
+            chatsError?.details ||
+            chatsError?.hint ||
+            JSON.stringify(chatsError);
+          console.error("Error fetching user chats:", errorMessage);
+
+          // If chat_participants table doesn't exist, try to get chats directly
+          if (
+            errorMessage.includes('relation "chat_participants" does not exist')
+          ) {
+            console.warn(
+              "chat_participants table doesn't exist, trying direct chat lookup",
+            );
+            try {
+              // Fallback: look for chats where the user might be involved
+              const { data: fallbackChats, error: fallbackError } =
+                await supabase.from("chats").select("id").limit(10); // Limit to avoid too many results
+
+              if (!fallbackError && fallbackChats) {
+                console.log(
+                  "Using fallback chat lookup, found",
+                  fallbackChats.length,
+                  "chats",
+                );
+                // For fallback, we'll just count all messages not from the user
+                const chatIds = fallbackChats.map((chat) => chat.id);
+                if (chatIds.length > 0) {
+                  const { count } = await supabase
+                    .from("messages")
+                    .select("*", { count: "exact", head: true })
+                    .in("chat_id", chatIds)
+                    .neq("sender_id", user.id);
+
+                  setUnreadCount(count || 0);
+                  return;
+                }
+              }
+            } catch (fallbackError) {
+              console.error("Fallback chat lookup also failed:", fallbackError);
+            }
+          }
+
+          setUnreadCount(0);
+          return;
+        }
+
+        console.log("👥 User chats found:", userChats?.length || 0);
+
+        if (!userChats || userChats.length === 0) {
+          console.log("📭 No chats found for user, setting unread count to 0");
           setUnreadCount(0);
           return;
         }
 
         let totalUnread = 0;
+
+        // For each chat, count messages that are unread (created after last_read_at)
         for (const chat of userChats) {
-          const { count } = await supabase
+          const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
+
+          const { count, error: messagesError } = await supabase
             .from("messages")
             .select("*", { count: "exact", head: true })
-            .eq("chat_id", chat.id)
-            .neq("sender_id", user.id)
-            .gt("created_at", user.last_seen || "1970-01-01");
+            .eq("chat_id", chat.chat_id)
+            .neq("sender_id", user.id) // Not from current user
+            .gt("created_at", lastReadAt); // Created after last read
 
+          if (messagesError) {
+            const errorMessage =
+              messagesError?.message ||
+              messagesError?.details ||
+              messagesError?.hint ||
+              JSON.stringify(messagesError);
+            console.error(
+              `Error counting unread messages for chat ${chat.chat_id}:`,
+              errorMessage,
+            );
+            continue;
+          }
+
+          console.log(
+            `💬 Chat ${chat.chat_id}: ${count} unread messages (since ${lastReadAt})`,
+          );
           totalUnread += count || 0;
         }
 
+        console.log("📊 Total unread messages count:", totalUnread);
         setUnreadCount(totalUnread);
-      } catch (error) {
-        console.error("Failed to load unread count:", error);
+      } catch (error: any) {
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          JSON.stringify(error);
+        console.error("Failed to load unread count:", errorMessage);
         setUnreadCount(0);
       }
     };
@@ -752,7 +1073,7 @@ export const useUnreadCount = () => {
 
     // Set up real-time subscription for new messages
     const channel = supabase
-      .channel("unread-messages")
+      .channel(`unread-messages-${user.id}`)
       .on(
         "postgres_changes",
         {
@@ -760,16 +1081,87 @@ export const useUnreadCount = () => {
           schema: "public",
           table: "messages",
         },
+        (payload) => {
+          console.log("🔔 New message received in unread counter:", payload);
+          // Only update if the message is not from the current user
+          if (payload.new && payload.new.sender_id !== user.id) {
+            console.log(
+              "📊 Updating unread count due to new message from:",
+              payload.new.sender_id,
+            );
+            // Increment the count immediately for responsiveness
+            setUnreadCount((prev) => prev + 1);
+            // Also reload to ensure accuracy
+            setTimeout(() => loadUnreadCount(), 500);
+          } else {
+            console.log(
+              "👤 Message from current user, not updating unread count",
+            );
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+        },
         () => {
+          console.log("📝 Message updated, reloading unread count");
           loadUnreadCount();
         },
       )
-      .subscribe();
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+        },
+        () => {
+          console.log("🗑️ Message deleted, reloading unread count");
+          loadUnreadCount();
+        },
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_participants",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log(
+            "👁️ Chat participant updated (read status changed):",
+            payload,
+          );
+          // When last_read_at is updated, reload the unread count
+          if (
+            payload.new &&
+            payload.new.last_read_at !== payload.old?.last_read_at
+          ) {
+            console.log("📖 Messages marked as read, updating unread count");
+            loadUnreadCount();
+          }
+        },
+      )
+      .subscribe((status) => {
+        console.log("📡 Unread count subscription status:", status);
+        if (status === "SUBSCRIBED") {
+          console.log("✅ Successfully subscribed to unread messages updates");
+        } else if (status === "CHANNEL_ERROR") {
+          console.error("❌ Error subscribing to unread messages updates");
+        }
+      });
 
     return () => {
+      console.log("Cleaning up unread count subscription");
       supabase.removeChannel(channel);
     };
   }, [user]);
 
-  return unreadCount;
+  return { unreadCount, refreshUnreadCount };
 };
