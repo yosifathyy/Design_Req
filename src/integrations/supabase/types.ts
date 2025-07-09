@@ -353,40 +353,64 @@ export type Database = {
         Row: {
           amount: number
           created_at: string
+          description: string | null
+          design_request_id: string | null
           designer_id: string | null
           due_date: string
           id: string
           invoice_number: string
+          notes: string | null
           paid_at: string | null
           request_id: string
           status: string
+          subtotal: number | null
+          tax_amount: number | null
+          tax_rate: number | null
+          terms: string | null
           title: string
+          total_amount: number | null
           user_id: string | null
         }
         Insert: {
           amount: number
           created_at?: string
+          description?: string | null
+          design_request_id?: string | null
           designer_id?: string | null
           due_date: string
           id?: string
           invoice_number: string
+          notes?: string | null
           paid_at?: string | null
           request_id: string
           status?: string
+          subtotal?: number | null
+          tax_amount?: number | null
+          tax_rate?: number | null
+          terms?: string | null
           title?: string
+          total_amount?: number | null
           user_id?: string | null
         }
         Update: {
           amount?: number
           created_at?: string
+          description?: string | null
+          design_request_id?: string | null
           designer_id?: string | null
           due_date?: string
           id?: string
           invoice_number?: string
+          notes?: string | null
           paid_at?: string | null
           request_id?: string
           status?: string
+          subtotal?: number | null
+          tax_amount?: number | null
+          tax_rate?: number | null
+          terms?: string | null
           title?: string
+          total_amount?: number | null
           user_id?: string | null
         }
         Relationships: [
