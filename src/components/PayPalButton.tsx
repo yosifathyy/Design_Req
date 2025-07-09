@@ -156,11 +156,13 @@ const PayPalButton: React.FC<PayPalButtonProps> = (props) => {
         </h3>
         <p className="text-green-600">
           This invoice was paid on{" "}
-          {new Date(props.invoice.paid_at!).toLocaleDateString()}
+          {props.invoice.paidAt
+            ? new Date(props.invoice.paidAt).toLocaleDateString()
+            : "Unknown date"}
         </p>
-        {props.invoice.paypal_order_id && (
+        {props.invoice.paypalOrderId && (
           <p className="text-sm text-green-600 mt-2">
-            PayPal Order ID: {props.invoice.paypal_order_id}
+            PayPal Order ID: {props.invoice.paypalOrderId}
           </p>
         )}
       </div>
