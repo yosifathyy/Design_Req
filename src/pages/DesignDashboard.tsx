@@ -718,7 +718,7 @@ const DesignDashboard: React.FC = () => {
                 <div className="flex items-center justify-between mb-2">
                   <h2 className="text-base sm:text-lg font-display font-bold text-black flex items-center gap-2">
                     <Palette className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
-                    Recent Projects
+                    <span className="-mt-1 mr-28">Recent Projects</span>
                   </h2>
                   <Link to="/requests">
                     <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
