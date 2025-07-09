@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Attempt to auto-create user record
         try {
-          const currentUser = session?.user;
+          const currentUser = userSession?.user || session?.user;
           if (currentUser) {
             const userData = {
               id: userId,
