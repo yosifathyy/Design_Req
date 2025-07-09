@@ -386,7 +386,7 @@ export const useRealtimeChat = (projectId: string | null) => {
               "❌ Messages table doesn't exist in database. Please set up database tables.";
           } else if (err.message.includes('relation "chats" does not exist')) {
             errorMessage =
-              "❌ Chats table doesn't exist in database. Please set up database tables.";
+              "��� Chats table doesn't exist in database. Please set up database tables.";
           } else if (
             err.message.includes("column") &&
             err.message.includes("does not exist")
@@ -897,7 +897,12 @@ export const useUnreadCount = () => {
           .eq("user_id", user.id);
 
         if (chatsError) {
-          console.error("Error fetching user chats:", chatsError);
+          const errorMessage =
+            chatsError?.message ||
+            chatsError?.details ||
+            chatsError?.hint ||
+            JSON.stringify(chatsError);
+          console.error("Error fetching user chats:", errorMessage);
           setUnreadCount(0);
           return;
         }
