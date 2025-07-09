@@ -74,21 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const fetchProfile = async (userId: string, userSession?: Session | null) => {
-    // Check if Supabase is properly configured
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    if (
-      !supabaseUrl ||
-      !supabaseAnonKey ||
-      supabaseUrl === "your-supabase-url" ||
-      supabaseAnonKey === "your-supabase-anon-key" ||
-      supabaseUrl.includes("placeholder")
-    ) {
-      // Don't fetch profile in mock mode, it's already set
-      return;
-    }
-
+    // Always fetch profile since Supabase is configured
     try {
       const { data, error } = await supabase
         .from("users")
@@ -246,75 +232,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
-
-    // Check if Supabase is properly configured
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    if (
-      !supabaseUrl ||
-      !supabaseAnonKey ||
-      supabaseUrl === "your-supabase-url" ||
-      supabaseAnonKey === "your-supabase-anon-key" ||
-      supabaseUrl.includes("placeholder")
-    ) {
-      // Mock authentication for development
-      console.warn("Supabase not configured - using mock authentication");
-
-      // Simple validation for demo
-      if (email === "admin@demo.com" && password === "demo123") {
-        const mockUser = {
-          id: "mock-admin-user",
-          email: "admin@demo.com",
-          aud: "authenticated",
-          role: "authenticated",
-          email_confirmed_at: new Date().toISOString(),
-          app_metadata: {},
-          user_metadata: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-
-        const mockSession = {
-          access_token: "mock-access-token",
-          refresh_token: "mock-refresh-token",
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-          token_type: "bearer",
-          user: mockUser,
-        };
-
-        const mockProfile = {
-          id: "mock-admin-user",
-          email: "admin@demo.com",
-          name: "Demo Admin",
-          role: "admin",
-          status: "active",
-          avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
-          xp: 100,
-          level: 5,
-          bio: "Demo admin user for testing",
-          skills: ["Admin", "Management"],
-          hourly_rate: null,
-          created_at: new Date().toISOString(),
-          last_login: new Date().toISOString(),
-        };
-
-        // Set mock state
-        setSession(mockSession);
-        setUser(mockUser);
-        setProfile(mockProfile);
-        setLoading(false);
-
-        return { data: mockSession, error: null };
-      } else {
-        setLoading(false);
-        return {
-          data: null,
-          error: new Error("Invalid credentials. Try admin@demo.com / demo123"),
-        };
-      }
-    }
 
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword(
