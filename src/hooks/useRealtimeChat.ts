@@ -28,7 +28,7 @@ export interface ChatRoom {
   unread_count: number;
 }
 
-// Simplified chat system using just messages table with project_id
+// Simplified chat system using existing database schema: messages -> chats -> design_requests
 export const useRealtimeChat = (projectId: string | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -76,35 +76,34 @@ export const useRealtimeChat = (projectId: string | null) => {
                 ));
           console.error("Messages query failed:", errorMessage);
 
-          // Try direct API for messages
-          const directResponse = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages?chat_id=eq.${chatId}&select=id,chat_id,sender_id,text,created_at&order=created_at.asc`,
-            {
-              headers: {
-                apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                "Content-Type": "application/json",
-              },
-            },
-          );
+          // If it's a network error, try simplified query
+          if (
+            errorMessage.includes("Failed to fetch") ||
+            errorMessage.includes("NetworkError")
+          ) {
+            console.log("Network error detected, trying simplified query...");
 
-          if (!directResponse.ok) {
-            const errorText = await directResponse.text();
-            throw new Error(
-              `Failed to load messages via direct API: ${errorText}`,
-            );
+            const { data: simpleMessages, error: simpleError } = await supabase
+              .from("messages")
+              .select("id, chat_id, sender_id, text, created_at")
+              .eq("chat_id", chatId)
+              .order("created_at", { ascending: true });
+
+            if (!simpleError && simpleMessages) {
+              console.log("✅ Simplified query worked:", simpleMessages);
+              setMessages(simpleMessages || []);
+              return;
+            }
           }
 
-          const directMessages = await directResponse.json();
-          console.log("Loaded messages via direct API:", directMessages);
-          setMessages(directMessages || []);
-          return;
+          throw new Error(`Failed to load messages: ${errorMessage}`);
         }
 
         console.log("Loaded messages via Supabase client:", messagesData);
         setMessages(messagesData || []);
       } catch (error: any) {
         console.error("Failed to load messages for chat:", error);
+        setMessages([]);
         throw new Error(`Failed to load messages: ${error.message}`);
       }
     };
@@ -120,7 +119,6 @@ export const useRealtimeChat = (projectId: string | null) => {
         );
       }
 
-      // Quick connection test
       console.log("Testing Supabase connection...");
 
       try {
@@ -189,43 +187,9 @@ export const useRealtimeChat = (projectId: string | null) => {
 
         if (chatsError) {
           console.error("Chats query failed:", chatsError);
-          console.log("Trying direct API for chats...");
-
-          // Try direct API call as fallback
-          const directResponse = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/chats?request_id=eq.${projectId}&select=id&limit=1`,
-            {
-              headers: {
-                apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                "Content-Type": "application/json",
-              },
-            },
+          throw new Error(
+            `Failed to find chat for project: ${chatsError.message}`,
           );
-
-          if (!directResponse.ok) {
-            const errorText = await directResponse.text();
-            throw new Error(
-              `Both Supabase client and direct API failed for chats: ${errorText}`,
-            );
-          }
-
-          const directData = await directResponse.json();
-          console.log("Direct API success for chats:", directData);
-
-          if (!directData || directData.length === 0) {
-            console.log(
-              "No chat found for project, will create one when sending message",
-            );
-            setMessages([]);
-            return;
-          }
-
-          // Use direct API data and continue with messages
-          const chatId = directData[0].id;
-          console.log("Found chat via direct API:", chatId);
-          await loadMessagesForChat(chatId);
-          return;
         }
 
         if (!chatsData || chatsData.length === 0) {
@@ -279,7 +243,6 @@ export const useRealtimeChat = (projectId: string | null) => {
       } else if (err?.code) {
         errorMessage = `Error ${err.code}: ${err.message || err.details || "Unknown database issue"}`;
       } else {
-        // Fallback for unknown errors
         console.error(
           "Unknown error structure:",
           JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
@@ -292,7 +255,7 @@ export const useRealtimeChat = (projectId: string | null) => {
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, user]);
 
   // Send a message
   const sendMessage = useCallback(
@@ -322,7 +285,7 @@ export const useRealtimeChat = (projectId: string | null) => {
             .insert([
               {
                 request_id: projectId,
-                created_by: user.id,
+                created_at: new Date().toISOString(),
               },
             ])
             .select()
@@ -420,7 +383,6 @@ export const useRealtimeChat = (projectId: string | null) => {
         } else if (err?.code) {
           errorMessage = `Database error ${err.code}: ${err.message || err.details || "Unknown issue"}`;
         } else {
-          // Log full error for debugging
           console.error(
             "Unhandled error structure:",
             JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
@@ -508,6 +470,7 @@ export const useRealtimeChat = (projectId: string | null) => {
       });
 
     return () => {
+      console.log("Cleaning up real-time subscription");
       supabase.removeChannel(channel);
     };
   }, [projectId, loadMessages]);
@@ -529,15 +492,25 @@ export const useRealtimeChatRooms = () => {
 
   const loadChatRooms = useCallback(async () => {
     if (!isSupabaseConfigured || !user) {
+      setChatRooms([]);
+      setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      console.log("Loading chat rooms for user:", user.email, "role:", user.role);
+      console.log(
+        "Loading chat rooms for user:",
+        user.email,
+        "role:",
+        user.role,
+      );
 
       // Check if user is admin
-      const isAdmin = user.role === 'admin' || user.role === 'super-admin' || user.email === 'admin@demo.com';
+      const isAdmin =
+        user.role === "admin" ||
+        user.role === "super-admin" ||
+        user.email === "admin@demo.com";
 
       if (!isAdmin) {
         console.log("User is not admin, returning empty chat rooms");
@@ -551,14 +524,16 @@ export const useRealtimeChatRooms = () => {
       // Get all projects (admin can see all)
       const { data: projects, error: projectsError } = await supabase
         .from("design_requests")
-        .select(`
+        .select(
+          `
           id,
           title,
           user_id,
           designer_id,
           client:users!user_id(id, name, email),
           designer:users!designer_id(id, name, email)
-        `)
+        `,
+        )
         .order("updated_at", { ascending: false });
 
       if (projectsError) {
@@ -596,10 +571,12 @@ export const useRealtimeChatRooms = () => {
               // Get latest message for this chat
               const { data: messageData } = await supabase
                 .from("messages")
-                .select(`
+                .select(
+                  `
                   *,
                   sender:users!sender_id(id, name, email, role)
-                `)
+                `,
+                )
                 .eq("chat_id", chatId)
                 .order("created_at", { ascending: false })
                 .limit(1)
@@ -639,106 +616,80 @@ export const useRealtimeChatRooms = () => {
               unread_count: 0,
             } as ChatRoom;
           }
-        })
+        }),
       );
 
       console.log("Processed chat rooms:", chatRoomsData.length);
       setChatRooms(chatRoomsData.filter(Boolean));
-            .gt("created_at", user.last_seen || "1970-01-01");
-
-          return {
-            project_id: project.id,
-            project_title: project.title,
-            client_id: project.user_id,
-            client_name: project.client?.name || "Unknown Client",
-            designer_id: project.designer_id,
-            designer_name: project.designer?.name,
-            last_message: latestMessage,
-            unread_count: unreadCount || 0,
-          };
-        }),
-      );
-
-      // Filter to only show rooms with messages or where user is involved
-      const relevantRooms = chatRoomsData.filter(
-        (room) =>
-          room.last_message ||
-          room.client_id === user.id ||
-          room.designer_id === user.id ||
-          user.role === "admin" ||
-          user.role === "super-admin",
-      );
-
-      setChatRooms(relevantRooms);
-    } catch (err: any) {
-      console.error("Failed to load chat rooms:", err);
+    } catch (error: any) {
+      console.error("Failed to load chat rooms:", error);
+      setChatRooms([]);
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  // Subscribe to message changes to update chat rooms
-  useEffect(() => {
-    if (!isSupabaseConfigured || !user) {
-      return;
-    }
-
+  const refreshChatRooms = () => {
     loadChatRooms();
+  };
 
-    // Subscribe to all message changes to update room list
-    const channel = supabase
-      .channel("chat-rooms-updates")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "messages",
-        },
-        () => {
-          // Refresh chat rooms when any message changes
-          loadChatRooms();
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, loadChatRooms]);
+  useEffect(() => {
+    loadChatRooms();
+  }, [loadChatRooms]);
 
   return {
     chatRooms,
     loading,
-    refreshChatRooms: loadChatRooms,
+    refreshChatRooms,
   };
 };
 
-// Hook for getting unread message count
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !user) {
+    if (!user || !isSupabaseConfigured) {
       return;
     }
 
-    const getUnreadCount = async () => {
-      const { count } = await supabase
-        .from("messages")
-        .select("*", { count: "exact", head: true })
-        .neq("sender_id", user.id)
-        .gt("created_at", user.last_seen || "1970-01-01");
+    const loadUnreadCount = async () => {
+      try {
+        // Get all chats the user is involved in
+        const { data: userChats } = await supabase
+          .from("chats")
+          .select("id")
+          .or(`user_id.eq.${user.id},designer_id.eq.${user.id}`);
 
-      setUnreadCount(count || 0);
+        if (!userChats) {
+          setUnreadCount(0);
+          return;
+        }
+
+        let totalUnread = 0;
+        for (const chat of userChats) {
+          const { count } = await supabase
+            .from("messages")
+            .select("*", { count: "exact", head: true })
+            .eq("chat_id", chat.id)
+            .neq("sender_id", user.id)
+            .gt("created_at", user.last_seen || "1970-01-01");
+
+          totalUnread += count || 0;
+        }
+
+        setUnreadCount(totalUnread);
+      } catch (error) {
+        console.error("Failed to load unread count:", error);
+        setUnreadCount(0);
+      }
     };
 
-    getUnreadCount();
+    loadUnreadCount();
 
-    // Subscribe to new messages to update count
+    // Set up real-time subscription for new messages
     const channel = supabase
-      .channel("unread-count")
+      .channel("unread-messages")
       .on(
         "postgres_changes",
         {
@@ -747,7 +698,7 @@ export const useUnreadCount = () => {
           table: "messages",
         },
         () => {
-          getUnreadCount();
+          loadUnreadCount();
         },
       )
       .subscribe();
