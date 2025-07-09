@@ -311,6 +311,153 @@ export interface Database {
           created_at?: string;
         };
       };
+      invoices: {
+        Row: {
+          id: string;
+          invoice_number: string;
+          design_request_id: string | null;
+          user_id: string;
+          designer_id: string | null;
+          title: string;
+          description: string | null;
+          subtotal: number;
+          tax_rate: number;
+          tax_amount: number;
+          discount_amount: number;
+          total_amount: number;
+          status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+          due_date: string | null;
+          sent_at: string | null;
+          paid_at: string | null;
+          payment_method: "paypal" | "stripe" | "bank_transfer" | null;
+          payment_reference: string | null;
+          paypal_order_id: string | null;
+          paypal_payer_id: string | null;
+          notes: string | null;
+          terms: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          invoice_number?: string;
+          design_request_id?: string | null;
+          user_id: string;
+          designer_id?: string | null;
+          title: string;
+          description?: string | null;
+          subtotal?: number;
+          tax_rate?: number;
+          tax_amount?: number;
+          discount_amount?: number;
+          total_amount: number;
+          status?: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+          due_date?: string | null;
+          sent_at?: string | null;
+          paid_at?: string | null;
+          payment_method?: "paypal" | "stripe" | "bank_transfer" | null;
+          payment_reference?: string | null;
+          paypal_order_id?: string | null;
+          paypal_payer_id?: string | null;
+          notes?: string | null;
+          terms?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          invoice_number?: string;
+          design_request_id?: string | null;
+          user_id?: string;
+          designer_id?: string | null;
+          title?: string;
+          description?: string | null;
+          subtotal?: number;
+          tax_rate?: number;
+          tax_amount?: number;
+          discount_amount?: number;
+          total_amount?: number;
+          status?: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+          due_date?: string | null;
+          sent_at?: string | null;
+          paid_at?: string | null;
+          payment_method?: "paypal" | "stripe" | "bank_transfer" | null;
+          payment_reference?: string | null;
+          paypal_order_id?: string | null;
+          paypal_payer_id?: string | null;
+          notes?: string | null;
+          terms?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      invoice_line_items: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          description: string;
+          quantity: number;
+          unit_price: number;
+          total_price: number;
+          item_type: "service" | "product" | "design" | "consultation";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          invoice_id: string;
+          description: string;
+          quantity?: number;
+          unit_price: number;
+          total_price: number;
+          item_type?: "service" | "product" | "design" | "consultation";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          invoice_id?: string;
+          description?: string;
+          quantity?: number;
+          unit_price?: number;
+          total_price?: number;
+          item_type?: "service" | "product" | "design" | "consultation";
+          created_at?: string;
+        };
+      };
+      invoice_payments: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          amount: number;
+          payment_method: string;
+          payment_reference: string | null;
+          paypal_transaction_id: string | null;
+          status: "pending" | "completed" | "failed" | "refunded";
+          processed_at: string;
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          invoice_id: string;
+          amount: number;
+          payment_method: string;
+          payment_reference?: string | null;
+          paypal_transaction_id?: string | null;
+          status?: "pending" | "completed" | "failed" | "refunded";
+          processed_at?: string;
+          notes?: string | null;
+        };
+        Update: {
+          id?: string;
+          invoice_id?: string;
+          amount?: number;
+          payment_method?: string;
+          payment_reference?: string | null;
+          paypal_transaction_id?: string | null;
+          status?: "pending" | "completed" | "failed" | "refunded";
+          processed_at?: string;
+          notes?: string | null;
+        };
+      };
       chats: {
         Row: {
           id: string;
