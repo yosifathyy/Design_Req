@@ -61,7 +61,7 @@ const RetroFlipGrid: React.FC = () => {
         scale: 0.8,
       });
 
-            // Header animation
+      // Header animation
       if (headerRef.current) {
         gsap.to(headerRef.current, {
           opacity: 1,
@@ -91,8 +91,9 @@ const RetroFlipGrid: React.FC = () => {
             start: "top 75%",
             end: "bottom 25%",
             toggleActions: "play none none reverse",
-        },
-      });
+          },
+        });
+      }
 
       // Individual grid rows animation
       const rows = gridSectionRef.current?.querySelectorAll(".grid-row");
