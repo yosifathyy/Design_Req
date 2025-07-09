@@ -448,7 +448,7 @@ const DesignDashboard: React.FC = () => {
         {/* Overlay for better content visibility */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20 backdrop-blur-[0.5px]"></div>
 
-        <div className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl mr-0 ml-auto" style={{ margin: "71px auto 0 0" }}>
+        <div className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl" style={{ margin: "71px auto 0 0" }}>
           {/* Notices */}
           {profileSetupError && <ProfileSetupNotice />}
           {idMismatch && (
@@ -464,64 +464,67 @@ const DesignDashboard: React.FC = () => {
                 {/* Compact Hero Section */}
                 <div
                   ref={heroRef}
-                  className="mb-2 relative bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-3 mr-auto ml-0"
+                  className="mb-2 relative bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-3"
+                  style={{ margin: "0 auto 8px 0" }}
                 >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                    <AvatarImage
-                      src={userProfile?.avatar_url}
-                      alt={userProfile?.name}
-                    />
-                    <AvatarFallback className="bg-festival-orange text-white text-sm sm:text-base font-bold">
-                      {userProfile?.name?.charAt(0) || "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                  {stats.xpProgress.level >= 5 && (
-                    <Crown className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-                  )}
-                </div>
-                <div>
-                  <h1 className="text-lg sm:text-xl lg:text-2xl font-display font-bold text-black leading-tight">
-                    Hey, {userProfile?.name?.split(" ")[0] || "Creator"}! ✨
-                  </h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge className="bg-festival-orange text-black border border-black font-bold text-xs px-2 py-0.5">
-                      <Star className="w-3 h-3 mr-1" />
-                      Level {stats.xpProgress.level}
-                    </Badge>
-                    <Badge className="bg-festival-pink text-black border border-black font-bold text-xs px-2 py-0.5">
-                      <Zap className="w-3 h-3 mr-1" />
-                      {stats.xpProgress.current} XP
-                    </Badge>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                          <AvatarImage
+                            src={userProfile?.avatar_url}
+                            alt={userProfile?.name}
+                          />
+                          <AvatarFallback className="bg-festival-orange text-white text-sm sm:text-base font-bold">
+                            {userProfile?.name?.charAt(0) || "?"}
+                          </AvatarFallback>
+                        </Avatar>
+                        {stats.xpProgress.level >= 5 && (
+                          <Crown className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+                        )}
+                      </div>
+                      <div>
+                        <h1 className="text-lg sm:text-xl lg:text-2xl font-display font-bold text-black leading-tight">
+                          Hey, {userProfile?.name?.split(" ")[0] || "Creator"}! ✨
+                        </h1>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className="bg-festival-orange text-black border border-black font-bold text-xs px-2 py-0.5">
+                            <Star className="w-3 h-3 mr-1" />
+                            Level {stats.xpProgress.level}
+                          </Badge>
+                          <Badge className="bg-festival-pink text-black border border-black font-bold text-xs px-2 py-0.5">
+                            <Zap className="w-3 h-3 mr-1" />
+                            {stats.xpProgress.current} XP
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hidden sm:block text-right">
+                      <div className="w-32 lg:w-40">
+                        <div className="flex justify-between text-xs font-medium mb-1">
+                          <span>XP</span>
+                          <span>
+                            {stats.xpProgress.current}/{stats.xpProgress.target}
+                          </span>
+                        </div>
+                        <Progress
+                          value={
+                            (stats.xpProgress.current / stats.xpProgress.target) * 100
+                          }
+                          className="h-2 border border-black bg-gray-200"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="hidden sm:block text-right">
-                <div className="w-32 lg:w-40">
-                  <div className="flex justify-between text-xs font-medium mb-1">
-                    <span>XP</span>
-                    <span>
-                      {stats.xpProgress.current}/{stats.xpProgress.target}
-                    </span>
-                  </div>
-                  <Progress
-                    value={
-                      (stats.xpProgress.current / stats.xpProgress.target) * 100
-                    }
-                    className="h-2 border border-black bg-gray-200"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Compact Stats Grid */}
-          <div
-            ref={statsRef}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-2"
-          >
+              <div className="flex flex-col w-6/12 ml-5 max-md:ml-0 max-md:w-full">
+                {/* Compact Stats Grid */}
+                <div
+                  ref={statsRef}
+                  className="grid grid-cols-2 lg:grid-cols-4 gap-2"
+                  style={{ margin: "28px auto 8px" }}
+                >
             {/* Total Requests */}
             <Link to="/requests">
               <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
