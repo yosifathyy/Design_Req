@@ -353,43 +353,106 @@ export const useRealtimeChat = (projectId: string | null) => {
         console.error("Error type:", typeof err);
         console.error("Error properties:", Object.keys(err || {}));
 
-        // Extract meaningful error information
+        // Log each property separately for debugging
+        console.error("Error.code:", err?.code);
+        console.error("Error.message:", err?.message);
+        console.error("Error.details:", err?.details);
+        console.error("Error.hint:", err?.hint);
+
+        // Extract meaningful error information with better property checking
         let errorMessage = "Failed to send message";
 
-        if (err?.message) {
-          errorMessage = `Send error: ${err.message}`;
+        // First check for the most specific error information
+        if (err?.message && typeof err.message === "string") {
+          errorMessage = err.message;
 
           // Check for specific database issues
           if (err.message.includes('relation "messages" does not exist')) {
-            errorMessage = "Messages table doesn't exist in database";
+            errorMessage =
+              "❌ Messages table doesn't exist in database. Please set up database tables.";
+          } else if (err.message.includes('relation "chats" does not exist')) {
+            errorMessage =
+              "❌ Chats table doesn't exist in database. Please set up database tables.";
           } else if (
             err.message.includes("column") &&
             err.message.includes("does not exist")
           ) {
-            errorMessage = `Database column error: ${err.message}`;
+            errorMessage = `❌ Database schema error: ${err.message}`;
           } else if (
             err.message.includes("permission denied") ||
-            err.message.includes("row-level security")
+            err.message.includes("row-level security") ||
+            err.message.includes("RLS")
           ) {
             errorMessage =
-              "Permission denied - you may not have access to send messages";
+              "❌ Permission denied - Row Level Security is blocking access. Please disable RLS.";
           } else if (err.message.includes("foreign key")) {
-            errorMessage = "Invalid reference - chat or user not found";
+            errorMessage =
+              "❌ Invalid reference - chat or user not found. Check project/user IDs.";
+          } else if (err.message.includes("violates not-null constraint")) {
+            errorMessage =
+              "❌ Missing required field - check that all message data is provided.";
+          } else {
+            errorMessage = `❌ Database error: ${err.message}`;
           }
-        } else if (err?.details) {
-          errorMessage = `Send error: ${err.details}`;
-        } else if (err?.hint) {
-          errorMessage = `Send error: ${err.hint}`;
+        } else if (err?.details && typeof err.details === "string") {
+          errorMessage = `❌ Database details: ${err.details}`;
+        } else if (err?.hint && typeof err.hint === "string") {
+          errorMessage = `❌ Database hint: ${err.hint}`;
         } else if (err?.code) {
-          errorMessage = `Database error ${err.code}: ${err.message || err.details || "Unknown issue"}`;
+          // Handle PostgreSQL error codes
+          let codeDescription = "";
+          switch (err.code) {
+            case "42P01":
+              codeDescription = "Table does not exist";
+              break;
+            case "42703":
+              codeDescription = "Column does not exist";
+              break;
+            case "23503":
+              codeDescription = "Foreign key violation";
+              break;
+            case "23502":
+              codeDescription = "Not null violation";
+              break;
+            case "42501":
+              codeDescription = "Insufficient privilege";
+              break;
+            default:
+              codeDescription = "Database error";
+          }
+          errorMessage = `❌ ${codeDescription} (${err.code}): ${err.message || err.details || "Unknown issue"}`;
         } else {
+          // Last resort - try to extract any useful information
           console.error(
             "Unhandled error structure:",
             JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
           );
-          errorMessage = `Unexpected error: ${JSON.stringify(err).substring(0, 100)}...`;
+
+          // Try to get any string representation
+          let errorStr = "";
+          if (err && typeof err === "object") {
+            errorStr = err.toString();
+            if (errorStr === "[object Object]") {
+              // If toString doesn't help, try to extract any property that's a string
+              const stringProps = Object.entries(err).filter(
+                ([key, value]) => typeof value === "string" && value.length > 0,
+              );
+              if (stringProps.length > 0) {
+                errorStr = stringProps
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join(", ");
+              } else {
+                errorStr = JSON.stringify(err, null, 2);
+              }
+            }
+          } else {
+            errorStr = String(err);
+          }
+
+          errorMessage = `❌ Unexpected error: ${errorStr.substring(0, 200)}${errorStr.length > 200 ? "..." : ""}`;
         }
 
+        console.error("Final error message:", errorMessage);
         setError(errorMessage);
         return false;
       }
