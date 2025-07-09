@@ -146,6 +146,19 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
 
 // Main PayPal Button Component
 const PayPalButton: React.FC<PayPalButtonProps> = (props) => {
+  // Safety check for undefined invoice
+  if (!props.invoice) {
+    return (
+      <div className="text-center p-6 border-4 border-gray-400 bg-gray-50">
+        <div className="text-6xl mb-4">⚠️</div>
+        <h3 className="text-xl font-bold text-gray-700 mb-2">
+          Invalid Invoice
+        </h3>
+        <p className="text-gray-600">Invoice data is not available.</p>
+      </div>
+    );
+  }
+
   // Show different UI based on invoice status
   if (props.invoice.status === "paid") {
     return (
