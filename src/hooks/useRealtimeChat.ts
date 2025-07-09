@@ -4,9 +4,9 @@ import { useAuth } from "@/hooks/useAuth";
 
 export interface ChatMessage {
   id: string;
-  project_id: string;
+  chat_id: string;
   sender_id: string;
-  message: string;
+  content: string;
   created_at: string;
   sender?: {
     id: string;
