@@ -2,6 +2,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import {
+  runConnectionDiagnostics,
+  printDiagnostics,
+} from "@/utils/connectionDiagnostics";
 
 type AuthContextType = {
   session: Session | null;
@@ -99,6 +103,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error?.hint ||
           JSON.stringify(error);
         console.error("Error fetching user profile:", errorMessage);
+
+        // Run diagnostics if it's a network error
+        if (
+          errorMessage.includes("Failed to fetch") ||
+          errorMessage.includes("Network")
+        ) {
+          console.log("Running connection diagnostics due to network error...");
+          runConnectionDiagnostics().then(printDiagnostics);
+        }
+
         setProfile(null);
         return;
       }
