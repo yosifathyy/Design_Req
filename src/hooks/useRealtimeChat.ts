@@ -119,7 +119,17 @@ export const useRealtimeChat = (projectId: string | null) => {
           .limit(1);
 
         if (connectionError) {
-          console.error("Supabase client failed:", connectionError);
+          const errorMessage =
+            connectionError?.message ||
+            connectionError?.details ||
+            connectionError?.hint ||
+            (typeof connectionError === "string"
+              ? connectionError
+              : JSON.stringify(
+                  connectionError,
+                  Object.getOwnPropertyNames(connectionError),
+                ));
+          console.error("Supabase client failed:", errorMessage);
 
           // Try direct API access as fallback
           console.log("Trying direct API access...");
