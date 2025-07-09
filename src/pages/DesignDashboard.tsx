@@ -18,6 +18,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import ProfileSetupNotice from "@/components/ProfileSetupNotice";
 import IDMismatchNotice from "@/components/IDMismatchNotice";
+import NewMessageNotification from "@/components/NewMessageNotification";
 import {
   FileText,
   MessageCircle,
