@@ -928,11 +928,21 @@ export const useUnreadCount = () => {
           table: "messages",
         },
         (payload) => {
-          console.log("New message received:", payload);
+          console.log("🔔 New message received in unread counter:", payload);
           // Only update if the message is not from the current user
-          if (payload.new.sender_id !== user.id) {
-            // Reload the count to ensure accuracy
-            loadUnreadCount();
+          if (payload.new && payload.new.sender_id !== user.id) {
+            console.log(
+              "📊 Updating unread count due to new message from:",
+              payload.new.sender_id,
+            );
+            // Increment the count immediately for responsiveness
+            setUnreadCount((prev) => prev + 1);
+            // Also reload to ensure accuracy
+            setTimeout(() => loadUnreadCount(), 500);
+          } else {
+            console.log(
+              "👤 Message from current user, not updating unread count",
+            );
           }
         },
       )
@@ -944,7 +954,7 @@ export const useUnreadCount = () => {
           table: "messages",
         },
         () => {
-          // Reload count when messages are updated (e.g., marked as read)
+          console.log("📝 Message updated, reloading unread count");
           loadUnreadCount();
         },
       )
@@ -956,12 +966,17 @@ export const useUnreadCount = () => {
           table: "messages",
         },
         () => {
-          // Reload count when messages are deleted
+          console.log("🗑️ Message deleted, reloading unread count");
           loadUnreadCount();
         },
       )
       .subscribe((status) => {
-        console.log("Unread count subscription status:", status);
+        console.log("📡 Unread count subscription status:", status);
+        if (status === "SUBSCRIBED") {
+          console.log("✅ Successfully subscribed to unread messages updates");
+        } else if (status === "CHANNEL_ERROR") {
+          console.error("❌ Error subscribing to unread messages updates");
+        }
       });
 
     return () => {
