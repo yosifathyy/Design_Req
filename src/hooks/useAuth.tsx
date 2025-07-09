@@ -245,7 +245,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             };
           }
         } catch (err: any) {
-          console.error("Error checking user profile:", err?.message || err);
+          const errorMessage =
+            err?.message ||
+            err?.details ||
+            err?.hint ||
+            (typeof err === "string"
+              ? err
+              : JSON.stringify(err, Object.getOwnPropertyNames(err)));
+          console.error("Error checking user profile:", errorMessage);
         }
       }
 
@@ -418,7 +425,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         await supabase.auth.signOut();
       } catch (error: any) {
-        console.error("Error signing out:", error?.message || error);
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          (typeof error === "string"
+            ? error
+            : JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        console.error("Error signing out:", errorMessage);
       }
     }
 
