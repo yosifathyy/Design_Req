@@ -106,75 +106,22 @@ const Chat: React.FC = () => {
     });
   };
 
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension || ""))
-      return <Image className="w-4 h-4" />;
-    if (["mp4", "avi", "mov", "webm"].includes(extension || ""))
-      return <Video className="w-4 h-4" />;
-    if (["pdf"].includes(extension || ""))
-      return <FileText className="w-4 h-4" />;
-    return <File className="w-4 h-4" />;
-  };
-
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || sending) return;
 
-    const newMessage = {
-      id: (messages.length + 1).toString(),
-      text: message,
-      senderId: mockUser.id,
-      senderName: mockUser.name,
-      senderType: "user" as const,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      setSending(true);
+      const success = await sendChatMessage(message);
 
-    // Add to UI immediately for better UX
-    setMessages((prev) => [...prev, newMessage]);
-    setMessage("");
-
-    // Send to backend
-    if (chatId && user) {
-      try {
-        await sendMessage(chatId, user.id, message.trim());
-      } catch (error) {
-        console.error("Error sending message:", error);
+      if (success) {
+        setMessage("");
+      } else {
+        console.error("Failed to send message");
       }
-    }
-
-    // Animate new message
-    setTimeout(() => {
-      const newMessageEl = messagesRef.current?.lastElementChild;
-      if (newMessageEl) {
-        gsap.fromTo(
-          newMessageEl,
-          { opacity: 0, x: 50, scale: 0.9 },
-          {
-            opacity: 1,
-            x: 0,
-            scale: 1,
-            duration: 0.4,
-            ease: "back.out(1.2)",
-          },
-        );
-      }
-    }, 50);
-
-    // Only simulate designer response if we're in demo mode
-    if (process.env.NODE_ENV === "development" && projectDetails?.designer_id) {
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        const designerResponse = {
-          id: (messages.length + 2).toString(),
-          text: "Thanks for the feedback! I'll work on those changes right away. 👍",
-          senderId: projectDetails.designer_id,
-          senderName: "Designer",
-          senderType: "designer" as const,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, designerResponse]);
-      }, 2000);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setSending(false);
     }
   };
 
