@@ -892,6 +892,60 @@ export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { user } = useAuth();
 
+  // Function to manually refresh unread count
+  const refreshUnreadCount = useCallback(async () => {
+    if (!user || !isSupabaseConfigured) {
+      setUnreadCount(0);
+      return;
+    }
+
+    console.log("🔄 Manually refreshing unread count...");
+
+    try {
+      const { data: userChats, error: chatsError } = await supabase
+        .from("chat_participants")
+        .select("chat_id, last_read_at")
+        .eq("user_id", user.id);
+
+      if (chatsError) {
+        const errorMessage =
+          chatsError?.message ||
+          chatsError?.details ||
+          chatsError?.hint ||
+          JSON.stringify(chatsError);
+        console.error("Error fetching user chats:", errorMessage);
+        setUnreadCount(0);
+        return;
+      }
+
+      if (!userChats || userChats.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
+      let totalUnread = 0;
+      for (const chat of userChats) {
+        const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
+
+        const { count, error: messagesError } = await supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .eq("chat_id", chat.chat_id)
+          .neq("sender_id", user.id)
+          .gt("created_at", lastReadAt);
+
+        if (!messagesError) {
+          totalUnread += count || 0;
+        }
+      }
+
+      setUnreadCount(totalUnread);
+    } catch (error: any) {
+      console.error("Error refreshing unread count:", error);
+      setUnreadCount(0);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!user) {
       setUnreadCount(0);
