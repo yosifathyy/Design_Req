@@ -418,7 +418,16 @@ export const useRealtimeChat = (projectId: string | null) => {
               codeDescription = "Column does not exist";
               break;
             case "23503":
-              codeDescription = "Foreign key violation";
+              // Check if it's a user foreign key violation
+              if (
+                err.details?.includes("sender_id") &&
+                err.details?.includes("users")
+              ) {
+                codeDescription =
+                  "User account mismatch - Fix your user record";
+              } else {
+                codeDescription = "Foreign key violation";
+              }
               break;
             case "23502":
               codeDescription = "Not null violation";
