@@ -682,8 +682,8 @@ const DesignDashboard: React.FC = () => {
                 </Button>
               </Link>
             </div>
-          )}
-                </div>
+                    )}
+        </div>
       </div>
     </>
   );
