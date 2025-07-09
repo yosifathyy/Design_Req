@@ -63,7 +63,7 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-display font-bold text-black">
-                INVOICE #{invoice.invoice_number}
+                INVOICE #{invoice.invoiceNumber}
               </h1>
               <p className="text-black/80 font-medium">{invoice.title}</p>
             </div>
@@ -74,7 +74,7 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
                 {invoice.status.toUpperCase()}
               </Badge>
               <p className="text-black/80 mt-2">
-                Total: ${invoice.total_amount.toFixed(2)}
+                Total: ${invoice.totalAmount.toFixed(2)}
               </p>
             </div>
           </div>
