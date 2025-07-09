@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { gsap } from "gsap";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { User, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, LogIn, UserCircle, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const FloatingLoginButton = () => {
@@ -27,7 +28,10 @@ const FloatingLoginButton = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { signIn, signUp, loading: isLoading, user } = useAuth();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const pulseRef = useRef<HTMLDivElement>(null);
+
+  const { signIn, signUp, signOut, loading: isLoading, user } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -86,36 +90,117 @@ const FloatingLoginButton = () => {
     }
   };
 
-  // Don't show the floating button if user is already logged in
-  if (user) return null;
+    // GSAP animations for hover and pulse effects
+  useEffect(() => {
+    if (!buttonRef.current || !pulseRef.current) return;
+
+    // Continuous pulse animation
+    gsap.to(pulseRef.current, {
+      scale: 1.5,
+      opacity: 0,
+      duration: 2,
+      repeat: -1,
+      ease: "power2.out",
+    });
+
+    // Floating animation
+    gsap.to(buttonRef.current, {
+      y: -10,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "power2.inOut",
+    });
+  }, []);
+
+  const handleHover = () => {
+    if (!buttonRef.current) return;
+
+    gsap.to(buttonRef.current, {
+      scale: 1.2,
+      rotation: 360,
+      duration: 0.3,
+      ease: "back.out(1.7)",
+    });
+  };
+
+  const handleHoverOut = () => {
+    if (!buttonRef.current) return;
+
+    gsap.to(buttonRef.current, {
+      scale: 1,
+      rotation: 0,
+      duration: 0.3,
+      ease: "back.out(1.7)",
+    });
+  };
+
+  const handleClick = () => {
+    if (!buttonRef.current) return;
+
+    gsap.fromTo(buttonRef.current,
+      { scale: 1.2 },
+      {
+        scale: 1,
+        duration: 0.2,
+        ease: "power2.out",
+      }
+    );
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   return (
     <>
-      <motion.div
+            <motion.div
         className="fixed bottom-6 right-6 z-50"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1, duration: 0.5, type: "spring" }}
       >
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <motion.button
-              className="bg-festival-orange hover:bg-festival-orange/90 text-white rounded-full p-4 shadow-lg border-2 border-festival-black hover:shadow-xl transition-all duration-300"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              animate={{
-                y: [0, -5, 0],
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <LogIn className="w-6 h-6" />
-            </motion.button>
-          </DialogTrigger>
+        {/* Pulse ring effect */}
+        <div
+          ref={pulseRef}
+          className="absolute inset-0 bg-festival-orange rounded-full opacity-30"
+          style={{ transform: 'translate(-50%, -50%)', top: '50%', left: '50%' }}
+        />
+
+        {user ? (
+          // User logged in - show profile/logout button
+          <button
+            ref={buttonRef}
+            onClick={handleLogout}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleHoverOut}
+            onMouseDown={handleClick}
+            className="relative bg-gradient-to-r from-festival-pink to-festival-coral text-white rounded-full p-4 shadow-lg border-2 border-festival-black hover:shadow-xl transition-all duration-300 group"
+          >
+            <UserCircle className="w-6 h-6" />
+            {/* Tooltip */}
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-festival-black text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              {user.email} - Click to logout
+            </div>
+          </button>
+        ) : (
+          // User not logged in - show login dialog
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogTrigger asChild>
+              <button
+                ref={buttonRef}
+                onMouseEnter={handleHover}
+                onMouseLeave={handleHoverOut}
+                onMouseDown={handleClick}
+                className="relative bg-festival-orange hover:bg-festival-orange/90 text-white rounded-full p-4 shadow-lg border-2 border-festival-black hover:shadow-xl transition-all duration-300 group"
+              >
+                <LogIn className="w-6 h-6" />
+                {/* Tooltip */}
+                <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-festival-black text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Click to login
+                </div>
+              </button>
+            </DialogTrigger>
 
           <DialogContent className="sm:max-w-md bg-festival-cream border-2 border-festival-black">
             <DialogHeader>
