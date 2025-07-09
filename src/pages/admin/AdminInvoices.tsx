@@ -26,7 +26,7 @@ const AdminInvoices: React.FC = () => {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [invoices, setInvoices] = useState<InvoiceWithDetails[]>([]);
+  const [invoices, setInvoices] = useState<SimpleInvoice[]>([]);
   const [stats, setStats] = useState({
     totalRevenue: 0,
     paidInvoices: 0,
