@@ -102,17 +102,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error?.details ||
           error?.hint ||
           JSON.stringify(error);
-        console.error("Error fetching user profile:", errorMessage);
 
-        // Run diagnostics if it's a network error
+        // Check if this is a network connectivity issue
         if (
           errorMessage.includes("Failed to fetch") ||
-          errorMessage.includes("Network")
+          errorMessage.includes("Network") ||
+          errorMessage.includes("TypeError: Failed to fetch")
         ) {
+          console.error("Network error fetching user profile:", errorMessage);
           console.log("Running connection diagnostics due to network error...");
           runConnectionDiagnostics().then(printDiagnostics);
+          setProfile(null);
+          return;
         }
 
+        // For other errors, log but don't run diagnostics
+        console.error("Error fetching user profile:", errorMessage);
         setProfile(null);
         return;
       }
@@ -123,8 +128,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      console.log("User profile fetched successfully:", data);
       setProfile(data);
     } catch (error: any) {
+      // Handle network errors specifically
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch")
+      ) {
+        console.error("Network connectivity error:", error.message);
+        console.log(
+          "Please check your internet connection and Supabase configuration",
+        );
+        setProfile(null);
+        return;
+      }
+
       const errorMessage =
         error?.message ||
         error?.details ||
