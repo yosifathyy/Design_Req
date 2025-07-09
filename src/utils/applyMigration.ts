@@ -34,6 +34,18 @@ export const applySimplifiedChatMigration =
       // Step 2: Execute migration step by step
       console.log("Applying simplified chat migration...");
 
+      // Try to use exec_sql RPC function first
+      const { error: rpcTestError } = await supabase.rpc("exec_sql", {
+        sql: "SELECT 1;",
+      });
+
+      if (rpcTestError) {
+        console.log(
+          "RPC exec_sql not available, using alternative approach...",
+        );
+        return await applyChatMigrationAlternative();
+      }
+
       // Drop existing chat tables
       const { error: dropError } = await supabase.rpc("exec_sql", {
         sql: `
@@ -154,61 +166,68 @@ export const applySimplifiedChatMigration =
     }
   };
 
-// Alternative approach using direct SQL if the RPC approach doesn't work
-export const applyMigrationDirect = async (): Promise<MigrationResult> => {
-  if (!isSupabaseConfigured) {
+// Alternative approach when RPC is not available
+const applyChatMigrationAlternative = async (): Promise<MigrationResult> => {
+  try {
+    // Since we can't execute DDL directly, provide detailed instructions
     return {
       success: false,
+      error: "Automated migration not available",
+      details: `Your Supabase instance doesn't support automated migrations.
+Please run the migration manually through the Supabase Dashboard:
+1. Go to SQL Editor in your Supabase Dashboard
+2. Copy and paste the migration SQL from the Manual Migration section
+3. Run the SQL to create the simplified chat structure
+4. Return here and click "Recheck Status"`,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: "Migration alternative failed",
+      details: error.message,
+    };
+  }
+};
+
+// Test if database supports the migration
+export const testMigrationSupport = async (): Promise<{
+  supportsRPC: boolean;
+  canWriteMessages: boolean;
+  error?: string;
+}> => {
+  if (!isSupabaseConfigured) {
+    return {
+      supportsRPC: false,
+      canWriteMessages: false,
       error: "Supabase not configured",
     };
   }
 
   try {
-    // Check if we need migration by trying to select from messages with project_id
-    const { data, error } = await supabase
+    // Test RPC support
+    const { error: rpcError } = await supabase.rpc("exec_sql", {
+      sql: "SELECT 1;",
+    });
+    const supportsRPC = !rpcError;
+
+    // Test if we can write to messages table (even if it exists with wrong structure)
+    const { error: writeError } = await supabase
       .from("messages")
-      .select("id, project_id")
+      .select("id")
       .limit(1);
 
-    if (!error) {
-      return {
-        success: true,
-        details: "Migration already applied",
-      };
-    }
+    const canWriteMessages = !writeError;
 
-    // If messages table doesn't exist or doesn't have project_id, we need to migrate
-    // Create the new structure by inserting a test record (which will create the table if RLS allows)
-    const { data: testUser } = await supabase
-      .from("users")
-      .select("id")
-      .limit(1)
-      .single();
-
-    const { data: testProject } = await supabase
-      .from("design_requests")
-      .select("id")
-      .limit(1)
-      .single();
-
-    if (!testUser || !testProject) {
-      return {
-        success: false,
-        error: "Cannot apply migration - no test data available",
-      };
-    }
-
-    // This approach won't work without proper admin privileges
     return {
-      success: false,
-      error: "Direct migration requires admin database access",
-      details: "Please apply the migration through Supabase dashboard or CLI",
+      supportsRPC,
+      canWriteMessages,
+      error: rpcError?.message,
     };
   } catch (error: any) {
     return {
-      success: false,
-      error: "Migration check failed",
-      details: error.message,
+      supportsRPC: false,
+      canWriteMessages: false,
+      error: error.message,
     };
   }
 };
