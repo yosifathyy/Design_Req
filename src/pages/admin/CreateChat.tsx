@@ -117,6 +117,11 @@ const CreateChat: React.FC = () => {
     try {
       setCreating(true);
 
+      // Check network connectivity
+      if (!navigator.onLine) {
+        throw new Error("No internet connection. Please check your network.");
+      }
+
       console.log("Creating chat with:", {
         projectId: selectedProject,
         participants: selectedUsers,
