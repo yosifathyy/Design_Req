@@ -70,15 +70,6 @@ const AdminInvoices: React.FC = () => {
 
   useEffect(() => {
     loadData();
-
-    // Set up real-time subscription
-    const unsubscribe = subscribeToInvoices((updatedInvoices) => {
-      setInvoices(updatedInvoices);
-      // Reload stats when invoices change
-      invoicesApi.getStats().then(setStats).catch(console.error);
-    });
-
-    return unsubscribe;
   }, []);
 
   useEffect(() => {
