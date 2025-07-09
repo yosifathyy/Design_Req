@@ -1,3 +1,5 @@
+import { validateApiKey } from "./validateApiKey";
+
 // Simple direct test to debug Supabase connection issues
 export const testSupabaseDirectly = async () => {
   const url = import.meta.env.VITE_SUPABASE_URL;
@@ -7,6 +9,18 @@ export const testSupabaseDirectly = async () => {
   console.log("URL:", url);
   console.log("Key (first 30 chars):", key?.substring(0, 30) + "...");
   console.log("Key length:", key?.length);
+
+  // Validate API key first
+  const keyValidation = validateApiKey(key);
+  console.log("API Key validation:", keyValidation);
+
+  if (!keyValidation.valid) {
+    return {
+      success: false,
+      error: `Invalid API key: ${keyValidation.issue}`,
+      recommendation: keyValidation.recommendation,
+    };
+  }
 
   // Test 1: Basic health check
   try {
