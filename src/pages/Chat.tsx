@@ -120,10 +120,29 @@ const Chat: React.FC = () => {
           }
         }, 50);
       } else {
-        console.error("Failed to send message");
+        console.error("Failed to send message - check error state for details");
+        // The error details are already in the error state from useRealtimeChat
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending message:", error);
+      // Extract detailed error information for debugging
+      if (error?.message) {
+        console.error("Error message:", error.message);
+      }
+      if (error?.details) {
+        console.error("Error details:", error.details);
+      }
+      if (error?.hint) {
+        console.error("Error hint:", error.hint);
+      }
+      if (error?.code) {
+        console.error("Error code:", error.code);
+      }
+      // Log the full error object structure
+      console.error(
+        "Full error object:",
+        JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+      );
     } finally {
       setSending(false);
     }
