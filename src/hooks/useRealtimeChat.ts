@@ -102,18 +102,13 @@ export const useRealtimeChat = (projectId: string | null) => {
         console.log("Loaded messages via Supabase client:", messagesData);
         setMessages(messagesData || []);
 
-        // Mark this chat as read when messages are loaded
+        // TODO: Mark this chat as read when messages are loaded
+        // Need to implement proper read tracking when database schema supports it
         if (user && chatId) {
-          try {
-            await supabase
-              .from("chat_participants")
-              .update({ last_read_at: new Date().toISOString() })
-              .eq("chat_id", chatId)
-              .eq("user_id", user.id);
-            console.log("✅ Marked chat as read:", chatId);
-          } catch (error) {
-            console.error("Error marking chat as read:", error);
-          }
+          console.log("📖 Chat viewed:", chatId);
+          console.log(
+            "ℹ️ Read tracking not implemented - database schema needs last_read_at column",
+          );
         }
       } catch (error: any) {
         console.error("Failed to load messages for chat:", error);
