@@ -39,6 +39,7 @@ export const useRealtimeChat = (projectId: string | null) => {
   const loadMessages = useCallback(async () => {
     if (!projectId || !isSupabaseConfigured) {
       setMessages([]);
+      setLoading(false);
       return;
     }
 
@@ -349,11 +350,40 @@ export const useRealtimeChat = (projectId: string | null) => {
         console.log("Target chat ID:", chatId);
         console.log("User ID:", user.id);
 
-        const { error } = await supabase.from("messages").insert([messageData]);
+        const { data: insertedMessage, error } = await supabase
+          .from("messages")
+          .insert([messageData])
+          .select(
+            `
+            id,
+            chat_id,
+            sender_id,
+            text,
+            created_at,
+            sender:users!sender_id(id, name, email, role, avatar_url)
+          `,
+          )
+          .single();
 
         if (error) {
           throw error;
         }
+
+        // Immediately add the message to local state for instant feedback
+        if (insertedMessage) {
+          setMessages((prev) => {
+            // Avoid duplicates
+            if (prev.some((msg) => msg.id === insertedMessage.id)) {
+              return prev;
+            }
+            return [...prev, insertedMessage];
+          });
+        }
+
+        // Also reload messages to ensure sync
+        setTimeout(() => {
+          loadMessages();
+        }, 500);
 
         return true;
       } catch (err: any) {
@@ -415,9 +445,7 @@ export const useRealtimeChat = (projectId: string | null) => {
     // Load initial messages
     loadMessages();
 
-    // For real-time, we need to subscribe to messages table and filter by chat_id
-    // Since we can't easily filter by project through chats, we'll subscribe to all messages
-    // and filter client-side (not ideal but works for now)
+    // Set up real-time subscription for messages
     const channel = supabase
       .channel(`project-${projectId}-messages`)
       .on(
@@ -428,46 +456,57 @@ export const useRealtimeChat = (projectId: string | null) => {
           table: "messages",
         },
         async (payload) => {
-          console.log("New message received:", payload);
+          console.log("Real-time message received:", payload);
 
-          // Check if this message belongs to our project's chat
-          const { data: chatData } = await supabase
-            .from("chats")
-            .select("request_id")
-            .eq("id", payload.new.chat_id)
-            .single();
+          try {
+            // Get the complete message with sender info
+            const { data: fullMessage, error } = await supabase
+              .from("messages")
+              .select(
+                `
+                *,
+                sender:users!sender_id(id, name, email, role, avatar_url)
+              `,
+              )
+              .eq("id", payload.new.id)
+              .single();
 
-          if (chatData?.request_id !== projectId) {
-            return; // Not for our project
-          }
-
-          // Get sender info
-          const { data: sender } = await supabase
-            .from("users")
-            .select("id, name, email, role, avatar_url")
-            .eq("id", payload.new.sender_id)
-            .single();
-
-          const newMessage: ChatMessage = {
-            ...payload.new,
-            sender: sender || {
-              id: payload.new.sender_id,
-              name: "Unknown User",
-              email: "",
-              role: "user",
-            },
-          };
-
-          setMessages((prev) => {
-            // Avoid duplicates
-            if (prev.some((msg) => msg.id === newMessage.id)) {
-              return prev;
+            if (error || !fullMessage) {
+              console.error("Failed to get full message:", error);
+              return;
             }
-            return [...prev, newMessage];
-          });
+
+            // Check if this message belongs to our project
+            const { data: chatData } = await supabase
+              .from("chats")
+              .select("request_id")
+              .eq("id", fullMessage.chat_id)
+              .single();
+
+            if (chatData?.request_id !== projectId) {
+              return; // Not for our project
+            }
+
+            // Add to local state
+            setMessages((prev) => {
+              // Avoid duplicates
+              if (prev.some((msg) => msg.id === fullMessage.id)) {
+                return prev;
+              }
+              return [...prev, fullMessage].sort(
+                (a, b) =>
+                  new Date(a.created_at).getTime() -
+                  new Date(b.created_at).getTime(),
+              );
+            });
+          } catch (error) {
+            console.error("Error processing real-time message:", error);
+          }
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Real-time subscription status:", status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
