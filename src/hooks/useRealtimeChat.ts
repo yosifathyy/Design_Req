@@ -6,7 +6,7 @@ export interface ChatMessage {
   id: string;
   chat_id: string;
   sender_id: string;
-  content: string;
+  message: string;
   created_at: string;
   sender?: {
     id: string;
@@ -126,7 +126,11 @@ export const useRealtimeChat = (projectId: string | null) => {
         .from("messages")
         .select(
           `
-          *,
+          id,
+          chat_id,
+          sender_id,
+          message,
+          created_at,
           sender:users!sender_id(id, name, email, role, avatar_url)
         `,
         )
@@ -236,7 +240,7 @@ export const useRealtimeChat = (projectId: string | null) => {
         const messageData = {
           chat_id: chatId,
           sender_id: user.id,
-          content: message.trim(),
+          message: message.trim(),
         };
 
         console.log("Attempting to insert message:", messageData);
