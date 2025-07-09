@@ -395,30 +395,30 @@ const DesignDashboard: React.FC = () => {
             className="mb-8 sm:mb-12 relative bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-4 sm:p-6 lg:p-8"
           >
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-              <div className="flex items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full lg:w-auto">
                 <div className="relative">
-                  <Avatar className="w-20 h-20 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     <AvatarImage
                       src={userProfile?.avatar_url}
                       alt={userProfile?.name}
                     />
-                    <AvatarFallback className="bg-festival-orange text-white text-2xl font-bold">
+                    <AvatarFallback className="bg-festival-orange text-white text-xl sm:text-2xl font-bold">
                       {userProfile?.name?.charAt(0) || "?"}
                     </AvatarFallback>
                   </Avatar>
                   {stats.xpProgress.level >= 5 && (
-                    <Crown className="absolute -top-2 -right-2 w-8 h-8 text-yellow-500" />
+                    <Crown className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
                   )}
                 </div>
-                <div>
-                  <h1 className="text-5xl font-display font-bold text-black mb-2">
+                <div className="text-center sm:text-left">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-black mb-2">
                     Welcome back,{" "}
                     {userProfile?.name?.split(" ")[0] || "Creator"}!
                   </h1>
-                  <p className="text-xl text-black/70 font-medium mb-3">
+                  <p className="text-lg sm:text-xl text-black/70 font-medium mb-3">
                     Ready to bring amazing ideas to life? ✨
                   </p>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4">
                     <Badge className="bg-festival-orange text-black border-2 border-black font-bold">
                       <Star className="w-4 h-4 mr-1" />
                       Level {stats.xpProgress.level} Creator
