@@ -201,35 +201,7 @@ const EnhancedChat: React.FC = () => {
     setUploadingFile(true);
 
     try {
-      // Check if storage bucket exists
-      console.log("Checking for chat-files bucket...");
-      const { data: buckets, error: bucketError } =
-        await supabase.storage.listBuckets();
-
-      console.log("Bucket check result:", { buckets, bucketError });
-
-      if (bucketError) {
-        console.error("Storage bucket error:", bucketError);
-        // Don't show error for bucket checking, just skip file upload
-        console.log("Bucket check failed, proceeding without file upload");
-        return;
-      }
-
-      const chatFilesBucket = buckets?.find(
-        (bucket) => bucket.name === "chat-files",
-      );
-      console.log("Found chat-files bucket:", chatFilesBucket);
-
-      if (!chatFilesBucket) {
-        console.log(
-          "chat-files bucket not found in:",
-          buckets?.map((b) => b.name),
-        );
-        setShowStorageSetup(true);
-        return;
-      }
-
-      console.log("✅ chat-files bucket exists, proceeding with upload...");
+      console.log("🔄 Starting file upload process...");
 
       for (const file of Array.from(files)) {
         // Check file size (max 10MB)
@@ -252,6 +224,17 @@ const EnhancedChat: React.FC = () => {
 
         if (uploadError) {
           console.error("Upload error:", uploadError);
+
+          // Check if it's a bucket not found error
+          if (
+            uploadError.message?.includes("Bucket not found") ||
+            uploadError.message?.includes("bucket does not exist")
+          ) {
+            console.log("Bucket doesn't exist, showing setup helper");
+            setShowStorageSetup(true);
+            return;
+          }
+
           const errorMessage =
             uploadError.message || uploadError.error || "Failed to upload file";
           toast({
