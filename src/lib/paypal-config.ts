@@ -30,8 +30,9 @@ export const paypalScriptOptions = {
   currency: PAYPAL_CONFIG.CURRENCY,
   intent: "capture",
   components: "buttons,messages",
-  "enable-funding": "venmo,paylater,card", // Enable additional payment methods
-  "data-sdk-integration-source": "developer-studio",
+  "enable-funding": "paylater", // Enable Pay Later (more stable with client-side)
+  "disable-funding": "", // Don't disable any funding sources
+  "data-sdk-integration-source": "react-paypal-js",
 };
 
 // Helper to get access token for server-side API calls
