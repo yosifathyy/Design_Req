@@ -336,3 +336,5 @@ SELECT 'Demo auth users created successfully!' as status;`;
     </div>
   );
 }
+
+export default AuthSetupHelper;
