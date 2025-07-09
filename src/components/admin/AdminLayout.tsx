@@ -263,14 +263,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           {children || <Outlet />}
         </main>
       </div>
-
-      {/* Click outside to close notifications */}
-      {showNotifications && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowNotifications(false)}
-        />
-      )}
     </div>
   );
 };
