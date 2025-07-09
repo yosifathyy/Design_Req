@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
+import QuickConnectionTest from "@/components/QuickConnectionTest";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,6 +149,7 @@ const Chat: React.FC = () => {
                 {error}
               </p>
             </div>
+            <QuickConnectionTest />
             <SupabaseConnectionTest />
           </div>
         )}
