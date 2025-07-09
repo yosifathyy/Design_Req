@@ -949,8 +949,13 @@ export const useUnreadCount = () => {
 
         console.log("📊 Total unread messages count:", totalUnread);
         setUnreadCount(totalUnread);
-      } catch (error) {
-        console.error("Failed to load unread count:", error);
+      } catch (error: any) {
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          JSON.stringify(error);
+        console.error("Failed to load unread count:", errorMessage);
         setUnreadCount(0);
       }
     };
