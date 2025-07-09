@@ -60,16 +60,20 @@ const Chat: React.FC = () => {
   };
 
   // Load project details
+  const [projectError, setProjectError] = useState<string | null>(null);
+
   useEffect(() => {
     const loadProjectDetails = async () => {
       if (!projectId) return;
 
       try {
         setProjectLoading(true);
+        setProjectError(null);
         const requestData = await getDesignRequestById(projectId);
         setProjectDetails(requestData);
       } catch (error: any) {
         console.error("Error loading project:", error);
+        setProjectError(error.message || "Unknown error loading project");
       } finally {
         setProjectLoading(false);
       }
