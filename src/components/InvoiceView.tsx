@@ -107,30 +107,30 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
                 <div className="flex justify-between">
                   <span className="text-black/60">Created:</span>
                   <span className="font-medium">
-                    {formatDate(invoice.created_at)}
+                    {formatDate(invoice.createdAt)}
                   </span>
                 </div>
-                {invoice.due_date && (
+                {invoice.dueDate && (
                   <div className="flex justify-between">
                     <span className="text-black/60">Due Date:</span>
                     <span className="font-medium">
-                      {formatDate(invoice.due_date)}
+                      {formatDate(invoice.dueDate)}
                     </span>
                   </div>
                 )}
-                {invoice.sent_at && (
+                {invoice.sentAt && (
                   <div className="flex justify-between">
                     <span className="text-black/60">Sent:</span>
                     <span className="font-medium">
-                      {formatDate(invoice.sent_at)}
+                      {formatDate(invoice.sentAt)}
                     </span>
                   </div>
                 )}
-                {invoice.paid_at && (
+                {invoice.paidAt && (
                   <div className="flex justify-between">
                     <span className="text-black/60">Paid:</span>
                     <span className="font-medium text-green-600">
-                      {formatDate(invoice.paid_at)}
+                      {formatDate(invoice.paidAt)}
                     </span>
                   </div>
                 )}
