@@ -277,7 +277,7 @@ export const AdminSetupHelper: React.FC = () => {
             {user && (
               <>
                 <Button
-                  onClick={createSampleData}
+                  onClick={checkDatabase}
                   disabled={loading}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white"
                 >
@@ -286,14 +286,41 @@ export const AdminSetupHelper: React.FC = () => {
                   ) : (
                     <Database className="w-4 h-4 mr-2" />
                   )}
-                  2. Create Sample Data
+                  2. Check Database Tables
+                </Button>
+
+                <Button
+                  onClick={setupDatabase}
+                  disabled={loading}
+                  variant="outline"
+                  className="w-full border-2 border-blue-300"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <FolderPlus className="w-4 h-4 mr-2" />
+                  )}
+                  Setup Database (Get SQL)
+                </Button>
+
+                <Button
+                  onClick={createSampleDataUtil}
+                  disabled={loading}
+                  className="w-full bg-purple-500 hover:bg-purple-600 text-white"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                  )}
+                  3. Create Sample Data
                 </Button>
 
                 <Button
                   onClick={() => navigate("/admin")}
                   className="w-full bg-green-500 hover:bg-green-600 text-white"
                 >
-                  3. Go to Admin Dashboard
+                  4. Go to Admin Dashboard
                 </Button>
 
                 <Button
