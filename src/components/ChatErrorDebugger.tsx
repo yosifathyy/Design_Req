@@ -334,6 +334,13 @@ export const ChatErrorDebugger: React.FC<ChatDebuggerProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* Message Send Test */}
+      {projectId && (
+        <div className="mt-4 pt-3 border-t border-orange-300">
+          <MessageSendTest projectId={projectId} />
+        </div>
+      )}
     </Card>
   );
 };
