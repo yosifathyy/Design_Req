@@ -42,6 +42,7 @@ import {
   Heart,
   Crown,
   Gift,
+  DollarSign,
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
