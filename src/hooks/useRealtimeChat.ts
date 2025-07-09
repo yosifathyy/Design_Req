@@ -1135,7 +1135,23 @@ export const useUnreadCount = () => {
           error?.details ||
           error?.hint ||
           JSON.stringify(error);
-        console.error("Failed to load unread count:", errorMessage);
+
+        // Handle network errors gracefully
+        if (
+          error?.name === "TypeError" &&
+          error?.message?.includes("Failed to fetch")
+        ) {
+          console.warn(
+            "Network connection failed while loading unread count, setting to 0",
+          );
+        } else if (errorMessage.includes("Failed to fetch")) {
+          console.warn(
+            "Network error while loading unread count, setting to 0",
+          );
+        } else {
+          console.error("Failed to load unread count:", errorMessage);
+        }
+
         setUnreadCount(0);
       }
     };
