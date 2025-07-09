@@ -168,10 +168,7 @@ const Chat: React.FC = () => {
       {/* Show detailed diagnostics for other errors */}
       {error && !error.includes("Failed to fetch") && (
         <div className="p-4 space-y-4">
-          <div className="bg-red-50 border-4 border-red-500 p-4">
-            <p className="text-red-800 font-medium">Chat Error</p>
-            <p className="text-red-600 text-sm whitespace-pre-line">{error}</p>
-          </div>
+          <ChatErrorDebugger projectId={projectId} error={error} />
           <QuickConnectionTest />
           <SupabaseConnectionTest />
         </div>
