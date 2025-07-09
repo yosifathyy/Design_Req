@@ -135,10 +135,8 @@ const AdminInvoices: React.FC = () => {
   const filteredInvoices = invoices.filter(
     (invoice) =>
       invoice.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      invoice.invoice_number
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      invoice.client.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      invoice.clientName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleDownloadInvoice = (invoice: InvoiceWithDetails) => {
