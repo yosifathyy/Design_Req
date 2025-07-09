@@ -177,6 +177,12 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
       );
 
       setMessages(userMessages);
+
+      // Mark all messages as read since user is viewing the inbox
+      const chatIds = [...new Set(userMessages.map((msg) => msg.project.id))];
+      if (chatIds.length > 0) {
+        markMessagesAsRead(chatIds);
+      }
     } catch (err: any) {
       console.error("Error loading messages:", err);
 
