@@ -874,6 +874,8 @@ export const useUnreadCount = () => {
 
     const loadUnreadCount = async () => {
       try {
+        console.log("🔄 Loading unread count for user:", user.id);
+
         // Get all chats the user is involved in via chat_participants
         const { data: userChats, error: chatsError } = await supabase
           .from("chat_participants")
@@ -886,12 +888,16 @@ export const useUnreadCount = () => {
           return;
         }
 
+        console.log("👥 User chats found:", userChats?.length || 0);
+
         if (!userChats || userChats.length === 0) {
+          console.log("📭 No chats found for user, setting unread count to 0");
           setUnreadCount(0);
           return;
         }
 
         const chatIds = userChats.map((chat) => chat.chat_id);
+        console.log("💬 Chat IDs to check:", chatIds);
 
         // Count messages in these chats that are not from the current user
         // For now, we'll count all messages not sent by the user as "unread"
@@ -908,6 +914,7 @@ export const useUnreadCount = () => {
           return;
         }
 
+        console.log("📊 Unread messages count:", count);
         setUnreadCount(count || 0);
       } catch (error) {
         console.error("Failed to load unread count:", error);
@@ -973,7 +980,7 @@ export const useUnreadCount = () => {
       .subscribe((status) => {
         console.log("📡 Unread count subscription status:", status);
         if (status === "SUBSCRIBED") {
-          console.log("✅ Successfully subscribed to unread messages updates");
+          console.log("�� Successfully subscribed to unread messages updates");
         } else if (status === "CHANNEL_ERROR") {
           console.error("❌ Error subscribing to unread messages updates");
         }
