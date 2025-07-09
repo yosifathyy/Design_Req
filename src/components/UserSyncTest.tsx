@@ -17,39 +17,72 @@ export const UserSyncTest: React.FC = () => {
     }
 
     setTesting(true);
-    setResult("Testing message sending capability...");
+    setResult("Testing user record existence...");
 
     try {
-      // Try to insert a test message to see if we get the foreign key error
-      const testData = {
-        chat_id: "test-chat-id", // This will fail, but we're checking for the user FK
-        sender_id: user.id,
-        text: "TEST MESSAGE - DO NOT SAVE",
-      };
-
-      const { error } = await supabase
-        .from("messages")
-        .insert([testData])
-        .select()
+      // First check if user exists in users table
+      const { data: userRecord, error: userError } = await supabase
+        .from("users")
+        .select("id, email, name, role")
+        .eq("id", user.id)
         .single();
 
-      if (error) {
-        if (error.code === "23503" && error.message.includes("sender_id")) {
+      if (userError) {
+        if (userError.code === "PGRST116") {
+          // No rows found
           setResult(
-            "❌ User sync issue detected - Your authentication account exists but user profile is missing. Use 'Fix User Record' to resolve this.",
-          );
-        } else if (
-          error.code === "23503" &&
-          error.message.includes("chat_id")
-        ) {
-          setResult(
-            "✅ User record exists (chat_id error is expected for this test)",
+            "❌ User record missing - will be auto-created on next message send",
           );
         } else {
-          setResult(`❓ Other error: ${error.message}`);
+          setResult(`❌ User check failed: ${userError.message}`);
         }
-      } else {
-        setResult("✅ Test successful - user record exists and is valid");
+        setTesting(false);
+        return;
+      }
+
+      if (userRecord) {
+        setResult(
+          `✅ User record exists: ${userRecord.name} (${userRecord.email})`,
+        );
+
+        // Now test a message insert to verify foreign key works
+        setResult("✅ User exists, testing message constraint...");
+
+        const testData = {
+          chat_id: "test-chat-id", // This will fail, but we're checking for the user FK
+          sender_id: user.id,
+          text: "TEST MESSAGE - DO NOT SAVE",
+        };
+
+        const { error: messageError } = await supabase
+          .from("messages")
+          .insert([testData])
+          .select()
+          .single();
+
+        if (messageError) {
+          if (
+            messageError.code === "23503" &&
+            messageError.message.includes("sender_id")
+          ) {
+            setResult(
+              "❌ User foreign key issue - this should not happen if user exists",
+            );
+          } else if (
+            messageError.code === "23503" &&
+            messageError.message.includes("chat_id")
+          ) {
+            setResult(
+              "✅ Perfect! User foreign key works (chat_id error is expected)",
+            );
+          } else {
+            setResult(`❓ Other error: ${messageError.message}`);
+          }
+        } else {
+          setResult(
+            "✅ Test message inserted (unexpected - please clean up test data)",
+          );
+        }
       }
     } catch (err: any) {
       setResult(`❌ Test failed: ${err.message}`);
