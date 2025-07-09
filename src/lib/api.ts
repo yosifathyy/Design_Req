@@ -316,6 +316,25 @@ export const getDesignRequests = async (userId: string, filter?: string) => {
 };
 
 export const getDesignRequestById = async (requestId: string) => {
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock project data");
+    return {
+      id: requestId,
+      title: "Mock Project",
+      description: "This is a mock project for development",
+      category: "logo",
+      priority: "medium",
+      status: "in-progress",
+      price: 299,
+      user_id: "mock-user",
+      designer_id: "mock-designer",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      files: [],
+    };
+  }
+
   try {
     // First check if user is authenticated
     const {
