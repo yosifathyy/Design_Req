@@ -46,7 +46,29 @@ export const useRealtimeChat = (projectId: string | null) => {
       setLoading(true);
       setError(null);
 
-      // Check if we have the simplified messages table structure
+      // Use existing database schema: messages -> chats -> design_requests
+      // First, find the chat for this project
+      const { data: chatsData, error: chatsError } = await supabase
+        .from("chats")
+        .select("id")
+        .eq("request_id", projectId)
+        .limit(1);
+
+      if (chatsError) {
+        throw new Error(
+          `Failed to find chat for project: ${chatsError.message}`,
+        );
+      }
+
+      if (!chatsData || chatsData.length === 0) {
+        // No chat exists for this project yet, return empty messages
+        setMessages([]);
+        return;
+      }
+
+      const chatId = chatsData[0].id;
+
+      // Now get messages for this chat
       const { data: messagesData, error: messagesError } = await supabase
         .from("messages")
         .select(
@@ -55,27 +77,11 @@ export const useRealtimeChat = (projectId: string | null) => {
           sender:users!sender_id(id, name, email, role, avatar_url)
         `,
         )
-        .eq("project_id", projectId)
+        .eq("chat_id", chatId)
         .order("created_at", { ascending: true });
 
       if (messagesError) {
-        // Check if it's a missing column error (old structure)
-        if (messagesError.message?.includes("project_id")) {
-          throw new Error(
-            "Database needs to be updated. The messages table is missing the 'project_id' column. Please run the simplified chat migration.",
-          );
-        }
-
-        // Check if table doesn't exist
-        if (
-          messagesError.message?.includes('relation "messages" does not exist')
-        ) {
-          throw new Error(
-            "Messages table does not exist. Please run the database setup migration.",
-          );
-        }
-
-        throw messagesError;
+        throw new Error(`Failed to load messages: ${messagesError.message}`);
       }
 
       setMessages(messagesData || []);
