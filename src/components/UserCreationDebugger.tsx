@@ -102,6 +102,67 @@ export const UserCreationDebugger: React.FC = () => {
     }
   };
 
+  const checkRLSPolicies = async () => {
+    setTesting(true);
+    setResult("Checking RLS policies...");
+
+    try {
+      // Try to read from users table
+      const { data: readTest, error: readError } = await supabase
+        .from("users")
+        .select("count")
+        .limit(1);
+
+      if (readError) {
+        setResult(`❌ Cannot read users table: ${readError.message}`);
+        setTesting(false);
+        return;
+      }
+
+      // Try to insert a test record to see if RLS allows it
+      const testData = {
+        id: "test-rls-check-id-delete-me",
+        email: "test-rls@example.com",
+        name: "RLS Test",
+        role: "user",
+        status: "active",
+        xp: 0,
+        level: 1,
+        avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=test",
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
+
+      const { error: insertError } = await supabase
+        .from("users")
+        .insert([testData]);
+
+      if (insertError) {
+        if (
+          insertError.code === "42501" ||
+          insertError.message?.includes("permission denied")
+        ) {
+          setResult(
+            `❌ RLS policies are blocking inserts. Error: ${insertError.message}`,
+          );
+        } else {
+          setResult(`❌ Insert test failed: ${insertError.message}`);
+        }
+      } else {
+        // Clean up test record
+        await supabase
+          .from("users")
+          .delete()
+          .eq("id", "test-rls-check-id-delete-me");
+        setResult("✅ RLS policies allow inserts");
+      }
+    } catch (err: any) {
+      setResult(`❌ RLS check failed: ${err.message}`);
+    } finally {
+      setTesting(false);
+    }
+  };
+
   const checkCurrentUser = async () => {
     if (!user) {
       setResult("❌ No user logged in");
