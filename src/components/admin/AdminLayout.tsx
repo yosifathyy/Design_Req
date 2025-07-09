@@ -65,18 +65,75 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     );
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Add logout animation
     gsap.to(layoutRef.current, {
       opacity: 0,
       scale: 0.95,
       duration: 0.3,
       ease: "power2.in",
-      onComplete: () => {
-        navigate("/login");
+      onComplete: async () => {
+        await signOut();
+        navigate("/");
       },
     });
   };
+
+  // Redirect non-admin users
+  useEffect(() => {
+    if (!authLoading && user && !isAdmin) {
+      console.log(
+        "❌ Non-admin user trying to access admin area, redirecting...",
+      );
+      navigate("/design-dashboard");
+    }
+  }, [authLoading, user, isAdmin, navigate]);
+
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-festival-cream">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
+          <p className="text-lg font-medium text-black">
+            Loading admin panel...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!user || !isAdmin) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-festival-cream">
+        <div className="text-center max-w-md p-8 bg-white border-4 border-red-500 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Shield className="w-16 h-16 mx-auto mb-4 text-red-500" />
+          <h2 className="text-2xl font-bold text-red-800 mb-2">
+            Access Denied
+          </h2>
+          <p className="text-red-600 mb-6">
+            Admin privileges required to access this area.
+          </p>
+          <div className="space-y-3">
+            <Button
+              onClick={() => navigate("/admin-setup")}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            >
+              Setup Admin Account
+            </Button>
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              className="w-full border-2 border-gray-300"
+            >
+              Go to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getRoleColor = (role: string) => {
     switch (role) {
