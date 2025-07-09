@@ -175,7 +175,7 @@ const InvoicePayment: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                ${invoice.lineItems
+                ${(invoice.lineItems || [])
                   .map(
                     (item) => `
                   <tr>
