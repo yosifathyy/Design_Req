@@ -360,8 +360,8 @@ const AdminInvoices: React.FC = () => {
         <div className="space-y-4">
           {filteredInvoices.map((invoice) => {
             const invoiceStatus = getInvoiceStatus(invoice);
-            const daysUntilDue = invoice.due_date
-              ? getDaysUntilDue(invoice.due_date)
+            const daysUntilDue = invoice.dueDate
+              ? getDaysUntilDue(invoice.dueDate)
               : null;
 
             return (
@@ -373,7 +373,7 @@ const AdminInvoices: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <h3 className="text-xl font-bold text-black">
-                        Invoice #{invoice.invoice_number}
+                        Invoice #{invoice.invoiceNumber}
                       </h3>
                       <Badge
                         className={`${getStatusColor(invoiceStatus.status)} text-white border-2 border-black`}
@@ -391,47 +391,48 @@ const AdminInvoices: React.FC = () => {
 
                     <div className="mb-3">
                       <h4 className="font-bold text-black">{invoice.title}</h4>
-                      {invoice.description && (
-                        <p className="text-black/70">{invoice.description}</p>
-                      )}
+                      <p className="text-black/70 text-sm">
+                        {invoice.lineItems.length} item(s) •{" "}
+                        {invoice.clientName}
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <p className="text-black/60">Client</p>
                         <p className="font-medium text-black">
-                          {invoice.client.name}
+                          {invoice.clientName}
                         </p>
-                        <p className="text-black/60">{invoice.client.email}</p>
+                        <p className="text-black/60">{invoice.clientEmail}</p>
                       </div>
                       <div>
                         <p className="text-black/60">Amount</p>
                         <p className="font-bold text-black text-lg">
-                          ${invoice.total_amount.toFixed(2)}
+                          ${invoice.totalAmount.toFixed(2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-black/60">Created</p>
                         <p className="font-medium text-black">
-                          {formatDate(invoice.created_at)}
+                          {formatDate(invoice.createdAt)}
                         </p>
                       </div>
                       <div>
                         <p className="text-black/60">Due Date</p>
                         <p className="font-medium text-black">
-                          {invoice.due_date
-                            ? formatDate(invoice.due_date)
+                          {invoice.dueDate
+                            ? formatDate(invoice.dueDate)
                             : "No due date"}
                         </p>
                       </div>
                     </div>
 
-                    {invoice.paid_at && (
+                    {invoice.paidAt && (
                       <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded">
                         <p className="text-sm text-green-700">
-                          <strong>Paid:</strong> {formatDate(invoice.paid_at)}
-                          {invoice.payment_method && (
-                            <span> via {invoice.payment_method}</span>
+                          <strong>Paid:</strong> {formatDate(invoice.paidAt)}
+                          {invoice.paymentMethod && (
+                            <span> via {invoice.paymentMethod}</span>
                           )}
                         </p>
                       </div>
