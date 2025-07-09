@@ -139,7 +139,7 @@ const AdminInvoices: React.FC = () => {
       invoice.clientName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const handleDownloadInvoice = (invoice: InvoiceWithDetails) => {
+  const handleDownloadInvoice = (invoice: SimpleInvoice) => {
     // Generate PDF (simplified version)
     const printWindow = window.open("", "_blank");
     if (printWindow) {
