@@ -544,9 +544,14 @@ export const createChat = async (requestId: string, participants: string[]) => {
       .from("design_requests")
       .select("id")
       .eq("id", requestId)
-      .single();
+      .maybeSingle(); // Use maybeSingle() to handle no results gracefully
 
-    if (projectError || !project) {
+    if (projectError) {
+      console.error("Project validation error:", projectError);
+      throw new Error(`Failed to validate project: ${projectError.message}`);
+    }
+
+    if (!project) {
       throw new Error(`Project with ID ${requestId} does not exist.`);
     }
     console.log("Creating chat for request:", requestId);
