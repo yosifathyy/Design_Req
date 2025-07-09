@@ -1017,6 +1017,26 @@ export const useUnreadCount = () => {
       try {
         console.log("🔄 Loading unread count for user:", user.id);
 
+        // First check if chat tables exist
+        const { error: tableCheckError } = await supabase
+          .from("chat_participants")
+          .select("id", { count: "exact", head: true })
+          .limit(1);
+
+        if (
+          tableCheckError &&
+          (tableCheckError.code === "42P01" ||
+            tableCheckError.message.includes(
+              'relation "chat_participants" does not exist',
+            ))
+        ) {
+          console.log(
+            "ℹ️ Chat tables don't exist yet, this is normal for a fresh setup",
+          );
+          setUnreadCount(0);
+          return;
+        }
+
         // Get all chats the user is involved in via chat_participants with last_read_at
         const { data: userChats, error: chatsError } = await supabase
           .from("chat_participants")
@@ -1033,7 +1053,10 @@ export const useUnreadCount = () => {
 
           // If chat_participants table doesn't exist, try to get chats directly
           if (
-            errorMessage.includes('relation "chat_participants" does not exist')
+            errorMessage.includes(
+              'relation "chat_participants" does not exist',
+            ) ||
+            chatsError.code === "42P01"
           ) {
             console.warn(
               "chat_participants table doesn't exist, trying direct chat lookup",
