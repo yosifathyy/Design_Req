@@ -377,10 +377,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       if (profileError) {
-        console.error(
-          "Error creating user profile:",
-          profileError?.message || profileError,
-        );
+        const errorMessage =
+          profileError?.message ||
+          profileError?.details ||
+          profileError?.hint ||
+          (typeof profileError === "string"
+            ? profileError
+            : JSON.stringify(
+                profileError,
+                Object.getOwnPropertyNames(profileError),
+              ));
+        console.error("Error creating user profile:", errorMessage);
         setLoading(false);
         return {
           data: null,
