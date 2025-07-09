@@ -140,37 +140,53 @@ export const useRealtimeChat = (projectId: string | null) => {
       }
 
       try {
+        // First, get or create the chat for this project
+        let { data: chatsData, error: chatsError } = await supabase
+          .from("chats")
+          .select("id")
+          .eq("request_id", projectId)
+          .limit(1);
+
+        if (chatsError) {
+          throw new Error(`Failed to find chat: ${chatsError.message}`);
+        }
+
+        let chatId: string;
+
+        if (!chatsData || chatsData.length === 0) {
+          // Create a new chat for this project
+          const { data: newChatData, error: createChatError } = await supabase
+            .from("chats")
+            .insert([
+              {
+                request_id: projectId,
+                created_by: user.id,
+              },
+            ])
+            .select()
+            .single();
+
+          if (createChatError) {
+            throw new Error(
+              `Failed to create chat: ${createChatError.message}`,
+            );
+          }
+
+          chatId = newChatData.id;
+        } else {
+          chatId = chatsData[0].id;
+        }
+
+        // Now send the message
         const { error } = await supabase.from("messages").insert([
           {
-            project_id: projectId,
+            chat_id: chatId,
             sender_id: user.id,
-            message: message.trim(),
+            content: message.trim(),
           },
         ]);
 
         if (error) {
-          // Check for specific database structure issues
-          if (error.message?.includes("project_id")) {
-            throw new Error(
-              "Database structure outdated. Please run the simplified chat migration to add the 'project_id' column.",
-            );
-          }
-
-          if (error.message?.includes('relation "messages" does not exist')) {
-            throw new Error(
-              "Messages table does not exist. Please run the database setup.",
-            );
-          }
-
-          if (
-            error.message?.includes("permission denied") ||
-            error.message?.includes("row-level security")
-          ) {
-            throw new Error(
-              "Permission denied. You may not have access to send messages to this project.",
-            );
-          }
-
           throw error;
         }
 
