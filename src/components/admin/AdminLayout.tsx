@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { AdminSidebar } from "./AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mockAdminUsers, mockSystemAlerts } from "@/lib/admin-data";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Search,
   Bell,
@@ -15,6 +15,7 @@ import {
   Moon,
   Zap,
   Shield,
+  Loader2,
 } from "lucide-react";
 
 interface AdminLayoutProps {
