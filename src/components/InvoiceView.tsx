@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { InvoiceWithDetails } from "@/lib/invoices-api";
+import { SimpleInvoice } from "@/lib/invoices-simple-api";
 import PayPalButton from "./PayPalButton";
 import {
   Calendar,
