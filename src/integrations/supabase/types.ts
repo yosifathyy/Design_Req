@@ -317,7 +317,11 @@ export type Database = {
           created_at: string
           id: string
           invoice_id: string
+          notes: string | null
           payment_method: string
+          payment_reference: string | null
+          paypal_transaction_id: string | null
+          processed_at: string | null
           status: string
           transaction_id: string | null
         }
@@ -326,7 +330,11 @@ export type Database = {
           created_at?: string
           id?: string
           invoice_id: string
+          notes?: string | null
           payment_method: string
+          payment_reference?: string | null
+          paypal_transaction_id?: string | null
+          processed_at?: string | null
           status?: string
           transaction_id?: string | null
         }
@@ -335,7 +343,11 @@ export type Database = {
           created_at?: string
           id?: string
           invoice_id?: string
+          notes?: string | null
           payment_method?: string
+          payment_reference?: string | null
+          paypal_transaction_id?: string | null
+          processed_at?: string | null
           status?: string
           transaction_id?: string | null
         }
@@ -485,6 +497,48 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_timeline: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          message: string
+          project_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          message: string
+          project_id: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          message?: string
+          project_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_timeline_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_timeline_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]

@@ -59,7 +59,18 @@ export const invoicesApi = {
         `
         *,
         line_items:invoice_line_items(*),
-        payments:invoice_payments(*),
+        payments:invoice_payments(
+          id,
+          invoice_id,
+          amount,
+          payment_method,
+          payment_reference,
+          paypal_transaction_id,
+          status,
+          processed_at,
+          notes,
+          created_at
+        ),
         design_request:design_request_id(id, title, description),
         client:user_id(id, name, email),
         designer:designer_id(id, name, email)
@@ -83,7 +94,18 @@ export const invoicesApi = {
         `
         *,
         line_items:invoice_line_items(*),
-        payments:invoice_payments(*),
+        payments:invoice_payments(
+          id,
+          invoice_id,
+          amount,
+          payment_method,
+          payment_reference,
+          paypal_transaction_id,
+          status,
+          processed_at,
+          notes,
+          created_at
+        ),
         design_request:design_request_id(id, title, description),
         client:user_id(id, name, email),
         designer:designer_id(id, name, email)
@@ -117,7 +139,18 @@ export const invoicesApi = {
         `
         *,
         line_items:invoice_line_items(*),
-        payments:invoice_payments(*),
+        payments:invoice_payments(
+          id,
+          invoice_id,
+          amount,
+          payment_method,
+          payment_reference,
+          paypal_transaction_id,
+          status,
+          processed_at,
+          notes,
+          created_at
+        ),
         design_request:design_request_id(id, title, description),
         client:user_id(id, name, email),
         designer:designer_id(id, name, email)

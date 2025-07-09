@@ -143,7 +143,7 @@ export const projectsApi = {
       .from("project_timeline")
       .insert({
         project_id: projectId,
-        user_id: user.id,
+        created_by: user.id,
         message,
         type,
       })
