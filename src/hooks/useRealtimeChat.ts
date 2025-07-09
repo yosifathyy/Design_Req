@@ -394,6 +394,36 @@ export const useRealtimeChat = (projectId: string | null) => {
               // Attempt automatic user creation
               console.log("Attempting automatic user creation...");
               try {
+                // First check if user exists by email
+                const { data: existingUser, error: checkError } = await supabase
+                  .from("users")
+                  .select("*")
+                  .eq("email", user.email)
+                  .single();
+
+                if (existingUser && !checkError) {
+                  console.log(
+                    "User exists with different ID, deleting old record...",
+                  );
+
+                  // Try to delete the old record first
+                  const { error: deleteError } = await supabase
+                    .from("users")
+                    .delete()
+                    .eq("email", user.email);
+
+                  if (deleteError) {
+                    console.error(
+                      "Could not delete existing user record:",
+                      deleteError,
+                    );
+                    throw new Error(
+                      `Could not delete existing user: ${deleteError.message}`,
+                    );
+                  }
+                  console.log("Old user record deleted successfully");
+                }
+
                 const userData = {
                   id: user.id,
                   email: user.email,
