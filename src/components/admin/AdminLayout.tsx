@@ -26,13 +26,25 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentUser] = useState(mockAdminUsers[0]); // Simulate logged-in admin user
 
+  const { user, profile, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const layoutRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
-  const unreadAlerts = mockSystemAlerts.filter((alert) => !alert.isRead).length;
+  // Check if user is admin
+  const isAdmin =
+    user?.email === "admin@demo.com" ||
+    profile?.role === "admin" ||
+    profile?.role === "super-admin";
+
+  const currentUser = {
+    name: profile?.name || user?.email || "Admin User",
+    role: profile?.role || "admin",
+    lastLogin: profile?.last_login || new Date().toISOString(),
+  };
+
+  const unreadAlerts = 0; // Simplified for now
 
   useEffect(() => {
     if (!layoutRef.current || !headerRef.current) return;
