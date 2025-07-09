@@ -47,6 +47,7 @@ const AdminRedirectHandler = () => {
 // Import main components eagerly to prevent loading screens
 import Index from "./pages/Index";
 import StartProject from "./pages/StartProject";
+import Login from "./pages/Login";
 const Services = lazy(() => import("./pages/Services"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const About = lazy(() => import("./pages/About"));
