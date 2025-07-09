@@ -343,7 +343,7 @@ const Navigation = () => {
     ) : (
       <LogIn className="h-full w-full text-black" />
     ),
-    action: () => navigate(user ? "/dashboard" : "/login"),
+    action: () => navigate(user ? "/design-dashboard" : "/login"),
     color: user ? "bg-emerald-400" : "bg-blue-400",
   };
 
