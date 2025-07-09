@@ -15,6 +15,7 @@ import UserSyncFix from "@/components/UserSyncFix";
 import UserCreationDebugger from "@/components/UserCreationDebugger";
 import RLSFixGuide from "@/components/RLSFixGuide";
 import UserIDMismatchFixer from "@/components/UserIDMismatchFixer";
+import DatabaseDiagnostic from "@/components/DatabaseDiagnostic";
 import {
   MessageCircle,
   Send,
