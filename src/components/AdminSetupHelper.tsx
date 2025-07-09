@@ -28,6 +28,62 @@ export const AdminSetupHelper: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string>("");
 
+  const syncCurrentUser = async () => {
+    if (!user) {
+      setStatus("❌ Please login first");
+      return;
+    }
+
+    setLoading(true);
+    setStatus("Syncing current user to database...");
+
+    try {
+      // Check if user exists in users table
+      const { data: existingUser, error: checkError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (existingUser && !checkError) {
+        setStatus("✅ User already exists in database");
+        setLoading(false);
+        return;
+      }
+
+      // Create user record
+      const userData = {
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+        role: user.email === "admin@demo.com" ? "admin" : "user",
+        status: "active",
+        xp: 0,
+        level: 1,
+        avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
+
+      const { data: newUser, error: createError } = await supabase
+        .from("users")
+        .insert([userData])
+        .select()
+        .single();
+
+      if (createError) {
+        throw createError;
+      }
+
+      setStatus("✅ User synced successfully! You can now send messages.");
+    } catch (error: any) {
+      console.error("Error syncing user:", error);
+      setStatus(`❌ Error syncing user: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createDemoUser = async () => {
     setLoading(true);
     setStatus("Creating demo admin user...");
