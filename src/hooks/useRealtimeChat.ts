@@ -1000,6 +1000,29 @@ export const useUnreadCount = () => {
           loadUnreadCount();
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_participants",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log(
+            "👁️ Chat participant updated (read status changed):",
+            payload,
+          );
+          // When last_read_at is updated, reload the unread count
+          if (
+            payload.new &&
+            payload.new.last_read_at !== payload.old?.last_read_at
+          ) {
+            console.log("📖 Messages marked as read, updating unread count");
+            loadUnreadCount();
+          }
+        },
+      )
       .subscribe((status) => {
         console.log("📡 Unread count subscription status:", status);
         if (status === "SUBSCRIBED") {
