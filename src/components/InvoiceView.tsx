@@ -12,7 +12,7 @@ import {
   FileText,
   DollarSign,
   Download,
-  Print,
+  Printer,
 } from "lucide-react";
 
 interface InvoiceViewProps {
