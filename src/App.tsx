@@ -160,6 +160,7 @@ const AppContent = () => {
           <Route path="/admin-setup" element={<AdminSetupHelper />} />
           <Route path="/auth-setup" element={<AuthSetupHelper />} />
           <Route path="/auth-status" element={<AuthStatus />} />
+          <Route path="/invoices/:id" element={<InvoicePayment />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
