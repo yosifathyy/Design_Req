@@ -8,6 +8,7 @@ import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 import QuickConnectionTest from "@/components/QuickConnectionTest";
+import ChatConnectionFixer from "@/components/ChatConnectionFixer";
 import {
   MessageCircle,
   Send,
@@ -33,6 +34,7 @@ const Chat: React.FC = () => {
   const [sending, setSending] = useState(false);
   const [projectDetails, setProjectDetails] = useState<any>(null);
   const [projectLoading, setProjectLoading] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   // Use the realtime chat hook
   const {
@@ -41,6 +43,14 @@ const Chat: React.FC = () => {
     error,
     sendMessage: sendChatMessage,
   } = useRealtimeChat(projectId);
+
+  // Retry function for connection issues
+  const retryConnection = () => {
+    console.log("Retrying chat connection...");
+    setRetryKey((prev) => prev + 1);
+    // Force re-render of chat hook
+    window.location.reload();
+  };
 
   // Load project details
   useEffect(() => {
@@ -128,8 +138,15 @@ const Chat: React.FC = () => {
 
   return (
     <div className="h-screen bg-festival-cream flex flex-col">
-      {/* Show error if there's a problem loading messages */}
-      {error && (
+      {/* Show connection fixer if there's a problem loading messages */}
+      {error && error.includes("Failed to fetch") && (
+        <div className="p-4">
+          <ChatConnectionFixer onRetry={retryConnection} />
+        </div>
+      )}
+
+      {/* Show detailed diagnostics for other errors */}
+      {error && !error.includes("Failed to fetch") && (
         <div className="p-4 space-y-4">
           <div className="bg-red-50 border-4 border-red-500 p-4">
             <p className="text-red-800 font-medium">Chat Error</p>
