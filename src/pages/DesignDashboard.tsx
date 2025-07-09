@@ -19,6 +19,8 @@ import { Progress } from "@/components/ui/progress";
 import ProfileSetupNotice from "@/components/ProfileSetupNotice";
 import IDMismatchNotice from "@/components/IDMismatchNotice";
 import NewMessageNotification from "@/components/NewMessageNotification";
+import MessagesInbox from "@/components/MessagesInbox";
+import ProjectChatSelection from "@/components/ProjectChatSelection";
 import {
   FileText,
   MessageCircle,
