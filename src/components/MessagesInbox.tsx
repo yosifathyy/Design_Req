@@ -64,12 +64,26 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
     if (!user || !chatIds.length) return;
 
     try {
-      // TODO: Implement proper read tracking when database schema supports it
-      // For now, we'll just log that messages were viewed
-      console.log("📖 Messages viewed for chats:", chatIds);
-      console.log(
-        "ℹ️ Read tracking not implemented - database schema needs last_read_at column",
-      );
+      // Mark all messages in these chats as read for the current user
+      for (const chatId of chatIds) {
+        // Use the Supabase function to mark chat as read
+        const { error } = await supabase.rpc("mark_chat_as_read", {
+          p_chat_id: chatId,
+          p_user_id: user.id,
+        });
+
+        if (error) {
+          console.error(`Error marking chat ${chatId} as read:`, error);
+          // Fallback to direct update if function doesn't exist
+          await supabase
+            .from("chat_participants")
+            .update({ last_read_at: new Date().toISOString() })
+            .eq("chat_id", chatId)
+            .eq("user_id", user.id);
+        }
+      }
+
+      console.log("✅ Marked messages as read for chats:", chatIds);
     } catch (error) {
       console.error("Error marking messages as read:", error);
     }
