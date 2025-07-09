@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { invoicesApi, InvoiceWithDetails } from "@/lib/invoices-api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import InvoiceView from "@/components/InvoiceView";
 import { ArrowLeft, Edit, Send, Trash2, Loader2 } from "lucide-react";
 
@@ -138,25 +138,25 @@ const InvoiceDetail: React.FC = () => {
               <h1>Design Agency</h1>
               <p>Professional Design Services</p>
             </div>
-            
+
             <div class="header">
               <h1>INVOICE ${invoice.invoice_number}</h1>
               <h2>${invoice.title}</h2>
             </div>
-            
+
             <div class="bill-to">
               <h3>Bill To:</h3>
               <p><strong>${invoice.client.name}</strong></p>
               <p>${invoice.client.email}</p>
             </div>
-            
+
             <div class="invoice-details">
               <p><strong>Invoice Date:</strong> ${new Date(invoice.created_at).toLocaleDateString()}</p>
               ${invoice.due_date ? `<p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>` : ""}
               ${invoice.sent_at ? `<p><strong>Sent Date:</strong> ${new Date(invoice.sent_at).toLocaleDateString()}</p>` : ""}
               ${invoice.paid_at ? `<p><strong>Paid Date:</strong> ${new Date(invoice.paid_at).toLocaleDateString()}</p>` : ""}
             </div>
-            
+
             <table class="line-items">
               <thead>
                 <tr>
@@ -183,7 +183,7 @@ const InvoiceDetail: React.FC = () => {
                   .join("")}
               </tbody>
             </table>
-            
+
             <div class="totals">
               <div class="total-line">
                 <strong>Subtotal: $${invoice.subtotal.toFixed(2)}</strong>
@@ -201,7 +201,7 @@ const InvoiceDetail: React.FC = () => {
                 <strong>Total: $${invoice.total_amount.toFixed(2)}</strong>
               </div>
             </div>
-            
+
             ${
               invoice.notes
                 ? `
@@ -212,7 +212,7 @@ const InvoiceDetail: React.FC = () => {
             `
                 : ""
             }
-            
+
             ${
               invoice.terms
                 ? `
@@ -223,7 +223,7 @@ const InvoiceDetail: React.FC = () => {
             `
                 : ""
             }
-            
+
             <div class="notes">
               <p><em>Thank you for your business!</em></p>
             </div>
