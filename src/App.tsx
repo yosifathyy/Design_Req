@@ -109,6 +109,9 @@ const AdminSetupHelper = lazy(() => import("./components/AdminSetupHelper"));
 const AuthSetupHelper = lazy(() => import("./components/AuthSetupHelper"));
 const AuthStatus = lazy(() => import("./pages/AuthStatus"));
 const InvoicePayment = lazy(() => import("./pages/InvoicePayment"));
+const InvoiceSystemSetup = lazy(
+  () => import("./components/InvoiceSystemSetup"),
+);
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
