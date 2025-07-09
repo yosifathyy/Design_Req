@@ -947,6 +947,14 @@ export const useUnreadCount = () => {
 
     loadUnreadCount();
 
+    // Add event listener for manual refresh
+    const handleRefreshEvent = () => {
+      console.log("🔄 Manual refresh triggered for unread count");
+      loadUnreadCount();
+    };
+
+    window.addEventListener("refreshUnreadCount", handleRefreshEvent);
+
     // Set up real-time subscription for new messages
     const channel = supabase
       .channel(`unread-messages-${user.id}`)
