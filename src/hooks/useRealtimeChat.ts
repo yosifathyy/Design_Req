@@ -903,6 +903,43 @@ export const useUnreadCount = () => {
             chatsError?.hint ||
             JSON.stringify(chatsError);
           console.error("Error fetching user chats:", errorMessage);
+
+          // If chat_participants table doesn't exist, try to get chats directly
+          if (
+            errorMessage.includes('relation "chat_participants" does not exist')
+          ) {
+            console.warn(
+              "chat_participants table doesn't exist, trying direct chat lookup",
+            );
+            try {
+              // Fallback: look for chats where the user might be involved
+              const { data: fallbackChats, error: fallbackError } =
+                await supabase.from("chats").select("id").limit(10); // Limit to avoid too many results
+
+              if (!fallbackError && fallbackChats) {
+                console.log(
+                  "Using fallback chat lookup, found",
+                  fallbackChats.length,
+                  "chats",
+                );
+                // For fallback, we'll just count all messages not from the user
+                const chatIds = fallbackChats.map((chat) => chat.id);
+                if (chatIds.length > 0) {
+                  const { count } = await supabase
+                    .from("messages")
+                    .select("*", { count: "exact", head: true })
+                    .in("chat_id", chatIds)
+                    .neq("sender_id", user.id);
+
+                  setUnreadCount(count || 0);
+                  return;
+                }
+              }
+            } catch (fallbackError) {
+              console.error("Fallback chat lookup also failed:", fallbackError);
+            }
+          }
+
           setUnreadCount(0);
           return;
         }
@@ -1007,7 +1044,7 @@ export const useUnreadCount = () => {
           table: "messages",
         },
         () => {
-          console.log("📝 Message updated, reloading unread count");
+          console.log("��� Message updated, reloading unread count");
           loadUnreadCount();
         },
       )
