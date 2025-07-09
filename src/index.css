@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dashboard specific animations */
+@import "./styles/dashboard-animations.css";
+
 @layer base {
   /**
    * Tailwind CSS theme
