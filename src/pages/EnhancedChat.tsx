@@ -196,9 +196,11 @@ const EnhancedChat: React.FC = () => {
 
         if (uploadError) {
           console.error("Upload error:", uploadError);
+          const errorMessage =
+            uploadError.message || uploadError.error || "Failed to upload file";
           toast({
             title: "Upload failed",
-            description: "Failed to upload file. Please try again.",
+            description: `${errorMessage}. Please try again.`,
             variant: "destructive",
           });
           continue;
@@ -221,11 +223,15 @@ const EnhancedChat: React.FC = () => {
           description: `${file.name} has been shared`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading file:", error);
+      const errorMessage =
+        error?.message ||
+        error?.error ||
+        "An error occurred while uploading the file";
       toast({
         title: "Upload error",
-        description: "An error occurred while uploading the file",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
