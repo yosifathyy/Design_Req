@@ -317,10 +317,28 @@ export const getDesignRequests = async (userId: string, filter?: string) => {
 
 export const getDesignRequestById = async (requestId: string) => {
   try {
+    // First check if user is authenticated
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
+
+    if (authError) {
+      throw new Error("Authentication error. Please log in and try again.");
+    }
+
+    if (!session) {
+      throw new Error("You must be logged in to view project details.");
+    }
+
+    const userId = session.user.id;
+
+    // Try to get the request with user permission check
     const { data, error } = await supabase
       .from("design_requests")
       .select("*, files(*)")
       .eq("id", requestId)
+      .or(`user_id.eq.${userId},designer_id.eq.${userId}`) // Allow access if user is client or designer
       .maybeSingle();
 
     if (error) {
@@ -331,13 +349,35 @@ export const getDesignRequestById = async (requestId: string) => {
           "Design requests table does not exist. Please run the database setup script.",
         );
       }
+      if (error.message?.includes("row-level security policy")) {
+        throw new Error(
+          "Access denied. You don't have permission to view this project.",
+        );
+      }
       throw error;
     }
 
     if (!data) {
-      throw new Error(
-        "Request not found or you do not have permission to view it.",
-      );
+      // Check if the request exists at all (without user filter)
+      const { data: existsData, error: existsError } = await supabase
+        .from("design_requests")
+        .select("id, user_id, designer_id")
+        .eq("id", requestId)
+        .maybeSingle();
+
+      if (existsError) {
+        throw new Error("Error checking project existence. Please try again.");
+      }
+
+      if (!existsData) {
+        throw new Error(
+          `Project with ID "${requestId}" does not exist. It may have been deleted or the link is invalid.`,
+        );
+      } else {
+        throw new Error(
+          "Access denied. You don't have permission to view this project. Only the project client and assigned designer can access it.",
+        );
+      }
     }
 
     return data;
