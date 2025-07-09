@@ -119,6 +119,40 @@ export const UserSyncFix: React.FC = () => {
       .single();
 
     if (createError) {
+      // Log detailed error information
+      const errorDetails = {
+        message: createError.message,
+        details: createError.details,
+        hint: createError.hint,
+        code: createError.code,
+      };
+      console.error("User creation failed:", errorDetails);
+      console.error(
+        "Full create error:",
+        JSON.stringify(createError, Object.getOwnPropertyNames(createError), 2),
+      );
+
+      // Check for RLS permission issues
+      if (
+        createError.code === "42501" ||
+        createError.message?.includes("permission denied") ||
+        createError.message?.includes("RLS")
+      ) {
+        throw new Error(
+          `Permission denied: Row Level Security policies are preventing user creation. Please contact admin to disable RLS on users table or create proper insert policies. Error: ${createError.message}`,
+        );
+      }
+
+      // Check for duplicate user
+      if (
+        createError.code === "23505" ||
+        createError.message?.includes("duplicate")
+      ) {
+        throw new Error(
+          `User record may already exist with this ID or email. Try refreshing the page. Error: ${createError.message}`,
+        );
+      }
+
       throw createError;
     }
 
