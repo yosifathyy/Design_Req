@@ -38,13 +38,11 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
       console.log("PayPal payment captured:", details);
 
       // Update invoice in database
-      const updatedInvoice = await invoicesApi.markAsPaid(invoice.id, {
+      const updatedInvoice = await simpleInvoicesApi.markAsPaid(invoice.id, {
         paymentMethod: "paypal",
         paypalOrderId: details.id,
-        paypalPayerId: details.payer.payer_id,
         transactionId: details.purchase_units[0].payments.captures[0].id,
         amount: parseFloat(details.purchase_units[0].amount.value),
-        paymentReference: details.purchase_units[0].payments.captures[0].id,
       });
 
       toast({
