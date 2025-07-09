@@ -147,6 +147,7 @@ const AppContent = () => {
           <Route path="/requests" element={<Requests />} />
           <Route path="/requests/:id" element={<RequestDetail />} />
           <Route path="/admin-debug" element={<AdminDebugTest />} />
+          <Route path="/admin-setup" element={<AdminSetupHelper />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
