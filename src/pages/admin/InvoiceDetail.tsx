@@ -298,10 +298,10 @@ const InvoiceDetail: React.FC = () => {
           </Button>
           <div>
             <h1 className="text-4xl font-display font-bold text-black">
-              Invoice #{invoice.invoice_number}
+              Invoice #{invoice.invoiceNumber}
             </h1>
             <p className="text-xl text-black/70 font-medium">
-              {invoice.title} • {invoice.client.name}
+              {invoice.title} • {invoice.clientName}
             </p>
           </div>
         </div>
