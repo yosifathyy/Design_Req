@@ -194,12 +194,17 @@ const EnhancedChat: React.FC = () => {
         (bucket) => bucket.name === "chat-files",
       );
       if (!chatFilesBucket) {
-        console.error("chat-files bucket not found");
+        console.error("chat-files bucket not found, using fallback");
+        // Fallback: send a text message about the file instead
+        for (const file of Array.from(files)) {
+          const fileMessage = `📎 **File shared:** ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)\n*Note: File storage is not configured, please ask the designer for an alternative way to share files.*`;
+          await sendChatMessage(fileMessage);
+        }
+
         toast({
-          title: "Storage configuration error",
+          title: "File reference sent",
           description:
-            "File upload storage is not configured. Please contact support.",
-          variant: "destructive",
+            "File storage is not available, but a message about your file has been sent.",
         });
         return;
       }
