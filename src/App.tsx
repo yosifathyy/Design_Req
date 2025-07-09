@@ -99,6 +99,7 @@ const EditUser = lazy(() => import("./pages/admin/EditUser"));
 const ProjectDetail = lazy(() => import("./pages/admin/ProjectDetail"));
 const AdminDebugTest = lazy(() => import("./components/AdminDebugTest"));
 const AdminSetupHelper = lazy(() => import("./components/AdminSetupHelper"));
+const AuthSetupHelper = lazy(() => import("./components/AuthSetupHelper"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
