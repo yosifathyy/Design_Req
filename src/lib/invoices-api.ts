@@ -204,10 +204,18 @@ export const invoicesApi = {
       .insert(lineItemsToInsert);
 
     if (lineItemsError) {
-      console.error("Error creating line items:", lineItemsError);
+      console.error("Error creating line items:", {
+        error: lineItemsError,
+        message: lineItemsError.message,
+        details: lineItemsError.details,
+        hint: lineItemsError.hint,
+        code: lineItemsError.code,
+      });
       // Clean up the invoice if line items failed
       await supabase.from("invoices").delete().eq("id", invoice.id);
-      throw lineItemsError;
+      throw new Error(
+        `Failed to create invoice line items: ${lineItemsError.message || JSON.stringify(lineItemsError)}`,
+      );
     }
 
     // Return the complete invoice
