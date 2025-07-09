@@ -305,6 +305,52 @@ export const AdminSetupHelper: React.FC = () => {
             </div>
           )}
 
+          {/* SQL Display */}
+          {showSQL && sqlStatements && (
+            <div className="p-4 bg-gray-50 rounded border-2 border-gray-300">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-gray-800">
+                  Database Setup SQL:
+                </h4>
+                <Button
+                  onClick={() => {
+                    navigator.clipboard?.writeText(sqlStatements).catch(() => {
+                      // Fallback: select the text
+                      const textArea = document.getElementById(
+                        "sql-text",
+                      ) as HTMLTextAreaElement;
+                      if (textArea) {
+                        textArea.select();
+                        document.execCommand("copy");
+                      }
+                    });
+                  }}
+                  size="sm"
+                  variant="outline"
+                  className="text-xs"
+                >
+                  Copy SQL
+                </Button>
+              </div>
+              <textarea
+                id="sql-text"
+                value={sqlStatements}
+                readOnly
+                className="w-full h-64 p-3 text-xs font-mono bg-white border rounded resize-none"
+                placeholder="SQL will appear here..."
+              />
+              <div className="mt-2 text-xs text-gray-600">
+                <strong>Instructions:</strong>
+                <ol className="list-decimal list-inside mt-1 space-y-1">
+                  <li>Copy the SQL above</li>
+                  <li>Go to your Supabase dashboard → SQL Editor</li>
+                  <li>Paste and run the SQL</li>
+                  <li>Come back and create sample data</li>
+                </ol>
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="space-y-3">
             {!user && (
