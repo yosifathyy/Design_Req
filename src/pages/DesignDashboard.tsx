@@ -675,11 +675,27 @@ const DesignDashboard: React.FC = () => {
           >
             <div className="flex gap-5 max-md:flex-col max-md:gap-0">
               <div className="flex flex-col w-1/3 max-md:ml-0 max-md:w-full">
-                {/* Action Cards - Compact Row */}
+                {/* Enhanced Action Cards */}
                 <div
                   ref={actionsRef}
-                  className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2"
+                  className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2"
                 >
+                  <Link to="/new-request" className="action-card">
+                    <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            Start New Project
+                          </h3>
+                          <p className="text-white/80 text-xs">
+                            Logo, Web, Brand & More
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+
                   <div
                     onClick={() => setShowProjectSelection(true)}
                     className="action-card"
@@ -689,10 +705,10 @@ const DesignDashboard: React.FC = () => {
                         <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
                         <div className="flex-1 sm:text-center lg:text-left">
                           <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                            Chat Designer
+                            Chat with Designer
                           </h3>
-                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                            Start conversation
+                          <p className="text-white/80 text-xs">
+                            Get instant support
                           </p>
                         </div>
                         {unreadCount > 0 && (
@@ -704,32 +720,18 @@ const DesignDashboard: React.FC = () => {
                     </Card>
                   </div>
 
-                  <Link to="/new-request" className="action-card">
-                    <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
-                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
-                        <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
-                        <div className="flex-1 sm:text-center lg:text-left">
-                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                            New Project
-                          </h3>
-                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                            Create amazing
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-
                   <Link to="/payments" className="action-card">
                     <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
                       <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
                         <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
                         <div className="flex-1 sm:text-center lg:text-left">
                           <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                            Invoices
+                            View Invoices
                           </h3>
-                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                            Payments
+                          <p className="text-white/80 text-xs">
+                            {stats.dueInvoices > 0
+                              ? `${stats.dueInvoices} due`
+                              : "All paid up!"}
                           </p>
                         </div>
                         {stats.dueInvoices > 0 && (
@@ -737,6 +739,38 @@ const DesignDashboard: React.FC = () => {
                             {stats.dueInvoices}
                           </Badge>
                         )}
+                      </div>
+                    </Card>
+                  </Link>
+
+                  <Link to="/downloads" className="action-card">
+                    <Card className="group bg-gradient-to-br from-purple-500 to-indigo-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            View & Download
+                          </h3>
+                          <p className="text-white/80 text-xs">
+                            Completed designs
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+
+                  <Link to="/portfolio" className="action-card">
+                    <Card className="group bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <Star className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            Browse Portfolio
+                          </h3>
+                          <p className="text-white/80 text-xs">
+                            Get inspiration
+                          </p>
+                        </div>
                       </div>
                     </Card>
                   </Link>
