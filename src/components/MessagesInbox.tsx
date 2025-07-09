@@ -60,14 +60,57 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const loadAllMessages = async () => {
+    const loadAllMessages = async () => {
     if (!user) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      // Get all messages with sender information
+      // First, try to load with the full query structure
+      try {
+        await loadMessagesWithFullQuery();
+        return;
+      } catch (fullQueryError) {
+        console.warn("Full query failed, trying fallback approach:", fullQueryError);
+        await loadMessagesWithFallback();
+      }
+    } catch (err: any) {
+      console.error("Error loading messages:", err);
+
+      // Enhanced error message extraction
+      let errorMessage = "Failed to load messages";
+
+      if (err?.message) {
+        errorMessage = err.message;
+      } else if (err?.details) {
+        errorMessage = err.details;
+      } else if (err?.hint) {
+        errorMessage = err.hint;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      } else if (err?.code) {
+        errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
+      }
+
+      // Handle specific error cases
+      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+        errorMessage = "Database tables not found. Please ensure your database is properly set up.";
+      } else if (errorMessage.includes("permission denied") || errorMessage.includes("RLS")) {
+        errorMessage = "Permission denied. Please check your database security settings.";
+      } else if (errorMessage.includes("Failed to fetch")) {
+        errorMessage = "Network error. Please check your connection.";
+      }
+
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMessagesWithFullQuery = async () => {
+
+            // Get all messages with sender information
       const { data: messagesData, error: messagesError } = await supabase
         .from("messages")
         .select(
@@ -148,7 +191,7 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         });
 
       setMessages(userMessages);
-    } catch (err: any) {
+        } catch (err: any) {
       console.error("Error loading messages:", err);
 
       // Enhanced error message extraction
@@ -167,18 +210,10 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
       }
 
       // Handle specific error cases
-      if (
-        errorMessage.includes("relation") &&
-        errorMessage.includes("does not exist")
-      ) {
-        errorMessage =
-          "Database tables not found. Please ensure your database is properly set up.";
-      } else if (
-        errorMessage.includes("permission denied") ||
-        errorMessage.includes("RLS")
-      ) {
-        errorMessage =
-          "Permission denied. Please check your database security settings.";
+      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+        errorMessage = "Database tables not found. Please ensure your database is properly set up.";
+      } else if (errorMessage.includes("permission denied") || errorMessage.includes("RLS")) {
+        errorMessage = "Permission denied. Please check your database security settings.";
       } else if (errorMessage.includes("Failed to fetch")) {
         errorMessage = "Network error. Please check your connection.";
       }
