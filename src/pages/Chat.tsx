@@ -168,6 +168,14 @@ const Chat: React.FC = () => {
 
   return (
     <div className="h-screen bg-festival-cream flex flex-col">
+      {/* Show project error with diagnostics */}
+      {projectError && (
+        <div className="p-4 space-y-4">
+          <ErrorDisplay error={projectError} title="Project Loading Error" />
+          <DatabaseDiagnostic />
+        </div>
+      )}
+
       {/* Show connection fixer if there's a problem loading messages */}
       {error && error.includes("Failed to fetch") && (
         <div className="p-4">
