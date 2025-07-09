@@ -13,7 +13,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { User, Mail, Lock, Eye, EyeOff, LogIn, UserCircle, LogOut } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  LogIn,
+  UserCircle,
+  LogOut,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const FloatingLoginButton = () => {
@@ -90,7 +99,7 @@ const FloatingLoginButton = () => {
     }
   };
 
-    // GSAP animations for hover and pulse effects
+  // GSAP animations for hover and pulse effects
   useEffect(() => {
     if (!buttonRef.current || !pulseRef.current) return;
 
@@ -138,13 +147,14 @@ const FloatingLoginButton = () => {
   const handleClick = () => {
     if (!buttonRef.current) return;
 
-    gsap.fromTo(buttonRef.current,
+    gsap.fromTo(
+      buttonRef.current,
       { scale: 1.2 },
       {
         scale: 1,
         duration: 0.2,
         ease: "power2.out",
-      }
+      },
     );
   };
 
@@ -154,7 +164,7 @@ const FloatingLoginButton = () => {
 
   return (
     <>
-            <motion.div
+      <motion.div
         className="fixed bottom-6 right-6 z-50"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -164,7 +174,11 @@ const FloatingLoginButton = () => {
         <div
           ref={pulseRef}
           className="absolute inset-0 bg-festival-orange rounded-full opacity-30"
-          style={{ transform: 'translate(-50%, -50%)', top: '50%', left: '50%' }}
+          style={{
+            transform: "translate(-50%, -50%)",
+            top: "50%",
+            left: "50%",
+          }}
         />
 
         {user ? (
@@ -202,186 +216,187 @@ const FloatingLoginButton = () => {
               </button>
             </DialogTrigger>
 
-          <DialogContent className="sm:max-w-md bg-festival-cream border-2 border-festival-black">
-            <DialogHeader>
-              <DialogTitle className="text-center font-display text-2xl text-festival-black">
-                {isLogin ? "Welcome Back!" : "Join Us!"}
-              </DialogTitle>
-            </DialogHeader>
+            <DialogContent className="sm:max-w-md bg-festival-cream border-2 border-festival-black">
+              <DialogHeader>
+                <DialogTitle className="text-center font-display text-2xl text-festival-black">
+                  {isLogin ? "Welcome Back!" : "Join Us!"}
+                </DialogTitle>
+              </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="name"
+                      className="text-festival-black font-medium"
+                    >
+                      Full Name
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className={cn(
+                          "pl-10 border-2 border-festival-black focus:border-festival-orange",
+                          errors.name && "border-red-500",
+                        )}
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                    {errors.name && (
+                      <p className="text-red-500 text-sm">{errors.name}</p>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label
-                    htmlFor="name"
+                    htmlFor="email"
                     className="text-festival-black font-medium"
                   >
-                    Full Name
+                    Email
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
                     <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      value={formData.name}
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
                       onChange={handleInputChange}
                       className={cn(
                         "pl-10 border-2 border-festival-black focus:border-festival-orange",
-                        errors.name && "border-red-500",
+                        errors.email && "border-red-500",
                       )}
-                      placeholder="Enter your full name"
+                      placeholder="Enter your email"
                     />
                   </div>
-                  {errors.name && (
-                    <p className="text-red-500 text-sm">{errors.name}</p>
+                  {errors.email && (
+                    <p className="text-red-500 text-sm">{errors.email}</p>
                   )}
                 </div>
-              )}
 
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-festival-black font-medium"
-                >
-                  Email
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={cn(
-                      "pl-10 border-2 border-festival-black focus:border-festival-orange",
-                      errors.email && "border-red-500",
-                    )}
-                    placeholder="Enter your email"
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-festival-black font-medium"
-                >
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={cn(
-                      "pl-10 pr-10 border-2 border-festival-black focus:border-festival-orange",
-                      errors.password && "border-red-500",
-                    )}
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 hover:text-festival-black"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password}</p>
-                )}
-              </div>
-
-              {!isLogin && (
                 <div className="space-y-2">
                   <Label
-                    htmlFor="confirmPassword"
+                    htmlFor="password"
                     className="text-festival-black font-medium"
                   >
-                    Confirm Password
+                    Password
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
                     <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
                       onChange={handleInputChange}
                       className={cn(
-                        "pl-10 border-2 border-festival-black focus:border-festival-orange",
-                        errors.confirmPassword && "border-red-500",
+                        "pl-10 pr-10 border-2 border-festival-black focus:border-festival-orange",
+                        errors.password && "border-red-500",
                       )}
-                      placeholder="Confirm your password"
+                      placeholder="Enter your password"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 hover:text-festival-black"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
-                  {errors.confirmPassword && (
-                    <p className="text-red-500 text-sm">
-                      {errors.confirmPassword}
-                    </p>
+                  {errors.password && (
+                    <p className="text-red-500 text-sm">{errors.password}</p>
                   )}
                 </div>
-              )}
 
-              {errors.submit && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                  <p className="text-red-700 text-sm">{errors.submit}</p>
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="confirmPassword"
+                      className="text-festival-black font-medium"
+                    >
+                      Confirm Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-festival-black/50 w-4 h-4" />
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        className={cn(
+                          "pl-10 border-2 border-festival-black focus:border-festival-orange",
+                          errors.confirmPassword && "border-red-500",
+                        )}
+                        placeholder="Confirm your password"
+                      />
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-red-500 text-sm">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {errors.submit && (
+                  <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                    <p className="text-red-700 text-sm">{errors.submit}</p>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-festival-orange hover:bg-festival-orange/90 text-white border-2 border-festival-black font-bold"
+                >
+                  {isLoading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+                </Button>
+
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsLogin(!isLogin);
+                      setErrors({});
+                      setFormData({
+                        email: "",
+                        password: "",
+                        confirmPassword: "",
+                        name: "",
+                      });
+                    }}
+                    className="text-festival-black hover:text-festival-orange font-medium text-sm underline"
+                  >
+                    {isLogin
+                      ? "Need an account? Sign up"
+                      : "Already have an account? Sign in"}
+                  </button>
                 </div>
-              )}
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-festival-orange hover:bg-festival-orange/90 text-white border-2 border-festival-black font-bold"
-              >
-                {isLoading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
-              </Button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setErrors({});
-                    setFormData({
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      name: "",
-                    });
-                  }}
-                  className="text-festival-black hover:text-festival-orange font-medium text-sm underline"
-                >
-                  {isLogin
-                    ? "Need an account? Sign up"
-                    : "Already have an account? Sign in"}
-                </button>
-              </div>
-
-              <div className="text-center">
-                <Link
-                  to="/login"
-                  className="text-festival-black/70 hover:text-festival-orange text-sm underline"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Open full login page
-                </Link>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <div className="text-center">
+                  <Link
+                    to="/login"
+                    className="text-festival-black/70 hover:text-festival-orange text-sm underline"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Open full login page
+                  </Link>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </motion.div>
     </>
   );
