@@ -456,7 +456,7 @@ const DesignDashboard: React.FC = () => {
 
           {/* Unread Chats */}
           <Link to="/chat">
-            <Card className="stat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-6">
+            <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-6">
               <div className="flex items-center justify-between mb-4">
                 <MessageCircle className="w-12 h-12 text-white" />
                 {unreadCount > 0 && (
