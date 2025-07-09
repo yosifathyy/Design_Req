@@ -9,6 +9,7 @@ import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById, getDesignRequests } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import StorageSetupHelper from "@/components/StorageSetupHelper";
 import {
   MessageCircle,
   Send,
@@ -67,6 +68,9 @@ const EnhancedChat: React.FC = () => {
   // Image viewer state
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Storage setup state
+  const [showStorageSetup, setShowStorageSetup] = useState(false);
 
   // Use the realtime chat hook
   const {
@@ -194,18 +198,8 @@ const EnhancedChat: React.FC = () => {
         (bucket) => bucket.name === "chat-files",
       );
       if (!chatFilesBucket) {
-        console.error("chat-files bucket not found, using fallback");
-        // Fallback: send a text message about the file instead
-        for (const file of Array.from(files)) {
-          const fileMessage = `📎 **File shared:** ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)\n*Note: File storage is not configured, please ask the designer for an alternative way to share files.*`;
-          await sendChatMessage(fileMessage);
-        }
-
-        toast({
-          title: "File reference sent",
-          description:
-            "File storage is not available, but a message about your file has been sent.",
-        });
+        console.error("chat-files bucket not found, showing setup helper");
+        setShowStorageSetup(true);
         return;
       }
 
@@ -505,6 +499,31 @@ const EnhancedChat: React.FC = () => {
 
   return (
     <div className="h-screen bg-festival-cream flex flex-col">
+      {/* Storage Setup Helper */}
+      <AnimatePresence>
+        {showStorageSetup && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="p-4 bg-white border-b-2 border-black"
+          >
+            <div className="max-w-4xl mx-auto">
+              <StorageSetupHelper />
+              <div className="mt-3 flex justify-end">
+                <Button
+                  onClick={() => setShowStorageSetup(false)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header - Enhanced with project navigation */}
       <motion.div
         initial={{ y: -50, opacity: 0 }}
