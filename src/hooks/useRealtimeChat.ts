@@ -192,30 +192,46 @@ export const useRealtimeChat = (projectId: string | null) => {
 
         return true;
       } catch (err: any) {
-        console.error("Failed to send message:", err);
+        console.error("Failed to send message - Full error:", err);
+        console.error("Error type:", typeof err);
+        console.error("Error properties:", Object.keys(err || {}));
 
-        // Better error message extraction
+        // Extract meaningful error information
         let errorMessage = "Failed to send message";
-        try {
-          if (typeof err === "string") {
-            errorMessage = err;
-          } else if (err instanceof Error) {
-            errorMessage = err.message;
-          } else if (err?.message) {
-            errorMessage = err.message;
-          } else if (err?.error_description) {
-            errorMessage = err.error_description;
-          } else if (err?.details) {
-            errorMessage = err.details;
-          } else if (err?.hint) {
-            errorMessage = err.hint;
-          } else if (err?.code) {
-            errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
-          } else {
-            errorMessage = JSON.stringify(err, Object.getOwnPropertyNames(err));
+
+        if (err?.message) {
+          errorMessage = `Send error: ${err.message}`;
+
+          // Check for specific database issues
+          if (err.message.includes('relation "messages" does not exist')) {
+            errorMessage = "Messages table doesn't exist in database";
+          } else if (
+            err.message.includes("column") &&
+            err.message.includes("does not exist")
+          ) {
+            errorMessage = `Database column error: ${err.message}`;
+          } else if (
+            err.message.includes("permission denied") ||
+            err.message.includes("row-level security")
+          ) {
+            errorMessage =
+              "Permission denied - you may not have access to send messages";
+          } else if (err.message.includes("foreign key")) {
+            errorMessage = "Invalid reference - chat or user not found";
           }
-        } catch (stringifyError) {
-          errorMessage = "Error occurred but could not be displayed";
+        } else if (err?.details) {
+          errorMessage = `Send error: ${err.details}`;
+        } else if (err?.hint) {
+          errorMessage = `Send error: ${err.hint}`;
+        } else if (err?.code) {
+          errorMessage = `Database error ${err.code}: ${err.message || err.details || "Unknown issue"}`;
+        } else {
+          // Log full error for debugging
+          console.error(
+            "Unhandled error structure:",
+            JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
+          );
+          errorMessage = `Unexpected error: ${JSON.stringify(err).substring(0, 100)}...`;
         }
 
         setError(errorMessage);
