@@ -10,11 +10,20 @@ export const testSupabaseConnection = async () => {
       .select("count", { count: "exact", head: true });
 
     if (error) {
-      console.error("❌ Supabase connection failed:", error);
+      const errorDetails = {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      };
+      console.error(
+        "❌ Supabase connection failed:",
+        JSON.stringify(errorDetails, null, 2),
+      );
       return {
         success: false,
-        error: error.message,
-        details: error,
+        error: error.message || "Connection failed",
+        details: errorDetails,
       };
     }
 
@@ -26,11 +35,19 @@ export const testSupabaseConnection = async () => {
       userCount: data || 0,
     };
   } catch (error: any) {
-    console.error("❌ Supabase connection test failed:", error);
+    const errorDetails = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    };
+    console.error(
+      "❌ Supabase connection test failed:",
+      JSON.stringify(errorDetails, null, 2),
+    );
     return {
       success: false,
       error: error.message || "Unknown error",
-      details: error,
+      details: errorDetails,
     };
   }
 };

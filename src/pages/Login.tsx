@@ -11,6 +11,7 @@ import {
   testSupabaseConnection,
   checkDatabaseSchema,
 } from "@/lib/supabase-test";
+import { testSupabaseDirectly } from "@/utils/testConnection";
 import SupabaseStatus from "@/components/SupabaseStatus";
 import AuthSetupHelper from "@/components/AuthSetupHelper";
 import {
@@ -51,17 +52,26 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
 
-    // Test Supabase connection on load
-    testSupabaseConnection().then((result) => {
+    // Test Supabase connection directly first
+    testSupabaseDirectly().then((result) => {
       if (result.success) {
-        console.log("✅ Supabase connected successfully");
-      } else {
-        console.error("❌ Supabase connection issue:", result.error);
-      }
-    });
+        console.log("✅ Direct Supabase test passed");
 
-    checkDatabaseSchema().then((results) => {
-      console.log("📋 Database schema check:", results);
+        // Then test with Supabase client
+        testSupabaseConnection().then((clientResult) => {
+          if (clientResult.success) {
+            console.log("✅ Supabase client test passed");
+          } else {
+            console.error("❌ Supabase client issue:", clientResult.error);
+          }
+        });
+
+        checkDatabaseSchema().then((results) => {
+          console.log("📋 Database schema check:", results);
+        });
+      } else {
+        console.error("❌ Direct Supabase test failed:", result.error);
+      }
     });
 
     // Initial page animation
