@@ -1197,6 +1197,7 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
                   <ul className="space-y-2 text-white/80">
                     {[
                       { label: "Home", href: "#home" },
+                      { label: "Admin Setup", href: "/admin-setup" },
                       { label: "Services", href: "#services" },
                       { label: "Portfolio", href: "#portfolio" },
                       { label: "About", href: "#about" },
