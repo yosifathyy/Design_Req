@@ -6,11 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import {
-  invoicesApi,
-  InvoiceWithDetails,
-  subscribeToInvoices,
-} from "@/lib/invoices-api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import {
   CreditCard,
   Search,
@@ -175,7 +171,7 @@ const AdminInvoices: React.FC = () => {
               <p>Created: ${formatDate(invoice.created_at)}</p>
               ${invoice.due_date ? `<p>Due: ${formatDate(invoice.due_date)}</p>` : ""}
             </div>
-            
+
             <h3>Invoice Items:</h3>
             ${invoice.line_items
               .map(
@@ -187,7 +183,7 @@ const AdminInvoices: React.FC = () => {
             `,
               )
               .join("")}
-            
+
             <div class="total">
               <div class="line-item">
                 <span>Subtotal:</span>
@@ -208,7 +204,7 @@ const AdminInvoices: React.FC = () => {
                 <span>$${invoice.total_amount.toFixed(2)}</span>
               </div>
             </div>
-            
+
             ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ""}
             ${invoice.terms ? `<p><strong>Terms:</strong> ${invoice.terms}</p>` : ""}
           </body>
