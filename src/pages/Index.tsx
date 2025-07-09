@@ -1291,6 +1291,9 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
               </div>
             </div>
           </footer>
+
+          {/* Floating Login Button */}
+          <FloatingLoginButton />
         </motion.div>
       )}
     </AnimatePresence>
