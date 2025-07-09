@@ -115,7 +115,42 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         .limit(50);
 
       if (messagesError) {
-        throw messagesError;
+        console.log("Complex query failed, trying simple fallback...");
+        // Try a simpler query as fallback
+        const { data: simpleMessagesData, error: simpleError } = await supabase
+          .from("messages")
+          .select("id, text, created_at, chat_id, sender_id")
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        if (simpleError) {
+          throw messagesError; // Throw original error
+        }
+
+        console.log("Simple fallback query succeeded");
+        // Use simple data without project info
+        if (simpleMessagesData && simpleMessagesData.length > 0) {
+          const processedMessages = simpleMessagesData.map((msg: any) => ({
+            id: msg.id,
+            text: msg.text,
+            created_at: msg.created_at,
+            sender: {
+              id: msg.sender_id,
+              name: "Unknown User",
+              email: "",
+              role: "user",
+              avatar_url: null,
+            },
+            project: {
+              id: msg.chat_id || "unknown",
+              title: `Chat ${msg.chat_id}`,
+              status: "active",
+            },
+          }));
+
+          setMessages(processedMessages);
+          return;
+        }
       }
 
       if (!messagesData || messagesData.length === 0) {
