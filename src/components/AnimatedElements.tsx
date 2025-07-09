@@ -90,7 +90,7 @@ export const SlideRotate = ({
       rotate: 0,
       scale: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 20,
         stiffness: 100,
       },

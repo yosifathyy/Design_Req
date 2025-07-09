@@ -55,7 +55,11 @@ const FestivalContactForm: React.FC = () => {
   const onSubmit = async (data: ContactFormData) => {
     // Simulate form submission
     try {
-      await submitContactForm(data);
+      await submitContactForm({
+        name: data.name || '',
+        email: data.email || '',
+        message: data.message || ''
+      });
       setIsSubmitted(true);
       toast({
         title: "Message sent!",

@@ -34,7 +34,7 @@ const PaperTearContactForm: React.FC = () => {
     resolver: zodResolver(contactFormSchema)
   });
 
-  const handleScrapClick = (field: keyof ScrapState) => {
+  const handleScrapClick = (field: keyof { name: boolean; email: boolean; message: boolean }) => {
     setTornScraps((prev) => ({
       ...prev,
       [field]: true,

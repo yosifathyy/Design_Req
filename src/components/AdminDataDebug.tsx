@@ -62,7 +62,7 @@ export const AdminDataDebug: React.FC = () => {
         newResults.push(`❌ Projects: ${projectsError.message}`);
       } else {
         newResults.push(`✅ Projects: Found ${projects?.length || 0} projects`);
-        projects?.slice(0, 3).forEach((project) => {
+        projects?.slice(0, 3).forEach((project: any) => {
           newResults.push(`   - ${project.title} by ${project.user?.email}`);
         });
       }
@@ -83,7 +83,7 @@ export const AdminDataDebug: React.FC = () => {
         newResults.push(`❌ Chats: ${chatsError.message}`);
       } else {
         newResults.push(`✅ Chats: Found ${chats?.length || 0} chats`);
-        chats?.slice(0, 3).forEach((chat) => {
+        chats?.slice(0, 3).forEach((chat: any) => {
           newResults.push(`   - Chat for: ${chat.request?.title}`);
         });
       }
@@ -105,7 +105,7 @@ export const AdminDataDebug: React.FC = () => {
         newResults.push(`❌ Messages: ${messagesError.message}`);
       } else {
         newResults.push(`✅ Messages: Found ${messages?.length || 0} messages`);
-        messages?.slice(0, 3).forEach((msg) => {
+        messages?.slice(0, 3).forEach((msg: any) => {
           newResults.push(
             `   - "${msg.text?.substring(0, 50)}..." by ${msg.sender?.email}`,
           );

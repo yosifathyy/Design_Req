@@ -22,7 +22,7 @@ const isMobileDevice = () => {
 // Custom GSAP hooks for React components
 
 export const useGSAPFadeIn = (trigger?: boolean, delay = 0) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -59,7 +59,7 @@ export const useGSAPScrollTrigger = (
   direction: "up" | "down" | "left" | "right" = "up",
   delay = 0,
 ) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -135,7 +135,7 @@ export const useGSAPScrollTrigger = (
 };
 
 export const useGSAPStagger = (staggerDelay = 0.1) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -177,7 +177,7 @@ export const useGSAPStagger = (staggerDelay = 0.1) => {
 export const useGSAPHover = (
   hoverAnimation: "lift" | "tilt" | "glow" | "bounce" | "wiggle" = "lift",
 ) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -238,7 +238,7 @@ export const useGSAPHover = (
 };
 
 export const useGSAPFloating = (amplitude = 10, duration = 3) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -283,7 +283,7 @@ export const useGSAPFloating = (amplitude = 10, duration = 3) => {
 };
 
 export const useGSAPTypewriter = (text: string, speed = 0.05) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -316,7 +316,7 @@ export const useGSAPTypewriter = (text: string, speed = 0.05) => {
 };
 
 export const useGSAPParallax = (speed = 0.5) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
