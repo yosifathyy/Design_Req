@@ -55,14 +55,45 @@ export const useRealtimeChat = (projectId: string | null) => {
 
       // Quick connection test
       console.log("Testing Supabase connection...");
-      const { data: connectionTest, error: connectionError } = await supabase
-        .from("users")
-        .select("id")
-        .limit(1);
 
-      if (connectionError) {
-        console.error("Supabase connection failed:", connectionError);
-        throw new Error(`Connection failed: ${connectionError.message}`);
+      try {
+        const { data: connectionTest, error: connectionError } = await supabase
+          .from("users")
+          .select("id")
+          .limit(1);
+
+        if (connectionError) {
+          console.error("Supabase client failed:", connectionError);
+
+          // Try direct API access as fallback
+          console.log("Trying direct API access...");
+          const directResponse = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/users?select=id&limit=1`,
+            {
+              headers: {
+                apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+              },
+            },
+          );
+
+          if (!directResponse.ok) {
+            const errorText = await directResponse.text();
+            throw new Error(
+              `Direct API failed (${directResponse.status}): ${errorText}`,
+            );
+          }
+
+          console.log(
+            "Direct API access successful, but Supabase client has issues",
+          );
+        }
+      } catch (fetchError: any) {
+        console.error(
+          "Both Supabase client and direct API failed:",
+          fetchError,
+        );
+        throw new Error(`Connection completely failed: ${fetchError.message}`);
       }
 
       console.log("Supabase connection successful");
