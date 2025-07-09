@@ -182,6 +182,7 @@ const AppContent = () => {
             <Route path="chat/create" element={<CreateChat />} />
             <Route path="invoices" element={<AdminInvoices />} />
             <Route path="invoices/create" element={<CreateInvoice />} />
+            <Route path="invoices/:id" element={<InvoiceDetail />} />
             <Route path="invoices/reports" element={<InvoiceReports />} />
             <Route path="alerts" element={<SystemAlerts />} />
             <Route path="audit" element={<AuditLogs />} />
