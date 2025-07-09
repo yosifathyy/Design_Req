@@ -11,6 +11,7 @@ import {
   testSupabaseConnection,
   checkDatabaseSchema,
 } from "@/lib/supabase-test";
+import { testSupabaseDirectly } from "@/utils/testConnection";
 import SupabaseStatus from "@/components/SupabaseStatus";
 import AuthSetupHelper from "@/components/AuthSetupHelper";
 import {
@@ -43,23 +44,34 @@ const Login: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const loginButtonRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const { signIn, signUp, loading: isLoading } = useAuth();
 
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
 
-    // Test Supabase connection on load
-    testSupabaseConnection().then((result) => {
+    // Test Supabase connection directly first
+    testSupabaseDirectly().then((result) => {
       if (result.success) {
-        console.log("✅ Supabase connected successfully");
-      } else {
-        console.error("❌ Supabase connection issue:", result.error);
-      }
-    });
+        console.log("✅ Direct Supabase test passed");
 
-    checkDatabaseSchema().then((results) => {
-      console.log("📋 Database schema check:", results);
+        // Then test with Supabase client
+        testSupabaseConnection().then((clientResult) => {
+          if (clientResult.success) {
+            console.log("✅ Supabase client test passed");
+          } else {
+            console.error("❌ Supabase client issue:", clientResult.error);
+          }
+        });
+
+        checkDatabaseSchema().then((results) => {
+          console.log("📋 Database schema check:", results);
+        });
+      } else {
+        console.error("❌ Direct Supabase test failed:", result.error);
+      }
     });
 
     // Initial page animation
@@ -90,6 +102,54 @@ const Login: React.FC = () => {
       },
       "-=0.2",
     );
+
+    // Setup login button hover animations
+    const setupButtonAnimations = () => {
+      if (loginButtonRef.current) {
+        const button = loginButtonRef.current;
+
+        const handleMouseEnter = () => {
+          gsap.to(button, {
+            scale: 1.02,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+
+          // Add glow effect
+          gsap.to(button, {
+            filter: "brightness(1.1) saturate(1.2)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        };
+
+        const handleMouseLeave = () => {
+          gsap.to(button, {
+            scale: 1,
+            boxShadow: "6px 6px 0px 0px rgba(0,0,0,1)",
+            filter: "brightness(1) saturate(1)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        };
+
+        button.addEventListener("mouseenter", handleMouseEnter);
+        button.addEventListener("mouseleave", handleMouseLeave);
+
+        return () => {
+          button.removeEventListener("mouseenter", handleMouseEnter);
+          button.removeEventListener("mouseleave", handleMouseLeave);
+        };
+      }
+    };
+
+    // Setup animations after a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(setupButtonAnimations, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const handleInputChange = (field: string, value: string) => {
@@ -140,6 +200,26 @@ const Login: React.FC = () => {
       return;
     }
 
+    // Dramatic button click animation
+    if (loginButtonRef.current) {
+      const tl = gsap.timeline();
+      tl.to(loginButtonRef.current, {
+        scale: 0.95,
+        duration: 0.1,
+        ease: "power2.inOut",
+      })
+        .to(loginButtonRef.current, {
+          scale: 1.05,
+          duration: 0.15,
+          ease: "back.out(1.4)",
+        })
+        .to(loginButtonRef.current, {
+          scale: 1,
+          duration: 0.1,
+          ease: "power2.out",
+        });
+    }
+
     setErrorMessage(null);
 
     try {
@@ -170,7 +250,7 @@ const Login: React.FC = () => {
         ease: "back.out(1.4)",
       });
 
-      navigate("/design-dashboard");
+      // Let RoleBasedRedirectHandler handle the redirect based on user role
     } catch (error: any) {
       console.error("Authentication error:", error);
       setErrorMessage(
@@ -460,9 +540,10 @@ const Login: React.FC = () => {
               )}
 
               <Button
+                ref={loginButtonRef}
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-14 text-xl font-display font-bold bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
+                className="w-full h-14 text-xl font-display font-bold bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-none"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">

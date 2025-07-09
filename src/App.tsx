@@ -15,14 +15,15 @@ import GSAPScrollProgress from "@/components/GSAPScrollProgress";
 import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
 
-// Admin redirect component
-const AdminRedirectHandler = () => {
+// Role-based redirect component
+const RoleBasedRedirectHandler = () => {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     if (!loading && user) {
+      // Determine if user is admin
       const isAdmin =
         user.email === "admin@demo.com" ||
         profile?.role === "admin" ||
@@ -30,13 +31,17 @@ const AdminRedirectHandler = () => {
         user?.role === "admin" ||
         user?.role === "super-admin";
 
-      if (
-        isAdmin &&
-        location.pathname === "/" &&
-        user.email === "admin@demo.com"
-      ) {
-        console.log("🔄 Admin user detected, redirecting to /admin...");
-        navigate("/admin", { replace: true });
+      // Only redirect from login page or root
+      if (location.pathname === "/" || location.pathname === "/login") {
+        if (isAdmin) {
+          console.log("🔄 Admin user detected, redirecting to /admin...");
+          navigate("/admin", { replace: true });
+        } else {
+          console.log(
+            "🔄 Regular user detected, redirecting to /design-dashboard...",
+          );
+          navigate("/design-dashboard", { replace: true });
+        }
       }
     }
   }, [user, profile, loading, location.pathname, navigate]);
@@ -128,7 +133,7 @@ const AppContent = () => {
 
   return (
     <>
-      <AdminRedirectHandler />
+      <RoleBasedRedirectHandler />
       {isLoading && <RetroPreloader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
       <RetroCursor enabled={!isLoading} />
