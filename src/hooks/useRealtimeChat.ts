@@ -881,7 +881,13 @@ export const useUnreadCount = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user || !isSupabaseConfigured) {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      console.warn("Supabase not configured, setting unread count to 0");
       setUnreadCount(0);
       return;
     }
@@ -1044,7 +1050,7 @@ export const useUnreadCount = () => {
           table: "messages",
         },
         () => {
-          console.log("��� Message updated, reloading unread count");
+          console.log("📝 Message updated, reloading unread count");
           loadUnreadCount();
         },
       )
