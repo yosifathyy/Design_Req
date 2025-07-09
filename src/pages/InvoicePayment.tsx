@@ -109,7 +109,7 @@ const InvoicePayment: React.FC = () => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Invoice ${invoice.invoice_number}</title>
+            <title>Invoice ${invoice.invoiceNumber}</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
               .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
@@ -330,9 +330,9 @@ const InvoicePayment: React.FC = () => {
               <p className="text-green-600">
                 Thank you for your payment. Your project will be delivered soon.
               </p>
-              {invoice.paid_at && (
+              {invoice.paidAt && (
                 <p className="text-sm text-green-600 mt-2">
-                  Paid on {new Date(invoice.paid_at).toLocaleDateString()}
+                  Paid on {new Date(invoice.paidAt).toLocaleDateString()}
                 </p>
               )}
             </div>
@@ -343,7 +343,6 @@ const InvoicePayment: React.FC = () => {
             invoice={invoice}
             showPayment={invoice.status === "sent"} // Only show payment for sent invoices
             onPaymentSuccess={handlePaymentSuccess}
-            onPaymentError={handlePaymentError}
             onDownload={handleDownload}
             onPrint={handlePrint}
           />

@@ -201,7 +201,7 @@ const AdminChat: React.FC = () => {
                         <Clock className="w-3 h-3" />
                         <span>
                           {new Date(
-                            chat.last_message_at || chat.created_at,
+                            typeof chat.last_message === 'string' ? chat.last_message : new Date().toISOString(),
                           ).toLocaleDateString()}
                         </span>
                       </div>
@@ -276,7 +276,7 @@ const AdminChat: React.FC = () => {
                         }`}
                       >
                         <p className="text-sm">
-                          {message.text || message.content}
+                          {message.text}
                         </p>
                         <div className="flex items-center justify-between mt-1">
                           <span className="text-xs opacity-70">

@@ -177,7 +177,7 @@ const NewRequest: React.FC = () => {
 
     if (!validateForm()) {
       gsap.to(formRef.current, {
-        x: [-10, 10, -10, 10, 0],
+        x: "-10px, 10px, -10px, 10px, 0px",
         duration: 0.4,
         ease: "power2.inOut",
       });

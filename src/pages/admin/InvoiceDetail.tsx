@@ -87,7 +87,7 @@ const InvoiceDetail: React.FC = () => {
     if (!invoice) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete invoice ${invoice.invoice_number}? This action cannot be undone.`,
+      `Are you sure you want to delete invoice ${invoice.invoiceNumber}? This action cannot be undone.`,
     );
 
     if (!confirmed) return;
@@ -127,7 +127,7 @@ const InvoiceDetail: React.FC = () => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Invoice ${invoice.invoice_number}</title>
+            <title>Invoice ${invoice.invoiceNumber}</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
               .header { border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
@@ -178,15 +178,15 @@ const InvoiceDetail: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                ${invoice.line_items
+                ${invoice.lineItems
                   .map(
                     (item) => `
                   <tr>
                     <td>${item.description}</td>
-                    <td>${item.item_type}</td>
+                    <td>${item.itemType}</td>
                     <td>${item.quantity}</td>
-                    <td>$${item.unit_price.toFixed(2)}</td>
-                    <td>$${item.total_price.toFixed(2)}</td>
+                    <td>$${item.unitPrice.toFixed(2)}</td>
+                    <td>$${(item.quantity * item.unitPrice).toFixed(2)}</td>
                   </tr>
                 `,
                   )
@@ -196,19 +196,19 @@ const InvoiceDetail: React.FC = () => {
 
             <div class="totals">
               <div class="total-line">
-                <strong>Subtotal: $${invoice.subtotal.toFixed(2)}</strong>
+                <strong>Subtotal: $${(invoice.amount || 0).toFixed(2)}</strong>
               </div>
               ${
-                invoice.tax_amount > 0
+                invoice.taxAmount > 0
                   ? `
                 <div class="total-line">
-                  <strong>Tax (${invoice.tax_rate}%): $${invoice.tax_amount.toFixed(2)}</strong>
+                  <strong>Tax (${invoice.taxRate}%): $${invoice.taxAmount.toFixed(2)}</strong>
                 </div>
               `
                   : ""
               }
               <div class="grand-total">
-                <strong>Total: $${invoice.total_amount.toFixed(2)}</strong>
+                <strong>Total: $${invoice.totalAmount.toFixed(2)}</strong>
               </div>
             </div>
 

@@ -146,7 +146,7 @@ const AdminInvoices: React.FC = () => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Invoice ${invoice.invoice_number}</title>
+            <title>Invoice ${invoice.invoiceNumber}</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 40px; }
               .header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }

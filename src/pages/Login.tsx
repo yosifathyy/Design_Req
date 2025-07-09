@@ -193,7 +193,7 @@ const Login: React.FC = () => {
     if (!validateForm()) {
       // Shake animation for errors
       gsap.to(formRef.current, {
-        x: [-10, 10, -10, 10, 0],
+        x: "-10px, 10px, -10px, 10px, 0px",
         duration: 0.4,
         ease: "power2.inOut",
       });
@@ -520,7 +520,7 @@ const Login: React.FC = () => {
                     <Checkbox
                       id="remember"
                       checked={rememberMe}
-                      onCheckedChange={setRememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
                       className="border-2 border-black data-[state=checked]:bg-festival-orange"
                     />
                     <Label

@@ -503,8 +503,7 @@ const Portfolio = () => {
                       </GSAPMagneticButton>
 
                       <GSAPMagneticButton
-                        className="border-2 border-festival-pink hover:bg-festival-pink hover:text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300"
-                        style={{ color: "#121212" }}
+                        className="border-2 border-festival-pink hover:bg-festival-pink hover:text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 text-gray-900"
                       >
                         <ExternalLink className="w-5 h-5 mr-2 inline" />
                         Live Demos

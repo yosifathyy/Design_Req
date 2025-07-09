@@ -295,7 +295,9 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
                 </GSAPFadeIn>
               </GSAPBounceIn>
 
-              <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12" />
+              <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12">
+                <div></div>
+              </GSAPSlideIn>
 
               <StaggerContainer>
                 <BentoGrid>
@@ -515,9 +517,9 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
                   }}
                 >
                   <span style={{ color: "rgb(18, 18, 18)" }}>
-                    <font face="Aclonica, sans-serif">
+                    <span style={{ fontFamily: "Aclonica, sans-serif" }}>
                       <strong>Portfolio Gallery</strong>
-                    </font>
+                    </span>
                   </span>
                 </h2>
               </div>
@@ -653,7 +655,6 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
                   <StaggerChild>
                     <BentoCard
                       size="md"
-                      gradient="from-retro-teal/20 to-retro-mint/20"
                       delay={0.3}
                       className="h-full"
                     >
@@ -709,7 +710,6 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
                   <StaggerChild>
                     <BentoCard
                       size="md"
-                      gradient="from-retro-purple/20 to-retro-lavender/20"
                       delay={0.4}
                       className="h-full"
                     >
