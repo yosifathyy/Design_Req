@@ -42,33 +42,35 @@ const StorageSetupHelper: React.FC = () => {
     setCreating(true);
 
     try {
-      // Try to create the bucket programmatically
-      const { data, error } = await supabase.storage.createBucket(
-        "chat-files",
-        {
-          public: true,
-          fileSizeLimit: 10485760, // 10MB
-          allowedMimeTypes: [
-            "image/*",
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "text/plain",
-            "application/zip",
-            "application/x-rar-compressed",
-          ],
-        },
-      );
+      // Try to create the bucket using SQL (bypasses RLS)
+      const { data, error } = await supabase.rpc("create_chat_files_bucket");
 
       if (error) {
-        console.error("Error creating bucket:", error);
-        toast({
-          title: "Auto-creation failed",
-          description:
-            "Please create the bucket manually using the instructions below.",
-          variant: "destructive",
-        });
-        return false;
+        console.error("Error creating bucket via RPC:", error);
+
+        // If RPC fails, try the direct storage API
+        try {
+          const { data: bucketData, error: bucketError } =
+            await supabase.storage.createBucket("chat-files", {
+              public: true,
+              fileSizeLimit: 10485760, // 10MB
+            });
+
+          if (bucketError) {
+            throw bucketError;
+          }
+        } catch (directError: any) {
+          console.error("Direct bucket creation also failed:", directError);
+
+          const errorMessage =
+            directError?.message || directError?.details || "Unknown error";
+          toast({
+            title: "Auto-creation failed",
+            description: `${errorMessage}. Please create the bucket manually using the instructions below.`,
+            variant: "destructive",
+          });
+          return false;
+        }
       }
 
       toast({
@@ -78,12 +80,12 @@ const StorageSetupHelper: React.FC = () => {
 
       setBucketExists(true);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating bucket:", error);
+      const errorMessage = error?.message || error?.details || "Unknown error";
       toast({
         title: "Auto-creation failed",
-        description:
-          "Please create the bucket manually using the instructions below.",
+        description: `${errorMessage}. Please create the bucket manually using the instructions below.`,
         variant: "destructive",
       });
       return false;
