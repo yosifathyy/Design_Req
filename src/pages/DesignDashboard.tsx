@@ -458,7 +458,7 @@ const DesignDashboard: React.FC = () => {
           {/* Stats Grid */}
           <div
             ref={statsRef}
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12"
           >
             {/* Total Requests */}
             <Link to="/requests">
