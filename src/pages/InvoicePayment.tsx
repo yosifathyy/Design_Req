@@ -13,7 +13,7 @@ const InvoicePayment: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const [invoice, setInvoice] = useState<InvoiceWithDetails | null>(null);
+  const [invoice, setInvoice] = useState<SimpleInvoice | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
