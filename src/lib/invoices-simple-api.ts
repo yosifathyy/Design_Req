@@ -40,32 +40,82 @@ export const simpleInvoicesApi = {
   // Get all invoices
   async getAll(): Promise<SimpleInvoice[]> {
     try {
+      console.log("🔍 Starting to fetch invoices...");
+
+      // First, let's try a simple query without joins to test connectivity
       const { data: requests, error } = await supabase
         .from("design_requests")
-        .select(
-          `
-          *,
-          client:user_id(id, name, email),
-          designer:designer_id(id, name, email)
-        `,
-        )
-        .eq("category", "invoice") // Use category to filter invoices
+        .select("*")
+        .eq("category", "invoice")
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching invoices:", {
+        console.error("❌ Supabase error fetching invoices:", {
           error,
           message: error.message,
           details: error.details,
+          hint: error.hint,
+          code: error.code,
         });
         throw new Error(`Failed to fetch invoices: ${error.message}`);
       }
 
-      if (!requests) return [];
+      console.log("✅ Raw invoice requests:", requests);
 
-      return requests.map((request) => this.parseInvoiceFromRequest(request));
+      if (!requests || requests.length === 0) {
+        console.log("ℹ️ No invoices found with category 'invoice'");
+        return [];
+      }
+
+      // Get user data separately to avoid join issues
+      const userIds = [
+        ...new Set([
+          ...requests.map((r) => r.user_id),
+          ...requests.map((r) => r.designer_id).filter(Boolean),
+        ]),
+      ];
+
+      console.log("🔍 Fetching user data for IDs:", userIds);
+
+      const { data: users, error: usersError } = await supabase
+        .from("users")
+        .select("id, name, email")
+        .in("id", userIds);
+
+      if (usersError) {
+        console.warn("⚠️ Error fetching user data:", usersError);
+      }
+
+      console.log("✅ User data:", users);
+
+      const userMap = new Map(users?.map((u) => [u.id, u]) || []);
+
+      const invoices = requests.map((request) => {
+        const client = userMap.get(request.user_id);
+        const designer = userMap.get(request.designer_id);
+
+        return this.parseInvoiceFromRequest({
+          ...request,
+          client,
+          designer,
+        });
+      });
+
+      console.log("✅ Parsed invoices:", invoices);
+      return invoices;
     } catch (error) {
-      console.error("Error in getAll:", error);
+      console.error("❌ Error in getAll:", error);
+
+      // If it's a network error, provide a more user-friendly message
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch")
+      ) {
+        throw new Error(
+          "Network connection error. Please check your internet connection and try again.",
+        );
+      }
+
       throw error;
     }
   },
