@@ -477,10 +477,24 @@ export const useRealtimeChat = (projectId: string | null) => {
                     return true; // Exit early on success
                   }
                 }
-              } catch (autoCreateError) {
+              } catch (autoCreateError: any) {
+                const errorDetails = {
+                  message: autoCreateError?.message,
+                  details: autoCreateError?.details,
+                  hint: autoCreateError?.hint,
+                  code: autoCreateError?.code,
+                };
                 console.error(
-                  "Automatic user creation failed:",
-                  autoCreateError,
+                  "Automatic user creation exception:",
+                  errorDetails,
+                );
+                console.error(
+                  "Full auto-create exception:",
+                  JSON.stringify(
+                    autoCreateError,
+                    Object.getOwnPropertyNames(autoCreateError),
+                    2,
+                  ),
                 );
               }
 
