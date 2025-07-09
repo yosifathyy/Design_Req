@@ -176,6 +176,8 @@ const Chat: React.FC = () => {
         <div className="p-4 space-y-4">
           <ErrorDisplay error={error} title="Chat Message Error" />
 
+          <DatabaseDiagnostic />
+
           {/* Show UserSyncFix for user-related errors */}
           {(error.includes("foreign key") ||
             error.includes("not present in table") ||
