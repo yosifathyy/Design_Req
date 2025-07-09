@@ -201,7 +201,7 @@ const DesignDashboard: React.FC = () => {
         }
 
         try {
-          invoicesResponse = await getInvoices();
+          invoicesResponse = await getInvoices(user.id);
           console.log("✅ Invoices fetched:", invoicesResponse.length);
         } catch (invoicesError) {
           console.error("❌ Error fetching invoices:", invoicesError);
