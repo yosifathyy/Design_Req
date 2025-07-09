@@ -558,7 +558,7 @@ const DesignDashboard: React.FC = () => {
           {/* Quick Actions */}
           <div
             ref={actionsRef}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12"
           >
             <Link to="/new-request">
               <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 cursor-pointer p-8 text-center">
