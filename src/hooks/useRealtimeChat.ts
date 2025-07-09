@@ -234,7 +234,9 @@ export const useRealtimeChat = (projectId: string | null) => {
     // Load initial messages
     loadMessages();
 
-    // Subscribe to new messages for this project
+    // For real-time, we need to subscribe to messages table and filter by chat_id
+    // Since we can't easily filter by project through chats, we'll subscribe to all messages
+    // and filter client-side (not ideal but works for now)
     const channel = supabase
       .channel(`project-${projectId}-messages`)
       .on(
@@ -243,10 +245,20 @@ export const useRealtimeChat = (projectId: string | null) => {
           event: "INSERT",
           schema: "public",
           table: "messages",
-          filter: `project_id=eq.${projectId}`,
         },
         async (payload) => {
           console.log("New message received:", payload);
+
+          // Check if this message belongs to our project's chat
+          const { data: chatData } = await supabase
+            .from("chats")
+            .select("request_id")
+            .eq("id", payload.new.chat_id)
+            .single();
+
+          if (chatData?.request_id !== projectId) {
+            return; // Not for our project
+          }
 
           // Get sender info
           const { data: sender } = await supabase
