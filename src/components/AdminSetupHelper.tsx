@@ -178,26 +178,34 @@ export const AdminSetupHelper: React.FC = () => {
     }
   };
 
+  const [showSQL, setShowSQL] = useState(false);
+  const [sqlStatements, setSqlStatements] = useState("");
+
   const setupDatabase = async () => {
     setLoading(true);
     setStatus("Generating database setup SQL...");
 
     try {
       const result = await createMissingTables();
+      setSqlStatements(result.sqlStatements);
+      setShowSQL(true);
 
-      // Copy SQL to clipboard
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(result.sqlStatements);
+      // Try to copy to clipboard, but don't fail if it doesn't work
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(result.sqlStatements);
+          setStatus(
+            "✅ Database setup SQL generated and copied to clipboard! Also shown below.",
+          );
+        } else {
+          setStatus(
+            "✅ Database setup SQL generated! Copy the SQL below and run it in your Supabase SQL Editor.",
+          );
+        }
+      } catch (clipboardError) {
         setStatus(
-          "✅ Database setup SQL copied to clipboard! Paste it in your Supabase SQL Editor and run it.",
+          "✅ Database setup SQL generated! Copy the SQL below and run it in your Supabase SQL Editor.",
         );
-      } else {
-        setStatus(
-          "⚠️ Please copy the SQL from the console and run it in your Supabase SQL Editor.",
-        );
-        console.log("=== COPY THIS SQL TO SUPABASE SQL EDITOR ===");
-        console.log(result.sqlStatements);
-        console.log("=== END SQL ===");
       }
     } catch (error: any) {
       setStatus(`❌ Database setup failed: ${error.message}`);
