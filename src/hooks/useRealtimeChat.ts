@@ -132,7 +132,32 @@ export const useRealtimeChat = (projectId: string | null) => {
         return true;
       } catch (err: any) {
         console.error("Failed to send message:", err);
-        setError(err.message || "Failed to send message");
+
+        // Better error message extraction
+        let errorMessage = "Failed to send message";
+        try {
+          if (typeof err === "string") {
+            errorMessage = err;
+          } else if (err instanceof Error) {
+            errorMessage = err.message;
+          } else if (err?.message) {
+            errorMessage = err.message;
+          } else if (err?.error_description) {
+            errorMessage = err.error_description;
+          } else if (err?.details) {
+            errorMessage = err.details;
+          } else if (err?.hint) {
+            errorMessage = err.hint;
+          } else if (err?.code) {
+            errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
+          } else {
+            errorMessage = JSON.stringify(err, Object.getOwnPropertyNames(err));
+          }
+        } catch (stringifyError) {
+          errorMessage = "Error occurred but could not be displayed";
+        }
+
+        setError(errorMessage);
         return false;
       }
     },
