@@ -247,7 +247,7 @@ const Chat: React.FC = () => {
                   <div className="font-medium text-black text-sm mb-1">
                     {msg.sender?.name || "Unknown User"}
                   </div>
-                  <div className="text-black font-medium">{msg.message}</div>
+                  <div className="text-black font-medium">{msg.text}</div>
                   <div className="text-xs text-black/70 mt-2">
                     {formatTime(msg.created_at)}
                   </div>
