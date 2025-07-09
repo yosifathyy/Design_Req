@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { simpleInvoicesApi } from "@/lib/invoices-simple-api";
-import { kanbanApi } from "@/lib/kanban-api";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowLeft,
@@ -82,11 +81,15 @@ const CreateInvoice: React.FC = () => {
             client:user_id(id, name, email)
           `,
           )
+          .neq("category", "invoice") // Exclude existing invoices
           .order("created_at", { ascending: false });
 
-        if (projectsError) throw projectsError;
+        if (projectsError) {
+          console.error("Error loading projects:", projectsError);
+          throw new Error(`Failed to load projects: ${projectsError.message}`);
+        }
 
-        const projectOptions: ProjectOption[] = designRequests.map(
+        const projectOptions: ProjectOption[] = (designRequests || []).map(
           (request) => ({
             id: request.id,
             title: request.title,
@@ -105,13 +108,18 @@ const CreateInvoice: React.FC = () => {
           .in("role", ["user", "admin"])
           .order("name");
 
-        if (usersError) throw usersError;
-        setUsers(allUsers);
+        if (usersError) {
+          console.error("Error loading users:", usersError);
+          throw new Error(`Failed to load users: ${usersError.message}`);
+        }
+
+        setUsers(allUsers || []);
       } catch (error) {
         console.error("Error loading data:", error);
         toast({
           title: "Error loading data",
-          description: "Failed to load projects and users",
+          description:
+            error instanceof Error ? error.message : "Unknown error occurred",
           variant: "destructive",
         });
       } finally {
@@ -205,10 +213,9 @@ const CreateInvoice: React.FC = () => {
     try {
       setSaving(true);
 
-      const createData: CreateInvoiceData = {
+      const createData = {
         title: invoiceData.title,
         description: invoiceData.description,
-        designRequestId: selectedProject || undefined,
         clientId: selectedClient,
         dueDate: invoiceData.dueDate || undefined,
         taxRate: invoiceData.taxRate,
@@ -222,19 +229,23 @@ const CreateInvoice: React.FC = () => {
         })),
       };
 
-      const invoice = await invoicesApi.create(createData);
+      console.log("Creating invoice with data:", createData);
+      const invoice = await simpleInvoicesApi.create(createData);
+      console.log("Invoice created successfully:", invoice);
 
       toast({
         title: "Draft Saved! 📄",
-        description: `Invoice ${invoice.invoice_number} has been saved as draft.`,
+        description: `Invoice ${invoice.invoiceNumber} has been saved as draft.`,
       });
 
       navigate(`/admin/invoices/${invoice.id}`);
     } catch (error) {
       console.error("Error saving draft:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error saving draft",
-        description: "Failed to save invoice. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -256,10 +267,9 @@ const CreateInvoice: React.FC = () => {
     try {
       setSaving(true);
 
-      const createData: CreateInvoiceData = {
+      const createData = {
         title: invoiceData.title,
         description: invoiceData.description,
-        designRequestId: selectedProject || undefined,
         clientId: selectedClient,
         dueDate: invoiceData.dueDate || undefined,
         taxRate: invoiceData.taxRate,
@@ -273,20 +283,25 @@ const CreateInvoice: React.FC = () => {
         })),
       };
 
-      const invoice = await invoicesApi.create(createData);
-      const sentInvoice = await invoicesApi.sendInvoice(invoice.id);
+      console.log("Creating and sending invoice with data:", createData);
+      const invoice = await simpleInvoicesApi.create(createData);
+      console.log("Invoice created, now sending...", invoice);
+      const sentInvoice = await simpleInvoicesApi.sendInvoice(invoice.id);
+      console.log("Invoice sent successfully:", sentInvoice);
 
       toast({
         title: "Invoice Sent! 📧",
-        description: `Invoice ${sentInvoice.invoice_number} has been sent to ${selectedClientData?.name}.`,
+        description: `Invoice ${sentInvoice.invoiceNumber} has been sent to ${selectedClientData?.name}.`,
       });
 
       navigate(`/admin/invoices/${sentInvoice.id}`);
     } catch (error) {
       console.error("Error sending invoice:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error sending invoice",
-        description: "Failed to send invoice. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
