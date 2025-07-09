@@ -876,10 +876,10 @@ export const useUnreadCount = () => {
       try {
         console.log("🔄 Loading unread count for user:", user.id);
 
-        // Get all chats the user is involved in via chat_participants
+        // Get all chats the user is involved in via chat_participants with last_read_at
         const { data: userChats, error: chatsError } = await supabase
           .from("chat_participants")
-          .select("chat_id")
+          .select("chat_id, last_read_at")
           .eq("user_id", user.id);
 
         if (chatsError) {
@@ -896,26 +896,35 @@ export const useUnreadCount = () => {
           return;
         }
 
-        const chatIds = userChats.map((chat) => chat.chat_id);
-        console.log("💬 Chat IDs to check:", chatIds);
+        let totalUnread = 0;
 
-        // Count messages in these chats that are not from the current user
-        // For now, we'll count all messages not sent by the user as "unread"
-        // In a real app, you'd track read status per user
-        const { count, error: messagesError } = await supabase
-          .from("messages")
-          .select("*", { count: "exact", head: true })
-          .in("chat_id", chatIds)
-          .neq("sender_id", user.id);
+        // For each chat, count messages that are unread
+        for (const chat of userChats) {
+          const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
 
-        if (messagesError) {
-          console.error("Error counting unread messages:", messagesError);
-          setUnreadCount(0);
-          return;
+          const { count, error: messagesError } = await supabase
+            .from("messages")
+            .select("*", { count: "exact", head: true })
+            .eq("chat_id", chat.chat_id)
+            .neq("sender_id", user.id) // Not from current user
+            .gt("created_at", lastReadAt); // Created after last read
+
+          if (messagesError) {
+            console.error(
+              `Error counting unread messages for chat ${chat.chat_id}:`,
+              messagesError,
+            );
+            continue;
+          }
+
+          console.log(
+            `💬 Chat ${chat.chat_id}: ${count} unread messages (since ${lastReadAt})`,
+          );
+          totalUnread += count || 0;
         }
 
-        console.log("📊 Unread messages count:", count);
-        setUnreadCount(count || 0);
+        console.log("📊 Total unread messages count:", totalUnread);
+        setUnreadCount(totalUnread);
       } catch (error) {
         console.error("Failed to load unread count:", error);
         setUnreadCount(0);
@@ -980,7 +989,7 @@ export const useUnreadCount = () => {
       .subscribe((status) => {
         console.log("📡 Unread count subscription status:", status);
         if (status === "SUBSCRIBED") {
-          console.log("�� Successfully subscribed to unread messages updates");
+          console.log("✅ Successfully subscribed to unread messages updates");
         } else if (status === "CHANNEL_ERROR") {
           console.error("❌ Error subscribing to unread messages updates");
         }
