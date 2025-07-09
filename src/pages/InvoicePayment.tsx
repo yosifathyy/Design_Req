@@ -132,19 +132,19 @@ const InvoicePayment: React.FC = () => {
             </div>
 
             <div class="header">
-              <h1>INVOICE ${invoice.invoice_number}</h1>
+              <h1>INVOICE ${invoice.invoiceNumber}</h1>
               <h2>${invoice.title}</h2>
             </div>
 
             <div class="invoice-info">
               <div class="bill-to">
                 <h3>Bill To:</h3>
-                <p><strong>${invoice.client.name}</strong></p>
-                <p>${invoice.client.email}</p>
+                <p><strong>${invoice.clientName}</strong></p>
+                <p>${invoice.clientEmail}</p>
               </div>
               <div>
-                <p><strong>Invoice Date:</strong> ${new Date(invoice.created_at).toLocaleDateString()}</p>
-                ${invoice.due_date ? `<p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>` : ""}
+                <p><strong>Invoice Date:</strong> ${new Date(invoice.createdAt).toLocaleDateString()}</p>
+                ${invoice.dueDate ? `<p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>` : ""}
                 <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
               </div>
             </div>
@@ -154,9 +154,9 @@ const InvoicePayment: React.FC = () => {
                 ? `
               <div class="payment-info">
                 <h3>✅ PAYMENT RECEIVED</h3>
-                <p><strong>Paid on:</strong> ${new Date(invoice.paid_at!).toLocaleDateString()}</p>
-                <p><strong>Payment Method:</strong> ${invoice.payment_method || "PayPal"}</p>
-                ${invoice.paypal_order_id ? `<p><strong>Transaction ID:</strong> ${invoice.paypal_order_id}</p>` : ""}
+                <p><strong>Paid on:</strong> ${invoice.paidAt ? new Date(invoice.paidAt).toLocaleDateString() : "Unknown"}</p>
+                <p><strong>Payment Method:</strong> ${invoice.paymentMethod || "PayPal"}</p>
+                ${invoice.paypalOrderId ? `<p><strong>Transaction ID:</strong> ${invoice.paypalOrderId}</p>` : ""}
               </div>
             `
                 : ""
