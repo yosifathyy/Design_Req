@@ -11,8 +11,8 @@ import { paypalScriptOptions } from "@/lib/paypal-config";
 import { Loader2, CreditCard, CheckCircle, XCircle } from "lucide-react";
 
 interface PayPalButtonProps {
-  invoice: InvoiceWithDetails;
-  onPaymentSuccess?: (invoice: InvoiceWithDetails) => void;
+  invoice: SimpleInvoice;
+  onPaymentSuccess?: (invoice: SimpleInvoice) => void;
   onPaymentError?: (error: any) => void;
   disabled?: boolean;
 }
