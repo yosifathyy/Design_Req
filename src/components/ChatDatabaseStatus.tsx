@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { applySimplifiedChatMigration } from "@/utils/applyMigration";
+import ManualMigration from "./ManualMigration";
 import {
   Database,
   CheckCircle,
@@ -28,6 +29,7 @@ export const ChatDatabaseStatus: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [migrating, setMigrating] = useState(false);
   const [migrationResult, setMigrationResult] = useState<string | null>(null);
+  const [showManualMigration, setShowManualMigration] = useState(false);
 
   useEffect(() => {
     checkDatabaseStatus();
@@ -281,6 +283,19 @@ export const ChatDatabaseStatus: React.FC = () => {
             </div>
           )}
 
+          {status.configured && !status.hasCorrectStructure && (
+            <div className="space-y-3">
+              <Button
+                onClick={() => setShowManualMigration(!showManualMigration)}
+                variant="outline"
+                size="sm"
+                className="border-2 border-blue-500 text-blue-700 hover:bg-blue-50"
+              >
+                {showManualMigration ? "Hide" : "Show"} Manual Migration
+              </Button>
+            </div>
+          )}
+
           <div className="flex gap-2">
             <Button
               onClick={checkDatabaseStatus}
@@ -303,6 +318,14 @@ export const ChatDatabaseStatus: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {showManualMigration &&
+        status.configured &&
+        !status.hasCorrectStructure && (
+          <div className="mt-4">
+            <ManualMigration />
+          </div>
+        )}
     </Card>
   );
 };
