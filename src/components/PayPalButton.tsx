@@ -120,7 +120,7 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
                 description: `Payment for ${invoice.title}`,
                 amount: {
                   currency_code: "USD",
-                  value: invoice.totalAmount.toFixed(2),
+                  value: (invoice.totalAmount || 0).toFixed(2),
                 },
               },
             ],
