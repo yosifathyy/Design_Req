@@ -176,6 +176,15 @@ const CreateChat: React.FC = () => {
           errorMessage = error;
         } else if (error instanceof Error) {
           errorMessage = error.message;
+
+          // Special handling for authentication errors
+          if (
+            errorMessage.includes("Authentication") ||
+            errorMessage.includes("session")
+          ) {
+            errorMessage +=
+              "\n\nTip: Try refreshing the page and logging in again.";
+          }
         } else if (error?.message) {
           errorMessage = error.message;
         } else if (error?.error_description) {
