@@ -953,31 +953,40 @@ export const useUnreadCount = () => {
           return;
         }
 
-        const chatIds = userChats.map((chat) => chat.chat_id);
-        console.log("💬 Chat IDs to check:", chatIds);
+        let totalUnread = 0;
 
-        // Count all messages in these chats that are not from the current user
-        // For now, we'll count all messages not sent by the user as "unread"
-        // TODO: Implement proper read tracking when database schema supports it
-        const { count, error: messagesError } = await supabase
-          .from("messages")
-          .select("*", { count: "exact", head: true })
-          .in("chat_id", chatIds)
-          .neq("sender_id", user.id);
+        // For each chat, count messages that are unread (created after last_read_at)
+        for (const chat of userChats) {
+          const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
 
-        if (messagesError) {
-          const errorMessage =
-            messagesError?.message ||
-            messagesError?.details ||
-            messagesError?.hint ||
-            JSON.stringify(messagesError);
-          console.error("Error counting unread messages:", errorMessage);
-          setUnreadCount(0);
-          return;
+          const { count, error: messagesError } = await supabase
+            .from("messages")
+            .select("*", { count: "exact", head: true })
+            .eq("chat_id", chat.chat_id)
+            .neq("sender_id", user.id) // Not from current user
+            .gt("created_at", lastReadAt); // Created after last read
+
+          if (messagesError) {
+            const errorMessage =
+              messagesError?.message ||
+              messagesError?.details ||
+              messagesError?.hint ||
+              JSON.stringify(messagesError);
+            console.error(
+              `Error counting unread messages for chat ${chat.chat_id}:`,
+              errorMessage,
+            );
+            continue;
+          }
+
+          console.log(
+            `💬 Chat ${chat.chat_id}: ${count} unread messages (since ${lastReadAt})`,
+          );
+          totalUnread += count || 0;
         }
 
-        console.log("📊 Total unread messages count:", count);
-        setUnreadCount(count || 0);
+        console.log("📊 Total unread messages count:", totalUnread);
+        setUnreadCount(totalUnread);
       } catch (error: any) {
         const errorMessage =
           error?.message ||
