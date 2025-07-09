@@ -45,7 +45,11 @@ const Requests: React.FC = () => {
           user.id,
           statusFilter !== "all" ? statusFilter : undefined,
         );
-        setRequests(data);
+        // Filter out invoices (they have category: "invoice")
+        const projectsOnly = data.filter(
+          (request) => request.category !== "invoice",
+        );
+        setRequests(projectsOnly);
       } catch (error: any) {
         console.error("Error fetching requests:", error?.message || error);
       } finally {

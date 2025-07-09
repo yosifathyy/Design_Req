@@ -62,7 +62,11 @@ export const ProjectChatSelection: React.FC<ProjectChatSelectionProps> = ({
       setLoading(true);
       setError(null);
       const projectsData = await getDesignRequests(user.id);
-      setProjects(projectsData);
+      // Filter out invoices (they have category: "invoice")
+      const projectsOnly = projectsData.filter(
+        (project) => project.category !== "invoice",
+      );
+      setProjects(projectsOnly);
     } catch (err: any) {
       console.error("Error loading projects:", err);
       setError(err.message || "Failed to load projects");
