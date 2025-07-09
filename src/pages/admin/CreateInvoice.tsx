@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { invoicesApi, CreateInvoiceData } from "@/lib/invoices-api";
+import { simpleInvoicesApi } from "@/lib/invoices-simple-api";
 import { kanbanApi } from "@/lib/kanban-api";
 import { supabase } from "@/lib/supabase";
 import {
