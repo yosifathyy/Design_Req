@@ -483,7 +483,7 @@ const DesignDashboard: React.FC = () => {
               </Card>
             </Link>
 
-                        {/* Unread Chats */}
+            {/* Unread Chats */}
             <div onClick={() => setShowMessagesInbox(true)}>
               <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -506,7 +506,7 @@ const DesignDashboard: React.FC = () => {
                 </div>
                 <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-white/60 group-hover:text-white transition-colors" />
               </Card>
-            </Link>
+            </div>
 
             {/* Active Projects */}
             <Link to="/requests?filter=active">
