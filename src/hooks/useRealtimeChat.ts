@@ -101,15 +101,71 @@ export const useRealtimeChat = (projectId: string | null) => {
       // Use existing database schema: messages -> chats -> design_requests
       // First, find the chat for this project
       console.log("Looking for chat with project ID:", projectId);
-      const { data: chatsData, error: chatsError } = await supabase
-        .from("chats")
-        .select("id")
-        .eq("request_id", projectId)
-        .limit(1);
+      console.log("Current user:", user);
 
-      if (chatsError) {
+      try {
+        const { data: chatsData, error: chatsError } = await supabase
+          .from("chats")
+          .select("id")
+          .eq("request_id", projectId)
+          .limit(1);
+
+        if (chatsError) {
+          console.error("Chats query failed:", chatsError);
+          console.log("Trying direct API for chats...");
+
+          // Try direct API call as fallback
+          const directResponse = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/chats?request_id=eq.${projectId}&select=id&limit=1`,
+            {
+              headers: {
+                apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                "Content-Type": "application/json",
+              },
+            },
+          );
+
+          if (!directResponse.ok) {
+            const errorText = await directResponse.text();
+            throw new Error(
+              `Both Supabase client and direct API failed for chats: ${errorText}`,
+            );
+          }
+
+          const directData = await directResponse.json();
+          console.log("Direct API success for chats:", directData);
+
+          if (!directData || directData.length === 0) {
+            console.log(
+              "No chat found for project, will create one when sending message",
+            );
+            setMessages([]);
+            return;
+          }
+
+          // Use direct API data and continue with messages
+          const chatId = directData[0].id;
+          console.log("Found chat via direct API:", chatId);
+          await loadMessagesForChat(chatId);
+          return;
+        }
+
+        if (!chatsData || chatsData.length === 0) {
+          console.log(
+            "No chat found for project, will create one when sending message",
+          );
+          setMessages([]);
+          return;
+        }
+
+        const chatId = chatsData[0].id;
+        console.log("Found chat:", chatId);
+        await loadMessagesForChat(chatId);
+      } catch (fetchError: any) {
+        console.error("Complete failure finding chat:", fetchError);
         throw new Error(
-          `Failed to find chat for project: ${chatsError.message}`,
+          `Failed to find chat for project: ${fetchError.message}`,
         );
       }
 
