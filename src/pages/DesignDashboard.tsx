@@ -790,7 +790,6 @@ const DesignDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
 
       {/* Messages Inbox Modal */}
       <MessagesInbox
