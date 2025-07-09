@@ -5,7 +5,28 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { mockAdminProjects, mockAdminUsers } from "@/lib/admin-data";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import {
+  kanbanApi,
+  subscribeToKanbanUpdates,
+  KanbanProject,
+} from "@/lib/kanban-api";
 import {
   Search,
   Plus,
@@ -18,16 +39,28 @@ import {
   Eye,
   Edit,
   MoreVertical,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 
 const ProjectKanban: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [projects, setProjects] = useState(mockAdminProjects);
+  const [projects, setProjects] = useState<KanbanProject[]>([]);
+  const [loading, setLoading] = useState(true);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newProject, setNewProject] = useState({
+    title: "",
+    description: "",
+    category: "",
+    priority: "medium" as KanbanProject["priority"],
+    budget: 1000,
+  });
 
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const columns = [
     { id: "new", title: "New Requests", color: "from-blue-400 to-blue-500" },
@@ -53,6 +86,76 @@ const ProjectKanban: React.FC = () => {
     },
   ];
 
+  // Load projects from Supabase
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await kanbanApi.getAllProjects();
+      setProjects(data);
+      toast({
+        title: "Projects loaded",
+        description: `Loaded ${data.length} projects from database`,
+      });
+    } catch (error) {
+      console.error("Error loading projects:", error);
+      toast({
+        title: "Error loading projects",
+        description: "Failed to load projects from database",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create new project
+  const handleCreateProject = async () => {
+    try {
+      if (!newProject.title.trim()) {
+        toast({
+          title: "Title required",
+          description: "Please enter a project title",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const createdProject = await kanbanApi.createProject(newProject);
+      setProjects((prev) => [createdProject, ...prev]);
+      setIsCreateDialogOpen(false);
+      setNewProject({
+        title: "",
+        description: "",
+        category: "",
+        priority: "medium",
+        budget: 1000,
+      });
+
+      toast({
+        title: "Project created",
+        description: `"${createdProject.title}" has been created successfully`,
+      });
+    } catch (error) {
+      console.error("Error creating project:", error);
+      toast({
+        title: "Error creating project",
+        description: "Failed to create project. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    loadProjects();
+
+    // Set up real-time subscription
+    const unsubscribe = subscribeToKanbanUpdates((updatedProjects) => {
+      setProjects(updatedProjects);
+    });
+
+    return unsubscribe;
+  }, []);
+
   useEffect(() => {
     if (!containerRef.current || !boardRef.current) return;
 
@@ -77,7 +180,7 @@ const ProjectKanban: React.FC = () => {
       },
       "-=0.3",
     );
-  }, []);
+  }, [loading]);
 
   const filteredProjects = projects.filter((project) =>
     project.title.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -102,7 +205,8 @@ const ProjectKanban: React.FC = () => {
     }
   };
 
-  const getDaysUntilDue = (dueDate: string) => {
+  const getDaysUntilDue = (dueDate?: string) => {
+    if (!dueDate) return 30;
     const due = new Date(dueDate);
     const now = new Date();
     const diffTime = due.getTime() - now.getTime();
@@ -120,40 +224,80 @@ const ProjectKanban: React.FC = () => {
     e.dataTransfer.dropEffect = "move";
   };
 
-  const handleDrop = (e: React.DragEvent, newStatus: string) => {
+  const handleDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
     if (!draggedItem) return;
 
-    // Animate the card movement
-    const draggedElement = document.querySelector(
-      `[data-project-id="${draggedItem}"]`,
-    );
-    if (draggedElement) {
-      gsap.to(draggedElement, {
-        scale: 1.05,
-        duration: 0.2,
-        yoyo: true,
-        repeat: 1,
-        ease: "power2.inOut",
+    const oldProject = projects.find((p) => p.id === draggedItem);
+    if (!oldProject || oldProject.status === newStatus) return;
+
+    try {
+      // Optimistic update
+      setProjects((prev) =>
+        prev.map((project) =>
+          project.id === draggedItem
+            ? { ...project, status: newStatus as KanbanProject["status"] }
+            : project,
+        ),
+      );
+
+      // Animate the card movement
+      const draggedElement = document.querySelector(
+        `[data-project-id="${draggedItem}"]`,
+      );
+      if (draggedElement) {
+        gsap.to(draggedElement, {
+          scale: 1.05,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 1,
+          ease: "power2.inOut",
+        });
+      }
+
+      // Update in database
+      await kanbanApi.updateProjectStatus(
+        draggedItem,
+        newStatus as KanbanProject["status"],
+      );
+
+      toast({
+        title: "Status updated",
+        description: `Project moved to ${newStatus.replace("-", " ")}`,
+      });
+    } catch (error) {
+      console.error("Error updating project status:", error);
+      // Revert optimistic update
+      setProjects((prev) =>
+        prev.map((project) =>
+          project.id === draggedItem
+            ? { ...project, status: oldProject.status }
+            : project,
+        ),
+      );
+
+      toast({
+        title: "Error updating status",
+        description: "Failed to update project status. Please try again.",
+        variant: "destructive",
       });
     }
-
-    setProjects((prev) =>
-      prev.map((project) =>
-        project.id === draggedItem
-          ? { ...project, status: newStatus as any }
-          : project,
-      ),
-    );
 
     setDraggedItem(null);
   };
 
-  const getDesignerName = (designerId?: string) => {
-    if (!designerId) return "Unassigned";
-    const designer = mockAdminUsers.find((user) => user.id === designerId);
-    return designer?.name || "Unknown";
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
+          <p className="text-lg font-medium text-black">
+            Loading projects from database...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -164,7 +308,8 @@ const ProjectKanban: React.FC = () => {
             PROJECT KANBAN
           </h1>
           <p className="text-xl text-black/70 font-medium">
-            Drag and drop to manage project workflow
+            Drag and drop to manage project workflow • {projects.length} total
+            projects
           </p>
         </div>
 
@@ -180,20 +325,133 @@ const ProjectKanban: React.FC = () => {
           </div>
 
           <Button
+            onClick={loadProjects}
             variant="outline"
             className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
           >
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
           </Button>
 
-          <Button
-            onClick={() => navigate("/admin/projects/create")}
-            className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
           >
-            <Plus className="w-4 h-4 mr-2" />
-            New Project
-          </Button>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1">
+                <Plus className="w-4 h-4 mr-2" />
+                New Project
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <DialogHeader>
+                <DialogTitle className="font-display text-2xl">
+                  Create New Project
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Project Title</Label>
+                  <Input
+                    id="title"
+                    value={newProject.title}
+                    onChange={(e) =>
+                      setNewProject((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter project title..."
+                    className="border-2 border-black"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newProject.description}
+                    onChange={(e) =>
+                      setNewProject((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    placeholder="Project description..."
+                    className="border-2 border-black"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Input
+                      id="category"
+                      value={newProject.category}
+                      onChange={(e) =>
+                        setNewProject((prev) => ({
+                          ...prev,
+                          category: e.target.value,
+                        }))
+                      }
+                      placeholder="e.g., web design, logo"
+                      className="border-2 border-black"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="priority">Priority</Label>
+                    <Select
+                      value={newProject.priority}
+                      onValueChange={(value) =>
+                        setNewProject((prev) => ({
+                          ...prev,
+                          priority: value as any,
+                        }))
+                      }
+                    >
+                      <SelectTrigger className="border-2 border-black">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="urgent">Urgent</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="budget">Budget ($)</Label>
+                  <Input
+                    id="budget"
+                    type="number"
+                    value={newProject.budget}
+                    onChange={(e) =>
+                      setNewProject((prev) => ({
+                        ...prev,
+                        budget: parseInt(e.target.value) || 1000,
+                      }))
+                    }
+                    className="border-2 border-black"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateDialogOpen(false)}
+                    className="border-2 border-black"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateProject}
+                    className="bg-festival-orange hover:bg-festival-amber border-2 border-black"
+                  >
+                    Create Project
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -255,29 +513,6 @@ const ProjectKanban: React.FC = () => {
                           >
                             <Eye className="w-3 h-3" />
                           </Button>
-                          <Button
-                            onClick={() =>
-                              navigate(`/admin/projects/${project.id}/edit`)
-                            }
-                            variant="outline"
-                            size="sm"
-                            className="h-6 w-6 p-0 border-2 border-black"
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            onClick={() =>
-                              console.log(
-                                "More options for project:",
-                                project.id,
-                              )
-                            }
-                            variant="outline"
-                            size="sm"
-                            className="h-6 w-6 p-0 border-2 border-black"
-                          >
-                            <MoreVertical className="w-3 h-3" />
-                          </Button>
                         </div>
                       </div>
 
@@ -292,7 +527,7 @@ const ProjectKanban: React.FC = () => {
                         <div className="flex items-center gap-2 text-xs">
                           <div className="w-3 h-3 bg-festival-orange rounded-full" />
                           <span className="text-black/70 font-medium">
-                            {getDesignerName(project.designerId)}
+                            {project.designerName}
                           </span>
                         </div>
                       </div>
@@ -344,13 +579,21 @@ const ProjectKanban: React.FC = () => {
                               width:
                                 project.actualHours && project.estimatedHours
                                   ? `${Math.min((project.actualHours / project.estimatedHours) * 100, 100)}%`
-                                  : "20%",
+                                  : project.status === "new"
+                                    ? "10%"
+                                    : project.status === "in-progress"
+                                      ? "40%"
+                                      : project.status === "needs-feedback"
+                                        ? "75%"
+                                        : project.status === "completed"
+                                          ? "100%"
+                                          : "60%",
                             }}
                           />
                         </div>
                       </div>
 
-                      {/* Priority Badge */}
+                      {/* Priority Badge and Stats */}
                       <div className="flex items-center justify-between">
                         <Badge
                           className={`text-xs font-bold border-2 border-black ${
@@ -367,30 +610,36 @@ const ProjectKanban: React.FC = () => {
                         </Badge>
 
                         <div className="flex items-center gap-1">
-                          {project.timeline.length > 0 && (
-                            <Badge
-                              variant="outline"
-                              className="border-2 border-black text-xs"
-                            >
-                              <MessageCircle className="w-3 h-3 mr-1" />
-                              {project.timeline.length}
-                            </Badge>
-                          )}
-                          {project.tasks.length > 0 && (
-                            <Badge
-                              variant="outline"
-                              className="border-2 border-black text-xs"
-                            >
-                              <Clock className="w-3 h-3 mr-1" />
-                              {
-                                project.tasks.filter(
-                                  (t) => t.status === "completed",
-                                ).length
-                              }
-                              /{project.tasks.length}
-                            </Badge>
-                          )}
+                          <Badge
+                            variant="outline"
+                            className="border-2 border-black text-xs"
+                          >
+                            <MessageCircle className="w-3 h-3 mr-1" />
+                            {project.timeline.length}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-2 border-black text-xs"
+                          >
+                            <Clock className="w-3 h-3 mr-1" />
+                            {
+                              project.tasks.filter(
+                                (t) => t.status === "completed",
+                              ).length
+                            }
+                            /{project.tasks.length}
+                          </Badge>
                         </div>
+                      </div>
+
+                      {/* Category */}
+                      <div className="mt-2">
+                        <Badge
+                          variant="outline"
+                          className="text-xs border border-black/30"
+                        >
+                          {project.category}
+                        </Badge>
                       </div>
                     </div>
                   </Card>
@@ -398,7 +647,10 @@ const ProjectKanban: React.FC = () => {
               })}
 
               {/* Add New Card Button */}
-              <Card className="border-4 border-dashed border-black/30 bg-festival-cream/50 hover:bg-festival-cream hover:border-black transition-all duration-200 cursor-pointer">
+              <Card
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="border-4 border-dashed border-black/30 bg-festival-cream/50 hover:bg-festival-cream hover:border-black transition-all duration-200 cursor-pointer"
+              >
                 <div className="p-6 text-center">
                   <Plus className="w-8 h-8 text-black/50 mx-auto mb-2" />
                   <p className="text-sm font-medium text-black/70">
