@@ -392,9 +392,9 @@ const DesignDashboard: React.FC = () => {
           {/* Hero Section */}
           <div
             ref={heroRef}
-            className="mb-12 relative bg-white/80 backdrop-blur-sm rounded-3xl border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8"
+            className="mb-8 sm:mb-12 relative bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-4 sm:p-6 lg:p-8"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="flex items-center gap-6">
                 <div className="relative">
                   <Avatar className="w-20 h-20 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
