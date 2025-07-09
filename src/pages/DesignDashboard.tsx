@@ -674,8 +674,12 @@ const DesignDashboard: React.FC = () => {
                 <div className="lg:col-span-2 flex flex-col min-h-0">
                   <div
                     ref={projectsRef}
-                    className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-start mt-3 mx-auto p-3 pr-5 min-h-[300px] lg:min-h-0"
-                    style={{ width: "636.5px", padding: "12px 20px 93px 12px" }}
+                    className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-start mx-auto min-h-[300px] lg:min-h-0"
+                    style={{
+                      width: "636.5px",
+                      margin: "0 auto",
+                      padding: "12px 20px 93px 12px",
+                    }}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h2 className="text-base sm:text-lg font-display font-bold text-black flex items-center gap-2">
