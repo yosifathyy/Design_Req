@@ -14,6 +14,7 @@ import {
   User,
   RefreshCw,
 } from "lucide-react";
+import MessageSendTest from "./MessageSendTest";
 
 interface ChatDebuggerProps {
   projectId?: string;
