@@ -15,6 +15,35 @@ import GSAPScrollProgress from "@/components/GSAPScrollProgress";
 import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
 
+// Admin redirect component
+const AdminRedirectHandler = () => {
+  const { user, profile, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && user) {
+      const isAdmin =
+        user.email === "admin@demo.com" ||
+        profile?.role === "admin" ||
+        profile?.role === "super-admin" ||
+        user?.role === "admin" ||
+        user?.role === "super-admin";
+
+      if (
+        isAdmin &&
+        location.pathname === "/" &&
+        user.email === "admin@demo.com"
+      ) {
+        console.log("🔄 Admin user detected, redirecting to /admin...");
+        navigate("/admin", { replace: true });
+      }
+    }
+  }, [user, profile, loading, location.pathname, navigate]);
+
+  return null;
+};
+
 // Import main components eagerly to prevent loading screens
 import Index from "./pages/Index";
 import StartProject from "./pages/StartProject";
