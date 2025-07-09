@@ -230,26 +230,15 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
             <div className="flex justify-between text-lg">
               <span className="text-black/70">Subtotal:</span>
               <span className="font-bold text-black">
-                ${invoice.subtotal.toFixed(2)}
+                ${invoice.amount.toFixed(2)}
               </span>
             </div>
 
-            {invoice.tax_rate > 0 && (
+            {invoice.taxRate > 0 && (
               <div className="flex justify-between text-lg">
-                <span className="text-black/70">
-                  Tax ({invoice.tax_rate}%):
-                </span>
+                <span className="text-black/70">Tax ({invoice.taxRate}%):</span>
                 <span className="font-bold text-black">
-                  ${invoice.tax_amount.toFixed(2)}
-                </span>
-              </div>
-            )}
-
-            {invoice.discount_amount > 0 && (
-              <div className="flex justify-between text-lg">
-                <span className="text-black/70">Discount:</span>
-                <span className="font-bold text-green-600">
-                  -${invoice.discount_amount.toFixed(2)}
+                  ${invoice.taxAmount.toFixed(2)}
                 </span>
               </div>
             )}
@@ -259,7 +248,7 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
             <div className="flex justify-between text-2xl">
               <span className="font-display font-bold text-black">Total:</span>
               <span className="font-display font-bold text-black">
-                ${invoice.total_amount.toFixed(2)}
+                ${invoice.totalAmount.toFixed(2)}
               </span>
             </div>
           </div>
