@@ -46,6 +46,7 @@ export const useRealtimeChat = (projectId: string | null) => {
       setLoading(true);
       setError(null);
 
+      // Check if we have the simplified messages table structure
       const { data: messagesData, error: messagesError } = await supabase
         .from("messages")
         .select(
@@ -58,6 +59,22 @@ export const useRealtimeChat = (projectId: string | null) => {
         .order("created_at", { ascending: true });
 
       if (messagesError) {
+        // Check if it's a missing column error (old structure)
+        if (messagesError.message?.includes("project_id")) {
+          throw new Error(
+            "Database needs to be updated. The messages table is missing the 'project_id' column. Please run the simplified chat migration.",
+          );
+        }
+
+        // Check if table doesn't exist
+        if (
+          messagesError.message?.includes('relation "messages" does not exist')
+        ) {
+          throw new Error(
+            "Messages table does not exist. Please run the database setup migration.",
+          );
+        }
+
         throw messagesError;
       }
 
