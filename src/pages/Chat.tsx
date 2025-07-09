@@ -9,6 +9,7 @@ import { getDesignRequestById } from "@/lib/api";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 import QuickConnectionTest from "@/components/QuickConnectionTest";
 import ChatConnectionFixer from "@/components/ChatConnectionFixer";
+import ChatErrorDebugger from "@/components/ChatErrorDebugger";
 import {
   MessageCircle,
   Send,
