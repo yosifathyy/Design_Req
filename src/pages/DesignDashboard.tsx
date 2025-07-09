@@ -91,7 +91,10 @@ const DesignDashboard: React.FC = () => {
 
   // Real-time update for unread count changes
   useEffect(() => {
-    if (unreadCount > 0) {
+    if (unreadCount > lastUnreadCount && lastUnreadCount >= 0) {
+      // Show notification when new messages arrive
+      setShowNotification(true);
+
       // Add a subtle animation when unread count changes
       const chatCard = document.querySelector(".unread-chat-card");
       if (chatCard) {
@@ -104,7 +107,8 @@ const DesignDashboard: React.FC = () => {
         });
       }
     }
-  }, [unreadCount]);
+    setLastUnreadCount(unreadCount);
+  }, [unreadCount, lastUnreadCount]);
 
   useEffect(() => {
     const fetchUserData = async () => {
