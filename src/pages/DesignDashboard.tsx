@@ -49,301 +49,223 @@ gsap.registerPlugin(ScrollTrigger);
 interface ProjectRequest {
   id: string;
   title: string;
-  status: string;
+  description: string;
+  status:
+    | "draft"
+    | "submitted"
+    | "in_review"
+    | "in_progress"
+    | "completed"
+    | "cancelled";
+  priority: "low" | "medium" | "high" | "urgent";
+  category: "logo" | "web" | "brand" | "print" | "packaging" | "other";
   created_at: string;
-  priority: string;
-  category: string;
+  updated_at: string;
+  client_id: string;
+  designer_id?: string;
+  due_date?: string;
+  budget?: number;
+  attachments?: string[];
+}
+
+interface Invoice {
+  id: string;
+  amount: number;
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+  due_date: string;
+  created_at: string;
+}
+
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url?: string;
+  created_at: string;
+}
+
+interface IDMismatch {
+  authId: string;
+  dbId: string;
+}
+
+interface DashboardStats {
+  totalRequests: number;
+  activeProjects: number;
+  completedProjects: number;
+  totalEarnings: number;
+  avgRating: number;
+  dueInvoices: number;
+  xpProgress: {
+    current: number;
+    target: number;
+    level: number;
+  };
 }
 
 const DesignDashboard: React.FC = () => {
-  const [userProfile, setUserProfile] = useState<any>(null);
-  const [requests, setRequests] = useState<ProjectRequest[]>([]);
-  const [stats, setStats] = useState({
-    totalRequests: 0,
-    activeProjects: 0,
-    completedProjects: 0,
-    dueInvoices: 0,
-    xpProgress: {
-      current: 0,
-      target: 1000,
-      level: 1,
-    },
-  });
-  const [loading, setLoading] = useState(true);
-  const [isCreatingProfile, setIsCreatingProfile] = useState(false);
-  const [profileSetupError, setProfileSetupError] = useState(false);
-  const [idMismatch, setIdMismatch] = useState<{
-    authId: string;
-    dbId: string;
-  } | null>(null);
-  const [showNotification, setShowNotification] = useState(false);
-  const [lastUnreadCount, setLastUnreadCount] = useState(0);
-  const [showMessagesInbox, setShowMessagesInbox] = useState(false);
-  const [showProjectSelection, setShowProjectSelection] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { unreadCount, refreshUnreadCount } = useUnreadCount();
 
   // Refs for animations
-  const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
 
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const { unreadCount, refreshUnreadCount } = useUnreadCount();
+  // State
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [requests, setRequests] = useState<ProjectRequest[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalRequests: 0,
+    activeProjects: 0,
+    completedProjects: 0,
+    totalEarnings: 0,
+    avgRating: 4.8,
+    dueInvoices: 0,
+    xpProgress: {
+      current: 10,
+      target: 1000,
+      level: 1,
+    },
+  });
+  const [loading, setLoading] = useState(true);
+  const [showMessagesInbox, setShowMessagesInbox] = useState(false);
+  const [showProjectSelection, setShowProjectSelection] = useState(false);
+  const [profileSetupError, setProfileSetupError] = useState(false);
+  const [idMismatch, setIdMismatch] = useState<IDMismatch | null>(null);
 
-  // Real-time update for unread count changes
+  // Data fetching
   useEffect(() => {
-    if (unreadCount > lastUnreadCount && lastUnreadCount >= 0) {
-      // Show notification when new messages arrive
-      setShowNotification(true);
-
-      // Add a subtle animation when unread count changes
-      const chatCard = document.querySelector(".unread-chat-card");
-      if (chatCard) {
-        gsap.to(chatCard, {
-          scale: 1.02,
-          duration: 0.2,
-          yoyo: true,
-          repeat: 1,
-          ease: "power2.inOut",
-        });
-      }
-    } else if (unreadCount === 0 && lastUnreadCount > 0) {
-      // Hide notification when all messages are read
-      console.log("📭 All messages read, hiding notification");
-      setShowNotification(false);
-    }
-    setLastUnreadCount(unreadCount);
-  }, [unreadCount, lastUnreadCount]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) return;
+    const fetchData = async () => {
+      if (!user?.id) return;
 
       try {
         setLoading(true);
 
-        // Fetch user profile
-        let profile = await getUserProfile(user.id);
+        // First try to get user profile by auth ID
+        let profile;
+        try {
+          profile = await getUserProfile(user.id);
+        } catch (profileError) {
+          console.log("⚠️ Profile not found by auth ID, searching by email...");
 
-        // Handle ID mismatches
-        if (!profile && user.email) {
-          profile = await findUserProfileByEmail(user.email);
-          if (profile && profile.id !== user.id) {
-            setIdMismatch({ authId: user.id, dbId: profile.id });
+          if (user.email) {
+            try {
+              const foundProfile = await findUserProfileByEmail(user.email);
+              if (foundProfile) {
+                console.log("⚠️ Found profile with different ID:", {
+                  authId: user.id,
+                  dbId: foundProfile.id,
+                });
+                setIdMismatch({ authId: user.id, dbId: foundProfile.id });
+                profile = foundProfile;
+              }
+            } catch (searchError) {
+              console.log("No existing profile found, will create new one");
+            }
           }
-        }
-
-        // Create profile if missing
-        if (!profile && user.email) {
-          setIsCreatingProfile(true);
-          setProfileSetupError(false);
-
-          profile = await createUserProfileIfMissing(
-            user.id,
-            user.email,
-            user.user_metadata?.name || user.email.split("@")[0],
-          );
-
-          setIsCreatingProfile(false);
 
           if (!profile) {
-            setProfileSetupError(true);
+            console.log("📝 Creating new user profile...");
+            try {
+              await createUserProfileIfMissing(
+                user.id,
+                user.email || "",
+                user.user_metadata?.name || "",
+              );
+              profile = await getUserProfile(user.id);
+              console.log("✅ User profile created successfully");
+            } catch (createError) {
+              console.error("❌ Error creating user profile:", createError);
+              setProfileSetupError(true);
+              return;
+            }
           }
-        }
-
-        // Fallback profile
-        if (!profile) {
-          profile = {
-            id: user.id,
-            email: user.email || "unknown@example.com",
-            name: user.email?.split("@")[0] || "User",
-            xp: 0,
-            level: 1,
-            role: "user",
-            status: "active",
-          };
         }
 
         setUserProfile(profile);
 
-        // Fetch requests
-        const requestsData = await getDesignRequests(user.id);
-        setRequests(requestsData);
+        // Fetch design requests and invoices in parallel
+        const [requestsResponse, invoicesResponse] = await Promise.all([
+          getDesignRequests(),
+          getInvoices(),
+        ]);
 
-        // Fetch invoices
-        const invoices = await getInvoices(user.id);
-        const pendingInvoices = invoices.filter(
-          (inv) => inv.status === "pending",
-        );
+        setRequests(requestsResponse);
 
         // Calculate stats
-        const activeProjects = requestsData.filter(
-          (req) => req.status === "in-progress" || req.status === "submitted",
+        const totalRequests = requestsResponse.length;
+        const activeProjects = requestsResponse.filter(
+          (r) => r.status === "in_progress" || r.status === "in_review",
         ).length;
-        const completedProjects = requestsData.filter(
-          (req) => req.status === "completed" || req.status === "delivered",
+        const completedProjects = requestsResponse.filter(
+          (r) => r.status === "completed",
+        ).length;
+        const dueInvoices = invoicesResponse.filter(
+          (i) => i.status === "overdue",
         ).length;
 
-        const currentProfile = profile || { level: 1, xp: 0 };
-        const xpTarget = currentProfile.level * 1000;
-
-        setStats({
-          totalRequests: requestsData.length,
+        setStats((prev) => ({
+          ...prev,
+          totalRequests,
           activeProjects,
           completedProjects,
-          dueInvoices: pendingInvoices.length,
-          xpProgress: {
-            current: currentProfile.xp,
-            target: xpTarget,
-            level: currentProfile.level,
-          },
-        });
-      } catch (error: any) {
-        console.error("Error fetching user data:", error?.message || error);
+          dueInvoices,
+        }));
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (user) {
-      fetchUserData();
-    }
-  }, [user]);
+    fetchData();
+  }, [user?.id, user?.email, user?.user_metadata?.name]);
 
+  // Animations
   useEffect(() => {
-    if (!containerRef.current || loading) return;
+    if (loading) return;
 
     const ctx = gsap.context(() => {
-      // Enhanced page load animation sequence
-      const mainTl = gsap.timeline();
-
-      // Background elements entrance (static)
-      const backgroundElements =
-        containerRef.current?.querySelectorAll(".floating-element");
-      if (backgroundElements) {
-        gsap.set(backgroundElements, { opacity: 0.3, scale: 1 });
-      }
-
-      // Hero section with dramatic entrance
-      if (heroRef.current) {
-        mainTl.fromTo(
+      // Staggered entrance animation for all main sections
+      gsap.set(
+        [
           heroRef.current,
-          {
-            opacity: 0,
-            y: -30,
-            scale: 0.9,
-            rotateX: -15,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            rotateX: 0,
-            duration: 0.8,
-            ease: "power3.out",
-          },
-        );
-      }
-
-      // Stats cards with enhanced stagger and physics
-      if (statsRef.current) {
-        const statCards = statsRef.current.querySelectorAll(".stat-card");
-        mainTl.fromTo(
-          statCards,
-          {
-            opacity: 0,
-            y: 40,
-            scale: 0.8,
-            rotateY: -30,
-            z: -100,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            rotateY: 0,
-            z: 0,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: "back.out(1.2)",
-          },
-          "-=0.4",
-        );
-      }
-
-      // Action cards with spring physics
-      if (actionsRef.current) {
-        const actionCards = actionsRef.current.querySelectorAll(".action-card");
-        mainTl.fromTo(
-          actionCards,
-          {
-            opacity: 0,
-            scale: 0.7,
-            rotation: -10,
-            x: -50,
-          },
-          {
-            opacity: 1,
-            scale: 1,
-            rotation: 0,
-            x: 0,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "elastic.out(1, 0.5)",
-          },
-          "-=0.3",
-        );
-      }
-
-      // Projects section with slide-in effect
-      if (projectsRef.current) {
-        mainTl.fromTo(
+          statsRef.current,
+          actionsRef.current,
           projectsRef.current,
-          {
-            opacity: 0,
-            x: 50,
-            scale: 0.95,
-          },
-          {
-            opacity: 1,
-            x: 0,
-            scale: 1,
-            duration: 0.6,
-            ease: "power2.out",
-          },
-          "-=0.4",
-        );
+        ],
+        {
+          opacity: 0,
+          y: 20,
+        },
+      );
 
-        // Animate project items when they appear
-        const projectItems =
-          projectsRef.current.querySelectorAll(".project-item");
-        if (projectItems.length > 0) {
-          gsap.fromTo(
-            projectItems,
-            { opacity: 0, x: 20 },
-            {
-              opacity: 1,
-              x: 0,
-              duration: 0.4,
-              stagger: 0.1,
-              ease: "power2.out",
-              delay: 0.5,
-            },
-          );
-        }
-      }
+      gsap.to(
+        [
+          heroRef.current,
+          statsRef.current,
+          actionsRef.current,
+          projectsRef.current,
+        ],
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+        },
+      );
 
-      // Enhanced hover interactions for all cards (no continuous animations)
-      const allCards = document.querySelectorAll(".stat-card, .action-card");
-      allCards.forEach((card) => {
+      // Enhanced hover animations for stat cards
+      gsap.utils.toArray(".stat-card").forEach((card: any) => {
         card.addEventListener("mouseenter", () => {
           gsap.to(card, {
-            scale: 1.03,
-            rotateY: 3,
-            z: 20,
-            boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+            scale: 1.02,
+            rotationY: 2,
+            rotationX: 1,
             duration: 0.3,
             ease: "power2.out",
           });
@@ -352,26 +274,78 @@ const DesignDashboard: React.FC = () => {
         card.addEventListener("mouseleave", () => {
           gsap.to(card, {
             scale: 1,
-            rotateY: 0,
-            z: 0,
-            boxShadow: "3px 3px 0px 0px rgba(0,0,0,1)",
+            rotationY: 0,
+            rotationX: 0,
             duration: 0.3,
             ease: "power2.out",
           });
         });
       });
-    }, containerRef);
+
+      // Enhanced hover animations for action cards
+      gsap.utils.toArray(".action-card").forEach((card: any) => {
+        card.addEventListener("mouseenter", () => {
+          gsap.to(card, {
+            scale: 1.03,
+            rotationY: 3,
+            rotationX: 2,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        });
+
+        card.addEventListener("mouseleave", () => {
+          gsap.to(card, {
+            scale: 1,
+            rotationY: 0,
+            rotationX: 0,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        });
+      });
+
+      // Project item animations
+      gsap.utils
+        .toArray(".project-item")
+        .forEach((item: any, index: number) => {
+          gsap.set(item, { opacity: 0, x: -20 });
+          gsap.to(item, {
+            opacity: 1,
+            x: 0,
+            duration: 0.5,
+            delay: 0.8 + index * 0.1,
+            ease: "power2.out",
+          });
+        });
+
+      // Special animation for unread chat card if there are unread messages
+      if (unreadCount > 0) {
+        const chatCard = document.querySelector(".unread-chat-card");
+        if (chatCard) {
+          gsap.to(chatCard, {
+            scale: 1.01,
+            duration: 2,
+            ease: "power2.inOut",
+            repeat: -1,
+            yoyo: true,
+          });
+        }
+      }
+    });
 
     return () => ctx.revert();
-  }, [loading, requests.length]);
+  }, [loading, unreadCount, requests]);
 
+  // Helper functions
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-      case "delivered":
         return "bg-green-500";
-      case "in-progress":
+      case "in_progress":
         return "bg-blue-500";
+      case "in_review":
+        return "bg-purple-500";
       case "submitted":
         return "bg-yellow-500";
       default:
@@ -381,62 +355,36 @@ const DesignDashboard: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
+      case "urgent":
+        return "bg-red-200 text-red-800";
       case "high":
-        return "text-red-600 bg-red-100";
+        return "bg-red-100 text-red-600";
       case "medium":
-        return "text-yellow-600 bg-yellow-100";
+        return "bg-yellow-100 text-yellow-600";
       case "low":
-        return "text-green-600 bg-green-100";
+        return "bg-green-100 text-green-600";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "bg-gray-100 text-gray-600";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream flex items-center justify-center p-4">
-        <div className="text-center max-w-md w-full">
-          <div className="w-20 h-20 border-6 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <h2 className="text-2xl font-display font-bold text-black mb-2">
-            Loading your creative space...
-          </h2>
-          <p className="text-lg text-black/70">
-            Getting everything ready for you ✨
-          </p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-festival-orange via-festival-pink to-festival-magenta flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
       </div>
     );
   }
 
   return (
     <>
-      {/* New Message Notification */}
-      <NewMessageNotification
-        show={showNotification}
-        count={unreadCount}
-        onClose={() => setShowNotification(false)}
-        onClick={() => {
-          setShowNotification(false);
-          setShowMessagesInbox(true);
-        }}
-      />
+      <NewMessageNotification />
 
-      <div
-        ref={containerRef}
-        className="h-screen bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream relative overflow-hidden"
-        style={{
-          backgroundImage:
-            "url(https://cdn.builder.io/api/v1/image/assets%2F847ced7118144d42aa3c3a20eefb4087%2Fb37ab6171c61405ab176b52f9c1859bb)",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundAttachment: "fixed",
-        }}
-      >
-        {/* Enhanced Animated Background Elements */}
+      <div className="min-h-screen bg-gradient-to-br from-festival-orange via-festival-pink to-festival-magenta relative overflow-hidden">
+        {/* Static Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="floating-element absolute top-10 left-5 w-16 h-16 bg-festival-orange/30 transform rotate-45 rounded-lg blur-sm"></div>
-          <div className="floating-element absolute top-20 right-10 w-12 h-12 bg-festival-pink/40 rounded-full blur-sm"></div>
+          <div className="floating-element absolute top-20 left-20 w-32 h-32 bg-festival-coral/30 rounded-full blur-lg"></div>
+          <div className="floating-element absolute top-1/3 right-10 w-24 h-24 bg-festival-yellow/40 transform rotate-45 blur-md"></div>
           <div className="floating-element absolute bottom-20 left-1/4 w-14 h-14 bg-festival-yellow/30 transform rotate-12 rounded-lg blur-sm"></div>
           <div className="floating-element absolute bottom-10 right-1/3 w-10 h-10 bg-festival-magenta/40 rounded-full blur-sm"></div>
           <div className="floating-element absolute top-1/2 left-10 w-8 h-8 bg-festival-coral/30 transform rotate-45 blur-sm"></div>
@@ -448,7 +396,10 @@ const DesignDashboard: React.FC = () => {
         {/* Overlay for better content visibility */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20 backdrop-blur-[0.5px]"></div>
 
-        <div className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl" style={{ margin: "71px auto 0 0" }}>
+        <div
+          className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl"
+          style={{ margin: "71px auto 0 0" }}
+        >
           {/* Notices */}
           {profileSetupError && <ProfileSetupNotice />}
           {idMismatch && (
@@ -485,7 +436,8 @@ const DesignDashboard: React.FC = () => {
                       </div>
                       <div>
                         <h1 className="text-lg sm:text-xl lg:text-2xl font-display font-bold text-black leading-tight">
-                          Hey, {userProfile?.name?.split(" ")[0] || "Creator"}! ✨
+                          Hey, {userProfile?.name?.split(" ")[0] || "Creator"}!
+                          ✨
                         </h1>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge className="bg-festival-orange text-black border border-black font-bold text-xs px-2 py-0.5">
@@ -509,7 +461,9 @@ const DesignDashboard: React.FC = () => {
                         </div>
                         <Progress
                           value={
-                            (stats.xpProgress.current / stats.xpProgress.target) * 100
+                            (stats.xpProgress.current /
+                              stats.xpProgress.target) *
+                            100
                           }
                           className="h-2 border border-black bg-gray-200"
                         />
@@ -525,234 +479,247 @@ const DesignDashboard: React.FC = () => {
                   className="grid grid-cols-2 lg:grid-cols-4 gap-2"
                   style={{ margin: "28px auto 8px" }}
                 >
-            {/* Total Requests */}
-            <Link to="/requests">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
-                <div className="flex items-center justify-between mb-1">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
-                    Total
-                  </Badge>
-                </div>
-                <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
-                  {stats.totalRequests}
-                </div>
-                <div className="text-white/90 font-medium text-xs">
-                  Projects
-                </div>
-                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
-              </Card>
-            </Link>
+                  {/* Total Requests */}
+                  <Link to="/requests" className="flex flex-col">
+                    <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Total
+                        </Badge>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
+                        {stats.totalRequests}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        Projects
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </Link>
 
-            {/* Unread Chats */}
-            <div onClick={() => setShowMessagesInbox(true)}>
-              <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
-                <div className="flex items-center justify-between mb-1">
-                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  {unreadCount > 0 && (
-                    <Badge className="bg-red-500 text-white border border-white animate-pulse text-[10px] px-1 py-0.5">
-                      {unreadCount}!
-                    </Badge>
-                  )}
+                  {/* Unread Chats */}
+                  <div
+                    onClick={() => setShowMessagesInbox(true)}
+                    className="flex flex-col"
+                  >
+                    <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                      </div>
+                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
+                        {unreadCount}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        Messages
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </div>
+
+                  {/* Active Projects */}
+                  <Link to="/requests?filter=active" className="flex flex-col">
+                    <Card className="stat-card group relative bg-gradient-to-br from-festival-yellow to-festival-amber border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+                        <Badge className="bg-black/20 text-black border-black/30 text-[10px] px-1 py-0.5">
+                          Active
+                        </Badge>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-display font-bold text-black leading-none mb-0.5">
+                        {stats.activeProjects}
+                      </div>
+                      <div className="text-black/80 font-medium text-xs">
+                        In Progress
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-black/60 group-hover:text-black transition-colors" />
+                    </Card>
+                  </Link>
+
+                  {/* Completed Projects */}
+                  <Link
+                    to="/requests?filter=completed"
+                    className="flex flex-col"
+                  >
+                    <Card className="stat-card group relative bg-gradient-to-br from-green-400 to-green-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Done
+                        </Badge>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
+                        {stats.completedProjects}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        Completed
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </Link>
                 </div>
-                <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
-                  {unreadCount}
-                </div>
-                <div className="text-white/90 font-medium text-xs">
-                  Messages
-                </div>
-                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
-              </Card>
+              </div>
             </div>
-
-            {/* Active Projects */}
-            <Link to="/requests?filter=active">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-yellow to-festival-amber border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
-                <div className="flex items-center justify-between mb-1">
-                  <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-                  <Badge className="bg-black/20 text-black border-black/30 text-[10px] px-1 py-0.5">
-                    Active
-                  </Badge>
-                </div>
-                <div className="text-xl sm:text-2xl font-display font-bold text-black leading-none mb-0.5">
-                  {stats.activeProjects}
-                </div>
-                <div className="text-black/80 font-medium text-xs">
-                  In Progress
-                </div>
-                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-black/60 group-hover:text-black transition-colors" />
-              </Card>
-            </Link>
-
-            {/* Completed Projects */}
-            <Link to="/requests?filter=completed">
-              <Card className="stat-card group relative bg-gradient-to-br from-green-400 to-green-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px]">
-                <div className="flex items-center justify-between mb-1">
-                  <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
-                    Done
-                  </Badge>
-                </div>
-                <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
-                  {stats.completedProjects}
-                </div>
-                <div className="text-white/90 font-medium text-xs">
-                  Completed
-                </div>
-                <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
-              </Card>
-            </Link>
           </div>
 
           {/* Compact Main Content Grid */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-2 min-h-0">
-            {/* Action Cards - Compact Row */}
-            <div
-              ref={actionsRef}
-              className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2"
-            >
-              <div
-                onClick={() => setShowProjectSelection(true)}
-                className="action-card"
-              >
-                <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
-                  <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
-                    <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
-                    <div className="flex-1 sm:text-center lg:text-left">
-                      <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                        Chat Designer
-                      </h3>
-                      <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                        Start conversation
-                      </p>
-                    </div>
-                    {unreadCount > 0 && (
-                      <Badge className="absolute -top-1 -right-1 bg-red-500 text-white border border-white animate-bounce text-[10px] px-1 py-0.5">
-                        {unreadCount}
-                      </Badge>
-                    )}
+          <div
+            className="flex-1 flex flex-col gap-2 min-h-0"
+            style={{ margin: "49px auto -69px" }}
+          >
+            <div className="flex gap-5 max-md:flex-col max-md:gap-0">
+              <div className="flex flex-col w-1/3 max-md:ml-0 max-md:w-full">
+                {/* Action Cards - Compact Row */}
+                <div
+                  ref={actionsRef}
+                  className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2"
+                >
+                  <div
+                    onClick={() => setShowProjectSelection(true)}
+                    className="action-card"
+                  >
+                    <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            Chat Designer
+                          </h3>
+                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
+                            Start conversation
+                          </p>
+                        </div>
+                        {unreadCount > 0 && (
+                          <Badge className="absolute -top-1 -right-1 bg-red-500 text-white border border-white animate-bounce text-[10px] px-1 py-0.5">
+                            {unreadCount}
+                          </Badge>
+                        )}
+                      </div>
+                    </Card>
                   </div>
-                </Card>
-              </div>
 
-              <Link to="/new-request" className="action-card">
-                <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
-                  <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
-                    <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
-                    <div className="flex-1 sm:text-center lg:text-left">
-                      <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                        New Project
-                      </h3>
-                      <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                        Create amazing
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
+                  <Link to="/new-request" className="action-card">
+                    <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            New Project
+                          </h3>
+                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
+                            Create amazing
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
 
-              <Link to="/payments" className="action-card">
-                <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
-                  <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
-                    <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
-                    <div className="flex-1 sm:text-center lg:text-left">
-                      <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                        Invoices
-                      </h3>
-                      <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                        Payments
-                      </p>
-                    </div>
-                    {stats.dueInvoices > 0 && (
-                      <Badge className="absolute -top-1 -right-1 bg-yellow-500 text-black border border-white text-[10px] px-1 py-0.5">
-                        {stats.dueInvoices}
-                      </Badge>
-                    )}
-                  </div>
-                </Card>
-              </Link>
-            </div>
-
-            {/* Projects Section - Takes up remaining space */}
-            <div className="lg:col-span-2 flex flex-col min-h-0">
-              <div
-                ref={projectsRef}
-                className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-start mt-3 mx-auto p-3 pr-5 min-h-[300px] lg:min-h-0"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-base sm:text-lg font-display font-bold text-black flex items-center gap-2">
-                    <Palette className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
-                    <span className="-mt-1 mr-28">Recent Projects</span>
-                  </h2>
-                  <Link to="/requests">
-                    <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
-                      View All
-                      <ArrowRight className="w-3 h-3 ml-1" />
-                    </Button>
+                  <Link to="/payments" className="action-card">
+                    <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            Invoices
+                          </h3>
+                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
+                            Payments
+                          </p>
+                        </div>
+                        {stats.dueInvoices > 0 && (
+                          <Badge className="absolute -top-1 -right-1 bg-yellow-500 text-black border border-white text-[10px] px-1 py-0.5">
+                            {stats.dueInvoices}
+                          </Badge>
+                        )}
+                      </div>
+                    </Card>
                   </Link>
                 </div>
-
-                {requests.length > 0 ? (
-                  <div className="flex-1 overflow-y-auto space-y-1">
-                    {requests.slice(0, 4).map((request, index) => (
-                      <Link
-                        key={request.id}
-                        to={`/requests/${request.id}`}
-                        className="project-item group block"
-                      >
-                        <Card className="border border-black/20 hover:border-festival-orange hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] transition-all duration-200 p-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-festival-orange/20 rounded-full flex items-center justify-center border border-festival-orange/30 flex-shrink-0">
-                              {request.category === "logo" && (
-                                <PaintBucket className="w-3 h-3 text-festival-orange" />
-                              )}
-                              {request.category === "web" && (
-                                <Brush className="w-3 h-3 text-festival-orange" />
-                              )}
-                              {request.category === "brand" && (
-                                <Sparkles className="w-3 h-3 text-festival-orange" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-xs sm:text-sm font-bold text-black group-hover:text-festival-orange transition-colors truncate leading-tight">
-                                {request.title}
-                              </h3>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <Badge
-                                  className={`${getStatusColor(request.status)} text-white border-0 text-[10px] px-1 py-0.5`}
-                                >
-                                  {request.status}
-                                </Badge>
-                                <Badge
-                                  className={`${getPriorityColor(request.priority)} border-0 text-[10px] px-1 py-0.5`}
-                                >
-                                  {request.priority}
-                                </Badge>
-                              </div>
-                            </div>
-                            <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-festival-orange transition-colors flex-shrink-0" />
-                          </div>
-                        </Card>
+              </div>
+              <div className="flex flex-col w-2/3 ml-5 max-md:ml-0 max-md:w-full">
+                {/* Projects Section - Takes up remaining space */}
+                <div className="lg:col-span-2 flex flex-col min-h-0">
+                  <div
+                    ref={projectsRef}
+                    className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-start mt-3 mx-auto p-3 pr-5 min-h-[300px] lg:min-h-0"
+                    style={{ width: "636.5px", padding: "12px 20px 93px 12px" }}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-base sm:text-lg font-display font-bold text-black flex items-center gap-2">
+                        <Palette className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
+                        <span className="-mt-1 mr-28">Recent Projects</span>
+                      </h2>
+                      <Link to="/requests">
+                        <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
+                          View All
+                          <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
                       </Link>
-                    ))}
+                    </div>
+
+                    {requests.length > 0 ? (
+                      <div className="flex-1 overflow-y-auto space-y-1">
+                        {requests.slice(0, 4).map((request, index) => (
+                          <Link
+                            key={request.id}
+                            to={`/requests/${request.id}`}
+                            className="project-item group block"
+                          >
+                            <Card className="border border-black/20 hover:border-festival-orange hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] transition-all duration-200 p-2">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 bg-festival-orange/20 rounded-full flex items-center justify-center border border-festival-orange/30 flex-shrink-0">
+                                  {request.category === "logo" && (
+                                    <PaintBucket className="w-3 h-3 text-festival-orange" />
+                                  )}
+                                  {request.category === "web" && (
+                                    <Brush className="w-3 h-3 text-festival-orange" />
+                                  )}
+                                  {request.category === "brand" && (
+                                    <Sparkles className="w-3 h-3 text-festival-orange" />
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-xs sm:text-sm font-bold text-black group-hover:text-festival-orange transition-colors truncate leading-tight">
+                                    {request.title}
+                                  </h3>
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <Badge
+                                      className={`${getStatusColor(request.status)} text-white border-0 text-[10px] px-1 py-0.5`}
+                                    >
+                                      {request.status}
+                                    </Badge>
+                                    <Badge
+                                      className={`${getPriorityColor(request.priority)} border-0 text-[10px] px-1 py-0.5`}
+                                    >
+                                      {request.priority}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-festival-orange transition-colors flex-shrink-0" />
+                              </div>
+                            </Card>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 flex-1 flex flex-col justify-center">
+                        <Gift className="w-8 h-8 text-festival-orange/50 mx-auto mb-2" />
+                        <h3 className="text-sm font-bold text-black/60 mb-1">
+                          No projects yet
+                        </h3>
+                        <p className="text-black/50 mb-3 text-xs">
+                          Start your first design project!
+                        </p>
+                        <Link to="/new-request">
+                          <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
+                            <Plus className="w-3 h-3 mr-1" />
+                            Create Project
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="text-center py-4 flex-1 flex flex-col justify-center">
-                    <Gift className="w-8 h-8 text-festival-orange/50 mx-auto mb-2" />
-                    <h3 className="text-sm font-bold text-black/60 mb-1">
-                      No projects yet
-                    </h3>
-                    <p className="text-black/50 mb-3 text-xs">
-                      Start your first design project!
-                    </p>
-                    <Link to="/new-request">
-                      <Button className="bg-festival-orange hover:bg-festival-coral border border-black font-bold text-xs px-2 py-1">
-                        <Plus className="w-3 h-3 mr-1" />
-                        Create Project
-                      </Button>
-                    </Link>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
