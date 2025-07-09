@@ -246,16 +246,14 @@ const PayPalButton: React.FC<PayPalButtonProps> = (props) => {
             Secure Payment Options
           </h3>
           <p className="text-black/70 mb-2">
-            Pay with PayPal, Credit/Debit Cards, Venmo, or Pay Later
+            Pay with PayPal or Pay Later options
           </p>
           <div className="flex justify-center items-center gap-2 text-xs text-black/60">
-            <span>💳 Cards</span>
-            <span>•</span>
             <span>🅿️ PayPal</span>
             <span>•</span>
-            <span>📱 Venmo</span>
-            <span>•</span>
             <span>⏳ Pay Later</span>
+            <span>•</span>
+            <span>🔒 Secure</span>
           </div>
         </div>
 
