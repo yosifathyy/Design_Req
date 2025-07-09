@@ -1,6 +1,15 @@
 // Validate if the Supabase API key looks complete and valid
 export const validateApiKey = (key: string) => {
   console.log("🔍 Validating API Key...");
+  
+  if (!key) {
+    return {
+      valid: false,
+      issue: "API key is missing or undefined",
+      recommendation: "Please provide a valid Supabase API key",
+    };
+  }
+  
   console.log("Key length:", key.length);
   console.log("Key preview:", key.substring(0, 50) + "...");
 

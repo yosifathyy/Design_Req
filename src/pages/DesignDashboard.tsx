@@ -435,7 +435,12 @@ const DesignDashboard: React.FC = () => {
 
   return (
     <>
-      <NewMessageNotification />
+      <NewMessageNotification 
+        show={false} 
+        count={0} 
+        onClose={() => {}} 
+        onClick={() => {}} 
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-festival-orange via-festival-pink to-festival-magenta relative overflow-hidden">
         {/* Static Background Elements */}
@@ -470,8 +475,9 @@ const DesignDashboard: React.FC = () => {
           {profileSetupError && <ProfileSetupNotice />}
           {idMismatch && (
             <IDMismatchNotice
-              authId={idMismatch.authId}
-              dbId={idMismatch.dbId}
+              authUserId={idMismatch.authId}
+              databaseUserId={idMismatch.dbId}
+              userEmail={user?.email || "unknown"}
             />
           )}
 

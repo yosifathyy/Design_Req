@@ -290,6 +290,8 @@ export const useRealtimeChat = (projectId: string | null) => {
         return false;
       }
 
+      let chatId: string; // Move chatId declaration to function scope
+
       try {
         // First, get or create the chat for this project
         let { data: chatsData, error: chatsError } = await supabase
@@ -301,8 +303,6 @@ export const useRealtimeChat = (projectId: string | null) => {
         if (chatsError) {
           throw new Error(`Failed to find chat: ${chatsError.message}`);
         }
-
-        let chatId: string;
 
         if (!chatsData || chatsData.length === 0) {
           // Create a new chat for this project

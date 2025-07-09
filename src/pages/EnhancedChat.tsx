@@ -236,7 +236,7 @@ const EnhancedChat: React.FC = () => {
           }
 
           const errorMessage =
-            uploadError.message || uploadError.error || "Failed to upload file";
+            uploadError.message || "Failed to upload file";
           toast({
             title: "Upload failed",
             description: `${errorMessage}. Please try again.`,
