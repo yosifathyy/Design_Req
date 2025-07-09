@@ -61,33 +61,36 @@ const RetroFlipGrid: React.FC = () => {
         scale: 0.8,
       });
 
-      // Header animation
-      gsap.to(headerRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 1.2,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
-      });
+            // Header animation
+      if (headerRef.current) {
+        gsap.to(headerRef.current, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
 
       // Grid section animation with stagger
-      gsap.to(gridSectionRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 1.5,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: gridSectionRef.current,
-          start: "top 75%",
-          end: "bottom 25%",
-          toggleActions: "play none none reverse",
+      if (gridSectionRef.current) {
+        gsap.to(gridSectionRef.current, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: gridSectionRef.current,
+            start: "top 75%",
+            end: "bottom 25%",
+            toggleActions: "play none none reverse",
         },
       });
 
