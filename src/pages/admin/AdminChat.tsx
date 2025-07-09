@@ -172,7 +172,7 @@ const AdminChat: React.FC = () => {
                       navigate(`/admin/chat/${chat.id}`, { replace: true });
                     }}
                     className={`p-3 border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-colors ${
-                      selectedChat?.id === chat.id
+                      selectedProjectId === chat.project_id
                         ? "bg-festival-orange/30"
                         : "bg-festival-cream"
                     }`}
