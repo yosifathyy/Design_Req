@@ -4,12 +4,18 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import {
+  validateSupabaseCredentials,
+  testDirectApiAccess,
+  testUsersTableAccess,
+} from "@/utils/validateSupabase";
+import {
   Wifi,
   WifiOff,
   CheckCircle,
   XCircle,
   Loader2,
   RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 
 interface ConnectionStatus {
@@ -30,16 +36,50 @@ export const SupabaseConnectionTest: React.FC = () => {
     console.log("=== Supabase Connection Test ===");
 
     try {
-      // Test 1: Configuration
-      console.log("1. Checking configuration...");
-      if (!isSupabaseConfigured) {
+      // Test 1: Credential validation
+      console.log("1. Validating credentials...");
+      const credentialCheck = validateSupabaseCredentials();
+
+      if (!credentialCheck.valid) {
         setStatus({
           configured: false,
           connected: false,
           userTableAccess: false,
           chatsTableAccess: false,
           messagesTableAccess: false,
-          error: "Supabase not configured. Check environment variables.",
+          error: `Credential issues: ${credentialCheck.issues.join(", ")}`,
+        });
+        return;
+      }
+
+      // Test 2: Direct API access
+      console.log("2. Testing direct API access...");
+      const directApiTest = await testDirectApiAccess();
+
+      if (!directApiTest.success) {
+        setStatus({
+          configured: true,
+          connected: false,
+          userTableAccess: false,
+          chatsTableAccess: false,
+          messagesTableAccess: false,
+          error: directApiTest.message,
+        });
+        return;
+      }
+
+      // Test 3: Users table direct access
+      console.log("3. Testing users table direct access...");
+      const usersTest = await testUsersTableAccess();
+
+      if (!usersTest.success) {
+        setStatus({
+          configured: true,
+          connected: true,
+          userTableAccess: false,
+          chatsTableAccess: false,
+          messagesTableAccess: false,
+          error: usersTest.message,
         });
         return;
       }
