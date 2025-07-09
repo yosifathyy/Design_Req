@@ -92,6 +92,12 @@ const DesignDashboard: React.FC = () => {
   const navigate = useNavigate();
   const unreadCount = useUnreadCount();
 
+  // Debug function to test unread count
+  const refreshUnreadCount = () => {
+    console.log("🔄 Manually refreshing unread count...");
+    window.location.reload(); // Force reload to test
+  };
+
   // Real-time update for unread count changes
   useEffect(() => {
     if (unreadCount > lastUnreadCount && lastUnreadCount >= 0) {
