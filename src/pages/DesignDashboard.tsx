@@ -379,7 +379,7 @@ const DesignDashboard: React.FC = () => {
           <div className="floating-element absolute top-60 right-40 w-12 h-12 bg-festival-amber/20 rounded-full"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Notices */}
           {profileSetupError && <ProfileSetupNotice />}
           {idMismatch && (
