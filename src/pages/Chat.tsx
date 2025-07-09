@@ -12,6 +12,7 @@ import ChatConnectionFixer from "@/components/ChatConnectionFixer";
 import ChatErrorDebugger from "@/components/ChatErrorDebugger";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import UserSyncFix from "@/components/UserSyncFix";
+import UserCreationDebugger from "@/components/UserCreationDebugger";
 import {
   MessageCircle,
   Send,
