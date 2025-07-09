@@ -100,7 +100,7 @@ export const useRealtimeChat = (projectId: string | null) => {
         }
 
         console.log("Loaded messages via Supabase client:", messagesData);
-        setMessages(messagesData || []);
+        setMessages((messagesData || []) as any);
 
         // TODO: Mark this chat as read when messages are loaded
         // Mark this chat as read when messages are loaded
@@ -362,10 +362,10 @@ export const useRealtimeChat = (projectId: string | null) => {
         if (insertedMessage) {
           setMessages((prev) => {
             // Avoid duplicates
-            if (prev.some((msg) => msg.id === insertedMessage.id)) {
+            if (prev.some((msg) => msg.id === (insertedMessage as any).id)) {
               return prev;
             }
-            return [...prev, insertedMessage].sort(
+            return [...prev, insertedMessage as any].sort(
               (a, b) =>
                 new Date(a.created_at).getTime() -
                 new Date(b.created_at).getTime(),
@@ -521,10 +521,10 @@ export const useRealtimeChat = (projectId: string | null) => {
                       "Message sent successfully after user creation",
                     );
                     setMessages((prev) => {
-                      if (prev.some((msg) => msg.id === retryMessage.id)) {
+                      if (prev.some((msg) => msg.id === (retryMessage as any).id)) {
                         return prev;
                       }
-                      return [...prev, retryMessage].sort(
+                      return [...prev, retryMessage as any].sort(
                         (a, b) =>
                           new Date(a.created_at).getTime() -
                           new Date(b.created_at).getTime(),
