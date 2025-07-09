@@ -6,7 +6,7 @@ import {
 } from "@paypal/react-paypal-js";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { invoicesApi, InvoiceWithDetails } from "@/lib/invoices-api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import { paypalScriptOptions } from "@/lib/paypal-config";
 import { Loader2, CreditCard, CheckCircle, XCircle } from "lucide-react";
 
