@@ -247,53 +247,39 @@ const Chat: React.FC = () => {
         {/* Input Area */}
         <div className="p-4 border-t-4 border-black bg-white">
           <div className="flex items-center gap-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-              accept="image/*,video/*,.pdf,.doc,.docx"
-            />
-
-            <Button
-              onClick={handleFileAttach}
-              variant="outline"
-              size="sm"
-              className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-            >
-              <Paperclip className="w-4 h-4" />
-            </Button>
-
-            <div className="flex-1 relative">
+            <div className="flex-1">
               <Input
                 ref={inputRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="h-12 border-4 border-black pr-12 bg-festival-cream text-lg font-medium"
+                placeholder={
+                  !projectId
+                    ? "Please select a project to chat"
+                    : error
+                      ? "Chat unavailable"
+                      : "Type your message..."
+                }
+                disabled={!projectId || !!error || sending}
+                className="h-12 border-4 border-black bg-festival-cream text-lg font-medium"
               />
-              <Button
-                variant="outline"
-                size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 border-2 border-black"
-              >
-                <Smile className="w-4 h-4" />
-              </Button>
             </div>
 
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || !chatId || !user}
+              disabled={!message.trim() || !projectId || !!error || sending}
               className="h-12 px-6 bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Send className="w-5 h-5" />
+              {sending ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
             </Button>
           </div>
 
           <div className="text-xs text-black/60 mt-2 text-center">
-            Press Enter to send • Shift+Enter for new line
+            Press Enter to send • Instant messaging with Supabase Realtime
           </div>
         </div>
       </div>
