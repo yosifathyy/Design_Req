@@ -103,10 +103,12 @@ const CreateUser = lazy(() => import("./pages/admin/CreateUser"));
 const EditProject = lazy(() => import("./pages/admin/EditProject"));
 const EditUser = lazy(() => import("./pages/admin/EditUser"));
 const ProjectDetail = lazy(() => import("./pages/admin/ProjectDetail"));
+const InvoiceDetail = lazy(() => import("./pages/admin/InvoiceDetail"));
 const AdminDebugTest = lazy(() => import("./components/AdminDebugTest"));
 const AdminSetupHelper = lazy(() => import("./components/AdminSetupHelper"));
 const AuthSetupHelper = lazy(() => import("./components/AuthSetupHelper"));
 const AuthStatus = lazy(() => import("./pages/AuthStatus"));
+const InvoicePayment = lazy(() => import("./pages/InvoicePayment"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
