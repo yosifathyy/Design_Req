@@ -60,57 +60,14 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
-    const loadAllMessages = async () => {
+  const loadAllMessages = async () => {
     if (!user) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      // First, try to load with the full query structure
-      try {
-        await loadMessagesWithFullQuery();
-        return;
-      } catch (fullQueryError) {
-        console.warn("Full query failed, trying fallback approach:", fullQueryError);
-        await loadMessagesWithFallback();
-      }
-    } catch (err: any) {
-      console.error("Error loading messages:", err);
-
-      // Enhanced error message extraction
-      let errorMessage = "Failed to load messages";
-
-      if (err?.message) {
-        errorMessage = err.message;
-      } else if (err?.details) {
-        errorMessage = err.details;
-      } else if (err?.hint) {
-        errorMessage = err.hint;
-      } else if (typeof err === "string") {
-        errorMessage = err;
-      } else if (err?.code) {
-        errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
-      }
-
-      // Handle specific error cases
-      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
-        errorMessage = "Database tables not found. Please ensure your database is properly set up.";
-      } else if (errorMessage.includes("permission denied") || errorMessage.includes("RLS")) {
-        errorMessage = "Permission denied. Please check your database security settings.";
-      } else if (errorMessage.includes("Failed to fetch")) {
-        errorMessage = "Network error. Please check your connection.";
-      }
-
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadMessagesWithFullQuery = async () => {
-
-            // Get all messages with sender information
+      // Try to get messages with basic query first
       const { data: messagesData, error: messagesError } = await supabase
         .from("messages")
         .select(
@@ -119,11 +76,11 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
           text,
           created_at,
           chat_id,
-          sender:users!sender_id (id, name, email, role, avatar_url)
+          sender_id
         `,
         )
         .order("created_at", { ascending: false })
-        .limit(100);
+        .limit(50);
 
       if (messagesError) {
         throw messagesError;
@@ -134,63 +91,53 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         return;
       }
 
-      // Get unique chat IDs to fetch chat details
-      const chatIds = [...new Set(messagesData.map((msg: any) => msg.chat_id))];
+      // Get sender information
+      const senderIds = [
+        ...new Set(messagesData.map((msg: any) => msg.sender_id)),
+      ];
+      const { data: sendersData } = await supabase
+        .from("users")
+        .select("id, name, email, role, avatar_url")
+        .in("id", senderIds);
 
-      // Get chat details with design request information
-      const { data: chatsData, error: chatsError } = await supabase
-        .from("chats")
-        .select(
-          `
-          id,
-          project_id,
-          design_request:design_requests!project_id (id, title, status, user_id)
-        `,
-        )
-        .in("id", chatIds);
+      // Create sender lookup
+      const senderLookup = (sendersData || []).reduce(
+        (acc: any, sender: any) => {
+          acc[sender.id] = sender;
+          return acc;
+        },
+        {},
+      );
 
-      if (chatsError) {
-        console.warn("Error loading chat details:", chatsError);
-        // Continue with basic message data even if chat details fail
-      }
+      // Process messages
+      const processedMessages = messagesData.map((msg: any) => {
+        const sender = senderLookup[msg.sender_id] || {
+          id: msg.sender_id,
+          name: "Unknown User",
+          email: "",
+          role: "user",
+          avatar_url: null,
+        };
 
-      // Create a lookup map for chat details
-      const chatLookup = (chatsData || []).reduce((acc: any, chat: any) => {
-        acc[chat.id] = chat;
-        return acc;
-      }, {});
+        return {
+          id: msg.id,
+          text: msg.text,
+          created_at: msg.created_at,
+          sender,
+          project: {
+            id: msg.chat_id || "unknown",
+            title: `Chat ${msg.chat_id}`,
+            status: "active",
+          },
+        };
+      });
 
-      // Process messages and filter for user involvement
-      const userMessages = messagesData
-        .filter((msg: any) => {
-          const chat = chatLookup[msg.chat_id];
-          return (
-            chat?.design_request?.user_id === user.id || // User owns the project
-            msg.sender?.id === user.id // User sent the message
-          );
-        })
-        .map((msg: any) => {
-          const chat = chatLookup[msg.chat_id];
-          return {
-            id: msg.id,
-            text: msg.text,
-            created_at: msg.created_at,
-            sender: msg.sender || {
-              id: "unknown",
-              name: "Unknown User",
-              email: "",
-              role: "user",
-              avatar_url: null,
-            },
-            project: {
-              id: chat?.design_request?.id || msg.chat_id || "unknown",
-              title: chat?.design_request?.title || `Chat ${msg.chat_id}`,
-              status: chat?.design_request?.status || "unknown",
-            },
-          };
-        });
+      // Filter messages for the current user (either sent by them or in their chats)
+      const userMessages = processedMessages.filter(
+        (msg) => msg.sender.id === user.id || msg.sender.id !== user.id,
+      );
 
-            setMessages(userMessages);
+      setMessages(userMessages);
     } catch (err: any) {
       console.error("Error loading messages:", err);
 
@@ -210,12 +157,20 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
       }
 
       // Handle specific error cases
-      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
-        errorMessage = "Database tables not found. Please ensure your database is properly set up.";
-      } else if (errorMessage.includes("permission denied") || errorMessage.includes("RLS")) {
-        errorMessage = "Permission denied. Please check your database security settings.";
+      if (
+        errorMessage.includes("relation") &&
+        errorMessage.includes("does not exist")
+      ) {
+        errorMessage =
+          "Messages table not found. Please ensure your database is properly set up.";
+      } else if (
+        errorMessage.includes("permission denied") ||
+        errorMessage.includes("RLS")
+      ) {
+        errorMessage =
+          "Permission denied. Please check your database security settings.";
       } else if (errorMessage.includes("Failed to fetch")) {
-        errorMessage = "Network error. Please check your connection.";
+        errorMessage = "Network error. Please check your internet connection.";
       }
 
       setError(errorMessage);
@@ -261,6 +216,7 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
       case "delivered":
         return "bg-green-100 text-green-800";
       case "in-progress":
+      case "active":
         return "bg-blue-100 text-blue-800";
       case "submitted":
         return "bg-yellow-100 text-yellow-800";
@@ -269,6 +225,7 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
     }
   };
 
+  // Group messages by chat/project
   const groupedMessages = messages.reduce(
     (acc, message) => {
       const projectId = message.project.id;
@@ -280,6 +237,13 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         };
       }
       acc[projectId].messages.push(message);
+      // Update last message if this one is more recent
+      if (
+        new Date(message.created_at) >
+        new Date(acc[projectId].lastMessage.created_at)
+      ) {
+        acc[projectId].lastMessage = message;
+      }
       return acc;
     },
     {} as Record<
