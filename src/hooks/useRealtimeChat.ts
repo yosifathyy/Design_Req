@@ -64,7 +64,46 @@ export const useRealtimeChat = (projectId: string | null) => {
       setMessages(messagesData || []);
     } catch (err: any) {
       console.error("Failed to load messages:", err);
-      setError(err.message || "Failed to load messages");
+
+      // Better error message extraction
+      let errorMessage = "Failed to load messages";
+      try {
+        if (typeof err === "string") {
+          errorMessage = err;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        } else if (err?.message) {
+          errorMessage = err.message;
+        } else if (err?.error_description) {
+          errorMessage = err.error_description;
+        } else if (err?.details) {
+          errorMessage = err.details;
+        } else if (err?.hint) {
+          errorMessage = err.hint;
+        } else if (err?.code) {
+          errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
+        } else {
+          // Check if it's a network error
+          if (err?.status === 0 || !navigator.onLine) {
+            errorMessage =
+              "Network error: Please check your internet connection";
+          } else {
+            const errorStr = JSON.stringify(
+              err,
+              Object.getOwnPropertyNames(err),
+            );
+            errorMessage =
+              errorStr.length > 100
+                ? "Complex error occurred. Check console for details."
+                : errorStr;
+          }
+        }
+      } catch (stringifyError) {
+        console.error("Error processing error message:", stringifyError);
+        errorMessage = "Error occurred but could not be displayed";
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
