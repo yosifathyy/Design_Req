@@ -114,7 +114,6 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
         }}
         createOrder={(data, actions) => {
           return actions.order.create({
-            intent: "CAPTURE",
             purchase_units: [
               {
                 reference_id: invoice.id,
@@ -122,26 +121,7 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
                 amount: {
                   currency_code: "USD",
                   value: (invoice.totalAmount || 0).toFixed(2),
-                  breakdown: {
-                    item_total: {
-                      currency_code: "USD",
-                      value: (invoice.totalAmount || 0).toFixed(2),
-                    },
-                  },
                 },
-                items: [
-                  {
-                    name: invoice.title || "Design Services",
-                    unit_amount: {
-                      currency_code: "USD",
-                      value: (invoice.totalAmount || 0).toFixed(2),
-                    },
-                    quantity: "1",
-                    description:
-                      invoice.description || "Professional design services",
-                    sku: `invoice-${invoice.invoiceNumber}`,
-                  },
-                ],
               },
             ],
             application_context: {
@@ -152,37 +132,7 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
             },
           });
         }}
-        onApprove={async (data, actions) => {
-          try {
-            // Enhanced approval handling with better error recovery
-            const orderData = await actions.order.capture();
-
-            // Check for instrument declined and handle recovery
-            const errorDetail = orderData?.details?.[0];
-            if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-              // Recoverable error - restart the payment flow
-              return actions.restart();
-            } else if (errorDetail) {
-              // Non-recoverable error
-              throw new Error(
-                `${errorDetail.description} (${orderData.debug_id})`,
-              );
-            } else if (!orderData.purchase_units) {
-              throw new Error(JSON.stringify(orderData));
-            } else {
-              // Successful transaction
-              await handleApprove(data, actions);
-            }
-          } catch (error) {
-            console.error("PayPal approval error:", error);
-            toast({
-              title: "Payment Processing Error",
-              description: `Sorry, your transaction could not be processed. ${error}`,
-              variant: "destructive",
-            });
-            onPaymentError?.(error);
-          }
-        }}
+        onApprove={handleApprove}
         onError={handleError}
         onCancel={handleCancel}
       />
