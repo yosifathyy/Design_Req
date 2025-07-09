@@ -46,8 +46,30 @@ export const useRealtimeChat = (projectId: string | null) => {
       setLoading(true);
       setError(null);
 
+      // Test Supabase connection first
+      if (!isSupabaseConfigured) {
+        throw new Error(
+          "Supabase is not configured. Please check your environment variables.",
+        );
+      }
+
+      // Quick connection test
+      console.log("Testing Supabase connection...");
+      const { data: connectionTest, error: connectionError } = await supabase
+        .from("users")
+        .select("id")
+        .limit(1);
+
+      if (connectionError) {
+        console.error("Supabase connection failed:", connectionError);
+        throw new Error(`Connection failed: ${connectionError.message}`);
+      }
+
+      console.log("Supabase connection successful");
+
       // Use existing database schema: messages -> chats -> design_requests
       // First, find the chat for this project
+      console.log("Looking for chat with project ID:", projectId);
       const { data: chatsData, error: chatsError } = await supabase
         .from("chats")
         .select("id")
