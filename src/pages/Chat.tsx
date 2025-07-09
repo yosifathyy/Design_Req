@@ -139,6 +139,8 @@ const Chat: React.FC = () => {
         ref={containerRef}
         className="flex-1 max-w-4xl mx-auto w-full flex flex-col"
       >
+        {/* Database Status Check */}
+        {error && <ChatDatabaseStatus />}
         {/* Header */}
         <div className="p-4 border-b-4 border-black bg-white">
           <div className="flex items-center justify-between">
