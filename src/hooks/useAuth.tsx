@@ -386,9 +386,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .insert([userData]);
 
             if (createError) {
+              const errorDetails = {
+                message: createError.message,
+                details: createError.details,
+                hint: createError.hint,
+                code: createError.code,
+              };
               console.error(
                 "Failed to create user record during login:",
-                createError,
+                errorDetails,
+              );
+              console.error(
+                "Full login create error:",
+                JSON.stringify(
+                  createError,
+                  Object.getOwnPropertyNames(createError),
+                  2,
+                ),
               );
             } else {
               console.log("User record created successfully during login");
