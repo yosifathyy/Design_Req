@@ -3,6 +3,7 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { applySimplifiedChatMigration } from "@/utils/applyMigration";
 import {
   Database,
   CheckCircle,
@@ -10,6 +11,7 @@ import {
   AlertTriangle,
   Loader2,
   ExternalLink,
+  Wrench,
 } from "lucide-react";
 
 interface DatabaseStatus {
@@ -24,6 +26,8 @@ interface DatabaseStatus {
 export const ChatDatabaseStatus: React.FC = () => {
   const [status, setStatus] = useState<DatabaseStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [migrating, setMigrating] = useState(false);
+  const [migrationResult, setMigrationResult] = useState<string | null>(null);
 
   useEffect(() => {
     checkDatabaseStatus();
@@ -98,6 +102,29 @@ export const ChatDatabaseStatus: React.FC = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApplyMigration = async () => {
+    setMigrating(true);
+    setMigrationResult(null);
+
+    try {
+      const result = await applySimplifiedChatMigration();
+
+      if (result.success) {
+        setMigrationResult("✅ Migration applied successfully!");
+        // Recheck status after migration
+        setTimeout(() => {
+          checkDatabaseStatus();
+        }, 1000);
+      } else {
+        setMigrationResult(`❌ Migration failed: ${result.error}`);
+      }
+    } catch (error: any) {
+      setMigrationResult(`❌ Migration error: ${error.message}`);
+    } finally {
+      setMigrating(false);
     }
   };
 
@@ -219,12 +246,38 @@ export const ChatDatabaseStatus: React.FC = () => {
               <p className="text-xs text-yellow-700 mb-2">
                 The simplified chat system requires updated database structure.
               </p>
-              <p className="text-xs text-yellow-700">
-                Run:{" "}
-                <code className="bg-yellow-100 px-1 rounded">
-                  supabase db push
-                </code>
-              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <Button
+                  onClick={handleApplyMigration}
+                  disabled={migrating}
+                  size="sm"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                >
+                  {migrating ? (
+                    <>
+                      <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      Applying...
+                    </>
+                  ) : (
+                    <>
+                      <Wrench className="w-3 h-3 mr-1" />
+                      Apply Migration
+                    </>
+                  )}
+                </Button>
+                <span className="text-xs text-yellow-700">
+                  or use CLI:{" "}
+                  <code className="bg-yellow-100 px-1 rounded">
+                    supabase db push
+                  </code>
+                </span>
+              </div>
+            </div>
+          )}
+
+          {migrationResult && (
+            <div className="p-3 bg-blue-50 border-2 border-blue-300 rounded">
+              <p className="text-sm text-blue-800">{migrationResult}</p>
             </div>
           )}
 
