@@ -2,31 +2,19 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  getChatByRequestId,
-  createChat,
-  getMessages,
-  sendMessage,
-  getDesignRequestById,
-} from "@/lib/api";
-import { supabase } from "@/lib/supabase";
+import { useRealtimeChat } from "@/hooks/useRealtimeChat";
+import { getDesignRequestById } from "@/lib/api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { mockChat, mockUser } from "@/lib/dashboard-data";
 import {
   Send,
-  Paperclip,
-  Smile,
   ArrowLeft,
   Circle,
-  FileText,
-  Image,
-  Video,
-  File,
-  Download,
   MessageCircle,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 
 const Chat: React.FC = () => {
