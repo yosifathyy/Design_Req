@@ -11,8 +11,15 @@ export const isSupabaseConfigured = Boolean(
     supabaseUrl !== "your-supabase-url" &&
     supabaseAnonKey !== "your-supabase-anon-key" &&
     !supabaseUrl.includes("placeholder") &&
-    supabaseUrl.startsWith("https://"),
+    supabaseUrl.startsWith("https://") &&
+    supabaseUrl.includes(".supabase.co"),
 );
+
+// Log configuration details for debugging
+console.log("Supabase Configuration Check:");
+console.log("URL:", supabaseUrl);
+console.log("Key length:", supabaseAnonKey?.length || 0);
+console.log("Is configured:", isSupabaseConfigured);
 
 if (!isSupabaseConfigured) {
   console.warn(
