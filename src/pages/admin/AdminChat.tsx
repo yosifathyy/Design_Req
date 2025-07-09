@@ -76,12 +76,10 @@ const AdminChat: React.FC = () => {
     }
   };
 
-  const filteredChats = chats.filter(
+  const filteredChats = chatRooms.filter(
     (chat) =>
-      chat.request?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      chat.request?.user?.name
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+      chat.project_title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.client_name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
