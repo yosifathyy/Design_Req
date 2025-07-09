@@ -25,14 +25,19 @@ const InvoicePayment: React.FC = () => {
     const loadInvoice = async () => {
       try {
         setLoading(true);
-        const invoiceData = await invoicesApi.getById(id);
+        console.log("🔍 Loading invoice for payment with ID:", id);
+        const invoiceData = await simpleInvoicesApi.getById(id);
+        console.log("✅ Invoice loaded for payment:", invoiceData);
         setInvoice(invoiceData);
       } catch (error) {
-        console.error("Error loading invoice:", error);
+        console.error("❌ Error loading invoice:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
         toast({
           title: "Invoice not found",
-          description:
-            "The invoice you're looking for doesn't exist or you don't have permission to view it.",
+          description: errorMessage.includes("Network")
+            ? "Network error. Please check your connection and try again."
+            : "The invoice you're looking for doesn't exist or you don't have permission to view it.",
           variant: "destructive",
         });
       } finally {
