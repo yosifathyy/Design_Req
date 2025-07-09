@@ -41,85 +41,26 @@ const Chat: React.FC = () => {
     sendMessage: sendChatMessage,
   } = useRealtimeChat(projectId);
 
+  // Load project details
   useEffect(() => {
-    const initializeChat = async () => {
-      if (!user || !requestId) return;
+    const loadProjectDetails = async () => {
+      if (!projectId) return;
 
       try {
-        setLoading(true);
-
-        // Get project details
-        const requestData = await getDesignRequestById(requestId);
+        setProjectLoading(true);
+        const requestData = await getDesignRequestById(projectId);
         setProjectDetails(requestData);
-
-        // Get or create chat
-        let chat = await getChatByRequestId(requestId);
-
-        if (!chat) {
-          // Create new chat with user and designer (if assigned)
-          const participants = [user.id];
-          if (requestData.designer_id) {
-            participants.push(requestData.designer_id);
-          }
-
-          chat = await createChat(requestId, participants);
-        }
-
-        setChatId(chat.id);
-
-        // Get messages
-        const chatMessages = await getMessages(chat.id);
-        setMessages(chatMessages);
       } catch (error: any) {
-        console.error("Error initializing chat:", error?.message || error);
-
-        // Show user-friendly error message
-        const errorMessage =
-          error?.message || "Failed to initialize chat functionality.";
-
-        setError(errorMessage);
-
-        // Check if this is a policy setup issue
-        const isPolicyError =
-          errorMessage.includes("database policies need to be set up") ||
-          errorMessage.includes("row-level security policy");
-
-        if (isPolicyError) {
-          // Don't show the temporary notification for policy errors,
-          // as we'll show the setup helper instead
-          return;
-        }
-
-        // Create error notification
-        const errorEl = document.createElement("div");
-        errorEl.className =
-          "fixed top-4 right-4 z-50 bg-red-50 border-2 border-red-500 p-4 rounded-lg shadow-lg max-w-md";
-        errorEl.innerHTML = `
-          <div class="flex items-start gap-3">
-            <div class="text-red-500 text-xl">💬</div>
-            <div>
-              <h4 class="font-bold text-red-800 mb-1">Chat Unavailable</h4>
-              <p class="text-red-700 text-sm">${errorMessage}</p>
-              <p class="text-red-600 text-xs mt-2">Please check that your database chat tables are set up.</p>
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(errorEl);
-
-        // Remove error after 5 seconds
-        setTimeout(() => {
-          errorEl.remove();
-        }, 5000);
+        console.error("Error loading project:", error);
       } finally {
-        setLoading(false);
+        setProjectLoading(false);
       }
     };
 
-    if (user && requestId) {
-      initializeChat();
+    if (projectId) {
+      loadProjectDetails();
     }
-  }, [user, requestId]);
+  }, [projectId]);
 
   // Realtime subscription for new messages
   useEffect(() => {
