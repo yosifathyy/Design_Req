@@ -112,7 +112,7 @@ const Chat: React.FC = () => {
     }
   }, [projectId]);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive and mark as read
   useEffect(() => {
     if (messages.length > 0 && messagesRef.current) {
       const scrollElement = messagesRef.current;
@@ -126,8 +126,18 @@ const Chat: React.FC = () => {
           scrollElement.scrollTop = scrollElement.scrollHeight;
         }, 50);
       }
+
+      // Mark messages as read when they're loaded/viewed
+      if (projectId) {
+        // Get the chat ID from the useRealtimeChat hook if possible
+        // For now, we'll trigger mark as read when messages are loaded
+        const chatId = messages[0]?.chat_id;
+        if (chatId) {
+          markChatAsRead(chatId);
+        }
+      }
     }
-  }, [messages.length]);
+  }, [messages.length, projectId]);
 
   // Focus input on load
   useEffect(() => {
