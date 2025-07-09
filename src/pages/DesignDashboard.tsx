@@ -90,7 +90,7 @@ const DesignDashboard: React.FC = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
-  const unreadCount = useUnreadCount();
+  const { unreadCount, refreshUnreadCount } = useUnreadCount();
 
   // Real-time update for unread count changes
   useEffect(() => {
