@@ -184,7 +184,9 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         markMessagesAsRead(chatIds);
       }
     } catch (err: any) {
-      console.error("Error loading messages:", err);
+      const rawErrorMessage =
+        err?.message || err?.details || err?.hint || JSON.stringify(err);
+      console.error("Error loading messages:", rawErrorMessage);
 
       // Enhanced error message extraction
       let errorMessage = "Failed to load messages";
@@ -199,6 +201,8 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         errorMessage = err;
       } else if (err?.code) {
         errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
+      } else {
+        errorMessage = `Unexpected error: ${rawErrorMessage}`;
       }
 
       // Handle specific error cases
