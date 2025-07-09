@@ -376,14 +376,13 @@ export const useRealtimeChat = (projectId: string | null) => {
             if (prev.some((msg) => msg.id === insertedMessage.id)) {
               return prev;
             }
-            return [...prev, insertedMessage];
+            return [...prev, insertedMessage].sort(
+              (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime(),
+            );
           });
         }
-
-        // Also reload messages to ensure sync
-        setTimeout(() => {
-          loadMessages();
-        }, 500);
 
         return true;
       } catch (err: any) {
