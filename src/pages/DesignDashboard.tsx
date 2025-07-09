@@ -115,6 +115,10 @@ const DesignDashboard: React.FC = () => {
           ease: "power2.inOut",
         });
       }
+    } else if (unreadCount === 0 && lastUnreadCount > 0) {
+      // Hide notification when all messages are read
+      console.log("📭 All messages read, hiding notification");
+      setShowNotification(false);
     }
     setLastUnreadCount(unreadCount);
   }, [unreadCount, lastUnreadCount]);
