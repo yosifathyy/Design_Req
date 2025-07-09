@@ -117,6 +117,12 @@ const Chat: React.FC = () => {
 
       if (success) {
         setMessage("");
+        // Scroll to bottom after sending
+        setTimeout(() => {
+          if (messagesRef.current) {
+            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+          }
+        }, 100);
       } else {
         console.error("Failed to send message");
       }
