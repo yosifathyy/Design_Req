@@ -82,34 +82,18 @@ const Chat: React.FC = () => {
     }
   }, [messages.length]);
 
+  // Container animation
   useEffect(() => {
     if (!containerRef.current) return;
-
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-
-    // Animate messages on load
-    if (messagesRef.current) {
-      const messageElements = messagesRef.current.children;
-      gsap.fromTo(
-        messageElements,
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.3,
-          stagger: 0.1,
-          ease: "power2.out",
-        },
-      );
-    }
   }, []);
 
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    // Auto-scroll to bottom when new messages arrive
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
