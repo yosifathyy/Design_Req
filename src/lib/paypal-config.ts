@@ -1,10 +1,8 @@
 // PayPal Sandbox Configuration
 export const PAYPAL_CONFIG = {
-  // Your provided sandbox credentials
-  CLIENT_ID:
-    "AYJaJBXy8gcF-IlmX7-XIKhp4e7XBVGfLm6YuQiFr_qf7C7csjnO-aUqPnW4mC7Z_OHg60S9qD3IVDTm",
-  CLIENT_SECRET:
-    "ENgFb6KaTNvdU-cOBi7qYfxgiAPsMgo6vksjLXpANF2GhkGiDcE7dSokIAcnHMZdn9ovOACvTmiQvDwN",
+  // Your PayPal sandbox credentials
+  CLIENT_ID: "AYJaJBXy8gcF-IlmX7-XIKhp4e7XBVGfLm6YuQiFr_qf7C7csjnO-aUqPnW4mC7Z_OHg60S9qD3IVDTm",
+  CLIENT_SECRET: "ENgFb6KaTNvdU-cOBi7qYfxgiAPsMgo6vksjLXpANF2GhkGiDcE7dSokIAcnHMZdn9ovOACvTmiQvDwN",
 
   // Sandbox environment
   ENVIRONMENT: "sandbox" as const,
