@@ -518,7 +518,7 @@ export interface Database {
           created_at?: string;
         };
       };
-      invoices: {
+      simple_invoices: {
         Row: {
           id: string;
           request_id: string;

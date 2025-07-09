@@ -977,7 +977,6 @@ export const getInvoices = async (userId: string, status?: string) => {
     }
     throw error;
   }
-  return data;
 };
 
 export const createInvoice = async (invoiceData: any) => {

@@ -841,9 +841,9 @@ export const useRealtimeChatRooms = () => {
               project_id: project.id,
               project_title: project.title || "Untitled Project",
               client_id: project.user_id,
-              client_name: project.client?.name || "Unknown Client",
+              client_name: (project.client as any)?.name || "Unknown Client",
               designer_id: project.designer_id,
-              designer_name: project.designer?.name || null,
+              designer_name: (project.designer as any)?.name || null,
               last_message: latestMessage,
               unread_count: unreadCount,
             } as ChatRoom;
@@ -853,9 +853,9 @@ export const useRealtimeChatRooms = () => {
               project_id: project.id,
               project_title: project.title || "Untitled Project",
               client_id: project.user_id,
-              client_name: project.client?.name || "Unknown Client",
+              client_name: (project.client as any)?.name || "Unknown Client",
               designer_id: project.designer_id,
-              designer_name: project.designer?.name || null,
+              designer_name: (project.designer as any)?.name || null,
               last_message: null,
               unread_count: 0,
             } as ChatRoom;
