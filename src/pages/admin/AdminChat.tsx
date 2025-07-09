@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import ChatDatabaseStatus from "@/components/ChatDatabaseStatus";
+import DirectMigration from "@/components/DirectMigration";
 import { useRealtimeChatRooms, useRealtimeChat } from "@/hooks/useRealtimeChat";
 import {
   MessageCircle,
@@ -136,10 +136,8 @@ const AdminChat: React.FC = () => {
         </Button>
       </div>
 
-      {/* Database Status Check - Show if there are issues with chat system */}
-      {roomsLoading === false && chatRooms.length === 0 && (
-        <ChatDatabaseStatus />
-      )}
+      {/* Database Migration - Show if there are issues with chat system */}
+      {roomsLoading === false && chatRooms.length === 0 && <DirectMigration />}
 
       <div className="flex gap-4">
         <div className="flex-1 relative">
