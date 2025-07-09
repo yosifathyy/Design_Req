@@ -195,19 +195,19 @@ const InvoicePayment: React.FC = () => {
 
             <div class="totals">
               <div class="total-line">
-                <strong>Subtotal: $${invoice.amount.toFixed(2)}</strong>
+                <strong>Subtotal: $${(invoice.amount || 0).toFixed(2)}</strong>
               </div>
               ${
-                invoice.taxAmount > 0
+                (invoice.taxAmount || 0) > 0
                   ? `
                 <div class="total-line">
-                  <strong>Tax (${invoice.taxRate}%): $${invoice.taxAmount.toFixed(2)}</strong>
+                  <strong>Tax (${invoice.taxRate || 0}%): $${(invoice.taxAmount || 0).toFixed(2)}</strong>
                 </div>
               `
                   : ""
               }
               <div class="grand-total">
-                <strong>TOTAL: $${invoice.totalAmount.toFixed(2)}</strong>
+                <strong>TOTAL: $${(invoice.totalAmount || 0).toFixed(2)}</strong>
               </div>
             </div>
 
