@@ -219,18 +219,11 @@ const DesignDashboard: React.FC = () => {
       // Enhanced page load animation sequence
       const mainTl = gsap.timeline();
 
-      // Background elements entrance
+      // Background elements entrance (static)
       const backgroundElements =
         containerRef.current?.querySelectorAll(".floating-element");
       if (backgroundElements) {
-        gsap.set(backgroundElements, { opacity: 0, scale: 0 });
-        gsap.to(backgroundElements, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "back.out(1.4)",
-        });
+        gsap.set(backgroundElements, { opacity: 0.3, scale: 1 });
       }
 
       // Hero section with dramatic entrance
@@ -342,34 +335,9 @@ const DesignDashboard: React.FC = () => {
         }
       }
 
-      // Enhanced floating animations with varied movement
-      gsap.to(".floating-element", {
-        y: "random(-30, 30)",
-        x: "random(-20, 20)",
-        rotation: "random(-20, 20)",
-        scale: "random(0.8, 1.2)",
-        duration: "random(4, 8)",
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: {
-          amount: 2,
-          from: "random",
-        },
-      });
-
-      // Enhanced hover interactions for all cards
+      // Enhanced hover interactions for all cards (no continuous animations)
       const allCards = document.querySelectorAll(".stat-card, .action-card");
-      allCards.forEach((card, index) => {
-        // Subtle breathing animation
-        gsap.to(card, {
-          scale: 1.01,
-          duration: 3 + index * 0.5,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-
+      allCards.forEach((card) => {
         card.addEventListener("mouseenter", () => {
           gsap.to(card, {
             scale: 1.03,
@@ -383,7 +351,7 @@ const DesignDashboard: React.FC = () => {
 
         card.addEventListener("mouseleave", () => {
           gsap.to(card, {
-            scale: 1.01,
+            scale: 1,
             rotateY: 0,
             z: 0,
             boxShadow: "3px 3px 0px 0px rgba(0,0,0,1)",
@@ -391,16 +359,6 @@ const DesignDashboard: React.FC = () => {
             ease: "power2.out",
           });
         });
-      });
-
-      // Periodic subtle animations to keep interface alive
-      gsap.to(".stat-card", {
-        y: "random(-2, 2)",
-        duration: "random(2, 4)",
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: 0.2,
       });
     }, containerRef);
 
