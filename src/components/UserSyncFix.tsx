@@ -20,61 +20,116 @@ export const UserSyncFix: React.FC = () => {
     setResult("Checking user record...");
 
     try {
-      // First check if user exists in users table
-      const { data: existingUser, error: checkError } = await supabase
+      // First check if user exists by ID
+      const { data: existingUserById, error: checkByIdError } = await supabase
         .from("users")
         .select("*")
         .eq("id", user.id)
         .single();
 
-      if (existingUser && !checkError) {
-        setResult("✅ User record already exists in database");
+      if (existingUserById && !checkByIdError) {
+        setResult("✅ User record already exists in database with correct ID");
         setFixing(false);
         return;
       }
 
-      // User doesn't exist, create the record
-      setResult("Creating missing user record...");
+      // Check if user exists by email (different ID)
+      const { data: existingUserByEmail, error: checkByEmailError } =
+        await supabase
+          .from("users")
+          .select("*")
+          .eq("email", user.email)
+          .single();
 
-      const userData = {
-        id: user.id,
-        email: user.email,
-        name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
-        role: user.email === "admin@demo.com" ? "admin" : "user",
-        status: "active",
-        xp: 0,
-        level: 1,
-        avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
-        created_at: new Date().toISOString(),
-        last_login: new Date().toISOString(),
-      };
+      if (existingUserByEmail && !checkByEmailError) {
+        // User exists with email but different ID - update the ID
+        setResult("Found existing user with different ID, updating...");
 
-      console.log("Creating user record:", userData);
+        const { data: updatedUser, error: updateError } = await supabase
+          .from("users")
+          .update({
+            id: user.id,
+            last_login: new Date().toISOString(),
+          })
+          .eq("email", user.email)
+          .select()
+          .single();
 
-      const { data: newUser, error: createError } = await supabase
-        .from("users")
-        .insert([userData])
-        .select()
-        .single();
+        if (updateError) {
+          // If update fails, try deleting old record and creating new one
+          setResult("Updating failed, recreating user record...");
 
-      if (createError) {
-        throw createError;
+          const { error: deleteError } = await supabase
+            .from("users")
+            .delete()
+            .eq("email", user.email);
+
+          if (deleteError) {
+            throw new Error(
+              `Could not remove old user record: ${deleteError.message}`,
+            );
+          }
+
+          // Now create new record
+          await createNewUserRecord();
+        } else {
+          setResult(
+            "✅ User ID updated successfully! You can now send messages.",
+          );
+          // Refresh the page after a short delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+        return;
       }
 
-      setResult(
-        `✅ User record created successfully! You can now send messages.`,
-      );
-
-      // Refresh the page after a short delay to update the profile
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // User doesn't exist at all, create new record
+      await createNewUserRecord();
     } catch (error: any) {
       console.error("Failed to fix user record:", error);
-      setResult(`❌ Failed to create user record: ${error.message}`);
+      setResult(`❌ Failed to fix user record: ${error.message}`);
     } finally {
       setFixing(false);
     }
+  };
+
+  const createNewUserRecord = async () => {
+    setResult("Creating new user record...");
+
+    const userData = {
+      id: user.id,
+      email: user.email,
+      name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+      role: user.email === "admin@demo.com" ? "admin" : "user",
+      status: "active",
+      xp: 0,
+      level: 1,
+      avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
+      created_at: new Date().toISOString(),
+      last_login: new Date().toISOString(),
+    };
+
+    console.log("Creating user record:", userData);
+
+    const { data: newUser, error: createError } = await supabase
+      .from("users")
+      .insert([userData])
+      .select()
+      .single();
+
+    if (createError) {
+      throw createError;
+    }
+
+    setResult(
+      `✅ User record created successfully! You can now send messages.`,
+    );
+
+    // Refresh the page after a short delay to update the profile
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   };
 
   const checkUserStatus = async () => {
