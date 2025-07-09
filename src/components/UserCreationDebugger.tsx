@@ -214,7 +214,7 @@ export const UserCreationDebugger: React.FC = () => {
         <h3 className="text-lg font-bold text-red-800">
           🐛 User Creation Debugger
         </h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             onClick={checkCurrentUser}
             disabled={testing}
@@ -228,6 +228,20 @@ export const UserCreationDebugger: React.FC = () => {
               <User className="w-4 h-4 mr-1" />
             )}
             Check User
+          </Button>
+          <Button
+            onClick={checkRLSPolicies}
+            disabled={testing}
+            size="sm"
+            variant="outline"
+            className="border-orange-500 text-orange-700 hover:bg-orange-100"
+          >
+            {testing ? (
+              <Loader2 className="w-4 h-4 animate-spin mr-1" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 mr-1" />
+            )}
+            Check RLS
           </Button>
           <Button
             onClick={testUserCreation}
