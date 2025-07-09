@@ -430,14 +430,14 @@ const DesignDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-center lg:text-right w-full lg:w-auto">
                 <div className="text-sm text-black/60 mb-2">
                   Member since{" "}
                   {userProfile?.created_at
                     ? new Date(userProfile.created_at).toLocaleDateString()
                     : "recently"}
                 </div>
-                <div className="w-48">
+                <div className="w-full sm:w-64 lg:w-48 mx-auto lg:mx-0">
                   <div className="flex justify-between text-sm font-medium mb-1">
                     <span>XP Progress</span>
                     <span>
