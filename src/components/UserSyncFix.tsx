@@ -158,6 +158,15 @@ export const UserSyncFix: React.FC = () => {
     }
   }, [user]);
 
+  // Auto-fix capability - can be triggered by parent components
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("autofix") === "user" && user && !profile) {
+      // Automatically attempt to fix user record if autofix parameter is present
+      setTimeout(() => fixUserRecord(), 1000);
+    }
+  }, [user, profile]);
+
   if (!user) {
     return (
       <Card className="border-2 border-yellow-500 bg-yellow-50 p-4">
