@@ -86,6 +86,23 @@ const DesignDashboard: React.FC = () => {
   const navigate = useNavigate();
   const unreadCount = useUnreadCount();
 
+  // Real-time update for unread count changes
+  useEffect(() => {
+    if (unreadCount > 0) {
+      // Add a subtle animation when unread count changes
+      const chatCard = document.querySelector(".unread-chat-card");
+      if (chatCard) {
+        gsap.to(chatCard, {
+          scale: 1.02,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 1,
+          ease: "power2.inOut",
+        });
+      }
+    }
+  }, [unreadCount]);
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) return;
