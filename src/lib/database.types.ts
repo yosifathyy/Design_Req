@@ -176,6 +176,141 @@ export interface Database {
           created_at?: string;
         };
       };
+      projects: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          status:
+            | "new"
+            | "in-progress"
+            | "needs-feedback"
+            | "revisions"
+            | "completed";
+          priority: "low" | "medium" | "high" | "urgent";
+          client_name: string;
+          client_email: string | null;
+          designer_id: string | null;
+          budget: number | null;
+          estimated_hours: number | null;
+          actual_hours: number;
+          due_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          status?:
+            | "new"
+            | "in-progress"
+            | "needs-feedback"
+            | "revisions"
+            | "completed";
+          priority?: "low" | "medium" | "high" | "urgent";
+          client_name: string;
+          client_email?: string | null;
+          designer_id?: string | null;
+          budget?: number | null;
+          estimated_hours?: number | null;
+          actual_hours?: number;
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          status?:
+            | "new"
+            | "in-progress"
+            | "needs-feedback"
+            | "revisions"
+            | "completed";
+          priority?: "low" | "medium" | "high" | "urgent";
+          client_name?: string;
+          client_email?: string | null;
+          designer_id?: string | null;
+          budget?: number | null;
+          estimated_hours?: number | null;
+          actual_hours?: number;
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      project_tasks: {
+        Row: {
+          id: string;
+          project_id: string;
+          title: string;
+          description: string | null;
+          status: "pending" | "in-progress" | "completed";
+          priority: "low" | "medium" | "high" | "urgent";
+          assigned_to: string | null;
+          estimated_hours: number | null;
+          actual_hours: number;
+          due_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          title: string;
+          description?: string | null;
+          status?: "pending" | "in-progress" | "completed";
+          priority?: "low" | "medium" | "high" | "urgent";
+          assigned_to?: string | null;
+          estimated_hours?: number | null;
+          actual_hours?: number;
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          project_id?: string;
+          title?: string;
+          description?: string | null;
+          status?: "pending" | "in-progress" | "completed";
+          priority?: "low" | "medium" | "high" | "urgent";
+          assigned_to?: string | null;
+          estimated_hours?: number | null;
+          actual_hours?: number;
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      project_timeline: {
+        Row: {
+          id: string;
+          project_id: string;
+          user_id: string;
+          message: string;
+          type: "comment" | "status_change" | "file_upload" | "task_update";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          user_id: string;
+          message: string;
+          type?: "comment" | "status_change" | "file_upload" | "task_update";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          project_id?: string;
+          user_id?: string;
+          message?: string;
+          type?: "comment" | "status_change" | "file_upload" | "task_update";
+          created_at?: string;
+        };
+      };
       chats: {
         Row: {
           id: string;
