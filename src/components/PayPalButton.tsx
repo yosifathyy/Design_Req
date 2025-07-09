@@ -140,7 +140,7 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
 
       <div className="text-center text-sm text-black/60">
         <p>Secure payment powered by PayPal</p>
-        <p>Amount: ${invoice.total_amount.toFixed(2)} USD</p>
+        <p>Amount: ${invoice.totalAmount.toFixed(2)} USD</p>
       </div>
     </div>
   );
