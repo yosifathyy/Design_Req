@@ -108,44 +108,46 @@ export const useRealtimeChat = (projectId: string | null) => {
 
       setMessages(messagesData || []);
     } catch (err: any) {
-      console.error("Failed to load messages:", err);
+      console.error("Failed to load messages - Full error:", err);
+      console.error("Error name:", err?.name);
+      console.error("Error message:", err?.message);
+      console.error("Network status:", navigator.onLine);
 
-      // Better error message extraction
       let errorMessage = "Failed to load messages";
-      try {
-        if (typeof err === "string") {
-          errorMessage = err;
-        } else if (err instanceof Error) {
-          errorMessage = err.message;
-        } else if (err?.message) {
-          errorMessage = err.message;
-        } else if (err?.error_description) {
-          errorMessage = err.error_description;
-        } else if (err?.details) {
-          errorMessage = err.details;
-        } else if (err?.hint) {
-          errorMessage = err.hint;
-        } else if (err?.code) {
-          errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
-        } else {
-          // Check if it's a network error
-          if (err?.status === 0 || !navigator.onLine) {
-            errorMessage =
-              "Network error: Please check your internet connection";
-          } else {
-            const errorStr = JSON.stringify(
-              err,
-              Object.getOwnPropertyNames(err),
-            );
-            errorMessage =
-              errorStr.length > 100
-                ? "Complex error occurred. Check console for details."
-                : errorStr;
-          }
-        }
-      } catch (stringifyError) {
-        console.error("Error processing error message:", stringifyError);
-        errorMessage = "Error occurred but could not be displayed";
+
+      // Handle network/connection errors specifically
+      if (
+        err?.name === "TypeError" &&
+        err?.message?.includes("Failed to fetch")
+      ) {
+        errorMessage =
+          "Network connection failed. Please check:\n" +
+          "• Your internet connection\n" +
+          "• Supabase server status\n" +
+          "• If your Supabase URL is correct";
+      } else if (err?.message?.includes("Invalid API key")) {
+        errorMessage =
+          "Invalid Supabase API key. Please check your configuration.";
+      } else if (err?.message?.includes("Connection failed")) {
+        errorMessage = err.message;
+      } else if (!navigator.onLine) {
+        errorMessage = "No internet connection. Please check your network.";
+      } else if (err instanceof Error) {
+        errorMessage = `Connection error: ${err.message}`;
+      } else if (err?.message) {
+        errorMessage = `Load error: ${err.message}`;
+      } else if (err?.details) {
+        errorMessage = `Database error: ${err.details}`;
+      } else if (err?.code) {
+        errorMessage = `Error ${err.code}: ${err.message || err.details || "Unknown database issue"}`;
+      } else {
+        // Fallback for unknown errors
+        console.error(
+          "Unknown error structure:",
+          JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
+        );
+        errorMessage =
+          "Unexpected connection error. Check console for details.";
       }
 
       setError(errorMessage);
