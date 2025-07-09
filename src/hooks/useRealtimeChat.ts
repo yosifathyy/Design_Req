@@ -63,7 +63,17 @@ export const useRealtimeChat = (projectId: string | null) => {
           .order("created_at", { ascending: true });
 
         if (messagesError) {
-          console.error("Messages query failed:", messagesError);
+          const errorMessage =
+            messagesError?.message ||
+            messagesError?.details ||
+            messagesError?.hint ||
+            (typeof messagesError === "string"
+              ? messagesError
+              : JSON.stringify(
+                  messagesError,
+                  Object.getOwnPropertyNames(messagesError),
+                ));
+          console.error("Messages query failed:", errorMessage);
 
           // Try direct API for messages
           const directResponse = await fetch(
