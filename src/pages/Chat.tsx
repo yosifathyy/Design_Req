@@ -177,7 +177,12 @@ const Chat: React.FC = () => {
           {(error.includes("foreign key") ||
             error.includes("not present in table") ||
             error.includes("User account mismatch") ||
-            error.includes("sender_id")) && <UserSyncFix />}
+            error.includes("sender_id")) && (
+            <>
+              <UserSyncFix />
+              <UserCreationDebugger />
+            </>
+          )}
 
           <ChatErrorDebugger projectId={projectId} error={error} />
           <QuickConnectionTest />
