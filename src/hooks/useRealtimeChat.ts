@@ -386,7 +386,7 @@ export const useRealtimeChat = (projectId: string | null) => {
               "❌ Messages table doesn't exist in database. Please set up database tables.";
           } else if (err.message.includes('relation "chats" does not exist')) {
             errorMessage =
-              "��� Chats table doesn't exist in database. Please set up database tables.";
+              "❌ Chats table doesn't exist in database. Please set up database tables.";
           } else if (
             err.message.includes("column") &&
             err.message.includes("does not exist")
@@ -929,9 +929,14 @@ export const useUnreadCount = () => {
             .gt("created_at", lastReadAt); // Created after last read
 
           if (messagesError) {
+            const errorMessage =
+              messagesError?.message ||
+              messagesError?.details ||
+              messagesError?.hint ||
+              JSON.stringify(messagesError);
             console.error(
               `Error counting unread messages for chat ${chat.chat_id}:`,
-              messagesError,
+              errorMessage,
             );
             continue;
           }
