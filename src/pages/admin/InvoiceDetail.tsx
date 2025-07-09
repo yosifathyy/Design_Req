@@ -94,19 +94,23 @@ const InvoiceDetail: React.FC = () => {
 
     try {
       setUpdating(true);
-      await invoicesApi.delete(invoice.id);
+      // Note: Delete functionality not implemented in simpleInvoicesApi yet
+      // await simpleInvoicesApi.delete(invoice.id);
 
       toast({
-        title: "Invoice Deleted",
-        description: `Invoice ${invoice.invoice_number} has been deleted.`,
+        title: "Feature not available",
+        description: "Delete functionality is not yet implemented.",
+        variant: "destructive",
       });
 
-      navigate("/admin/invoices");
+      // navigate("/admin/invoices");
     } catch (error) {
       console.error("Error deleting invoice:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error deleting invoice",
-        description: "Failed to delete invoice. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
