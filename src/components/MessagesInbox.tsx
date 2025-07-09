@@ -67,7 +67,7 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
       setLoading(true);
       setError(null);
 
-      // Try to get messages with basic query first
+      // Get messages with chat and project information
       const { data: messagesData, error: messagesError } = await supabase
         .from("messages")
         .select(
@@ -76,7 +76,16 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
           text,
           created_at,
           chat_id,
-          sender_id
+          sender_id,
+          chat:chat_id (
+            id,
+            request_id,
+            design_request:request_id (
+              id,
+              title,
+              status
+            )
+          )
         `,
         )
         .order("created_at", { ascending: false })
@@ -119,15 +128,22 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
           avatar_url: null,
         };
 
+        // Get project info from the chat relationship
+        const project = msg.chat?.design_request || {
+          id: msg.chat?.request_id || msg.chat_id || "unknown",
+          title: `Chat ${msg.chat_id}`,
+          status: "active",
+        };
+
         return {
           id: msg.id,
           text: msg.text,
           created_at: msg.created_at,
           sender,
           project: {
-            id: msg.chat_id || "unknown",
-            title: `Chat ${msg.chat_id}`,
-            status: "active",
+            id: project.id,
+            title: project.title,
+            status: project.status,
           },
         };
       });
