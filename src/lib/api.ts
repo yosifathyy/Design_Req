@@ -572,13 +572,13 @@ export const getAllChatsForAdmin = async () => {
       .select(
         `
         *,
-        request:request_id(
+        request:design_requests!request_id(
           id,
           title,
           user_id,
           status,
           created_at,
-          user:user_id(id, name, email, avatar_url)
+          user:users!user_id(id, name, email, avatar_url)
         ),
         last_message:messages(content, created_at)
       `,

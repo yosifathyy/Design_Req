@@ -158,11 +158,14 @@ export const invoicesApi = {
     const { data: invoice, error: invoiceError } = await supabase
       .from("invoices")
       .insert({
+        invoice_number: `INV-${Date.now()}`,
         title: invoiceData.title,
         description: invoiceData.description,
         design_request_id: invoiceData.designRequestId,
+        request_id: invoiceData.designRequestId,
         user_id: invoiceData.clientId,
         designer_id: user.id,
+        amount: totalAmount,
         subtotal,
         tax_rate: taxRate,
         tax_amount: taxAmount,

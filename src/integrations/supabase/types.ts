@@ -353,15 +353,20 @@ export type Database = {
         Row: {
           amount: number
           created_at: string
+          currency: string | null
           description: string | null
           design_request_id: string | null
           designer_id: string | null
+          discount_amount: number | null
           due_date: string
           id: string
           invoice_number: string
           notes: string | null
           paid_at: string | null
+          payment_method: string | null
+          payment_reference: string | null
           request_id: string
+          sent_at: string | null
           status: string
           subtotal: number | null
           tax_amount: number | null
@@ -369,20 +374,26 @@ export type Database = {
           terms: string | null
           title: string
           total_amount: number | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
           amount: number
           created_at?: string
+          currency?: string | null
           description?: string | null
           design_request_id?: string | null
           designer_id?: string | null
+          discount_amount?: number | null
           due_date: string
           id?: string
           invoice_number: string
           notes?: string | null
           paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
           request_id: string
+          sent_at?: string | null
           status?: string
           subtotal?: number | null
           tax_amount?: number | null
@@ -390,20 +401,26 @@ export type Database = {
           terms?: string | null
           title?: string
           total_amount?: number | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           amount?: number
           created_at?: string
+          currency?: string | null
           description?: string | null
           design_request_id?: string | null
           designer_id?: string | null
+          discount_amount?: number | null
           due_date?: string
           id?: string
           invoice_number?: string
           notes?: string | null
           paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
           request_id?: string
+          sent_at?: string | null
           status?: string
           subtotal?: number | null
           tax_amount?: number | null
@@ -411,6 +428,7 @@ export type Database = {
           terms?: string | null
           title?: string
           total_amount?: number | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -464,6 +482,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      projects: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          designer_id: string | null
+          id: string
+          price: number | null
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          designer_id?: string | null
+          id?: string
+          price?: number | null
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          designer_id?: string | null
+          id?: string
+          price?: number | null
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       system_alerts: {
         Row: {
