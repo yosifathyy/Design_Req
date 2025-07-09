@@ -711,7 +711,7 @@ const DesignDashboard: React.FC = () => {
             console.log(
               "🔄 Refreshing unread count after closing messages inbox",
             );
-            window.dispatchEvent(new CustomEvent("refreshUnreadCount"));
+            refreshUnreadCount();
           }, 500);
         }}
         onOpenChat={(projectId) => {
