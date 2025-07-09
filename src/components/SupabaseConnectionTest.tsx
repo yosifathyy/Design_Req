@@ -9,6 +9,11 @@ import {
   testUsersTableAccess,
 } from "@/utils/validateSupabase";
 import {
+  inspectMessagesTable,
+  inspectChatsTable,
+  listTables,
+} from "@/utils/inspectDatabase";
+import {
   Wifi,
   WifiOff,
   CheckCircle,
@@ -24,6 +29,8 @@ interface ConnectionStatus {
   userTableAccess: boolean;
   chatsTableAccess: boolean;
   messagesTableAccess: boolean;
+  messagesColumns?: string[];
+  chatsColumns?: string[];
   error?: string;
 }
 
@@ -115,29 +122,26 @@ export const SupabaseConnectionTest: React.FC = () => {
         .select("id, request_id")
         .limit(1);
 
-      // Test 4: Messages table access
-      console.log("4. Testing messages table access...");
-      const { data: messagesTest, error: messagesError } = await supabase
-        .from("messages")
-        .select("id, chat_id, sender_id")
-        .limit(1);
+      // Test 4: Inspect table structures
+      console.log("4. Inspecting table structures...");
+      const tablesAvailable = await listTables();
+      const messagesInspection = await inspectMessagesTable();
+      const chatsInspection = await inspectChatsTable();
 
-      console.log("Connection test results:", {
-        configured: true,
-        connected: true,
-        userTableAccess: !connectionError,
-        chatsTableAccess: !chatsError,
-        messagesTableAccess: !messagesError,
-        connectionTime: `${connectionTime}ms`,
+      console.log("Table structures:", {
+        messagesColumns: messagesInspection.columns,
+        chatsColumns: chatsInspection.columns,
       });
 
       setStatus({
         configured: true,
         connected: true,
         userTableAccess: !connectionError,
-        chatsTableAccess: !chatsError,
-        messagesTableAccess: !messagesError,
-        error: messagesError?.message || chatsError?.message,
+        chatsTableAccess: chatsInspection.success,
+        messagesTableAccess: messagesInspection.success,
+        messagesColumns: messagesInspection.columns,
+        chatsColumns: chatsInspection.columns,
+        error: messagesInspection.error || chatsInspection.error,
       });
     } catch (error: any) {
       console.error("Connection test failed:", error);
@@ -236,6 +240,20 @@ export const SupabaseConnectionTest: React.FC = () => {
               </div>
               {getStatusBadge(status.messagesTableAccess)}
             </div>
+
+            {status.messagesColumns && (
+              <div className="p-2 bg-blue-100 border border-blue-300 rounded text-xs">
+                <strong>Messages table columns:</strong>{" "}
+                {status.messagesColumns.join(", ")}
+              </div>
+            )}
+
+            {status.chatsColumns && (
+              <div className="p-2 bg-green-100 border border-green-300 rounded text-xs">
+                <strong>Chats table columns:</strong>{" "}
+                {status.chatsColumns.join(", ")}
+              </div>
+            )}
 
             {status.error && (
               <div className="p-2 bg-red-100 border border-red-300 rounded text-xs text-red-700">
