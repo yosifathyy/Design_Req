@@ -90,7 +90,7 @@ export const useRealtimeChat = (projectId: string | null) => {
               .order("created_at", { ascending: true });
 
             if (!simpleError && simpleMessages) {
-              console.log("✅ Simplified query worked:", simpleMessages);
+              console.log("�� Simplified query worked:", simpleMessages);
               setMessages(simpleMessages || []);
               return;
             }
@@ -1172,5 +1172,5 @@ export const useUnreadCount = () => {
     };
   }, [user]);
 
-  return unreadCount;
+  return { unreadCount, refreshUnreadCount };
 };
