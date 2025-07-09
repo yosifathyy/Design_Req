@@ -136,6 +136,11 @@ const AdminChat: React.FC = () => {
         </Button>
       </div>
 
+      {/* Database Status Check - Show if there are issues with chat system */}
+      {roomsLoading === false && chatRooms.length === 0 && (
+        <ChatDatabaseStatus />
+      )}
+
       <div className="flex gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-5 h-5" />
