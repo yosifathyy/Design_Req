@@ -510,17 +510,10 @@ const DesignDashboard: React.FC = () => {
                 <div className="text-white/90 font-medium mb-3">
                   Unread Messages
                 </div>
-                <div className="flex items-center text-white/80 text-sm mb-2">
+                <div className="flex items-center text-white/80 text-sm">
                   <Bell className="w-4 h-4 mr-2" />
                   Check conversations
                 </div>
-                <Button
-                  onClick={refreshUnreadCount}
-                  size="sm"
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs"
-                >
-                  🔄 Debug Refresh
-                </Button>
                 <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </div>
