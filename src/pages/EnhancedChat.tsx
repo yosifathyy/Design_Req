@@ -576,10 +576,28 @@ const EnhancedChat: React.FC = () => {
                   {projectDetails?.title || "Project Chat"}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-                  <span className="text-xs text-black/70">
-                    Connected to chat
-                  </span>
+                  {error ? (
+                    <>
+                      <Circle className="w-2 h-2 fill-red-500 text-red-500" />
+                      <span className="text-xs text-red-700">
+                        Connection issues
+                      </span>
+                    </>
+                  ) : projectError ? (
+                    <>
+                      <Circle className="w-2 h-2 fill-yellow-500 text-yellow-500" />
+                      <span className="text-xs text-yellow-700">
+                        Project loading error
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Circle className="w-2 h-2 fill-green-500 text-green-500" />
+                      <span className="text-xs text-black/70">
+                        Connected to chat
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
