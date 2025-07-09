@@ -418,7 +418,16 @@ const DesignDashboard: React.FC = () => {
         </div>
 
         {/* Overlay for better content visibility */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20 backdrop-blur-[0.5px]"></div>
+        <div
+          className="absolute inset-0 backdrop-blur-[0.5px]"
+          style={{
+            backgroundImage:
+              "url(https://cdn.builder.io/api/v1/image/assets%2Fe6dff299644b4c3191befedd5e768455%2Fd9bacafe72ee494598776c513efb0cbf)",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        ></div>
 
         <div
           className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl"
