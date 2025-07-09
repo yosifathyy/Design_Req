@@ -163,11 +163,13 @@ const AdminChat: React.FC = () => {
               ) : (
                 filteredChats.map((chat) => (
                   <div
-                    key={chat.id}
+                    key={chat.project_id}
                     onClick={() => {
-                      setSelectedChat(chat);
-                      // Update URL to reflect selected chat
-                      navigate(`/admin/chat/${chat.id}`, { replace: true });
+                      setSelectedProjectId(chat.project_id);
+                      // Update URL to reflect selected project
+                      navigate(`/admin/chat/${chat.project_id}`, {
+                        replace: true,
+                      });
                     }}
                     className={`p-3 border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-colors ${
                       selectedProjectId === chat.project_id
@@ -177,7 +179,7 @@ const AdminChat: React.FC = () => {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-bold text-sm text-black line-clamp-1">
-                        {chat.request?.title || "Untitled Project"}
+                        {chat.project_title || "Untitled Project"}
                       </h4>
                       {chat.unread_count > 0 && (
                         <Badge className="bg-festival-orange text-black border-2 border-black">
@@ -189,11 +191,11 @@ const AdminChat: React.FC = () => {
                       <div className="flex items-center gap-2 text-xs">
                         <User className="w-3 h-3" />
                         <span className="text-black/70">
-                          {chat.request?.user?.name || "Unknown User"}
+                          {chat.client_name || "Unknown User"}
                         </span>
                       </div>
                       <p className="text-xs text-black/60 line-clamp-2">
-                        {chat.last_message?.content || "No messages yet"}
+                        {chat.last_message?.text || "No messages yet"}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-black/50">
                         <Clock className="w-3 h-3" />
