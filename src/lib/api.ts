@@ -646,19 +646,38 @@ export const createChat = async (requestId: string, participants: string[]) => {
   } catch (error: any) {
     console.error("CreateChat final error:", error);
 
+    // Check network connectivity
+    if (!navigator.onLine) {
+      throw new Error(
+        "No internet connection. Please check your network and try again.",
+      );
+    }
+
     // If it's already a properly formatted error, re-throw it
-    if (error instanceof Error) {
+    if (error instanceof Error && error.message.includes("Project with ID")) {
       throw error;
     }
 
-    // Handle network errors
-    if (
-      error.message?.includes("Failed to fetch") ||
-      error.message?.includes("NetworkError") ||
-      !navigator.onLine
-    ) {
+    if (error instanceof Error && error.message.includes("Authentication")) {
+      throw error;
+    }
+
+    // Handle Supabase-specific errors
+    if (error?.message?.includes("Failed to fetch")) {
       throw new Error(
-        "Network error: Could not connect to the database. Please check your internet connection.",
+        "Connection error: Unable to reach the database. This might be due to authentication issues or network problems. Try refreshing the page.",
+      );
+    }
+
+    if (error?.message?.includes("JWT") || error?.message?.includes("token")) {
+      throw new Error(
+        "Authentication error: Your session has expired. Please refresh the page and log in again.",
+      );
+    }
+
+    if (error?.message?.includes("multiple (or no) rows returned")) {
+      throw new Error(
+        "Data consistency error: Please refresh the page and try again.",
       );
     }
 
@@ -672,9 +691,23 @@ export const createChat = async (requestId: string, participants: string[]) => {
       );
     }
 
+    // Handle permission errors
+    if (
+      error.message?.includes("row-level security") ||
+      error.message?.includes("permission")
+    ) {
+      throw new Error(
+        "Permission error: You don't have permission to create chats. Please contact your administrator.",
+      );
+    }
+
     // Generic error handling
-    const errorMsg = error.message || error.details || error.toString();
-    throw new Error(`Unexpected error: ${errorMsg}`);
+    const errorMsg =
+      error.message ||
+      error.details ||
+      error.error_description ||
+      "Unknown error";
+    throw new Error(`Chat creation failed: ${errorMsg}`);
   }
 };
 
