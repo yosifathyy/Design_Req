@@ -193,7 +193,7 @@ const DesignDashboard: React.FC = () => {
         let invoicesResponse = [];
 
         try {
-          requestsResponse = await getDesignRequests();
+          requestsResponse = await getDesignRequests(user.id);
           console.log("✅ Design requests fetched:", requestsResponse.length);
         } catch (requestsError) {
           console.error("❌ Error fetching design requests:", requestsError);
