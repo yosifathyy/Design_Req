@@ -131,6 +131,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const currentUser = userSession?.user || session?.user;
           if (currentUser) {
+            // First check if user exists by email
+            const { data: existingUser, error: checkError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("email", currentUser.email)
+              .single();
+
+            if (existingUser && !checkError) {
+              console.log(
+                "User exists with different ID, attempting to delete old record...",
+              );
+
+              // Try to delete the old record and create new one
+              const { error: deleteError } = await supabase
+                .from("users")
+                .delete()
+                .eq("email", currentUser.email);
+
+              if (deleteError) {
+                console.error(
+                  "Could not delete existing user record:",
+                  deleteError,
+                );
+                setProfile(null);
+                return;
+              }
+              console.log("Old user record deleted successfully");
+            }
+
             const userData = {
               id: userId,
               email: currentUser.email,
