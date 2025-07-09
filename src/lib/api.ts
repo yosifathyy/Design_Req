@@ -379,10 +379,16 @@ export const getDesignRequestById = async (requestId: string) => {
           "Access denied. You don't have permission to view this project.",
         );
       }
-      // Re-throw the original error with more context
-      throw new Error(
-        `Database error: ${error.message || error.details || "Unknown error"}`,
-      );
+      if (error.message?.includes("Failed to fetch")) {
+        throw new Error(
+          "Connection error. Please check your internet connection and try again.",
+        );
+      }
+
+      // Extract meaningful error message
+      const errorMessage =
+        error.message || error.details || error.hint || JSON.stringify(error);
+      throw new Error(`Database error: ${errorMessage}`);
     }
 
     if (!data) {

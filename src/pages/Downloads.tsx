@@ -45,8 +45,10 @@ const Downloads: React.FC = () => {
       try {
         setLoading(true);
         const requests = await getDesignRequests(user.id);
-        // Filter only delivered requests
-        const delivered = requests.filter((req) => req.status === "delivered");
+        // Filter out invoices and only show delivered projects
+        const delivered = requests.filter(
+          (req) => req.status === "delivered" && req.category !== "invoice",
+        );
         setDeliveredRequests(delivered);
       } catch (error: any) {
         console.error(

@@ -7,10 +7,10 @@ import { useUnreadCount } from "@/hooks/useRealtimeChat";
 import {
   getUserProfile,
   getDesignRequests,
-  getInvoices,
   createUserProfileIfMissing,
   findUserProfileByEmail,
 } from "@/lib/api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,7 @@ import {
   Heart,
   Crown,
   Gift,
+  DollarSign,
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -68,13 +69,7 @@ interface ProjectRequest {
   attachments?: string[];
 }
 
-interface Invoice {
-  id: string;
-  amount: number;
-  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
-  due_date: string;
-  created_at: string;
-}
+// Using SimpleInvoice from invoices-simple-api.ts
 
 interface UserProfile {
   id: string;
@@ -96,6 +91,9 @@ interface DashboardStats {
   totalEarnings: number;
   avgRating: number;
   dueInvoices: number;
+  totalInvoices: number;
+  paidInvoices: number;
+  pendingPayments: number;
   xpProgress: {
     current: number;
     target: number;
@@ -124,6 +122,9 @@ const DesignDashboard: React.FC = () => {
     totalEarnings: 0,
     avgRating: 4.8,
     dueInvoices: 0,
+    totalInvoices: 0,
+    paidInvoices: 0,
+    pendingPayments: 0,
     xpProgress: {
       current: 10,
       target: 1000,
@@ -190,18 +191,35 @@ const DesignDashboard: React.FC = () => {
         // Fetch design requests and invoices in parallel
         console.log("📡 Fetching design requests and invoices...");
         let requestsResponse = [];
-        let invoicesResponse = [];
+        let invoicesResponse: SimpleInvoice[] = [];
 
         try {
-          requestsResponse = await getDesignRequests(user.id);
-          console.log("✅ Design requests fetched:", requestsResponse.length);
+          // Get ALL design requests first
+          const allRequests = await getDesignRequests(user.id);
+
+          // Filter out invoices (they have category: "invoice")
+          requestsResponse = allRequests.filter(
+            (r) => r.category !== "invoice",
+          );
+          console.log(
+            "✅ Design requests fetched (excluding invoices):",
+            requestsResponse.length,
+          );
+          console.log(
+            "📊 Total requests before filtering:",
+            allRequests.length,
+          );
         } catch (requestsError) {
           console.error("❌ Error fetching design requests:", requestsError);
           // Continue with empty array
         }
 
         try {
-          invoicesResponse = await getInvoices(user.id);
+          // Get invoices using the proper API
+          const allInvoices = await simpleInvoicesApi.getAll();
+          invoicesResponse = allInvoices.filter(
+            (invoice) => invoice.clientId === user.id,
+          );
           console.log("✅ Invoices fetched:", invoicesResponse.length);
         } catch (invoicesError) {
           console.error("❌ Error fetching invoices:", invoicesError);
@@ -210,7 +228,7 @@ const DesignDashboard: React.FC = () => {
 
         setRequests(requestsResponse);
 
-        // Calculate stats
+        // Calculate stats (now properly separated)
         const totalRequests = requestsResponse.length;
         const activeProjects = requestsResponse.filter(
           (r) => r.status === "in_progress" || r.status === "in_review",
@@ -219,8 +237,19 @@ const DesignDashboard: React.FC = () => {
           (r) => r.status === "completed",
         ).length;
         const dueInvoices = invoicesResponse.filter(
-          (i) => i.status === "overdue",
+          (i) => i.status === "sent" && new Date(i.dueDate || "") < new Date(),
         ).length;
+        const totalInvoices = invoicesResponse.length;
+
+        const paidInvoices = invoicesResponse.filter(
+          (i) => i.status === "paid",
+        ).length;
+        const pendingPayments = invoicesResponse
+          .filter((i) => i.status === "sent")
+          .reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+        const totalEarnings = invoicesResponse
+          .filter((i) => i.status === "paid")
+          .reduce((sum, invoice) => sum + invoice.totalAmount, 0);
 
         setStats((prev) => ({
           ...prev,
@@ -228,6 +257,10 @@ const DesignDashboard: React.FC = () => {
           activeProjects,
           completedProjects,
           dueInvoices,
+          totalInvoices,
+          paidInvoices,
+          pendingPayments,
+          totalEarnings,
         }));
       } catch (error) {
         console.error("❌ Error fetching dashboard data:", {
@@ -506,49 +539,30 @@ const DesignDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="flex flex-col w-6/12 ml-5 max-md:ml-0 max-md:w-full">
-                {/* Compact Stats Grid */}
+                {/* Enhanced Stats Grid */}
                 <div
                   ref={statsRef}
-                  className="grid grid-cols-2 lg:grid-cols-4 gap-2"
+                  className="grid grid-cols-2 lg:grid-cols-5 gap-2"
                   style={{ margin: "28px auto 8px" }}
                 >
-                  {/* Total Requests */}
+                  {/* Total Projects */}
                   <Link to="/requests" className="flex flex-col">
                     <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
                       <div className="flex items-center justify-between mb-1">
                         <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
-                          Total
+                          Projects
                         </Badge>
                       </div>
                       <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
                         {stats.totalRequests}
                       </div>
                       <div className="text-white/90 font-medium text-xs">
-                        Projects
+                        Total
                       </div>
                       <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
                     </Card>
                   </Link>
-
-                  {/* Unread Chats */}
-                  <div
-                    onClick={() => setShowMessagesInbox(true)}
-                    className="flex flex-col"
-                  >
-                    <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
-                      <div className="flex items-center justify-between mb-1">
-                        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
-                        {unreadCount}
-                      </div>
-                      <div className="text-white/90 font-medium text-xs">
-                        Messages
-                      </div>
-                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
-                    </Card>
-                  </div>
 
                   {/* Active Projects */}
                   <Link to="/requests?filter=active" className="flex flex-col">
@@ -566,6 +580,25 @@ const DesignDashboard: React.FC = () => {
                         In Progress
                       </div>
                       <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-black/60 group-hover:text-black transition-colors" />
+                    </Card>
+                  </Link>
+
+                  {/* Pending Payments */}
+                  <Link to="/payments?filter=sent" className="flex flex-col">
+                    <Card className="stat-card group relative bg-gradient-to-br from-blue-500 to-blue-700 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Pending
+                        </Badge>
+                      </div>
+                      <div className="text-lg sm:text-xl font-display font-bold text-white leading-none mb-0.5">
+                        ${stats.pendingPayments.toFixed(0)}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        To Pay
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
                     </Card>
                   </Link>
 
@@ -590,6 +623,28 @@ const DesignDashboard: React.FC = () => {
                       <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
                     </Card>
                   </Link>
+
+                  {/* Unread Chats - Last position */}
+                  <div
+                    onClick={() => setShowMessagesInbox(true)}
+                    className="flex flex-col"
+                  >
+                    <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Unread
+                        </Badge>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
+                        {unreadCount}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        Messages
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </div>
                 </div>
               </div>
             </div>
@@ -602,11 +657,27 @@ const DesignDashboard: React.FC = () => {
           >
             <div className="flex gap-5 max-md:flex-col max-md:gap-0">
               <div className="flex flex-col w-1/3 max-md:ml-0 max-md:w-full">
-                {/* Action Cards - Compact Row */}
+                {/* Enhanced Action Cards */}
                 <div
                   ref={actionsRef}
-                  className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2"
+                  className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2"
                 >
+                  <Link to="/new-request" className="action-card">
+                    <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            Start New Project
+                          </h3>
+                          <p className="text-white/80 text-xs">
+                            Logo, Web, Brand & More
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+
                   <div
                     onClick={() => setShowProjectSelection(true)}
                     className="action-card"
@@ -616,10 +687,10 @@ const DesignDashboard: React.FC = () => {
                         <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
                         <div className="flex-1 sm:text-center lg:text-left">
                           <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                            Chat Designer
+                            Chat with Designer
                           </h3>
-                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                            Start conversation
+                          <p className="text-white/80 text-xs">
+                            Get instant support
                           </p>
                         </div>
                         {unreadCount > 0 && (
@@ -631,39 +702,41 @@ const DesignDashboard: React.FC = () => {
                     </Card>
                   </div>
 
-                  <Link to="/new-request" className="action-card">
-                    <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
-                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
-                        <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
-                        <div className="flex-1 sm:text-center lg:text-left">
-                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                            New Project
-                          </h3>
-                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                            Create amazing
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-
                   <Link to="/payments" className="action-card">
                     <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
                       <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
                         <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
                         <div className="flex-1 sm:text-center lg:text-left">
                           <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
-                            Invoices
+                            Manage Invoices
                           </h3>
-                          <p className="text-white/80 text-xs hidden sm:block lg:hidden">
-                            Payments
+                          <p className="text-white/80 text-xs">
+                            {stats.totalInvoices > 0
+                              ? `${stats.totalInvoices - stats.paidInvoices} pending payment${stats.totalInvoices - stats.paidInvoices !== 1 ? "s" : ""}`
+                              : "No invoices yet"}
                           </p>
                         </div>
-                        {stats.dueInvoices > 0 && (
+                        {stats.totalInvoices - stats.paidInvoices > 0 && (
                           <Badge className="absolute -top-1 -right-1 bg-yellow-500 text-black border border-white text-[10px] px-1 py-0.5">
-                            {stats.dueInvoices}
+                            {stats.totalInvoices - stats.paidInvoices}
                           </Badge>
                         )}
+                      </div>
+                    </Card>
+                  </Link>
+
+                  <Link to="/downloads" className="action-card">
+                    <Card className="group bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer p-3 h-full min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex sm:flex-col lg:flex-row items-center gap-2 h-full">
+                        <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-white flex-shrink-0" />
+                        <div className="flex-1 sm:text-center lg:text-left">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-white leading-tight">
+                            View & Download
+                          </h3>
+                          <p className="text-white/80 text-xs">
+                            Completed designs
+                          </p>
+                        </div>
                       </div>
                     </Card>
                   </Link>

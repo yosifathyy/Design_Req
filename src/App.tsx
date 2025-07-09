@@ -64,7 +64,7 @@ const Disputes = lazy(() => import("./pages/Disputes"));
 // Login is now imported eagerly above
 const DesignDashboard = lazy(() => import("./pages/DesignDashboard"));
 const NewRequest = lazy(() => import("./pages/NewRequest"));
-const Chat = lazy(() => import("./pages/Chat"));
+const Chat = lazy(() => import("./pages/EnhancedChat"));
 const Payments = lazy(() => import("./pages/Payments"));
 const Downloads = lazy(() => import("./pages/Downloads"));
 const Requests = lazy(() => import("./pages/Requests"));
@@ -103,10 +103,15 @@ const CreateUser = lazy(() => import("./pages/admin/CreateUser"));
 const EditProject = lazy(() => import("./pages/admin/EditProject"));
 const EditUser = lazy(() => import("./pages/admin/EditUser"));
 const ProjectDetail = lazy(() => import("./pages/admin/ProjectDetail"));
+const InvoiceDetail = lazy(() => import("./pages/admin/InvoiceDetail"));
 const AdminDebugTest = lazy(() => import("./components/AdminDebugTest"));
 const AdminSetupHelper = lazy(() => import("./components/AdminSetupHelper"));
 const AuthSetupHelper = lazy(() => import("./components/AuthSetupHelper"));
 const AuthStatus = lazy(() => import("./pages/AuthStatus"));
+const InvoicePayment = lazy(() => import("./pages/InvoicePayment"));
+const InvoiceSystemSetup = lazy(
+  () => import("./components/InvoiceSystemSetup"),
+);
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
@@ -158,6 +163,7 @@ const AppContent = () => {
           <Route path="/admin-setup" element={<AdminSetupHelper />} />
           <Route path="/auth-setup" element={<AuthSetupHelper />} />
           <Route path="/auth-status" element={<AuthStatus />} />
+          <Route path="/invoices/:id" element={<InvoicePayment />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
@@ -179,6 +185,7 @@ const AppContent = () => {
             <Route path="chat/create" element={<CreateChat />} />
             <Route path="invoices" element={<AdminInvoices />} />
             <Route path="invoices/create" element={<CreateInvoice />} />
+            <Route path="invoices/:id" element={<InvoiceDetail />} />
             <Route path="invoices/reports" element={<InvoiceReports />} />
             <Route path="alerts" element={<SystemAlerts />} />
             <Route path="audit" element={<AuditLogs />} />

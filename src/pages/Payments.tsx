@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
-import { getInvoices, updateInvoice, updateUserXP } from "@/lib/api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mockInvoices, mockRequests } from "@/lib/dashboard-data";
+import { useToast } from "@/hooks/use-toast";
+import InvoiceDebugger from "@/components/InvoiceDebugger";
 import {
   CreditCard,
   Calendar,
@@ -18,13 +19,14 @@ import {
   Download,
   Eye,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 
 const Payments: React.FC = () => {
-  const [filter, setFilter] = useState<"all" | "paid" | "pending" | "overdue">(
+  const [filter, setFilter] = useState<"all" | "paid" | "sent" | "overdue">(
     "all",
   );
-  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<SimpleInvoice[]>([]);
   const [payingInvoice, setPayingInvoice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,26 +34,74 @@ const Payments: React.FC = () => {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchInvoices = async () => {
       if (!user) return;
-      
+
       try {
         setLoading(true);
-        const data = await getInvoices(user.id, filter !== 'all' ? filter : undefined);
-        setInvoices(data);
+        console.log("🔍 Fetching invoices for user:", user.id);
+
+        // Get all invoices and filter for current user
+        const allInvoices = await simpleInvoicesApi.getAll();
+        console.log("✅ All invoices fetched:", allInvoices);
+
+        const userInvoices = allInvoices.filter(
+          (invoice) => invoice.clientId === user.id,
+        );
+        console.log("✅ User invoices filtered:", userInvoices);
+
+        setInvoices(userInvoices);
+
+        if (userInvoices.length === 0) {
+          console.log("ℹ️ No invoices found for user");
+          // Don't show toast for empty state, it's normal
+        } else {
+          toast({
+            title: "Invoices loaded",
+            description: `Found ${userInvoices.length} invoices`,
+          });
+        }
       } catch (error) {
-        console.error('Error fetching invoices:', error);
+        console.error("❌ Error fetching invoices:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
+
+        // More specific error handling
+        if (errorMessage.includes("Network connection error")) {
+          toast({
+            title: "Connection Error",
+            description: "Please check your internet connection and try again.",
+            variant: "destructive",
+          });
+        } else if (errorMessage.includes("Failed to fetch")) {
+          toast({
+            title: "Service Unavailable",
+            description:
+              "The invoice service is temporarily unavailable. Please try again later.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error loading invoices",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
+
+        // Set empty array so UI doesn't break
+        setInvoices([]);
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (user) {
       fetchInvoices();
     }
-  }, [user, filter]);
+  }, [user, toast]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -64,7 +114,7 @@ const Payments: React.FC = () => {
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
 
-    if (cardsRef.current) {
+    if (cardsRef.current && !loading) {
       const cards = cardsRef.current.children;
       tl.fromTo(
         cards,
@@ -80,7 +130,7 @@ const Payments: React.FC = () => {
         "-=0.3",
       );
     }
-  }, []);
+  }, [loading]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -100,13 +150,21 @@ const Payments: React.FC = () => {
           icon: CheckCircle,
           label: "Paid",
         };
-      case "pending":
+      case "sent":
         return {
-          color: "bg-yellow-500",
-          textColor: "text-yellow-700",
-          bgColor: "bg-yellow-50",
+          color: "bg-blue-500",
+          textColor: "text-blue-700",
+          bgColor: "bg-blue-50",
           icon: Clock,
-          label: "Pending",
+          label: "Awaiting Payment",
+        };
+      case "draft":
+        return {
+          color: "bg-gray-500",
+          textColor: "text-gray-700",
+          bgColor: "bg-gray-50",
+          icon: Clock,
+          label: "Draft",
         };
       case "overdue":
         return {
@@ -127,120 +185,48 @@ const Payments: React.FC = () => {
     }
   };
 
-  const filteredInvoices = invoices.filter((invoice) => {
-    if (filter === "all") return true;
-    return invoice.status === filter;
-  });
+  const getInvoiceStatus = (invoice: SimpleInvoice) => {
+    if (invoice.status === "paid") return "paid";
+    if (invoice.status === "draft") return "draft";
+    if (invoice.status === "cancelled") return "cancelled";
 
-  const handlePayment = async (invoiceId: string) => {
-    setPayingInvoice(invoiceId);
-
-    try {
-      // Update invoice status to paid
-      await updateInvoice(invoiceId, {
-        status: 'paid',
-        paid_at: new Date().toISOString()
-      });
-      
-      // Award XP to the user
-      if (user) {
-        await updateUserXP(user.id, 25);
+    // Check if overdue
+    if (invoice.dueDate) {
+      const dueDate = new Date(invoice.dueDate);
+      const now = new Date();
+      if (dueDate < now) {
+        return "overdue";
       }
-      
-      // Update local state
-      setInvoices(prev => 
-        prev.map(invoice => 
-          invoice.id === invoiceId 
-            ? { ...invoice, status: 'paid', paid_at: new Date().toISOString() } 
-            : invoice
-        )
-      );
-    } catch (error) {
-      console.error('Error processing payment:', error);
     }
 
-    // Show success animation
-    const successEl = document.createElement("div");
-    successEl.className =
-      "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
-    successEl.innerHTML = `
-      <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-md">
-        <div class="text-6xl mb-4">🎉</div>
-        <h3 class="text-2xl font-display font-bold text-black mb-2">Payment Successful!</h3>
-        <p class="text-black/70 mb-4">Thank you for your payment</p>
-        <div class="w-16 h-16 bg-festival-orange rounded-full mx-auto flex items-center justify-center border-4 border-black mb-4">
-          <span class="text-xl font-bold text-black">+25</span>
-        </div>
-        <p class="text-sm text-black/60">You earned 25 XP!</p>
-      </div>
-    `;
-
-    document.body.appendChild(successEl);
-
-    // Confetti animation
-    const confettiColors = [
-      "#fa9746",
-      "#FF0080",
-      "#00FFFF",
-      "#FFBF00",
-      "#f3ebd3",
-    ];
-    for (let i = 0; i < 50; i++) {
-      const confetti = document.createElement("div");
-      confetti.className = "fixed w-4 h-4 pointer-events-none z-50";
-      confetti.style.backgroundColor =
-        confettiColors[Math.floor(Math.random() * confettiColors.length)];
-      confetti.style.left = Math.random() * 100 + "%";
-      confetti.style.top = "-20px";
-      document.body.appendChild(confetti);
-
-      gsap.to(confetti, {
-        y: window.innerHeight + 20,
-        rotation: Math.random() * 360,
-        duration: Math.random() * 3 + 2,
-        ease: "power1.in",
-        onComplete: () => confetti.remove(),
-      });
-    }
-
-    gsap.fromTo(
-      successEl.children[0],
-      { scale: 0, rotation: -180 },
-      {
-        scale: 1,
-        rotation: 0,
-        duration: 0.6,
-        ease: "back.out(1.4)",
-        onComplete: () => {
-          setTimeout(() => {
-            gsap.to(successEl, {
-              opacity: 0,
-              duration: 0.3,
-              onComplete: () => document.body.removeChild(successEl),
-            });
-          }, 3000);
-        },
-      },
-    );
-
-    setPayingInvoice(null);
+    return "sent";
   };
 
-  const getRequestTitle = (requestId: string) => {
-    const invoice = invoices.find(inv => inv.id === requestId);
-    return invoice?.request?.title || "Unknown Project";
+  const filteredInvoices = invoices.filter((invoice) => {
+    if (filter === "all") return true;
+    const status = getInvoiceStatus(invoice);
+    return status === filter;
+  });
+
+  const handleViewInvoice = (invoiceId: string) => {
+    navigate(`/invoices/${invoiceId}`);
+  };
+
+  const handlePayment = (invoiceId: string) => {
+    // Redirect to invoice payment page
+    navigate(`/invoices/${invoiceId}`);
   };
 
   const totalAmount = invoices.reduce(
-    (sum, invoice) => sum + invoice.amount,
+    (sum, invoice) => sum + invoice.totalAmount,
     0,
   );
   const paidAmount = invoices
     .filter((invoice) => invoice.status === "paid")
-    .reduce((sum, invoice) => sum + invoice.amount, 0);
+    .reduce((sum, invoice) => sum + invoice.totalAmount, 0);
   const pendingAmount = invoices
-    .filter((invoice) => invoice.status === "pending")
-    .reduce((sum, invoice) => sum + invoice.amount, 0);
+    .filter((invoice) => getInvoiceStatus(invoice) === "sent")
+    .reduce((sum, invoice) => sum + invoice.totalAmount, 0);
 
   return (
     <div className="min-h-screen bg-festival-cream relative overflow-hidden">
@@ -270,7 +256,7 @@ const Payments: React.FC = () => {
             PAYMENTS & INVOICES
           </h1>
           <p className="text-xl text-black/70 font-medium">
-            Manage your project payments
+            Manage your project payments • {invoices.length} total invoices
           </p>
         </div>
 
@@ -286,7 +272,7 @@ const Payments: React.FC = () => {
                   Total Amount
                 </p>
                 <p className="text-2xl font-display font-bold text-black">
-                  ${totalAmount}
+                  ${totalAmount.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -302,7 +288,7 @@ const Payments: React.FC = () => {
                   Paid
                 </p>
                 <p className="text-2xl font-display font-bold text-black">
-                  ${paidAmount}
+                  ${paidAmount.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -318,7 +304,7 @@ const Payments: React.FC = () => {
                   Pending
                 </p>
                 <p className="text-2xl font-display font-bold text-black">
-                  ${pendingAmount}
+                  ${pendingAmount.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -326,8 +312,8 @@ const Payments: React.FC = () => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex gap-2 mb-6">
-          {(["all", "paid", "pending", "overdue"] as const).map((status) => (
+        <div className="flex gap-2 mb-6 flex-wrap">
+          {(["all", "sent", "paid", "overdue"] as const).map((status) => (
             <Button
               key={status}
               onClick={() => setFilter(status)}
@@ -338,7 +324,11 @@ const Payments: React.FC = () => {
                   : "bg-white text-black"
               }`}
             >
-              {status === "all" ? "All Invoices" : status}
+              {status === "all"
+                ? "All Invoices"
+                : status === "sent"
+                  ? "Awaiting Payment"
+                  : status}
             </Button>
           ))}
         </div>
@@ -346,117 +336,173 @@ const Payments: React.FC = () => {
         {/* Invoices List */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 text-festival-orange animate-spin mx-auto mb-4" />
+              <p className="text-lg font-medium text-black">
+                Loading your invoices...
+              </p>
+            </div>
           </div>
         ) : (
           <div ref={cardsRef} className="space-y-4">
             {filteredInvoices.map((invoice) => {
-            const statusConfig = getStatusConfig(invoice.status);
-            const StatusIcon = statusConfig.icon;
+              const invoiceStatus = getInvoiceStatus(invoice);
+              const statusConfig = getStatusConfig(invoiceStatus);
+              const StatusIcon = statusConfig.icon;
 
-            return (
-              <Card
-                key={invoice.id}
-                className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6 hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div
-                      className={`p-4 rounded border-4 border-black ${statusConfig.bgColor}`}
-                    >
-                      <StatusIcon
-                        className={`w-6 h-6 ${statusConfig.textColor}`}
-                      />
-                    </div>
+              return (
+                <Card
+                  key={invoice.id}
+                  className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-6 hover:transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6">
+                      <div
+                        className={`p-4 rounded border-4 border-black ${statusConfig.bgColor}`}
+                      >
+                        <StatusIcon
+                          className={`w-6 h-6 ${statusConfig.textColor}`}
+                        />
+                      </div>
 
-                    <div>
-                      <h3 className="text-xl font-bold text-black mb-1">
-                        Invoice #{invoice.id}
-                      </h3>
-                      <p className="text-black/70 font-medium mb-2">
-                        {getRequestTitle(invoice.requestId)}
-                      </p>
-                      <div className="flex items-center gap-4 text-sm text-black/60">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>Due: {formatDate(invoice.dueDate)}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="w-4 h-4" />
-                          <span>${invoice.amount}</span>
+                      <div>
+                        <h3 className="text-xl font-bold text-black mb-1">
+                          Invoice #{invoice.invoiceNumber}
+                        </h3>
+                        <p className="text-black/70 font-medium mb-2">
+                          {invoice.title}
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-black/60">
+                          {invoice.dueDate && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>Due: {formatDate(invoice.dueDate)}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="w-4 h-4" />
+                            <span>${invoice.totalAmount.toFixed(2)}</span>
+                          </div>
+                          <div className="text-xs">
+                            Created: {formatDate(invoice.createdAt)}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-4">
-                    <Badge
-                      className={`${statusConfig.color} text-white border-2 border-black font-bold px-3 py-1`}
-                    >
-                      {statusConfig.label}
-                    </Badge>
-
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                    <div className="flex items-center gap-4">
+                      <Badge
+                        className={`${statusConfig.color} text-white border-2 border-black font-bold px-3 py-1`}
                       >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View
-                      </Button>
+                        {statusConfig.label}
+                      </Badge>
 
-                      {invoice.status === "paid" && (
+                      <div className="flex gap-2">
                         <Button
+                          onClick={() => handleViewInvoice(invoice.id)}
                           variant="outline"
                           size="sm"
                           className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
                         >
-                          <Download className="w-4 h-4 mr-2" />
-                          Receipt
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Invoice
                         </Button>
-                      )}
 
-                      {invoice.status !== "paid" && (
-                        <Button
-                          onClick={() => handlePayment(invoice.id)}
-                          disabled={payingInvoice === invoice.id}
-                          className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
-                        >
-                          {payingInvoice === invoice.id ? (
-                            <div className="flex items-center gap-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              Processing...
-                            </div>
-                          ) : (
-                            <>
-                              <CreditCard className="w-4 h-4 mr-2" />
-                              PAY WITH PAYPAL
-                            </>
-                          )}
-                        </Button>
-                      )}
+                        {invoice.status === "paid" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Receipt
+                          </Button>
+                        )}
+
+                        {invoiceStatus === "sent" && (
+                          <Button
+                            onClick={() => handlePayment(invoice.id)}
+                            disabled={payingInvoice === invoice.id}
+                            className="bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
+                          >
+                            {payingInvoice === invoice.id ? (
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Processing...
+                              </div>
+                            ) : (
+                              <>
+                                <CreditCard className="w-4 h-4 mr-2" />
+                                PAY WITH PAYPAL
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            );
+
+                  {/* Line Items Preview */}
+                  {invoice.lineItems.length > 0 && (
+                    <div className="mt-4 pt-4 border-t-2 border-black/10">
+                      <p className="text-sm font-medium text-black/70 mb-2">
+                        Invoice Items:
+                      </p>
+                      <div className="space-y-1">
+                        {invoice.lineItems.slice(0, 2).map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between text-sm"
+                          >
+                            <span className="text-black/60">
+                              {item.description} ({item.quantity}x)
+                            </span>
+                            <span className="font-medium">
+                              ${(item.quantity * item.unitPrice).toFixed(2)}
+                            </span>
+                          </div>
+                        ))}
+                        {invoice.lineItems.length > 2 && (
+                          <div className="text-xs text-black/50 italic">
+                            +{invoice.lineItems.length - 2} more items
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              );
             })}
           </div>
         )}
 
         {!loading && filteredInvoices.length === 0 && (
-          <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
-            <div className="text-6xl mb-4">💳</div>
-            <h3 className="text-2xl font-bold text-black mb-2">
-              No invoices found
-            </h3>
-            <p className="text-black/70">
-              {filter === "all"
-                ? "You don't have any invoices yet."
-                : `No ${filter} invoices at the moment.`}
-            </p>
-          </Card>
+          <div className="space-y-6">
+            <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
+              <div className="text-6xl mb-4">💳</div>
+              <h3 className="text-2xl font-bold text-black mb-2">
+                No invoices found
+              </h3>
+              <p className="text-black/70 mb-4">
+                {filter === "all"
+                  ? "You don't have any invoices yet. They will appear here when sent to you."
+                  : `No ${filter === "sent" ? "pending" : filter} invoices at the moment.`}
+              </p>
+              {invoices.length === 0 && (
+                <div className="mt-6">
+                  <Button
+                    onClick={() => navigate("/design-dashboard")}
+                    className="bg-festival-orange hover:bg-festival-amber border-4 border-black"
+                  >
+                    Go to Dashboard
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+            {/* Debug section - only show when no invoices */}
+            <InvoiceDebugger />
+          </div>
         )}
       </div>
     </div>
