@@ -150,21 +150,21 @@ const InvoiceDetail: React.FC = () => {
             </div>
 
             <div class="header">
-              <h1>INVOICE ${invoice.invoice_number}</h1>
+              <h1>INVOICE ${invoice.invoiceNumber}</h1>
               <h2>${invoice.title}</h2>
             </div>
 
             <div class="bill-to">
               <h3>Bill To:</h3>
-              <p><strong>${invoice.client.name}</strong></p>
-              <p>${invoice.client.email}</p>
+              <p><strong>${invoice.clientName}</strong></p>
+              <p>${invoice.clientEmail}</p>
             </div>
 
             <div class="invoice-details">
-              <p><strong>Invoice Date:</strong> ${new Date(invoice.created_at).toLocaleDateString()}</p>
-              ${invoice.due_date ? `<p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>` : ""}
-              ${invoice.sent_at ? `<p><strong>Sent Date:</strong> ${new Date(invoice.sent_at).toLocaleDateString()}</p>` : ""}
-              ${invoice.paid_at ? `<p><strong>Paid Date:</strong> ${new Date(invoice.paid_at).toLocaleDateString()}</p>` : ""}
+              <p><strong>Invoice Date:</strong> ${new Date(invoice.createdAt).toLocaleDateString()}</p>
+              ${invoice.dueDate ? `<p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>` : ""}
+              ${invoice.sentAt ? `<p><strong>Sent Date:</strong> ${new Date(invoice.sentAt).toLocaleDateString()}</p>` : ""}
+              ${invoice.paidAt ? `<p><strong>Paid Date:</strong> ${new Date(invoice.paidAt).toLocaleDateString()}</p>` : ""}
             </div>
 
             <table class="line-items">
