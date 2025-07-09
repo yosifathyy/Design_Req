@@ -338,11 +338,14 @@ const DesignDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-xl font-medium text-black">
+      <div className="min-h-screen w-full bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream flex items-center justify-center p-4">
+        <div className="text-center max-w-md w-full">
+          <div className="w-20 h-20 border-6 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <h2 className="text-2xl font-display font-bold text-black mb-2">
             Loading your creative space...
+          </h2>
+          <p className="text-lg text-black/70">
+            Getting everything ready for you ✨
           </p>
         </div>
       </div>
