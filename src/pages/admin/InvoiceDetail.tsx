@@ -26,13 +26,17 @@ const InvoiceDetail: React.FC = () => {
     const loadInvoice = async () => {
       try {
         setLoading(true);
-        const invoiceData = await invoicesApi.getById(id);
+        console.log("🔍 Loading invoice with ID:", id);
+        const invoiceData = await simpleInvoicesApi.getById(id);
+        console.log("✅ Invoice loaded:", invoiceData);
         setInvoice(invoiceData);
       } catch (error) {
-        console.error("Error loading invoice:", error);
+        console.error("❌ Error loading invoice:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
         toast({
           title: "Error loading invoice",
-          description: "Failed to load invoice details",
+          description: errorMessage,
           variant: "destructive",
         });
         navigate("/admin/invoices");
