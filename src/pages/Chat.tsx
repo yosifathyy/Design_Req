@@ -171,6 +171,11 @@ const Chat: React.FC = () => {
       {error && !error.includes("Failed to fetch") && (
         <div className="p-4 space-y-4">
           <ErrorDisplay error={error} title="Chat Message Error" />
+
+          {/* Show UserSyncFix for foreign key errors */}
+          {error.includes("foreign key") ||
+            (error.includes("not present in table") && <UserSyncFix />)}
+
           <ChatErrorDebugger projectId={projectId} error={error} />
           <QuickConnectionTest />
           <SupabaseConnectionTest />
