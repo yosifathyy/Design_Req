@@ -128,22 +128,32 @@ const RetroFlipGrid: React.FC = () => {
         start: "top bottom",
         end: "bottom top",
         onLeave: () => {
-          gsap.to([headerRef.current, gridSectionRef.current], {
-            opacity: 0,
-            y: -50,
-            scale: 0.95,
-            duration: 0.6,
-            ease: "power2.in",
-          });
+          const elements = [headerRef.current, gridSectionRef.current].filter(
+            Boolean,
+          );
+          if (elements.length > 0) {
+            gsap.to(elements, {
+              opacity: 0,
+              y: -50,
+              scale: 0.95,
+              duration: 0.6,
+              ease: "power2.in",
+            });
+          }
         },
         onEnterBack: () => {
-          gsap.to([headerRef.current, gridSectionRef.current], {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-          });
+          const elements = [headerRef.current, gridSectionRef.current].filter(
+            Boolean,
+          );
+          if (elements.length > 0) {
+            gsap.to(elements, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              ease: "back.out(1.7)",
+            });
+          }
         },
       });
     }, containerRef);
