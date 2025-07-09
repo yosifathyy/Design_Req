@@ -115,15 +115,15 @@ const AdminInvoices: React.FC = () => {
     return diffDays;
   };
 
-  const getInvoiceStatus = (invoice: InvoiceWithDetails) => {
+  const getInvoiceStatus = (invoice: SimpleInvoice) => {
     if (invoice.status === "paid") return { status: "paid", color: "green" };
     if (invoice.status === "cancelled")
       return { status: "cancelled", color: "red" };
     if (invoice.status === "draft") return { status: "draft", color: "gray" };
 
     // Check if overdue
-    if (invoice.due_date) {
-      const daysUntilDue = getDaysUntilDue(invoice.due_date);
+    if (invoice.dueDate) {
+      const daysUntilDue = getDaysUntilDue(invoice.dueDate);
       if (daysUntilDue !== null && daysUntilDue < 0) {
         return { status: "overdue", color: "red" };
       }
