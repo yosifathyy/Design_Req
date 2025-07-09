@@ -6,6 +6,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import {
+  checkAndCreateTables,
+  createMissingTables,
+  createSampleData,
+} from "@/utils/setupDatabase";
+import {
   Loader2,
   CheckCircle,
   XCircle,
