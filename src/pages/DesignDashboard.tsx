@@ -448,7 +448,7 @@ const DesignDashboard: React.FC = () => {
         {/* Overlay for better content visibility */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20 backdrop-blur-[0.5px]"></div>
 
-        <div className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl mx-auto">
+        <div className="relative z-10 h-full flex flex-col p-2 sm:p-3 lg:p-4 max-w-7xl mr-0 ml-auto" style={{ margin: "71px auto 0 0" }}>
           {/* Notices */}
           {profileSetupError && <ProfileSetupNotice />}
           {idMismatch && (
@@ -458,11 +458,14 @@ const DesignDashboard: React.FC = () => {
             />
           )}
 
-          {/* Compact Hero Section */}
-          <div
-            ref={heroRef}
-            className="mb-2 relative bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-3"
-          >
+          <div style={{ paddingLeft: "74px", margin: "-28px auto 23px" }}>
+            <div className="flex gap-5 max-md:flex-col max-md:gap-0">
+              <div className="flex flex-col w-6/12 max-md:ml-0 max-md:w-full">
+                {/* Compact Hero Section */}
+                <div
+                  ref={heroRef}
+                  className="mb-2 relative bg-white/90 backdrop-blur-md rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-3 mr-auto ml-0"
+                >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="relative">
