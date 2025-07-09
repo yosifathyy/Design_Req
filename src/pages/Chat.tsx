@@ -153,29 +153,29 @@ const Chat: React.FC = () => {
 
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-festival-orange border-4 border-black rounded-full flex items-center justify-center">
-                  <span className="text-lg font-bold">
-                    {projectDetails?.designer_id ? "D" : "?"}
-                  </span>
+                  <MessageCircle className="w-6 h-6 text-black" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-black">
-                    {projectDetails?.designer_id
-                      ? "Designer"
-                      : "Waiting for assignment"}
+                    {projectDetails?.title || "Project Chat"}
                   </h2>
                   <div className="flex items-center gap-2">
                     <Circle className="w-3 h-3 fill-green-500 text-green-500" />
                     <span className="text-sm text-black/70">
-                      {isTyping ? "Typing..." : "Online"}
+                      {projectDetails?.designer?.name
+                        ? `Designer: ${projectDetails.designer.name}`
+                        : "Waiting for designer assignment"}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="text-sm text-black/70">
-              Project: {projectDetails?.title || "Loading..."}
-            </div>
+            {projectDetails && (
+              <div className="text-sm text-black/70">
+                Client: {projectDetails.client?.name || "Unknown"}
+              </div>
+            )}
           </div>
         </div>
 
