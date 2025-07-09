@@ -123,6 +123,7 @@ const AppContent = () => {
 
   return (
     <>
+      <AdminRedirectHandler />
       {isLoading && <RetroPreloader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
       <RetroCursor enabled={!isLoading} />
