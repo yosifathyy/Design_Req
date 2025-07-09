@@ -178,13 +178,17 @@ export const useRealtimeChat = (projectId: string | null) => {
         }
 
         // Now send the message
-        const { error } = await supabase.from("messages").insert([
-          {
-            chat_id: chatId,
-            sender_id: user.id,
-            content: message.trim(),
-          },
-        ]);
+        const messageData = {
+          chat_id: chatId,
+          sender_id: user.id,
+          content: message.trim(),
+        };
+
+        console.log("Attempting to insert message:", messageData);
+        console.log("Target chat ID:", chatId);
+        console.log("User ID:", user.id);
+
+        const { error } = await supabase.from("messages").insert([messageData]);
 
         if (error) {
           throw error;
