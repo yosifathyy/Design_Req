@@ -48,27 +48,8 @@ const AdminChat: React.FC = () => {
     }
   }, [projectId]);
 
-  // Load messages for selected chat
-  useEffect(() => {
-    const loadMessages = async () => {
-      if (!selectedChat) {
-        setMessages([]);
-        return;
-      }
-
-      try {
-        setLoadingMessages(true);
-        const messagesData = await getMessages(selectedChat.id);
-        setMessages(messagesData);
-      } catch (error) {
-        console.error("Failed to load messages:", error);
-      } finally {
-        setLoadingMessages(false);
-      }
-    };
-
-    loadMessages();
-  }, [selectedChat]);
+  // Messages are automatically loaded by useRealtimeChat hook
+  // No need for manual loading
 
   useEffect(() => {
     if (!containerRef.current || loading) return;
@@ -80,16 +61,18 @@ const AdminChat: React.FC = () => {
   }, [loading]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedChat) return;
+    if (!newMessage.trim() || !selectedProjectId) return;
 
     try {
-      await respondToChat(selectedChat.id, newMessage, "current-admin-id");
-      setNewMessage("");
-      // Reload messages
-      const updatedMessages = await getMessages(selectedChat.id);
-      setMessages(updatedMessages);
+      setSending(true);
+      const success = await sendMessage(newMessage);
+      if (success) {
+        setNewMessage("");
+      }
     } catch (error) {
       console.error("Failed to send message:", error);
+    } finally {
+      setSending(false);
     }
   };
 
@@ -116,13 +99,11 @@ const AdminChat: React.FC = () => {
           )}
           <div>
             <h1 className="text-4xl font-display font-bold text-black mb-2">
-              {chatId && selectedChat
-                ? `CHAT: ${selectedChat.request?.title || "Project Chat"}`
-                : "CHAT HUB"}
+              {selectedProjectId ? `PROJECT CHAT` : "CHAT HUB"}
             </h1>
             <p className="text-xl text-black/70 font-medium">
-              {chatId && selectedChat
-                ? `Client: ${selectedChat.request?.user?.name || "Unknown"}`
+              {selectedProjectId
+                ? `Project ID: ${selectedProjectId}`
                 : "Unified communication center for all projects"}
             </p>
           </div>
@@ -237,18 +218,18 @@ const AdminChat: React.FC = () => {
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white h-96 flex flex-col">
             <div className="p-4 border-b-4 border-black">
               <h3 className="font-bold text-black">
-                {selectedChat
-                  ? selectedChat.request?.title || "Chat"
+                {selectedProjectId
+                  ? "Project Chat"
                   : "Select a conversation to start chatting"}
               </h3>
-              {selectedChat && (
+              {selectedProjectId && (
                 <p className="text-sm text-black/70">
-                  Client: {selectedChat.request?.user?.name || "Unknown"}
+                  Project: {selectedProjectId}
                 </p>
               )}
             </div>
             <div className="flex-1 p-4 overflow-y-auto">
-              {!selectedChat ? (
+              {!selectedProjectId ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <MessageCircle className="w-16 h-16 text-black/30 mx-auto mb-4" />
@@ -318,12 +299,12 @@ const AdminChat: React.FC = () => {
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
                   className="flex-1 border-4 border-black"
-                  disabled={!selectedChat}
+                  disabled={!selectedProjectId || sending}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 />
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!selectedChat || !newMessage.trim()}
+                  disabled={!selectedProjectId || !newMessage.trim() || sending}
                   className="border-4 border-black bg-festival-orange hover:bg-festival-coral"
                 >
                   <Send className="w-4 h-4" />
