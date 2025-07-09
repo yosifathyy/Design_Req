@@ -1173,90 +1173,141 @@ export const useUnreadCount = () => {
     loadUnreadCount();
 
     // Set up real-time subscription for new messages
-    const channel = supabase
-      .channel(`unread-messages-${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-        },
-        (payload) => {
-          console.log("🔔 New message received in unread counter:", payload);
-          // Only update if the message is not from the current user
-          if (payload.new && payload.new.sender_id !== user.id) {
-            console.log(
-              "📊 Updating unread count due to new message from:",
-              payload.new.sender_id,
-            );
-            // Increment the count immediately for responsiveness
-            setUnreadCount((prev) => prev + 1);
-            // Also reload to ensure accuracy
-            setTimeout(() => loadUnreadCount(), 500);
-          } else {
-            console.log(
-              "👤 Message from current user, not updating unread count",
-            );
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "messages",
-        },
-        () => {
-          console.log("📝 Message updated, reloading unread count");
-          loadUnreadCount();
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "messages",
-        },
-        () => {
-          console.log("🗑️ Message deleted, reloading unread count");
-          loadUnreadCount();
-        },
-      )
+    let channel: any = null;
 
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "chat_participants",
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          console.log(
-            "👁️ Chat participant updated (read status changed):",
-            payload,
-          );
-          // When last_read_at is updated, reload the unread count
-          if (
-            payload.new &&
-            payload.new.last_read_at !== payload.old?.last_read_at
-          ) {
-            console.log("📖 Messages marked as read, updating unread count");
-            loadUnreadCount();
+    try {
+      channel = supabase
+        .channel(`unread-messages-${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messages",
+          },
+          (payload) => {
+            console.log("🔔 New message received in unread counter:", payload);
+            try {
+              // Only update if the message is not from the current user
+              if (payload.new && payload.new.sender_id !== user.id) {
+                console.log(
+                  "📊 Updating unread count due to new message from:",
+                  payload.new.sender_id,
+                );
+                // Increment the count immediately for responsiveness
+                setUnreadCount((prev) => prev + 1);
+                // Also reload to ensure accuracy
+                setTimeout(() => loadUnreadCount(), 500);
+              } else {
+                console.log(
+                  "👤 Message from current user, not updating unread count",
+                );
+              }
+            } catch (error) {
+              console.warn(
+                "Error processing new message for unread count:",
+                error,
+              );
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "messages",
+          },
+          () => {
+            try {
+              console.log("📝 Message updated, reloading unread count");
+              loadUnreadCount();
+            } catch (error) {
+              console.warn(
+                "Error processing message update for unread count:",
+                error,
+              );
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "messages",
+          },
+          () => {
+            try {
+              console.log("🗑️ Message deleted, reloading unread count");
+              loadUnreadCount();
+            } catch (error) {
+              console.warn(
+                "Error processing message deletion for unread count:",
+                error,
+              );
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "chat_participants",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            try {
+              console.log(
+                "👁️ Chat participant updated (read status changed):",
+                payload,
+              );
+              // When last_read_at is updated, reload the unread count
+              if (
+                payload.new &&
+                payload.new.last_read_at !== payload.old?.last_read_at
+              ) {
+                console.log(
+                  "📖 Messages marked as read, updating unread count",
+                );
+                loadUnreadCount();
+              }
+            } catch (error) {
+              console.warn(
+                "Error processing participant update for unread count:",
+                error,
+              );
+            }
+          },
+        )
+        .subscribe((status) => {
+          console.log("📡 Unread count subscription status:", status);
+          if (status === "SUBSCRIBED") {
+            console.log(
+              "✅ Successfully subscribed to unread messages updates",
+            );
+          } else if (status === "CHANNEL_ERROR") {
+            console.error(
+              "❌ Error subscribing to unread messages updates - this may be due to missing tables or permissions",
+            );
+            console.log(
+              "ℹ️ Unread count will still work but won't update in real-time",
+            );
+          } else if (status === "CLOSED") {
+            console.log("🔒 Unread messages subscription closed");
+          } else if (status === "TIMED_OUT") {
+            console.warn(
+              "⏰ Unread messages subscription timed out, will retry",
+            );
           }
-        },
-      )
-      .subscribe((status) => {
-        console.log("📡 Unread count subscription status:", status);
-        if (status === "SUBSCRIBED") {
-          console.log("✅ Successfully subscribed to unread messages updates");
-        } else if (status === "CHANNEL_ERROR") {
-          console.error("❌ Error subscribing to unread messages updates");
-        }
-      });
+        });
+    } catch (error) {
+      console.error("❌ Failed to set up unread messages subscription:", error);
+      console.log(
+        "ℹ️ Unread count will still work but won't update in real-time",
+      );
+    }
 
     return () => {
       console.log("Cleaning up unread count subscription");
