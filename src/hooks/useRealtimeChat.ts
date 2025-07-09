@@ -143,6 +143,28 @@ export const useRealtimeChat = (projectId: string | null) => {
         ]);
 
         if (error) {
+          // Check for specific database structure issues
+          if (error.message?.includes("project_id")) {
+            throw new Error(
+              "Database structure outdated. Please run the simplified chat migration to add the 'project_id' column.",
+            );
+          }
+
+          if (error.message?.includes('relation "messages" does not exist')) {
+            throw new Error(
+              "Messages table does not exist. Please run the database setup.",
+            );
+          }
+
+          if (
+            error.message?.includes("permission denied") ||
+            error.message?.includes("row-level security")
+          ) {
+            throw new Error(
+              "Permission denied. You may not have access to send messages to this project.",
+            );
+          }
+
           throw error;
         }
 
