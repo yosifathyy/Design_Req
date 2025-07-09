@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
+import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,9 +141,14 @@ const Chat: React.FC = () => {
       >
         {/* Show error if there's a problem loading messages */}
         {error && (
-          <div className="bg-red-50 border-4 border-red-500 p-4 mb-4">
-            <p className="text-red-800 font-medium">Chat Error</p>
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="space-y-4">
+            <div className="bg-red-50 border-4 border-red-500 p-4">
+              <p className="text-red-800 font-medium">Chat Error</p>
+              <p className="text-red-600 text-sm whitespace-pre-line">
+                {error}
+              </p>
+            </div>
+            <SupabaseConnectionTest />
           </div>
         )}
         {/* Header */}
