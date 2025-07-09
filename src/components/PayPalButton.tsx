@@ -47,7 +47,7 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
 
       toast({
         title: "Payment Successful! 🎉",
-        description: `Invoice ${invoice.invoice_number} has been paid successfully.`,
+        description: `Invoice ${invoice.invoiceNumber} has been paid successfully.`,
       });
 
       onPaymentSuccess?.(updatedInvoice);
