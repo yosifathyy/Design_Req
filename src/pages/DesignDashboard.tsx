@@ -462,7 +462,7 @@ const DesignDashboard: React.FC = () => {
           >
             {/* Total Requests */}
             <Link to="/requests">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-6">
+              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-4 sm:p-6 min-h-[140px] sm:min-h-[160px]">
                 <div className="flex items-center justify-between mb-4">
                   <FileText className="w-12 h-12 text-white" />
                   <Badge className="bg-white/20 text-white border-white/30">
