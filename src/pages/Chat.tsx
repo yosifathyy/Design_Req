@@ -181,6 +181,7 @@ const Chat: React.FC = () => {
             error.includes("User account mismatch") ||
             error.includes("sender_id")) && (
             <>
+              <UserIDMismatchFixer />
               <RLSFixGuide />
               <UserSyncFix />
               <UserCreationDebugger />
