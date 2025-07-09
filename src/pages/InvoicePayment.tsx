@@ -57,7 +57,7 @@ const InvoicePayment: React.FC = () => {
     );
   }, [loading]);
 
-  const handlePaymentSuccess = (updatedInvoice: InvoiceWithDetails) => {
+  const handlePaymentSuccess = (updatedInvoice: SimpleInvoice) => {
     setInvoice(updatedInvoice);
 
     // Show success animation
