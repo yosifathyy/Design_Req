@@ -324,6 +324,7 @@ export const getDesignRequestById = async (requestId: string) => {
     } = await supabase.auth.getSession();
 
     if (authError) {
+      console.error("Auth error in getDesignRequestById:", authError);
       throw new Error("Authentication error. Please log in and try again.");
     }
 
@@ -332,6 +333,7 @@ export const getDesignRequestById = async (requestId: string) => {
     }
 
     const userId = session.user.id;
+    console.log(`Fetching project ${requestId} for user ${userId}`);
 
     // Try to get the request with user permission check
     const { data, error } = await supabase
@@ -341,7 +343,11 @@ export const getDesignRequestById = async (requestId: string) => {
       .or(`user_id.eq.${userId},designer_id.eq.${userId}`) // Allow access if user is client or designer
       .maybeSingle();
 
+    console.log("Query result:", { data, error });
+
     if (error) {
+      console.error("Database error in getDesignRequestById:", error);
+
       if (
         error.message?.includes('relation "design_requests" does not exist')
       ) {
@@ -354,10 +360,14 @@ export const getDesignRequestById = async (requestId: string) => {
           "Access denied. You don't have permission to view this project.",
         );
       }
-      throw error;
+      // Re-throw the original error with more context
+      throw new Error(
+        `Database error: ${error.message || error.details || "Unknown error"}`,
+      );
     }
 
     if (!data) {
+      console.log("No data returned, checking if project exists...");
       // Check if the request exists at all (without user filter)
       const { data: existsData, error: existsError } = await supabase
         .from("design_requests")
@@ -365,8 +375,13 @@ export const getDesignRequestById = async (requestId: string) => {
         .eq("id", requestId)
         .maybeSingle();
 
+      console.log("Exists check result:", { existsData, existsError });
+
       if (existsError) {
-        throw new Error("Error checking project existence. Please try again.");
+        console.error("Error checking project existence:", existsError);
+        throw new Error(
+          `Error checking project existence: ${existsError.message}`,
+        );
       }
 
       if (!existsData) {
@@ -380,15 +395,29 @@ export const getDesignRequestById = async (requestId: string) => {
       }
     }
 
+    console.log("Successfully fetched project:", data.title);
     return data;
   } catch (error: any) {
+    console.error("Final error in getDesignRequestById:", error);
+
+    // Don't catch and re-wrap errors that are already user-friendly
+    if (
+      error.message?.includes("Authentication error") ||
+      error.message?.includes("You must be logged in") ||
+      error.message?.includes("Access denied") ||
+      error.message?.includes("Project with ID") ||
+      error.message?.includes("Database error:")
+    ) {
+      throw error;
+    }
+
     if (
       error.message?.includes("Failed to fetch") ||
       error.message?.includes("relation") ||
       error.message?.includes("does not exist")
     ) {
       throw new Error(
-        "Could not fetch request details. Database table may not exist yet.",
+        `Could not fetch request details. Original error: ${error.message}`,
       );
     }
     throw error;
