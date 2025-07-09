@@ -156,7 +156,7 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
                   size="sm"
                   className="w-full border-2 border-black"
                 >
-                  <Print className="w-4 h-4 mr-2" />
+                  <Printer className="w-4 h-4 mr-2" />
                   Print Invoice
                 </Button>
               </div>
