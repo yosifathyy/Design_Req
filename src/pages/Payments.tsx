@@ -41,25 +41,22 @@ const Payments: React.FC = () => {
 
       try {
         setLoading(true);
-        console.log("Fetching invoices for user:", user.id);
+        console.log("🔍 Fetching invoices for user:", user.id);
 
         // Get all invoices and filter for current user
         const allInvoices = await simpleInvoicesApi.getAll();
-        console.log("All invoices:", allInvoices);
+        console.log("✅ All invoices fetched:", allInvoices);
 
         const userInvoices = allInvoices.filter(
           (invoice) => invoice.clientId === user.id,
         );
-        console.log("User invoices:", userInvoices);
+        console.log("✅ User invoices filtered:", userInvoices);
 
         setInvoices(userInvoices);
 
         if (userInvoices.length === 0) {
-          toast({
-            title: "No invoices found",
-            description:
-              "You don't have any invoices yet. They will appear here when sent to you.",
-          });
+          console.log("ℹ️ No invoices found for user");
+          // Don't show toast for empty state, it's normal
         } else {
           toast({
             title: "Invoices loaded",
@@ -67,14 +64,34 @@ const Payments: React.FC = () => {
           });
         }
       } catch (error) {
-        console.error("Error fetching invoices:", error);
+        console.error("❌ Error fetching invoices:", error);
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error occurred";
-        toast({
-          title: "Error loading invoices",
-          description: errorMessage,
-          variant: "destructive",
-        });
+
+        // More specific error handling
+        if (errorMessage.includes("Network connection error")) {
+          toast({
+            title: "Connection Error",
+            description: "Please check your internet connection and try again.",
+            variant: "destructive",
+          });
+        } else if (errorMessage.includes("Failed to fetch")) {
+          toast({
+            title: "Service Unavailable",
+            description:
+              "The invoice service is temporarily unavailable. Please try again later.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error loading invoices",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
+
+        // Set empty array so UI doesn't break
+        setInvoices([]);
       } finally {
         setLoading(false);
       }
