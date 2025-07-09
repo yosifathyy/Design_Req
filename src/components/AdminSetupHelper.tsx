@@ -369,7 +369,7 @@ export const AdminSetupHelper: React.FC = () => {
                   ) : (
                     <FolderPlus className="w-4 h-4 mr-2" />
                   )}
-                  Setup Database (Get SQL)
+                  4. Setup Database (Get SQL)
                 </Button>
 
                 <Button
@@ -382,14 +382,14 @@ export const AdminSetupHelper: React.FC = () => {
                   ) : (
                     <MessageSquare className="w-4 h-4 mr-2" />
                   )}
-                  3. Create Sample Data
+                  5. Create Sample Data
                 </Button>
 
                 <Button
                   onClick={() => navigate("/admin")}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white"
+                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white"
                 >
-                  4. Go to Admin Dashboard
+                  6. Go to Admin Dashboard
                 </Button>
 
                 <Button
