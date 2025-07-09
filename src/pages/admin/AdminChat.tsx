@@ -18,22 +18,27 @@ import {
 
 const AdminChat: React.FC = () => {
   const navigate = useNavigate();
-  const { id: chatId } = useParams<{ id?: string }>();
+  const { id: projectId } = useParams<{ id?: string }>();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [chats, setChats] = useState<any[]>([]);
-  const [selectedChat, setSelectedChat] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    projectId || null,
+  );
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sending, setSending] = useState(false);
 
-  // Real-time chat hooks
+  // Use the new realtime hooks
+  const {
+    chatRooms,
+    loading: roomsLoading,
+    refreshChatRooms,
+  } = useRealtimeChatRooms();
   const {
     messages,
-    loading: loadingMessages,
-    refreshMessages,
-  } = useRealTimeChat(selectedChat?.id || null);
-  const { lastUpdate, triggerRefresh } = useRealTimeChatList();
+    loading: messagesLoading,
+    sendMessage,
+  } = useRealtimeChat(selectedProjectId);
 
   // Load chats
   useEffect(() => {
