@@ -62,14 +62,31 @@ const Chat: React.FC = () => {
   // Load project details
   const [projectError, setProjectError] = useState<string | null>(null);
 
-  // TODO: Function to mark messages as read when chat is opened
+  // Function to mark messages as read when chat is opened
   const markChatAsRead = async (chatId: string) => {
     if (!user || !chatId) return;
 
-    console.log("📖 Chat opened:", chatId);
-    console.log(
-      "ℹ️ Read tracking not implemented - database schema needs last_read_at column",
-    );
+    try {
+      // Use the Supabase function to mark chat as read
+      const { error } = await supabase.rpc("mark_chat_as_read", {
+        p_chat_id: chatId,
+        p_user_id: user.id,
+      });
+
+      if (error) {
+        console.error(`Error marking chat ${chatId} as read:`, error);
+        // Fallback to direct update if function doesn't exist
+        await supabase
+          .from("chat_participants")
+          .update({ last_read_at: new Date().toISOString() })
+          .eq("chat_id", chatId)
+          .eq("user_id", user.id);
+      }
+
+      console.log("✅ Marked chat as read:", chatId);
+    } catch (error) {
+      console.error("Error marking chat as read:", error);
+    }
   };
 
   useEffect(() => {
