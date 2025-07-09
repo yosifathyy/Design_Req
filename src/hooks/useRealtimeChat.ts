@@ -391,8 +391,82 @@ export const useRealtimeChat = (projectId: string | null) => {
               err.message.includes("sender_id") &&
               err.message.includes("users")
             ) {
+              // Attempt automatic user creation
+              console.log("Attempting automatic user creation...");
+              try {
+                const userData = {
+                  id: user.id,
+                  email: user.email,
+                  name:
+                    user.user_metadata?.name ||
+                    user.email?.split("@")[0] ||
+                    "User",
+                  role: user.email === "admin@demo.com" ? "admin" : "user",
+                  status: "active",
+                  xp: 0,
+                  level: 1,
+                  avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
+                  created_at: new Date().toISOString(),
+                  last_login: new Date().toISOString(),
+                };
+
+                const { error: createError } = await supabase
+                  .from("users")
+                  .insert([userData]);
+
+                if (!createError) {
+                  console.log(
+                    "User record created automatically, retrying message...",
+                  );
+                  // Retry sending the message
+                  const { data: retryMessage, error: retryError } =
+                    await supabase
+                      .from("messages")
+                      .insert([
+                        {
+                          chat_id: chatId,
+                          sender_id: user.id,
+                          text: message.trim(),
+                        },
+                      ])
+                      .select(
+                        `
+                      id,
+                      chat_id,
+                      sender_id,
+                      text,
+                      created_at,
+                      sender:users!sender_id(id, name, email, role, avatar_url)
+                    `,
+                      )
+                      .single();
+
+                  if (!retryError && retryMessage) {
+                    console.log(
+                      "Message sent successfully after user creation",
+                    );
+                    setMessages((prev) => {
+                      if (prev.some((msg) => msg.id === retryMessage.id)) {
+                        return prev;
+                      }
+                      return [...prev, retryMessage].sort(
+                        (a, b) =>
+                          new Date(a.created_at).getTime() -
+                          new Date(b.created_at).getTime(),
+                      );
+                    });
+                    return true; // Exit early on success
+                  }
+                }
+              } catch (autoCreateError) {
+                console.error(
+                  "Automatic user creation failed:",
+                  autoCreateError,
+                );
+              }
+
               errorMessage =
-                "❌ User account mismatch - Your authentication account exists but you're missing a user profile. Use the 'Fix User Record' button to resolve this.";
+                "❌ User account mismatch - Attempted auto-fix. If this persists, use the 'Fix User Record' button.";
             } else {
               errorMessage =
                 "❌ Invalid reference - chat or user not found. Check project/user IDs.";
