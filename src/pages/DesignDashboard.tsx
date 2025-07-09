@@ -696,6 +696,27 @@ const DesignDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Messages Inbox Modal */}
+      <MessagesInbox
+        isOpen={showMessagesInbox}
+        onClose={() => setShowMessagesInbox(false)}
+        onOpenChat={(projectId) => {
+          navigate(`/chat?request=${projectId}`);
+        }}
+      />
+
+      {/* Project Chat Selection Modal */}
+      <ProjectChatSelection
+        isOpen={showProjectSelection}
+        onClose={() => setShowProjectSelection(false)}
+        onSelectProject={(projectId) => {
+          navigate(`/chat?request=${projectId}`);
+        }}
+        onCreateNewProject={() => {
+          navigate("/new-request");
+        }}
+      />
     </>
   );
 };
