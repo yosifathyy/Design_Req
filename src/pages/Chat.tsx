@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 import QuickConnectionTest from "@/components/QuickConnectionTest";
 import ChatConnectionFixer from "@/components/ChatConnectionFixer";
