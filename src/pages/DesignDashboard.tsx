@@ -74,6 +74,8 @@ const DesignDashboard: React.FC = () => {
     authId: string;
     dbId: string;
   } | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+  const [lastUnreadCount, setLastUnreadCount] = useState(0);
 
   // Refs for animations
   const containerRef = useRef<HTMLDivElement>(null);
