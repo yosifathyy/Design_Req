@@ -93,7 +93,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching user profile:", error);
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          JSON.stringify(error);
+        console.error("Error fetching user profile:", errorMessage);
         setProfile(null);
         return;
       }
@@ -106,7 +111,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setProfile(data);
     } catch (error: any) {
-      console.error("Error fetching user profile:", error?.message || error);
+      const errorMessage =
+        error?.message ||
+        error?.details ||
+        error?.hint ||
+        (typeof error === "string"
+          ? error
+          : JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      console.error("Error fetching user profile:", errorMessage);
       setProfile(null);
     }
   };
