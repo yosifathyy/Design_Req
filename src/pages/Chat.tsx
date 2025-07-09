@@ -185,9 +185,28 @@ const Chat: React.FC = () => {
           className="flex-1 overflow-y-auto p-4 space-y-4"
           style={{ height: "calc(100vh - 200px)" }}
         >
-          {loading ? (
+          {messagesLoading || projectLoading ? (
             <div className="flex justify-center items-center h-full">
-              <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-festival-orange" />
+                <p className="text-sm text-black/70">Loading messages...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
+              <p className="text-lg font-medium text-black mb-2">Chat Error</p>
+              <p className="text-sm text-black/70 text-center max-w-md">
+                {error}
+              </p>
+            </div>
+          ) : !projectId ? (
+            <div className="flex flex-col items-center justify-center h-full text-black/50">
+              <MessageCircle className="w-16 h-16 mb-4" />
+              <p className="text-lg font-medium">No Project Selected</p>
+              <p className="text-sm">
+                Please select a project to start chatting
+              </p>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-black/50">
@@ -201,64 +220,27 @@ const Chat: React.FC = () => {
             messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.senderType === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  msg.sender_id === user?.id ? "justify-end" : "justify-start"
+                }`}
               >
                 <div
                   className={`max-w-xs lg:max-w-md ${
-                    msg.senderType === "user"
+                    msg.sender_id === user?.id
                       ? "bg-gradient-to-br from-festival-orange to-festival-coral"
-                      : "bg-gradient-to-br from-festival-cyan to-festival-yellow"
+                      : "bg-gradient-to-br from-festival-pink to-festival-magenta"
                   } border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
                 >
                   <div className="font-medium text-black text-sm mb-1">
-                    {msg.senderName}
+                    {msg.sender?.name || "Unknown User"}
                   </div>
-                  <div className="text-black font-medium">{msg.text}</div>
-
-                  {msg.files && msg.files.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                      {msg.files.map((file) => (
-                        <div
-                          key={file.id}
-                          className="flex items-center gap-2 p-2 bg-white border-2 border-black rounded-none"
-                        >
-                          {getFileIcon(file.name)}
-                          <span className="text-sm font-medium text-black flex-1 truncate">
-                            {file.name}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 w-6 p-0 border-2 border-black"
-                          >
-                            <Download className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
+                  <div className="text-black font-medium">{msg.message}</div>
                   <div className="text-xs text-black/70 mt-2">
-                    {formatTime(msg.timestamp)}
+                    {formatTime(msg.created_at)}
                   </div>
                 </div>
               </div>
             ))
-          )}
-
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <div className="flex items-center gap-2">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-black rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></div>
-                    <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                  </div>
-                  <span className="text-sm text-black/70">Sarah is typing</span>
-                </div>
-              </div>
-            </div>
           )}
         </div>
 
