@@ -11,7 +11,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle, AlertCircle, Copy } from "lucide-react";
 
-export function AuthSetupHelper() {
+function AuthSetupHelper() {
   const [authStatus, setAuthStatus] = useState<{
     configured: boolean;
     hasUsers: boolean;
