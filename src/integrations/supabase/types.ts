@@ -108,16 +108,19 @@ export type Database = {
           created_at: string
           id: string
           request_id: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
           request_id: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           request_id?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -267,33 +270,124 @@ export type Database = {
           },
         ]
       }
-      invoices: {
+      invoice_line_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          item_type: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          item_type?: string
+          quantity?: number
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          item_type?: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_payments: {
         Row: {
           amount: number
           created_at: string
-          due_date: string
           id: string
-          paid_at: string | null
-          request_id: string
+          invoice_id: string
+          payment_method: string
           status: string
+          transaction_id: string | null
         }
         Insert: {
           amount: number
           created_at?: string
-          due_date: string
           id?: string
-          paid_at?: string | null
-          request_id: string
+          invoice_id: string
+          payment_method: string
           status?: string
+          transaction_id?: string | null
         }
         Update: {
           amount?: number
           created_at?: string
+          id?: string
+          invoice_id?: string
+          payment_method?: string
+          status?: string
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          designer_id: string | null
+          due_date: string
+          id: string
+          invoice_number: string
+          paid_at: string | null
+          request_id: string
+          status: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          designer_id?: string | null
+          due_date: string
+          id?: string
+          invoice_number: string
+          paid_at?: string | null
+          request_id: string
+          status?: string
+          title?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          designer_id?: string | null
           due_date?: string
           id?: string
+          invoice_number?: string
           paid_at?: string | null
           request_id?: string
           status?: string
+          title?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -308,6 +402,7 @@ export type Database = {
       messages: {
         Row: {
           chat_id: string
+          content: string
           created_at: string
           id: string
           sender_id: string
@@ -315,6 +410,7 @@ export type Database = {
         }
         Insert: {
           chat_id: string
+          content: string
           created_at?: string
           id?: string
           sender_id: string
@@ -322,6 +418,7 @@ export type Database = {
         }
         Update: {
           chat_id?: string
+          content?: string
           created_at?: string
           id?: string
           sender_id?: string
@@ -468,6 +565,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_or_create_mock_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_unread_count: {
         Args: { p_user_id: string }
         Returns: number

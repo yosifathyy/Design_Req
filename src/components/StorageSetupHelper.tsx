@@ -56,11 +56,15 @@ const StorageSetupHelper: React.FC = () => {
     setCreating(true);
 
     try {
-      // Try to create the bucket using SQL (bypasses RLS)
-      const { data, error } = await supabase.rpc("create_chat_files_bucket");
+      // Create the bucket directly using storage API
+      const { data, error } = await supabase.storage.createBucket("chat-files", {
+        public: true,
+        allowedMimeTypes: ["image/*", "application/pdf", "text/*"],
+        fileSizeLimit: 10485760, // 10MB
+      });
 
       if (error) {
-        console.error("Error creating bucket via RPC:", error);
+        console.error("Error creating bucket via storage API:", error);
 
         // If RPC fails, try the direct storage API
         try {

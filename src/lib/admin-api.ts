@@ -219,6 +219,7 @@ export const respondToChat = async (
           chat_id: chatId,
           sender_id: adminUserId,
           text: message,
+          content: message,
         },
       ])
       .select()

@@ -52,6 +52,7 @@ export const UserSyncTest: React.FC = () => {
           chat_id: "test-chat-id", // This will fail, but we're checking for the user FK
           sender_id: user.id,
           text: "TEST MESSAGE - DO NOT SAVE",
+          content: "TEST MESSAGE - DO NOT SAVE",
         };
 
         const { error: messageError } = await supabase

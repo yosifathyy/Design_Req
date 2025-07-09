@@ -94,6 +94,7 @@ export const MessageSendTest: React.FC<MessageSendTestProps> = ({
         chat_id: chatId,
         sender_id: user.id,
         text: testMessage.trim(),
+        content: testMessage.trim(),
       };
 
       console.log("Message data:", messageData);

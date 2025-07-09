@@ -333,6 +333,7 @@ export const useRealtimeChat = (projectId: string | null) => {
           chat_id: chatId,
           sender_id: user.id,
           text: message.trim(),
+          content: message.trim(),
         };
 
         console.log("Attempting to insert message:", messageData);
@@ -497,13 +498,14 @@ export const useRealtimeChat = (projectId: string | null) => {
                   const { data: retryMessage, error: retryError } =
                     await supabase
                       .from("messages")
-                      .insert([
-                        {
-                          chat_id: chatId,
-                          sender_id: user.id,
-                          text: message.trim(),
-                        },
-                      ])
+                       .insert([
+                         {
+                           chat_id: chatId,
+                           sender_id: user.id,
+                           text: message.trim(),
+                           content: message.trim(),
+                         },
+                       ])
                       .select(
                         `
                       id,

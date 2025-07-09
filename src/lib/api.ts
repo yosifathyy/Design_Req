@@ -604,6 +604,7 @@ export const getAllChatsForAdmin = async () => {
         ...chat,
         last_message: lastMessage,
         last_message_at: lastMessage?.created_at || chat.created_at,
+        updated_at: chat.updated_at || chat.created_at,
       };
     });
 
@@ -899,7 +900,7 @@ export const sendMessage = async (
   try {
     const { data, error } = await supabase
       .from("messages")
-      .insert([{ chat_id: chatId, sender_id: senderId, text }])
+      .insert([{ chat_id: chatId, sender_id: senderId, text, content: text }])
       .select()
       .single();
 
