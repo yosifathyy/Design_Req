@@ -1042,6 +1042,7 @@ export const useUnreadCount = () => {
 
     return () => {
       console.log("Cleaning up unread count subscription");
+      window.removeEventListener("refreshUnreadCount", handleRefreshEvent);
       supabase.removeChannel(channel);
     };
   }, [user]);
