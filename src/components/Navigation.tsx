@@ -26,10 +26,13 @@ import {
   Users,
   Phone,
   Send,
+  LogIn,
+  UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useClickSound } from "@/hooks/use-click-sound";
+import { useAuth } from "@/hooks/useAuth";
 
 const DOCK_HEIGHT = 128;
 const DEFAULT_MAGNIFICATION = 80;
@@ -254,6 +257,7 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
 
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
@@ -332,6 +336,17 @@ const Navigation = () => {
     color: "bg-orange-200",
   };
 
+  const loginButton = {
+    title: user ? "My Profile" : "Login",
+    icon: user ? (
+      <UserCircle className="h-full w-full text-black" />
+    ) : (
+      <LogIn className="h-full w-full text-black" />
+    ),
+    action: () => navigate(user ? "/design-dashboard" : "/login"),
+    color: user ? "bg-emerald-400" : "bg-blue-400",
+  };
+
   return (
     <div
       className={cn(
@@ -361,6 +376,13 @@ const Navigation = () => {
         >
           <DockLabel>{submitButton.title}</DockLabel>
           <DockIcon>{submitButton.icon}</DockIcon>
+        </DockItem>
+        <DockItem
+          className={`aspect-square ${loginButton.color} hover:rotate-2 transition-transform duration-100`}
+          onClick={loginButton.action}
+        >
+          <DockLabel>{loginButton.title}</DockLabel>
+          <DockIcon>{loginButton.icon}</DockIcon>
         </DockItem>
       </Dock>
     </div>

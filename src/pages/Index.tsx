@@ -88,6 +88,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import FloatingLoginButton from "@/components/FloatingLoginButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -1290,6 +1291,9 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
               </div>
             </div>
           </footer>
+
+          {/* Floating Login Button */}
+          <FloatingLoginButton />
         </motion.div>
       )}
     </AnimatePresence>

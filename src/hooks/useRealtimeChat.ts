@@ -925,23 +925,78 @@ export const useUnreadCount = () => {
 
       let totalUnread = 0;
       for (const chat of userChats) {
-        const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
+        try {
+          const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
 
-        const { count, error: messagesError } = await supabase
-          .from("messages")
-          .select("*", { count: "exact", head: true })
-          .eq("chat_id", chat.chat_id)
-          .neq("sender_id", user.id)
-          .gt("created_at", lastReadAt);
+          const { count, error: messagesError } = await supabase
+            .from("messages")
+            .select("*", { count: "exact", head: true })
+            .eq("chat_id", chat.chat_id)
+            .neq("sender_id", user.id)
+            .gt("created_at", lastReadAt);
 
-        if (!messagesError) {
+          if (messagesError) {
+            const errorMessage =
+              messagesError?.message ||
+              messagesError?.details ||
+              messagesError?.hint ||
+              JSON.stringify(messagesError);
+
+            // Handle specific network errors
+            if (
+              errorMessage.includes("Failed to fetch") ||
+              errorMessage.includes("TypeError: Failed to fetch")
+            ) {
+              console.warn(
+                `Network error in manual refresh for chat ${chat.chat_id}, skipping this chat`,
+              );
+              continue;
+            }
+
+            console.error(
+              `Error in manual refresh for chat ${chat.chat_id}:`,
+              errorMessage,
+            );
+            continue;
+          }
+
           totalUnread += count || 0;
+        } catch (fetchError: any) {
+          // Handle any uncaught fetch/network errors at the individual chat level
+          if (
+            fetchError?.name === "TypeError" &&
+            fetchError?.message?.includes("Failed to fetch")
+          ) {
+            console.warn(
+              `Network connection failed for chat ${chat.chat_id} during manual refresh, skipping. Error: ${fetchError.message}`,
+            );
+          } else {
+            console.error(
+              `Unexpected error in manual refresh for chat ${chat.chat_id}:`,
+              fetchError?.message || fetchError,
+            );
+          }
+          continue;
         }
       }
 
       setUnreadCount(totalUnread);
     } catch (error: any) {
-      console.error("Error refreshing unread count:", error);
+      // Handle network errors gracefully in manual refresh
+      if (
+        error?.name === "TypeError" &&
+        error?.message?.includes("Failed to fetch")
+      ) {
+        console.warn(
+          "Network connection failed during manual unread count refresh, setting to 0",
+        );
+      } else if (error?.message?.includes("Failed to fetch")) {
+        console.warn(
+          "Network error during manual unread count refresh, setting to 0",
+        );
+      } else {
+        console.error("Error refreshing unread count:", error);
+      }
       setUnreadCount(0);
     }
   }, [user]);
@@ -1028,32 +1083,62 @@ export const useUnreadCount = () => {
 
         // For each chat, count messages that are unread (created after last_read_at)
         for (const chat of userChats) {
-          const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
+          try {
+            const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
 
-          const { count, error: messagesError } = await supabase
-            .from("messages")
-            .select("*", { count: "exact", head: true })
-            .eq("chat_id", chat.chat_id)
-            .neq("sender_id", user.id) // Not from current user
-            .gt("created_at", lastReadAt); // Created after last read
+            const { count, error: messagesError } = await supabase
+              .from("messages")
+              .select("*", { count: "exact", head: true })
+              .eq("chat_id", chat.chat_id)
+              .neq("sender_id", user.id) // Not from current user
+              .gt("created_at", lastReadAt); // Created after last read
 
-          if (messagesError) {
-            const errorMessage =
-              messagesError?.message ||
-              messagesError?.details ||
-              messagesError?.hint ||
-              JSON.stringify(messagesError);
-            console.error(
-              `Error counting unread messages for chat ${chat.chat_id}:`,
-              errorMessage,
+            if (messagesError) {
+              const errorMessage =
+                messagesError?.message ||
+                messagesError?.details ||
+                messagesError?.hint ||
+                JSON.stringify(messagesError);
+
+              // Handle specific network errors
+              if (
+                errorMessage.includes("Failed to fetch") ||
+                errorMessage.includes("TypeError: Failed to fetch")
+              ) {
+                console.warn(
+                  `Network error counting unread messages for chat ${chat.chat_id}, skipping this chat`,
+                );
+                continue;
+              }
+
+              console.error(
+                `Error counting unread messages for chat ${chat.chat_id}:`,
+                errorMessage,
+              );
+              continue;
+            }
+
+            console.log(
+              `💬 Chat ${chat.chat_id}: ${count} unread messages (since ${lastReadAt})`,
             );
+            totalUnread += count || 0;
+          } catch (fetchError: any) {
+            // Handle any uncaught fetch/network errors at the individual chat level
+            if (
+              fetchError?.name === "TypeError" &&
+              fetchError?.message?.includes("Failed to fetch")
+            ) {
+              console.warn(
+                `Network connection failed for chat ${chat.chat_id}, skipping. Error: ${fetchError.message}`,
+              );
+            } else {
+              console.error(
+                `Unexpected error counting unread messages for chat ${chat.chat_id}:`,
+                fetchError?.message || fetchError,
+              );
+            }
             continue;
           }
-
-          console.log(
-            `💬 Chat ${chat.chat_id}: ${count} unread messages (since ${lastReadAt})`,
-          );
-          totalUnread += count || 0;
         }
 
         console.log("📊 Total unread messages count:", totalUnread);
@@ -1064,7 +1149,23 @@ export const useUnreadCount = () => {
           error?.details ||
           error?.hint ||
           JSON.stringify(error);
-        console.error("Failed to load unread count:", errorMessage);
+
+        // Handle network errors gracefully
+        if (
+          error?.name === "TypeError" &&
+          error?.message?.includes("Failed to fetch")
+        ) {
+          console.warn(
+            "Network connection failed while loading unread count, setting to 0",
+          );
+        } else if (errorMessage.includes("Failed to fetch")) {
+          console.warn(
+            "Network error while loading unread count, setting to 0",
+          );
+        } else {
+          console.error("Failed to load unread count:", errorMessage);
+        }
+
         setUnreadCount(0);
       }
     };

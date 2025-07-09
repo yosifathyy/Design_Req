@@ -12,6 +12,7 @@ import {
   updateProjectStatus,
   assignProjectToDesigner,
   getAdminUsers,
+  updateDesignRequest,
 } from "@/lib/api";
 import {
   ArrowLeft,
@@ -99,18 +100,42 @@ const EditProject: React.FC = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      setError(null);
 
-      // Update project status if changed
-      if (formData.status !== project.status) {
-        await updateProjectStatus(project.id, formData.status);
+      // Prepare the updates object with all changed fields
+      const updates: any = {};
+
+      if (formData.title !== project.title) {
+        updates.title = formData.title;
       }
 
-      // Assign designer if changed
-      if (
-        formData.designer_id !== project.designer_id &&
-        formData.designer_id
-      ) {
-        await assignProjectToDesigner(project.id, formData.designer_id);
+      if (formData.description !== project.description) {
+        updates.description = formData.description;
+      }
+
+      if (formData.status !== project.status) {
+        updates.status = formData.status;
+      }
+
+      if (formData.priority !== project.priority) {
+        updates.priority = formData.priority;
+      }
+
+      if (formData.designer_id !== project.designer_id) {
+        updates.designer_id = formData.designer_id;
+      }
+
+      if (formData.price !== project.price) {
+        updates.price = formData.price;
+      }
+
+      // Always update the updated_at timestamp
+      updates.updated_at = new Date().toISOString();
+
+      // Update the project with all changes at once
+      if (Object.keys(updates).length > 1) {
+        // More than just updated_at
+        await updateDesignRequest(project.id, updates);
       }
 
       // Show success and redirect
@@ -213,6 +238,16 @@ const EditProject: React.FC = () => {
           {saving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border-4 border-red-500 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+            <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+            <p className="text-red-700 font-medium">{error}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Details */}
