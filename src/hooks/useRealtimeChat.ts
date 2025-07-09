@@ -982,7 +982,21 @@ export const useUnreadCount = () => {
 
       setUnreadCount(totalUnread);
     } catch (error: any) {
-      console.error("Error refreshing unread count:", error);
+      // Handle network errors gracefully in manual refresh
+      if (
+        error?.name === "TypeError" &&
+        error?.message?.includes("Failed to fetch")
+      ) {
+        console.warn(
+          "Network connection failed during manual unread count refresh, setting to 0",
+        );
+      } else if (error?.message?.includes("Failed to fetch")) {
+        console.warn(
+          "Network error during manual unread count refresh, setting to 0",
+        );
+      } else {
+        console.error("Error refreshing unread count:", error);
+      }
       setUnreadCount(0);
     }
   }, [user]);
