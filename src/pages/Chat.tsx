@@ -188,20 +188,20 @@ const Chat: React.FC = () => {
           className="flex-1 overflow-y-auto p-4 space-y-4"
           style={{ height: "calc(100vh - 200px)" }}
         >
-          {messagesLoading || projectLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-festival-orange" />
-                <p className="text-sm text-black/70">Loading messages...</p>
-              </div>
-            </div>
-          ) : error ? (
+          {error ? (
             <div className="flex flex-col items-center justify-center h-full">
               <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
               <p className="text-lg font-medium text-black mb-2">Chat Error</p>
               <p className="text-sm text-black/70 text-center max-w-md">
                 {error}
               </p>
+            </div>
+          ) : messagesLoading || projectLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-festival-orange" />
+                <p className="text-sm text-black/70">Loading messages...</p>
+              </div>
             </div>
           ) : !projectId ? (
             <div className="flex flex-col items-center justify-center h-full text-black/50">
