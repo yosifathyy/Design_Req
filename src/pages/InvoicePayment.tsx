@@ -98,7 +98,10 @@ const InvoicePayment: React.FC = () => {
   };
 
   const handleDownload = () => {
-    if (!invoice) return;
+    if (!invoice || !invoice.invoiceNumber) {
+      console.error("Invoice data is incomplete for download");
+      return;
+    }
 
     // Generate client-friendly PDF
     const printWindow = window.open("", "_blank");
