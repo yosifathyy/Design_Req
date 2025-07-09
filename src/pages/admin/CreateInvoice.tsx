@@ -6,7 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { mockAdminProjects, mockAdminUsers } from "@/lib/admin-data";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { invoicesApi, CreateInvoiceData } from "@/lib/invoices-api";
+import { kanbanApi } from "@/lib/kanban-api";
+import { supabase } from "@/lib/supabase";
 import {
   ArrowLeft,
   Plus,
@@ -15,35 +25,116 @@ import {
   Send,
   Calculator,
   FileText,
+  Loader2,
 } from "lucide-react";
 
+interface LineItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  itemType: "service" | "product" | "design" | "consultation";
+}
+
+interface ProjectOption {
+  id: string;
+  title: string;
+  clientName: string;
+  clientId: string;
+  clientEmail: string;
+}
+
 const CreateInvoice: React.FC = () => {
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
   const [selectedProject, setSelectedProject] = useState("");
-  const [lineItems, setLineItems] = useState([
-    { description: "", quantity: 1, rate: 0, type: "design" },
+  const [selectedClient, setSelectedClient] = useState("");
+  const [lineItems, setLineItems] = useState<LineItem[]>([
+    { description: "", quantity: 1, unitPrice: 0, itemType: "design" },
   ]);
   const [invoiceData, setInvoiceData] = useState({
+    title: "",
+    description: "",
     dueDate: "",
     notes: "",
-    taxRate: 8,
+    terms: "Payment is due within 30 days of invoice date.",
+    taxRate: 8.25,
   });
 
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // Load projects and users
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+
+        // Load design requests (projects) with client info
+        const { data: designRequests, error: projectsError } = await supabase
+          .from("design_requests")
+          .select(
+            `
+            id, title, description,
+            client:user_id(id, name, email)
+          `,
+          )
+          .order("created_at", { ascending: false });
+
+        if (projectsError) throw projectsError;
+
+        const projectOptions: ProjectOption[] = designRequests.map(
+          (request) => ({
+            id: request.id,
+            title: request.title,
+            clientName: (request.client as any)?.name || "Unknown Client",
+            clientId: (request.client as any)?.id || "",
+            clientEmail: (request.client as any)?.email || "",
+          }),
+        );
+
+        setProjects(projectOptions);
+
+        // Load all users for client selection
+        const { data: allUsers, error: usersError } = await supabase
+          .from("users")
+          .select("id, name, email, role")
+          .in("role", ["user", "admin"])
+          .order("name");
+
+        if (usersError) throw usersError;
+        setUsers(allUsers);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        toast({
+          title: "Error loading data",
+          description: "Failed to load projects and users",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [toast]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
   const addLineItem = () => {
     setLineItems([
       ...lineItems,
-      { description: "", quantity: 1, rate: 0, type: "design" },
+      { description: "", quantity: 1, unitPrice: 0, itemType: "design" },
     ]);
   };
 
@@ -51,7 +142,7 @@ const CreateInvoice: React.FC = () => {
     setLineItems(lineItems.filter((_, i) => i !== index));
   };
 
-  const updateLineItem = (index: number, field: string, value: any) => {
+  const updateLineItem = (index: number, field: keyof LineItem, value: any) => {
     const updated = lineItems.map((item, i) =>
       i === index ? { ...item, [field]: value } : item,
     );
@@ -59,7 +150,10 @@ const CreateInvoice: React.FC = () => {
   };
 
   const calculateSubtotal = () => {
-    return lineItems.reduce((sum, item) => sum + item.quantity * item.rate, 0);
+    return lineItems.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0,
+    );
   };
 
   const calculateTax = () => {
@@ -70,72 +164,148 @@ const CreateInvoice: React.FC = () => {
     return calculateSubtotal() + calculateTax();
   };
 
-  const selectedProjectData = mockAdminProjects.find(
-    (p) => p.id === selectedProject,
-  );
+  const selectedProjectData = projects.find((p) => p.id === selectedProject);
+  const selectedClientData = users.find((u) => u.id === selectedClient);
 
-  const handleSaveDraft = () => {
-    // Save invoice as draft
-    const invoiceData = {
-      projectId: selectedProject,
-      lineItems,
-      dueDate: invoiceData.dueDate,
-      notes: invoiceData.notes,
-      taxRate: invoiceData.taxRate,
-      total: calculateTotal(),
-      status: "draft",
-    };
-    localStorage.setItem("draftInvoice", JSON.stringify(invoiceData));
+  // Auto-select client when project is selected
+  useEffect(() => {
+    if (selectedProjectData) {
+      setSelectedClient(selectedProjectData.clientId);
+      setInvoiceData((prev) => ({
+        ...prev,
+        title: `Invoice for ${selectedProjectData.title}`,
+        description: `Design services for ${selectedProjectData.title}`,
+      }));
+    }
+  }, [selectedProject, selectedProjectData]);
 
-    // Show success message
-    const notification = document.createElement("div");
-    notification.className =
-      "fixed bottom-4 right-4 bg-green-500 text-white p-4 border-4 border-black z-50";
-    notification.textContent = "Invoice saved as draft!";
-    document.body.appendChild(notification);
-    setTimeout(() => document.body.removeChild(notification), 3000);
+  const validateInvoice = (): string | null => {
+    if (!invoiceData.title.trim()) return "Invoice title is required";
+    if (!selectedClient) return "Please select a client";
+    if (lineItems.length === 0) return "Please add at least one line item";
+    if (
+      lineItems.some((item) => !item.description.trim() || item.unitPrice <= 0)
+    ) {
+      return "Please fill in all line items with valid prices";
+    }
+    return null;
   };
 
-  const handleSendInvoice = () => {
-    if (!selectedProject) {
-      alert("Please select a project first");
-      return;
-    }
-    if (lineItems.some((item) => !item.description || item.rate <= 0)) {
-      alert("Please fill in all line items");
+  const handleSaveDraft = async () => {
+    const validation = validateInvoice();
+    if (validation) {
+      toast({
+        title: "Validation Error",
+        description: validation,
+        variant: "destructive",
+      });
       return;
     }
 
-    // Send invoice
-    const invoiceData = {
-      projectId: selectedProject,
-      lineItems,
-      dueDate: invoiceData.dueDate,
-      notes: invoiceData.notes,
-      taxRate: invoiceData.taxRate,
-      total: calculateTotal(),
-      status: "sent",
-      sentDate: new Date().toISOString(),
-    };
+    try {
+      setSaving(true);
 
-    // Show success animation and navigate
-    const successEl = document.createElement("div");
-    successEl.className =
-      "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
-    successEl.innerHTML = `
-      <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-        <div class="text-6xl mb-4">📧</div>
-        <h3 class="text-2xl font-bold text-black mb-2">Invoice Sent!</h3>
-        <p class="text-black/70">Invoice has been sent to the client</p>
+      const createData: CreateInvoiceData = {
+        title: invoiceData.title,
+        description: invoiceData.description,
+        designRequestId: selectedProject || undefined,
+        clientId: selectedClient,
+        dueDate: invoiceData.dueDate || undefined,
+        taxRate: invoiceData.taxRate,
+        notes: invoiceData.notes,
+        terms: invoiceData.terms,
+        lineItems: lineItems.map((item) => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          itemType: item.itemType,
+        })),
+      };
+
+      const invoice = await invoicesApi.create(createData);
+
+      toast({
+        title: "Draft Saved! 📄",
+        description: `Invoice ${invoice.invoice_number} has been saved as draft.`,
+      });
+
+      navigate(`/admin/invoices/${invoice.id}`);
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      toast({
+        title: "Error saving draft",
+        description: "Failed to save invoice. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSendInvoice = async () => {
+    const validation = validateInvoice();
+    if (validation) {
+      toast({
+        title: "Validation Error",
+        description: validation,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const createData: CreateInvoiceData = {
+        title: invoiceData.title,
+        description: invoiceData.description,
+        designRequestId: selectedProject || undefined,
+        clientId: selectedClient,
+        dueDate: invoiceData.dueDate || undefined,
+        taxRate: invoiceData.taxRate,
+        notes: invoiceData.notes,
+        terms: invoiceData.terms,
+        lineItems: lineItems.map((item) => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          itemType: item.itemType,
+        })),
+      };
+
+      const invoice = await invoicesApi.create(createData);
+      const sentInvoice = await invoicesApi.sendInvoice(invoice.id);
+
+      toast({
+        title: "Invoice Sent! 📧",
+        description: `Invoice ${sentInvoice.invoice_number} has been sent to ${selectedClientData?.name}.`,
+      });
+
+      navigate(`/admin/invoices/${sentInvoice.id}`);
+    } catch (error) {
+      console.error("Error sending invoice:", error);
+      toast({
+        title: "Error sending invoice",
+        description: "Failed to send invoice. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
+          <p className="text-lg font-medium text-black">
+            Loading invoice data...
+          </p>
+        </div>
       </div>
-    `;
-    document.body.appendChild(successEl);
-
-    setTimeout(() => {
-      document.body.removeChild(successEl);
-      navigate("/admin/invoices");
-    }, 2000);
-  };
+    );
+  }
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -154,7 +324,7 @@ const CreateInvoice: React.FC = () => {
               CREATE INVOICE
             </h1>
             <p className="text-xl text-black/70 font-medium">
-              Generate a new client invoice
+              Generate a new client invoice with PayPal integration
             </p>
           </div>
         </div>
@@ -162,16 +332,26 @@ const CreateInvoice: React.FC = () => {
           <Button
             onClick={handleSaveDraft}
             variant="outline"
+            disabled={saving}
             className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
           >
-            <Save className="w-4 h-4 mr-2" />
+            {saving ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
             Save Draft
           </Button>
           <Button
             onClick={handleSendInvoice}
+            disabled={saving}
             className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
           >
-            <Send className="w-4 h-4 mr-2" />
+            {saving ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4 mr-2" />
+            )}
             Send Invoice
           </Button>
         </div>
@@ -180,51 +360,42 @@ const CreateInvoice: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Invoice Form */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Project Selection */}
+          {/* Invoice Details */}
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
             <div className="p-6 border-b-4 border-black bg-gradient-to-r from-festival-orange to-festival-coral">
-              <h3 className="text-xl font-bold text-black">Project Details</h3>
+              <h3 className="text-xl font-bold text-black">Invoice Details</h3>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <Label className="text-sm font-bold text-black">
-                  Select Project
+                  Invoice Title
                 </Label>
-                <select
-                  value={selectedProject}
-                  onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full p-3 border-4 border-black bg-festival-cream"
-                >
-                  <option value="">Choose a project...</option>
-                  {mockAdminProjects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.title} - {project.clientName}
-                    </option>
-                  ))}
-                </select>
+                <Input
+                  value={invoiceData.title}
+                  onChange={(e) =>
+                    setInvoiceData({ ...invoiceData, title: e.target.value })
+                  }
+                  placeholder="Enter invoice title..."
+                  className="border-4 border-black bg-festival-cream"
+                />
               </div>
 
-              {selectedProjectData && (
-                <div className="p-4 bg-festival-cream border-2 border-black">
-                  <h4 className="font-bold text-black mb-2">
-                    {selectedProjectData.title}
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-black/60">Client:</span>
-                      <p className="font-medium">
-                        {selectedProjectData.clientName}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-black/60">Budget:</span>
-                      <p className="font-medium">
-                        ${selectedProjectData.budget}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div>
+                <Label className="text-sm font-bold text-black">
+                  Description
+                </Label>
+                <Textarea
+                  value={invoiceData.description}
+                  onChange={(e) =>
+                    setInvoiceData({
+                      ...invoiceData,
+                      description: e.target.value,
+                    })
+                  }
+                  placeholder="Brief description of services..."
+                  className="border-4 border-black bg-festival-cream"
+                />
+              </div>
 
               <div>
                 <Label className="text-sm font-bold text-black">Due Date</Label>
@@ -240,11 +411,80 @@ const CreateInvoice: React.FC = () => {
             </div>
           </Card>
 
-          {/* Line Items */}
+          {/* Project & Client Selection */}
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
             <div className="p-6 border-b-4 border-black bg-gradient-to-r from-festival-pink to-festival-magenta">
+              <h3 className="text-xl font-bold text-white">Project & Client</h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <Label className="text-sm font-bold text-black">
+                  Select Project (Optional)
+                </Label>
+                <Select
+                  value={selectedProject}
+                  onValueChange={setSelectedProject}
+                >
+                  <SelectTrigger className="border-4 border-black bg-festival-cream">
+                    <SelectValue placeholder="Choose a project..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.title} - {project.clientName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-sm font-bold text-black">
+                  Select Client
+                </Label>
+                <Select
+                  value={selectedClient}
+                  onValueChange={setSelectedClient}
+                >
+                  <SelectTrigger className="border-4 border-black bg-festival-cream">
+                    <SelectValue placeholder="Choose a client..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.name} ({user.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedClientData && (
+                <div className="p-4 bg-festival-cream border-2 border-black">
+                  <h4 className="font-bold text-black mb-2">
+                    Client Information
+                  </h4>
+                  <div className="text-sm">
+                    <p>
+                      <strong>Name:</strong> {selectedClientData.name}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {selectedClientData.email}
+                    </p>
+                    <p>
+                      <strong>Role:</strong> {selectedClientData.role}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Line Items */}
+          <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
+            <div className="p-6 border-b-4 border-black bg-gradient-to-r from-festival-yellow to-festival-amber">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-white">Invoice Items</h3>
+                <h3 className="text-xl font-bold text-black">Invoice Items</h3>
                 <Button
                   onClick={addLineItem}
                   size="sm"
@@ -262,7 +502,7 @@ const CreateInvoice: React.FC = () => {
                     key={index}
                     className="p-4 bg-festival-cream border-2 border-black"
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                       <div className="md:col-span-2">
                         <Label className="text-xs font-bold text-black">
                           Description
@@ -272,9 +512,32 @@ const CreateInvoice: React.FC = () => {
                           onChange={(e) =>
                             updateLineItem(index, "description", e.target.value)
                           }
-                          placeholder="Design work description..."
+                          placeholder="Service description..."
                           className="border-2 border-black bg-white"
                         />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-bold text-black">
+                          Type
+                        </Label>
+                        <Select
+                          value={item.itemType}
+                          onValueChange={(value) =>
+                            updateLineItem(index, "itemType", value)
+                          }
+                        >
+                          <SelectTrigger className="border-2 border-black bg-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="design">Design</SelectItem>
+                            <SelectItem value="service">Service</SelectItem>
+                            <SelectItem value="product">Product</SelectItem>
+                            <SelectItem value="consultation">
+                              Consultation
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <Label className="text-xs font-bold text-black">
@@ -287,26 +550,29 @@ const CreateInvoice: React.FC = () => {
                             updateLineItem(
                               index,
                               "quantity",
-                              parseInt(e.target.value) || 0,
+                              parseInt(e.target.value) || 1,
                             )
                           }
+                          min="1"
                           className="border-2 border-black bg-white"
                         />
                       </div>
                       <div>
                         <Label className="text-xs font-bold text-black">
-                          Rate ($)
+                          Unit Price ($)
                         </Label>
                         <Input
                           type="number"
-                          value={item.rate}
+                          value={item.unitPrice}
                           onChange={(e) =>
                             updateLineItem(
                               index,
-                              "rate",
+                              "unitPrice",
                               parseFloat(e.target.value) || 0,
                             )
                           }
+                          min="0"
+                          step="0.01"
                           className="border-2 border-black bg-white"
                         />
                       </div>
@@ -324,7 +590,7 @@ const CreateInvoice: React.FC = () => {
                     </div>
                     <div className="mt-2 text-right">
                       <span className="text-sm font-bold text-black">
-                        Amount: ${(item.quantity * item.rate).toFixed(2)}
+                        Total: ${(item.quantity * item.unitPrice).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -333,21 +599,38 @@ const CreateInvoice: React.FC = () => {
             </div>
           </Card>
 
-          {/* Notes */}
+          {/* Notes & Terms */}
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-            <div className="p-6 border-b-4 border-black bg-gradient-to-r from-festival-yellow to-festival-amber">
-              <h3 className="text-xl font-bold text-black">Additional Notes</h3>
+            <div className="p-6 border-b-4 border-black bg-gradient-to-r from-blue-400 to-blue-500">
+              <h3 className="text-xl font-bold text-white">Notes & Terms</h3>
             </div>
-            <div className="p-6">
-              <Textarea
-                value={invoiceData.notes}
-                onChange={(e) =>
-                  setInvoiceData({ ...invoiceData, notes: e.target.value })
-                }
-                placeholder="Add any additional notes or payment terms..."
-                className="border-4 border-black bg-festival-cream"
-                rows={4}
-              />
+            <div className="p-6 space-y-4">
+              <div>
+                <Label className="text-sm font-bold text-black">Notes</Label>
+                <Textarea
+                  value={invoiceData.notes}
+                  onChange={(e) =>
+                    setInvoiceData({ ...invoiceData, notes: e.target.value })
+                  }
+                  placeholder="Additional notes for the client..."
+                  className="border-4 border-black bg-festival-cream"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-bold text-black">
+                  Payment Terms
+                </Label>
+                <Textarea
+                  value={invoiceData.terms}
+                  onChange={(e) =>
+                    setInvoiceData({ ...invoiceData, terms: e.target.value })
+                  }
+                  placeholder="Payment terms and conditions..."
+                  className="border-4 border-black bg-festival-cream"
+                  rows={3}
+                />
+              </div>
             </div>
           </Card>
         </div>
@@ -383,7 +666,10 @@ const CreateInvoice: React.FC = () => {
                           taxRate: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="w-16 h-8 border-2 border-black text-center"
+                      className="w-20 h-8 border-2 border-black text-center"
+                      step="0.01"
+                      min="0"
+                      max="100"
                     />
                     <span className="text-black/70">%</span>
                   </div>
@@ -407,25 +693,26 @@ const CreateInvoice: React.FC = () => {
           </Card>
 
           <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-            <div className="p-6 border-b-4 border-black bg-gradient-to-r from-blue-400 to-blue-500">
+            <div className="p-6 border-b-4 border-black bg-gradient-to-r from-purple-400 to-purple-500">
               <div className="flex items-center gap-3">
                 <FileText className="w-6 h-6 text-white" />
-                <h3 className="text-xl font-bold text-white">Preview</h3>
+                <h3 className="text-xl font-bold text-white">
+                  Payment Integration
+                </h3>
               </div>
             </div>
             <div className="p-6">
               <div className="text-center space-y-2">
-                <div className="text-6xl">📄</div>
-                <p className="text-sm text-black/70">
-                  Invoice preview will appear here
+                <div className="text-6xl">💳</div>
+                <p className="text-sm text-black/70 mb-4">
+                  Once sent, clients can pay securely via PayPal
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-2 border-black"
-                >
-                  Generate Preview
-                </Button>
+                <div className="p-3 bg-festival-cream border border-black/20 text-left text-xs">
+                  <p className="font-bold mb-1">PayPal Integration:</p>
+                  <p>✅ Secure payment processing</p>
+                  <p>✅ Automatic invoice updates</p>
+                  <p>✅ Project delivery automation</p>
+                </div>
               </div>
             </div>
           </Card>
