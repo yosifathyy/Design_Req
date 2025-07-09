@@ -925,17 +925,58 @@ export const useUnreadCount = () => {
 
       let totalUnread = 0;
       for (const chat of userChats) {
-        const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
+        try {
+          const lastReadAt = chat.last_read_at || "1970-01-01T00:00:00Z";
 
-        const { count, error: messagesError } = await supabase
-          .from("messages")
-          .select("*", { count: "exact", head: true })
-          .eq("chat_id", chat.chat_id)
-          .neq("sender_id", user.id)
-          .gt("created_at", lastReadAt);
+          const { count, error: messagesError } = await supabase
+            .from("messages")
+            .select("*", { count: "exact", head: true })
+            .eq("chat_id", chat.chat_id)
+            .neq("sender_id", user.id)
+            .gt("created_at", lastReadAt);
 
-        if (!messagesError) {
+          if (messagesError) {
+            const errorMessage =
+              messagesError?.message ||
+              messagesError?.details ||
+              messagesError?.hint ||
+              JSON.stringify(messagesError);
+
+            // Handle specific network errors
+            if (
+              errorMessage.includes("Failed to fetch") ||
+              errorMessage.includes("TypeError: Failed to fetch")
+            ) {
+              console.warn(
+                `Network error in manual refresh for chat ${chat.chat_id}, skipping this chat`,
+              );
+              continue;
+            }
+
+            console.error(
+              `Error in manual refresh for chat ${chat.chat_id}:`,
+              errorMessage,
+            );
+            continue;
+          }
+
           totalUnread += count || 0;
+        } catch (fetchError: any) {
+          // Handle any uncaught fetch/network errors at the individual chat level
+          if (
+            fetchError?.name === "TypeError" &&
+            fetchError?.message?.includes("Failed to fetch")
+          ) {
+            console.warn(
+              `Network connection failed for chat ${chat.chat_id} during manual refresh, skipping. Error: ${fetchError.message}`,
+            );
+          } else {
+            console.error(
+              `Unexpected error in manual refresh for chat ${chat.chat_id}:`,
+              fetchError?.message || fetchError,
+            );
+          }
+          continue;
         }
       }
 
