@@ -868,35 +868,47 @@ export const useUnreadCount = () => {
 
   useEffect(() => {
     if (!user || !isSupabaseConfigured) {
+      setUnreadCount(0);
       return;
     }
 
     const loadUnreadCount = async () => {
       try {
-        // Get all chats the user is involved in
-        const { data: userChats } = await supabase
-          .from("chats")
-          .select("id")
-          .or(`user_id.eq.${user.id},designer_id.eq.${user.id}`);
+        // Get all chats the user is involved in via chat_participants
+        const { data: userChats, error: chatsError } = await supabase
+          .from("chat_participants")
+          .select("chat_id")
+          .eq("user_id", user.id);
 
-        if (!userChats) {
+        if (chatsError) {
+          console.error("Error fetching user chats:", chatsError);
           setUnreadCount(0);
           return;
         }
 
-        let totalUnread = 0;
-        for (const chat of userChats) {
-          const { count } = await supabase
-            .from("messages")
-            .select("*", { count: "exact", head: true })
-            .eq("chat_id", chat.id)
-            .neq("sender_id", user.id)
-            .gt("created_at", user.last_seen || "1970-01-01");
-
-          totalUnread += count || 0;
+        if (!userChats || userChats.length === 0) {
+          setUnreadCount(0);
+          return;
         }
 
-        setUnreadCount(totalUnread);
+        const chatIds = userChats.map((chat) => chat.chat_id);
+
+        // Count messages in these chats that are not from the current user
+        // For now, we'll count all messages not sent by the user as "unread"
+        // In a real app, you'd track read status per user
+        const { count, error: messagesError } = await supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .in("chat_id", chatIds)
+          .neq("sender_id", user.id);
+
+        if (messagesError) {
+          console.error("Error counting unread messages:", messagesError);
+          setUnreadCount(0);
+          return;
+        }
+
+        setUnreadCount(count || 0);
       } catch (error) {
         console.error("Failed to load unread count:", error);
         setUnreadCount(0);
@@ -907,7 +919,7 @@ export const useUnreadCount = () => {
 
     // Set up real-time subscription for new messages
     const channel = supabase
-      .channel("unread-messages")
+      .channel(`unread-messages-${user.id}`)
       .on(
         "postgres_changes",
         {
@@ -915,13 +927,45 @@ export const useUnreadCount = () => {
           schema: "public",
           table: "messages",
         },
+        (payload) => {
+          console.log("New message received:", payload);
+          // Only update if the message is not from the current user
+          if (payload.new.sender_id !== user.id) {
+            // Reload the count to ensure accuracy
+            loadUnreadCount();
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+        },
         () => {
+          // Reload count when messages are updated (e.g., marked as read)
           loadUnreadCount();
         },
       )
-      .subscribe();
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+        },
+        () => {
+          // Reload count when messages are deleted
+          loadUnreadCount();
+        },
+      )
+      .subscribe((status) => {
+        console.log("Unread count subscription status:", status);
+      });
 
     return () => {
+      console.log("Cleaning up unread count subscription");
       supabase.removeChannel(channel);
     };
   }, [user]);
