@@ -190,8 +190,8 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
           };
         });
 
-      setMessages(userMessages);
-        } catch (err: any) {
+            setMessages(userMessages);
+    } catch (err: any) {
       console.error("Error loading messages:", err);
 
       // Enhanced error message extraction
