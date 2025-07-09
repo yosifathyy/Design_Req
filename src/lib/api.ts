@@ -580,7 +580,7 @@ export const getAllChatsForAdmin = async () => {
           created_at,
           user:users!user_id(id, name, email, avatar_url)
         ),
-        last_message:messages(content, created_at)
+        last_message:messages(content, text, created_at)
       `,
       )
       .order("updated_at", { ascending: false });

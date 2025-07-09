@@ -26,8 +26,8 @@ interface Chat {
     };
   };
   last_message: {
-    text: string;
-    content?: string;
+    text?: string;
+    content: string;
     created_at: string;
   } | null;
   last_message_at: string;
@@ -202,7 +202,7 @@ const AdminChatList: React.FC = () => {
 
                     {chat.last_message ? (
                       <p className="text-sm text-gray-600 truncate">
-                        {chat.last_message.content || chat.last_message.text}
+                        {chat.last_message.content || chat.last_message.text || ""}
                       </p>
                     ) : (
                       <p className="text-sm text-gray-500 italic">
