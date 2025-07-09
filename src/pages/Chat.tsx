@@ -19,12 +19,9 @@ import {
 
 const Chat: React.FC = () => {
   const [message, setMessage] = useState("");
-  const [chatId, setChatId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
   const [projectDetails, setProjectDetails] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [projectLoading, setProjectLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,10 +29,17 @@ const Chat: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Get request ID from URL query params
-  const requestId = new URLSearchParams(location.search).get("request");
+  // Get project ID from URL query params
+  const projectId = new URLSearchParams(location.search).get("request");
+
+  // Use the new realtime chat hook
+  const {
+    messages,
+    loading: messagesLoading,
+    error,
+    sendMessage: sendChatMessage,
+  } = useRealtimeChat(projectId);
 
   useEffect(() => {
     const initializeChat = async () => {
