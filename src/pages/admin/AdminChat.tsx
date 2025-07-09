@@ -52,13 +52,13 @@ const AdminChat: React.FC = () => {
   // No need for manual loading
 
   useEffect(() => {
-    if (!containerRef.current || loading) return;
+    if (!containerRef.current || roomsLoading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, [loading]);
+  }, [roomsLoading]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedProjectId) return;
@@ -131,10 +131,10 @@ const AdminChat: React.FC = () => {
           onClick={() => window.location.reload()}
           variant="outline"
           className="border-4 border-black"
-          disabled={loading}
+          disabled={roomsLoading}
         >
           <RefreshCw
-            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            className={`w-4 h-4 mr-2 ${roomsLoading ? "animate-spin" : ""}`}
           />
           Refresh
         </Button>
@@ -148,7 +148,7 @@ const AdminChat: React.FC = () => {
               <h3 className="font-bold text-black">Active Conversations</h3>
             </div>
             <div className="space-y-2 p-4 max-h-96 overflow-y-auto">
-              {loading ? (
+              {roomsLoading ? (
                 <div className="text-center py-8">
                   <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-festival-orange" />
                   <p className="text-sm text-black/70">Loading chats...</p>
@@ -238,7 +238,7 @@ const AdminChat: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              ) : loadingMessages ? (
+              ) : messagesLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-festival-orange" />
