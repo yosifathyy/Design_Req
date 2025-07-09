@@ -235,8 +235,16 @@ export const invoicesApi = {
       .single();
 
     if (error) {
-      console.error("Error updating invoice:", error);
-      throw error;
+      console.error("Error updating invoice:", {
+        error: error,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      throw new Error(
+        `Failed to update invoice: ${error.message || JSON.stringify(error)}`,
+      );
     }
 
     return this.getById(id);
