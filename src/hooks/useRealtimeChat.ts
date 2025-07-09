@@ -386,8 +386,17 @@ export const useRealtimeChat = (projectId: string | null) => {
             errorMessage =
               "❌ Permission denied - Row Level Security is blocking access. Please disable RLS.";
           } else if (err.message.includes("foreign key")) {
-            errorMessage =
-              "❌ Invalid reference - chat or user not found. Check project/user IDs.";
+            // Check if it's specifically a user foreign key issue
+            if (
+              err.message.includes("sender_id") &&
+              err.message.includes("users")
+            ) {
+              errorMessage =
+                "❌ User account mismatch - Your authentication account exists but you're missing a user profile. Use the 'Fix User Record' button to resolve this.";
+            } else {
+              errorMessage =
+                "❌ Invalid reference - chat or user not found. Check project/user IDs.";
+            }
           } else if (err.message.includes("violates not-null constraint")) {
             errorMessage =
               "❌ Missing required field - check that all message data is provided.";
