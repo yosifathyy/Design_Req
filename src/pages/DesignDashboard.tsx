@@ -188,10 +188,25 @@ const DesignDashboard: React.FC = () => {
         setUserProfile(profile);
 
         // Fetch design requests and invoices in parallel
-        const [requestsResponse, invoicesResponse] = await Promise.all([
-          getDesignRequests(),
-          getInvoices(),
-        ]);
+        console.log("📡 Fetching design requests and invoices...");
+        let requestsResponse = [];
+        let invoicesResponse = [];
+
+        try {
+          requestsResponse = await getDesignRequests();
+          console.log("✅ Design requests fetched:", requestsResponse.length);
+        } catch (requestsError) {
+          console.error("❌ Error fetching design requests:", requestsError);
+          // Continue with empty array
+        }
+
+        try {
+          invoicesResponse = await getInvoices();
+          console.log("✅ Invoices fetched:", invoicesResponse.length);
+        } catch (invoicesError) {
+          console.error("❌ Error fetching invoices:", invoicesError);
+          // Continue with empty array
+        }
 
         setRequests(requestsResponse);
 
