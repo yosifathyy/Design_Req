@@ -113,35 +113,61 @@ export const useRealtimeChat = (projectId: string | null) => {
         );
       }
 
-      if (!chatsData || chatsData.length === 0) {
-        // No chat exists for this project yet, return empty messages
-        setMessages([]);
-        return;
-      }
+      // Helper function to load messages for a specific chat
+      const loadMessagesForChat = async (chatId: string) => {
+        console.log("Loading messages for chat:", chatId);
 
-      const chatId = chatsData[0].id;
+        try {
+          const { data: messagesData, error: messagesError } = await supabase
+            .from("messages")
+            .select(
+              `
+            id,
+            chat_id,
+            sender_id,
+            text,
+            created_at,
+            sender:users!sender_id(id, name, email, role, avatar_url)
+          `,
+            )
+            .eq("chat_id", chatId)
+            .order("created_at", { ascending: true });
 
-      // Now get messages for this chat
-      const { data: messagesData, error: messagesError } = await supabase
-        .from("messages")
-        .select(
-          `
-          id,
-          chat_id,
-          sender_id,
-          text,
-          created_at,
-          sender:users!sender_id(id, name, email, role, avatar_url)
-        `,
-        )
-        .eq("chat_id", chatId)
-        .order("created_at", { ascending: true });
+          if (messagesError) {
+            console.error("Messages query failed:", messagesError);
 
-      if (messagesError) {
-        throw new Error(`Failed to load messages: ${messagesError.message}`);
-      }
+            // Try direct API for messages
+            const directResponse = await fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages?chat_id=eq.${chatId}&select=id,chat_id,sender_id,text,created_at&order=created_at.asc`,
+              {
+                headers: {
+                  apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+                  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
 
-      setMessages(messagesData || []);
+            if (!directResponse.ok) {
+              const errorText = await directResponse.text();
+              throw new Error(
+                `Failed to load messages via direct API: ${errorText}`,
+              );
+            }
+
+            const directMessages = await directResponse.json();
+            console.log("Loaded messages via direct API:", directMessages);
+            setMessages(directMessages || []);
+            return;
+          }
+
+          console.log("Loaded messages via Supabase client:", messagesData);
+          setMessages(messagesData || []);
+        } catch (error: any) {
+          console.error("Failed to load messages for chat:", error);
+          throw new Error(`Failed to load messages: ${error.message}`);
+        }
+      };
     } catch (err: any) {
       console.error("Failed to load messages - Full error:", err);
       console.error("Error name:", err?.name);
