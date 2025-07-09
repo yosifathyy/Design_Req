@@ -117,12 +117,11 @@ const TestimonialCard: React.FC<{
               `[data-card-index="${index + 1}"]`,
             ) as HTMLElement;
             if (nextCard) {
-              const offset = (index + 1) * 6; // Small offset for stacking effect
+              const cardOffset = (index + 1) * 6; // Small offset for stacking effect
 
               gsap.set(nextCard, {
                 y: `${(1 - stackProgress) * 100}vh`,
-                x: offset,
-                y: offset * 0.5,
+                x: cardOffset,
                 rotation:
                   testimonialsData[index + 1].rotation * (1 - stackProgress),
                 zIndex: (index + 1) * 10 + Math.floor(stackProgress * 10),
@@ -134,7 +133,7 @@ const TestimonialCard: React.FC<{
             gsap.set(card, {
               scale: 1 - stackProgress * 0.02,
               opacity: 1 - stackProgress * 0.15,
-              x: -offset * 0.3,
+              x: -6 * 0.3,
               y: -stackProgress * 8,
             });
           }

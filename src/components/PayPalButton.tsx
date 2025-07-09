@@ -170,6 +170,7 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
         }}
         createOrder={(data, actions) => {
           return actions.order.create({
+            intent: "CAPTURE",
             purchase_units: [
               {
                 reference_id: invoice.id,
@@ -267,7 +268,10 @@ const PayPalButton: React.FC<PayPalButtonProps> = (props) => {
   }
 
   return (
-    <PayPalScriptProvider options={paypalScriptOptions}>
+    <PayPalScriptProvider options={{
+      ...paypalScriptOptions,
+      clientId: paypalScriptOptions["client-id"]
+    }}>
       <div className="space-y-4">
         <div className="text-center p-4 border-4 border-black bg-festival-cream">
           <CreditCard className="w-8 h-8 text-black mx-auto mb-2" />

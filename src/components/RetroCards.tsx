@@ -454,7 +454,7 @@ const RetroCards: React.FC = () => {
       </div>
 
       {/* Custom CSS for floating animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes float-0 {
           0%,
           100% {

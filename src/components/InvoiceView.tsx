@@ -166,17 +166,17 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
       </Card>
 
       {/* Project Details */}
-      {invoice.design_request && (
+      {(invoice as any).design_request && (
         <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
           <div className="p-6 border-b-4 border-black bg-gradient-to-r from-festival-pink to-festival-magenta">
             <h3 className="text-xl font-bold text-white">Project Details</h3>
           </div>
           <div className="p-6">
             <h4 className="text-lg font-bold text-black mb-2">
-              {invoice.design_request.title}
+              {(invoice as any).design_request.title}
             </h4>
             <p className="text-black/70">
-              {invoice.design_request.description}
+              {(invoice as any).design_request.description}
             </p>
           </div>
         </Card>

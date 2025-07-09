@@ -215,7 +215,7 @@ function DockLabel({ children, className, ...rest }: DockLabelProps) {
 function DockIcon({ children, className, ...rest }: DockIconProps) {
   const restProps = rest as Record<string, unknown>;
   const style = restProps["style"] as React.CSSProperties | undefined; // Access style prop
-  const width = style?.width as MotionValue<number>; // Extract width from style
+  const width = style?.width as unknown as MotionValue<number>; // Extract width from style
 
   const widthTransform = useTransform(width, (val) => val / 2);
 
