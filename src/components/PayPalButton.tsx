@@ -78,6 +78,20 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
       onPaymentSuccess?.(updatedInvoice);
     } catch (error) {
       console.error("Payment processing error:", error);
+
+      // Check if error is due to window being closed
+      if (
+        error instanceof Error &&
+        error.message.includes("Window closed before response")
+      ) {
+        toast({
+          title: "Payment Window Closed",
+          description:
+            "The payment window was closed. You can try again anytime.",
+        });
+        return;
+      }
+
       toast({
         title: "Payment Processing Error",
         description:
@@ -94,6 +108,21 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
 
   const handleError = (err: any) => {
     console.error("PayPal error:", err);
+
+    // Check if error is due to window being closed
+    if (
+      err &&
+      err.message &&
+      err.message.includes("Window closed before response")
+    ) {
+      toast({
+        title: "Payment Window Closed",
+        description:
+          "The payment window was closed. You can try again anytime.",
+      });
+      return;
+    }
+
     toast({
       title: "Payment Error",
       description: "An error occurred during payment. Please try again.",
