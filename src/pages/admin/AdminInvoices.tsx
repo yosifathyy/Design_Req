@@ -156,20 +156,20 @@ const AdminInvoices: React.FC = () => {
           </head>
           <body>
             <div class="header">
-              <h1>Invoice ${invoice.invoice_number}</h1>
+              <h1>Invoice ${invoice.invoiceNumber}</h1>
               <h2>${invoice.title}</h2>
-              <p>Bill To: ${invoice.client.name} (${invoice.client.email})</p>
-              <p>Created: ${formatDate(invoice.created_at)}</p>
-              ${invoice.due_date ? `<p>Due: ${formatDate(invoice.due_date)}</p>` : ""}
+              <p>Bill To: ${invoice.clientName} (${invoice.clientEmail})</p>
+              <p>Created: ${formatDate(invoice.createdAt)}</p>
+              ${invoice.dueDate ? `<p>Due: ${formatDate(invoice.dueDate)}</p>` : ""}
             </div>
 
             <h3>Invoice Items:</h3>
-            ${invoice.line_items
+            ${invoice.lineItems
               .map(
                 (item) => `
               <div class="line-item">
                 <span>${item.description} (${item.quantity}x)</span>
-                <span>$${item.total_price.toFixed(2)}</span>
+                <span>$${(item.quantity * item.unitPrice).toFixed(2)}</span>
               </div>
             `,
               )
@@ -178,21 +178,21 @@ const AdminInvoices: React.FC = () => {
             <div class="total">
               <div class="line-item">
                 <span>Subtotal:</span>
-                <span>$${invoice.subtotal.toFixed(2)}</span>
+                <span>$${invoice.amount.toFixed(2)}</span>
               </div>
               ${
-                invoice.tax_amount > 0
+                invoice.taxAmount > 0
                   ? `
                 <div class="line-item">
-                  <span>Tax (${invoice.tax_rate}%):</span>
-                  <span>$${invoice.tax_amount.toFixed(2)}</span>
+                  <span>Tax (${invoice.taxRate}%):</span>
+                  <span>$${invoice.taxAmount.toFixed(2)}</span>
                 </div>
               `
                   : ""
               }
               <div class="line-item">
                 <span>Total:</span>
-                <span>$${invoice.total_amount.toFixed(2)}</span>
+                <span>$${invoice.totalAmount.toFixed(2)}</span>
               </div>
             </div>
 
