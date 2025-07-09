@@ -202,28 +202,34 @@ const EnhancedChat: React.FC = () => {
 
     try {
       // Check if storage bucket exists
+      console.log("Checking for chat-files bucket...");
       const { data: buckets, error: bucketError } =
         await supabase.storage.listBuckets();
 
+      console.log("Bucket check result:", { buckets, bucketError });
+
       if (bucketError) {
         console.error("Storage bucket error:", bucketError);
-        toast({
-          title: "Storage not available",
-          description:
-            "File upload is temporarily unavailable. Please try again later.",
-          variant: "destructive",
-        });
+        // Don't show error for bucket checking, just skip file upload
+        console.log("Bucket check failed, proceeding without file upload");
         return;
       }
 
-      const chatFilesBucket = buckets.find(
+      const chatFilesBucket = buckets?.find(
         (bucket) => bucket.name === "chat-files",
       );
+      console.log("Found chat-files bucket:", chatFilesBucket);
+
       if (!chatFilesBucket) {
-        console.error("chat-files bucket not found, showing setup helper");
+        console.log(
+          "chat-files bucket not found in:",
+          buckets?.map((b) => b.name),
+        );
         setShowStorageSetup(true);
         return;
       }
+
+      console.log("✅ chat-files bucket exists, proceeding with upload...");
 
       for (const file of Array.from(files)) {
         // Check file size (max 10MB)

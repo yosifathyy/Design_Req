@@ -21,19 +21,33 @@ const StorageSetupHelper: React.FC = () => {
 
   const checkBucketStatus = async () => {
     try {
+      console.log("🔍 Checking bucket status...");
       const { data: buckets, error } = await supabase.storage.listBuckets();
+
+      console.log("Bucket check response:", { buckets, error });
+
       if (error) {
         console.error("Error checking buckets:", error);
+        setBucketExists(false);
         return false;
       }
 
-      const chatFilesBucket = buckets.find(
+      console.log(
+        "Available buckets:",
+        buckets?.map((b) => b.name),
+      );
+
+      const chatFilesBucket = buckets?.find(
         (bucket) => bucket.name === "chat-files",
       );
+
+      console.log("chat-files bucket found:", !!chatFilesBucket);
+
       setBucketExists(!!chatFilesBucket);
       return !!chatFilesBucket;
     } catch (error) {
       console.error("Error checking bucket status:", error);
+      setBucketExists(false);
       return false;
     }
   };
