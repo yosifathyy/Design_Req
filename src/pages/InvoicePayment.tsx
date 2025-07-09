@@ -172,17 +172,17 @@ const InvoicePayment: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                ${invoice.line_items
+                ${invoice.lineItems
                   .map(
                     (item) => `
                   <tr>
                     <td>
                       <strong>${item.description}</strong>
-                      <br><small>${item.item_type}</small>
+                      <br><small>${item.itemType}</small>
                     </td>
                     <td>${item.quantity}</td>
-                    <td>$${item.unit_price.toFixed(2)}</td>
-                    <td>$${item.total_price.toFixed(2)}</td>
+                    <td>$${item.unitPrice.toFixed(2)}</td>
+                    <td>$${(item.quantity * item.unitPrice).toFixed(2)}</td>
                   </tr>
                 `,
                   )
@@ -192,19 +192,19 @@ const InvoicePayment: React.FC = () => {
 
             <div class="totals">
               <div class="total-line">
-                <strong>Subtotal: $${invoice.subtotal.toFixed(2)}</strong>
+                <strong>Subtotal: $${invoice.amount.toFixed(2)}</strong>
               </div>
               ${
-                invoice.tax_amount > 0
+                invoice.taxAmount > 0
                   ? `
                 <div class="total-line">
-                  <strong>Tax (${invoice.tax_rate}%): $${invoice.tax_amount.toFixed(2)}</strong>
+                  <strong>Tax (${invoice.taxRate}%): $${invoice.taxAmount.toFixed(2)}</strong>
                 </div>
               `
                   : ""
               }
               <div class="grand-total">
-                <strong>TOTAL: $${invoice.total_amount.toFixed(2)}</strong>
+                <strong>TOTAL: $${invoice.totalAmount.toFixed(2)}</strong>
               </div>
             </div>
 
