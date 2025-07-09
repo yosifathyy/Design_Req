@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
+import ChatDatabaseStatus from "@/components/ChatDatabaseStatus";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
