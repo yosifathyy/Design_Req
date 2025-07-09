@@ -414,7 +414,26 @@ export const useRealtimeChat = (projectId: string | null) => {
                   .from("users")
                   .insert([userData]);
 
-                if (!createError) {
+                if (createError) {
+                  const errorDetails = {
+                    message: createError.message,
+                    details: createError.details,
+                    hint: createError.hint,
+                    code: createError.code,
+                  };
+                  console.error(
+                    "Auto-creation failed in message send:",
+                    errorDetails,
+                  );
+                  console.error(
+                    "Full message auto-create error:",
+                    JSON.stringify(
+                      createError,
+                      Object.getOwnPropertyNames(createError),
+                      2,
+                    ),
+                  );
+                } else {
                   console.log(
                     "User record created automatically, retrying message...",
                   );
