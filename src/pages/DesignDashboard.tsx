@@ -361,7 +361,7 @@ const DesignDashboard: React.FC = () => {
         onClose={() => setShowNotification(false)}
         onClick={() => {
           setShowNotification(false);
-          navigate("/chat");
+          setShowMessagesInbox(true);
         }}
       />
 
