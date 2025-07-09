@@ -176,8 +176,16 @@ export const invoicesApi = {
       .single();
 
     if (invoiceError) {
-      console.error("Error creating invoice:", invoiceError);
-      throw invoiceError;
+      console.error("Error creating invoice:", {
+        error: invoiceError,
+        message: invoiceError.message,
+        details: invoiceError.details,
+        hint: invoiceError.hint,
+        code: invoiceError.code,
+      });
+      throw new Error(
+        `Failed to create invoice: ${invoiceError.message || JSON.stringify(invoiceError)}`,
+      );
     }
 
     // Create line items
