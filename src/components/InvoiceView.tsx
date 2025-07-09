@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 
 interface InvoiceViewProps {
-  invoice: InvoiceWithDetails;
+  invoice: SimpleInvoice;
   showPayment?: boolean;
-  onPaymentSuccess?: (invoice: InvoiceWithDetails) => void;
+  onPaymentSuccess?: (invoice: SimpleInvoice) => void;
   onDownload?: () => void;
   onPrint?: () => void;
 }
