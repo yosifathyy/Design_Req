@@ -89,10 +89,10 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
                 Bill To
               </h3>
               <div className="space-y-2">
-                <p className="font-bold text-black">{invoice.client.name}</p>
+                <p className="font-bold text-black">{invoice.clientName}</p>
                 <div className="flex items-center gap-2 text-black/70">
                   <Mail className="w-4 h-4" />
-                  <span>{invoice.client.email}</span>
+                  <span>{invoice.clientEmail}</span>
                 </div>
               </div>
             </div>
