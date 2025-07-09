@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { invoicesApi, InvoiceWithDetails } from "@/lib/invoices-api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import InvoiceView from "@/components/InvoiceView";
 import { ArrowLeft, Loader2, CheckCircle, XCircle } from "lucide-react";
 
@@ -125,12 +125,12 @@ const InvoicePayment: React.FC = () => {
               <p>Professional Design Services</p>
               <p>Email: hello@designagency.com | Phone: (555) 123-4567</p>
             </div>
-            
+
             <div class="header">
               <h1>INVOICE ${invoice.invoice_number}</h1>
               <h2>${invoice.title}</h2>
             </div>
-            
+
             <div class="invoice-info">
               <div class="bill-to">
                 <h3>Bill To:</h3>
@@ -143,7 +143,7 @@ const InvoicePayment: React.FC = () => {
                 <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
               </div>
             </div>
-            
+
             ${
               invoice.status === "paid"
                 ? `
@@ -156,7 +156,7 @@ const InvoicePayment: React.FC = () => {
             `
                 : ""
             }
-            
+
             <table class="line-items">
               <thead>
                 <tr>
@@ -184,7 +184,7 @@ const InvoicePayment: React.FC = () => {
                   .join("")}
               </tbody>
             </table>
-            
+
             <div class="totals">
               <div class="total-line">
                 <strong>Subtotal: $${invoice.subtotal.toFixed(2)}</strong>
@@ -202,7 +202,7 @@ const InvoicePayment: React.FC = () => {
                 <strong>TOTAL: $${invoice.total_amount.toFixed(2)}</strong>
               </div>
             </div>
-            
+
             ${
               invoice.notes
                 ? `
@@ -213,7 +213,7 @@ const InvoicePayment: React.FC = () => {
             `
                 : ""
             }
-            
+
             ${
               invoice.terms
                 ? `
@@ -224,7 +224,7 @@ const InvoicePayment: React.FC = () => {
             `
                 : ""
             }
-            
+
             <div class="footer">
               <p><em>Thank you for your business!</em></p>
               <p>For questions about this invoice, please contact us at hello@designagency.com</p>
