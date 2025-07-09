@@ -198,9 +198,9 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
             </div>
 
             {/* Line Items */}
-            {invoice.line_items.map((item, index) => (
+            {invoice.lineItems.map((item, index) => (
               <div
-                key={item.id}
+                key={index}
                 className="grid grid-cols-5 gap-4 py-3 border-b border-black/20"
               >
                 <div className="col-span-2">
@@ -209,15 +209,15 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
                     variant="outline"
                     className="mt-1 text-xs border border-black/30"
                   >
-                    {item.item_type}
+                    {item.itemType}
                   </Badge>
                 </div>
                 <div className="text-center text-black">{item.quantity}</div>
                 <div className="text-right text-black">
-                  ${item.unit_price.toFixed(2)}
+                  ${item.unitPrice.toFixed(2)}
                 </div>
                 <div className="text-right font-bold text-black">
-                  ${item.total_price.toFixed(2)}
+                  ${(item.quantity * item.unitPrice).toFixed(2)}
                 </div>
               </div>
             ))}
