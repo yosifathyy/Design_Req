@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
 import { getDesignRequestById } from "@/lib/api";
-import ChatDatabaseStatus from "@/components/ChatDatabaseStatus";
+import DirectMigration from "@/components/DirectMigration";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -139,8 +139,8 @@ const Chat: React.FC = () => {
         ref={containerRef}
         className="flex-1 max-w-4xl mx-auto w-full flex flex-col"
       >
-        {/* Database Status Check - Show if there's an error even during loading */}
-        {error && <ChatDatabaseStatus />}
+        {/* Database Migration - Show if there's an error even during loading */}
+        {error && <DirectMigration />}
         {/* Header */}
         <div className="p-4 border-b-4 border-black bg-white">
           <div className="flex items-center justify-between">
