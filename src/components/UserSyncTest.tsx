@@ -127,8 +127,8 @@ export const UserSyncTest: React.FC = () => {
         <div className="text-sm">
           <div className="font-medium text-purple-800">Test Info:</div>
           <div className="text-purple-700">
-            This test checks if your user ID exists in the users table by
-            attempting a message insert.
+            This test verifies if your user record exists in the database and if
+            the foreign key constraints work properly for message sending.
           </div>
         </div>
 
