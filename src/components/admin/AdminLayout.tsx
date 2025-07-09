@@ -204,75 +204,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
 
               {/* Notifications */}
-              <div className="relative">
-                <Button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  variant="outline"
-                  size="sm"
-                  className="relative border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-                >
-                  <Bell className="w-4 h-4" />
-                  {unreadAlerts > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-festival-orange text-black border-2 border-black w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs">
-                      {unreadAlerts}
-                    </Badge>
-                  )}
-                </Button>
-
-                {/* Notifications Dropdown */}
-                {showNotifications && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-50">
-                    <div className="p-4 border-b-2 border-black">
-                      <h3 className="font-bold text-black">System Alerts</h3>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {mockSystemAlerts.slice(0, 5).map((alert) => (
-                        <div
-                          key={alert.id}
-                          className={`p-3 border-b border-black/10 hover:bg-festival-cream cursor-pointer ${
-                            !alert.isRead ? "bg-festival-yellow/20" : ""
-                          }`}
-                        >
-                          <div className="flex items-start gap-2">
-                            <div
-                              className={`w-2 h-2 rounded-full mt-2 ${
-                                alert.type === "error"
-                                  ? "bg-red-500"
-                                  : alert.type === "warning"
-                                    ? "bg-yellow-500"
-                                    : alert.type === "success"
-                                      ? "bg-green-500"
-                                      : "bg-blue-500"
-                              }`}
-                            />
-                            <div className="flex-1">
-                              <h4 className="font-bold text-sm text-black">
-                                {alert.title}
-                              </h4>
-                              <p className="text-xs text-black/70">
-                                {alert.message}
-                              </p>
-                              <span className="text-xs text-black/50">
-                                {new Date(alert.timestamp).toLocaleTimeString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="p-3 border-t-2 border-black">
-                      <Button
-                        onClick={() => navigate("/admin/alerts")}
-                        variant="outline"
-                        size="sm"
-                        className="w-full border-2 border-black"
-                      >
-                        View All Alerts
-                      </Button>
-                    </div>
-                  </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="relative border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                onClick={() => navigate("/admin/alerts")}
+              >
+                <Bell className="w-4 h-4" />
+                {unreadAlerts > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-festival-orange text-black border-2 border-black w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs">
+                    {unreadAlerts}
+                  </Badge>
                 )}
-              </div>
+              </Button>
 
               {/* User Menu */}
               <div className="flex items-center gap-3 px-3 py-2 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
