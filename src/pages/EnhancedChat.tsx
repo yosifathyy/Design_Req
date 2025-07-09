@@ -175,6 +175,35 @@ const EnhancedChat: React.FC = () => {
     setUploadingFile(true);
 
     try {
+      // Check if storage bucket exists
+      const { data: buckets, error: bucketError } =
+        await supabase.storage.listBuckets();
+
+      if (bucketError) {
+        console.error("Storage bucket error:", bucketError);
+        toast({
+          title: "Storage not available",
+          description:
+            "File upload is temporarily unavailable. Please try again later.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const chatFilesBucket = buckets.find(
+        (bucket) => bucket.name === "chat-files",
+      );
+      if (!chatFilesBucket) {
+        console.error("chat-files bucket not found");
+        toast({
+          title: "Storage configuration error",
+          description:
+            "File upload storage is not configured. Please contact support.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       for (const file of Array.from(files)) {
         // Check file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
