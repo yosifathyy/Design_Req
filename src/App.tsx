@@ -56,7 +56,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disputes = lazy(() => import("./pages/Disputes"));
-const Login = lazy(() => import("./pages/Login"));
+// Login is now imported eagerly above
 const DesignDashboard = lazy(() => import("./pages/DesignDashboard"));
 const NewRequest = lazy(() => import("./pages/NewRequest"));
 const Chat = lazy(() => import("./pages/Chat"));
