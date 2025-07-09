@@ -539,6 +539,20 @@ export const createChat = async (requestId: string, participants: string[]) => {
   }
 
   try {
+    // Check authentication state first
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
+
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error("Authentication failed. Please log in again.");
+    }
+
+    if (!session) {
+      throw new Error("No active session. Please log in to create chats.");
+    }
     // Validate that the project exists
     const { data: project, error: projectError } = await supabase
       .from("design_requests")
