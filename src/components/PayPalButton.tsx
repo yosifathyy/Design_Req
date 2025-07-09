@@ -37,11 +37,36 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
 
       console.log("PayPal payment captured:", details);
 
+      // Check for errors in the response
+      const errorDetail = details?.details?.[0];
+      if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
+        // Recoverable error - restart the payment flow
+        setIsProcessing(false);
+        return actions.restart();
+      } else if (errorDetail) {
+        // Non-recoverable error
+        throw new Error(`${errorDetail.description} (${details.debug_id})`);
+      }
+
+      // Ensure we have payment data
+      if (!details.purchase_units || !details.purchase_units[0]) {
+        throw new Error("Invalid payment response from PayPal");
+      }
+
+      const capture = details.purchase_units[0].payments?.captures?.[0];
+      const authorization =
+        details.purchase_units[0].payments?.authorizations?.[0];
+      const transaction = capture || authorization;
+
+      if (!transaction) {
+        throw new Error("No transaction data received from PayPal");
+      }
+
       // Update invoice in database
       const updatedInvoice = await simpleInvoicesApi.markAsPaid(invoice.id, {
         paymentMethod: "paypal",
         paypalOrderId: details.id,
-        transactionId: details.purchase_units[0].payments.captures[0].id,
+        transactionId: transaction.id,
         amount: parseFloat(details.purchase_units[0].amount.value),
       });
 
@@ -56,7 +81,9 @@ const PayPalButtonWrapper: React.FC<PayPalButtonProps> = ({
       toast({
         title: "Payment Processing Error",
         description:
-          "There was an error processing your payment. Please try again.",
+          error instanceof Error
+            ? error.message
+            : "There was an error processing your payment. Please try again.",
         variant: "destructive",
       });
       onPaymentError?.(error);
