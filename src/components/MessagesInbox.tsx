@@ -67,7 +67,7 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
       setLoading(true);
       setError(null);
 
-      // Get all messages from projects where user is involved
+      // Get all messages with sender information
       const { data: messagesData, error: messagesError } = await supabase
         .from("messages")
         .select(
@@ -75,10 +75,8 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
           id,
           text,
           created_at,
-          sender:users!sender_id (id, name, email, role, avatar_url),
-          chat:chats!chat_id (
-            design_request:design_requests!project_id (id, title, status, user_id)
-          )
+          chat_id,
+          sender:users!sender_id (id, name, email, role, avatar_url)
         `,
         )
         .order("created_at", { ascending: false })
@@ -88,25 +86,66 @@ export const MessagesInbox: React.FC<MessagesInboxProps> = ({
         throw messagesError;
       }
 
-      // Filter messages for projects where user is involved
-      const userMessages = (messagesData || [])
+      if (!messagesData || messagesData.length === 0) {
+        setMessages([]);
+        return;
+      }
+
+      // Get unique chat IDs to fetch chat details
+      const chatIds = [...new Set(messagesData.map((msg: any) => msg.chat_id))];
+
+      // Get chat details with design request information
+      const { data: chatsData, error: chatsError } = await supabase
+        .from("chats")
+        .select(
+          `
+          id,
+          project_id,
+          design_request:design_requests!project_id (id, title, status, user_id)
+        `,
+        )
+        .in("id", chatIds);
+
+      if (chatsError) {
+        console.warn("Error loading chat details:", chatsError);
+        // Continue with basic message data even if chat details fail
+      }
+
+      // Create a lookup map for chat details
+      const chatLookup = (chatsData || []).reduce((acc: any, chat: any) => {
+        acc[chat.id] = chat;
+        return acc;
+      }, {});
+
+      // Process messages and filter for user involvement
+      const userMessages = messagesData
         .filter((msg: any) => {
+          const chat = chatLookup[msg.chat_id];
           return (
-            msg.chat?.design_request?.user_id === user.id || // User owns the project
-            msg.sender.id === user.id // User sent the message
+            chat?.design_request?.user_id === user.id || // User owns the project
+            msg.sender?.id === user.id // User sent the message
           );
         })
-        .map((msg: any) => ({
-          id: msg.id,
-          text: msg.text,
-          created_at: msg.created_at,
-          sender: msg.sender,
-          project: {
-            id: msg.chat?.design_request?.id || "unknown",
-            title: msg.chat?.design_request?.title || "Unknown Project",
-            status: msg.chat?.design_request?.status || "unknown",
-          },
-        }));
+        .map((msg: any) => {
+          const chat = chatLookup[msg.chat_id];
+          return {
+            id: msg.id,
+            text: msg.text,
+            created_at: msg.created_at,
+            sender: msg.sender || {
+              id: "unknown",
+              name: "Unknown User",
+              email: "",
+              role: "user",
+              avatar_url: null,
+            },
+            project: {
+              id: chat?.design_request?.id || msg.chat_id || "unknown",
+              title: chat?.design_request?.title || `Chat ${msg.chat_id}`,
+              status: chat?.design_request?.status || "unknown",
+            },
+          };
+        });
 
       setMessages(userMessages);
     } catch (err: any) {
