@@ -43,8 +43,8 @@ const AdminInvoices: React.FC = () => {
     try {
       setLoading(true);
       const [invoicesData, statsData] = await Promise.all([
-        invoicesApi.getAll(),
-        invoicesApi.getStats(),
+        simpleInvoicesApi.getAll(),
+        simpleInvoicesApi.getStats(),
       ]);
 
       setInvoices(invoicesData);
@@ -56,9 +56,11 @@ const AdminInvoices: React.FC = () => {
       });
     } catch (error) {
       console.error("Failed to load invoices:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error loading invoices",
-        description: "Failed to load invoices from database",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
