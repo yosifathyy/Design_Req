@@ -215,7 +215,16 @@ const DesignDashboard: React.FC = () => {
           dueInvoices,
         }));
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("❌ Error fetching dashboard data:", {
+          error,
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+
+        // Also log to see which specific API call failed
+        if (error instanceof Error) {
+          console.error("❌ Error details:", error.message);
+        }
       } finally {
         setLoading(false);
       }
