@@ -156,7 +156,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .single();
 
             if (createError) {
-              console.error("Failed to auto-create user record:", createError);
+              const errorDetails = {
+                message: createError.message,
+                details: createError.details,
+                hint: createError.hint,
+                code: createError.code,
+              };
+              console.error("Failed to auto-create user record:", errorDetails);
+              console.error(
+                "Full error object:",
+                JSON.stringify(
+                  createError,
+                  Object.getOwnPropertyNames(createError),
+                  2,
+                ),
+              );
               setProfile(null);
               return;
             }
