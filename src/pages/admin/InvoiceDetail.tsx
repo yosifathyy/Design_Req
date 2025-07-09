@@ -62,18 +62,20 @@ const InvoiceDetail: React.FC = () => {
 
     try {
       setUpdating(true);
-      const updatedInvoice = await invoicesApi.sendInvoice(invoice.id);
+      const updatedInvoice = await simpleInvoicesApi.sendInvoice(invoice.id);
       setInvoice(updatedInvoice);
 
       toast({
         title: "Invoice Sent! 📧",
-        description: `Invoice ${updatedInvoice.invoice_number} has been sent to ${updatedInvoice.client.name}.`,
+        description: `Invoice ${updatedInvoice.invoiceNumber} has been sent to ${updatedInvoice.clientName}.`,
       });
     } catch (error) {
       console.error("Error sending invoice:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error sending invoice",
-        description: "Failed to send invoice. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
