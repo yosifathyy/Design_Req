@@ -339,10 +339,34 @@ export const AdminSetupHelper: React.FC = () => {
             <h3 className="font-semibold mb-2">Quick Start Guide:</h3>
             <ol className="text-sm space-y-1 list-decimal list-inside">
               <li>Create the demo admin user (admin@demo.com / demo123)</li>
-              <li>Login with the admin credentials</li>
+              <li>Check if database tables exist</li>
+              <li>
+                If tables are missing, get SQL setup commands and run them in
+                Supabase
+              </li>
               <li>Create sample data to populate the dashboard</li>
               <li>Explore the admin dashboard with real data</li>
             </ol>
+
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+              <h4 className="font-medium text-blue-800 text-sm mb-1">
+                💡 Common Issues:
+              </h4>
+              <ul className="text-xs text-blue-700 space-y-1">
+                <li>
+                  • <strong>Empty dashboard:</strong> Database tables missing or
+                  RLS blocking access
+                </li>
+                <li>
+                  • <strong>Message errors:</strong> Check chat debugger at
+                  /admin-debug
+                </li>
+                <li>
+                  • <strong>Permission denied:</strong> Run the "Setup Database"
+                  SQL to disable RLS
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </Card>
