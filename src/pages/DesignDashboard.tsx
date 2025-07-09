@@ -70,7 +70,7 @@ const DesignDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
   const [profileSetupError, setProfileSetupError] = useState(false);
-  const [idMismatch, setIdMismatch] = useState<{
+    const [idMismatch, setIdMismatch] = useState<{
     authId: string;
     dbId: string;
   } | null>(null);
@@ -85,25 +85,25 @@ const DesignDashboard: React.FC = () => {
   const projectsRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
 
-  const { user } = useAuth();
+    const { user } = useAuth();
   const navigate = useNavigate();
   const unreadCount = useUnreadCount();
 
-  // Real-time update for unread count changes
+    // Real-time update for unread count changes
   useEffect(() => {
     if (unreadCount > lastUnreadCount && lastUnreadCount >= 0) {
       // Show notification when new messages arrive
       setShowNotification(true);
 
       // Add a subtle animation when unread count changes
-      const chatCard = document.querySelector(".unread-chat-card");
+      const chatCard = document.querySelector('.unread-chat-card');
       if (chatCard) {
         gsap.to(chatCard, {
           scale: 1.02,
           duration: 0.2,
           yoyo: true,
           repeat: 1,
-          ease: "power2.inOut",
+          ease: "power2.inOut"
         });
       }
     }
@@ -346,11 +346,23 @@ const DesignDashboard: React.FC = () => {
     );
   }
 
-  return (
-    <div
-      ref={containerRef}
-      className="min-h-screen bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream relative overflow-hidden"
-    >
+    return (
+    <>
+      {/* New Message Notification */}
+      <NewMessageNotification
+        show={showNotification}
+        count={unreadCount}
+        onClose={() => setShowNotification(false)}
+        onClick={() => {
+          setShowNotification(false);
+          navigate("/chat");
+        }}
+      />
+
+      <div
+        ref={containerRef}
+        className="min-h-screen bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream relative overflow-hidden"
+      >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="floating-element absolute top-20 left-10 w-32 h-32 bg-festival-orange/20 transform rotate-45 rounded-lg"></div>
@@ -462,7 +474,7 @@ const DesignDashboard: React.FC = () => {
           </Link>
 
           {/* Unread Chats */}
-          <Link to="/chat">
+                    <Link to="/chat">
             <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-6">
               <div className="flex items-center justify-between mb-4">
                 <MessageCircle className="w-12 h-12 text-white" />
