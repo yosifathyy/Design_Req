@@ -572,14 +572,14 @@ const DesignDashboard: React.FC = () => {
               </Card>
             </Link>
 
-            <Link to="/chat">
+            <div onClick={() => setShowProjectSelection(true)}>
               <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 cursor-pointer p-8 text-center">
                 <MessageCircle className="w-16 h-16 text-white mx-auto mb-4" />
                 <h3 className="text-2xl font-display font-bold text-white mb-2">
                   Chat with Designer
                 </h3>
                 <p className="text-white/80 font-medium">
-                  Get instant updates and feedback
+                  Choose project to chat about
                 </p>
                 {unreadCount > 0 && (
                   <Badge className="absolute -top-2 -right-2 bg-red-500 text-white border-2 border-white animate-bounce">
@@ -587,7 +587,7 @@ const DesignDashboard: React.FC = () => {
                   </Badge>
                 )}
               </Card>
-            </Link>
+            </div>
 
             <Link to="/payments">
               <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 cursor-pointer p-8 text-center">
