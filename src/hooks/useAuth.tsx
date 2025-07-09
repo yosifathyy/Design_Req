@@ -339,12 +339,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { data: null, error: authError };
       }
 
-      // Update last login timestamp
+      // Update last login timestamp or create user record
       if (data?.session?.user) {
-        await supabase
+        const { error: updateError } = await supabase
           .from("users")
           .update({ last_login: new Date().toISOString() })
           .eq("id", data.session.user.id);
+
+        // If update fails, user might not exist - create the record
+        if (updateError && updateError.message?.includes("No rows found")) {
+          console.log("User record not found during login, creating...");
+          try {
+            const userData = {
+              id: data.session.user.id,
+              email: data.session.user.email,
+              name:
+                data.session.user.user_metadata?.name ||
+                data.session.user.email?.split("@")[0] ||
+                "User",
+              role:
+                data.session.user.email === "admin@demo.com" ? "admin" : "user",
+              status: "active",
+              xp: 0,
+              level: 1,
+              avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.session.user.email}`,
+              created_at: new Date().toISOString(),
+              last_login: new Date().toISOString(),
+            };
+
+            const { error: createError } = await supabase
+              .from("users")
+              .insert([userData]);
+
+            if (createError) {
+              console.error(
+                "Failed to create user record during login:",
+                createError,
+              );
+            } else {
+              console.log("User record created successfully during login");
+            }
+          } catch (userCreateError) {
+            console.error("Error creating user during login:", userCreateError);
+          }
+        }
       }
 
       setLoading(false);
