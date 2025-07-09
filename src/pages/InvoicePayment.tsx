@@ -83,7 +83,7 @@ const InvoicePayment: React.FC = () => {
 
     toast({
       title: "Payment Successful! 🎉",
-      description: `Payment of $${updatedInvoice.total_amount.toFixed(2)} has been processed successfully.`,
+      description: `Payment of $${updatedInvoice.totalAmount.toFixed(2)} has been processed successfully.`,
     });
   };
 
