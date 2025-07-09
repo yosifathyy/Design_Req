@@ -23,13 +23,15 @@ export const PAYPAL_CONFIG = {
   WEBHOOK_URL: window.location.origin + "/api/paypal/webhook",
 } as const;
 
-// PayPal SDK options for react-paypal-js
+// PayPal SDK options for react-paypal-js with enhanced payment options
 export const paypalScriptOptions = {
   "client-id": PAYPAL_CONFIG.CLIENT_ID,
+  "buyer-country": "US",
   currency: PAYPAL_CONFIG.CURRENCY,
   intent: "capture",
-  "disable-funding": "credit,card", // Only show PayPal option
   components: "buttons,messages",
+  "enable-funding": "venmo,paylater,card", // Enable additional payment methods
+  "data-sdk-integration-source": "developer-studio",
 };
 
 // Helper to get access token for server-side API calls
