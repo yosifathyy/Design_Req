@@ -384,7 +384,7 @@ const DesignDashboard: React.FC = () => {
         </div>
 
         <div
-          className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col"
+          className="relative z-10 w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 flex flex-col min-h-screen"
           style={{
             backgroundImage:
               "url(https://cdn.builder.io/api/v1/image/assets%2F847ced7118144d42aa3c3a20eefb4087%2Fb37ab6171c61405ab176b52f9c1859bb)",
@@ -405,7 +405,7 @@ const DesignDashboard: React.FC = () => {
           {/* Hero Section */}
           <div
             ref={heroRef}
-            className="mb-8 sm:mb-12 relative bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-4 sm:p-6 lg:p-8"
+            className="mb-4 sm:mb-6 relative bg-white/80 backdrop-blur-sm rounded-2xl border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-3 sm:p-4 lg:p-6"
           >
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full lg:w-auto">
@@ -471,138 +471,135 @@ const DesignDashboard: React.FC = () => {
           {/* Stats Grid */}
           <div
             ref={statsRef}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6"
           >
             {/* Total Requests */}
             <Link to="/requests">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-3 px-6 min-h-[140px] sm:min-h-[160px]">
-                <div className="flex items-center justify-between mb-4">
-                  <FileText className="w-12 h-12 text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30">
+              <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
+                <div className="flex items-center justify-between mb-2">
+                  <FileText className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                  <Badge className="bg-white/20 text-white border-white/30 text-xs">
                     All Time
                   </Badge>
                 </div>
-                <div className="text-4xl font-display font-bold text-white mb-2">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
                   {stats.totalRequests}
                 </div>
-                <div className="text-white/90 font-medium mb-3">
+                <div className="text-white/90 font-medium text-sm">
                   Total Projects
                 </div>
-                <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-white/60 group-hover:text-white transition-colors mt-9" />
+                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </Link>
 
             {/* Unread Chats */}
             <div onClick={() => setShowMessagesInbox(true)}>
-              <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-3 px-6 min-h-[140px] sm:min-h-[160px]">
-                <div className="flex items-center justify-between mb-4">
-                  <MessageCircle className="w-12 h-12 text-white" />
+              <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
+                <div className="flex items-center justify-between mb-2">
+                  <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                   {unreadCount > 0 && (
-                    <Badge className="bg-red-500 text-white border-2 border-white animate-pulse">
+                    <Badge className="bg-red-500 text-white border-2 border-white animate-pulse text-xs">
                       {unreadCount} New!
                     </Badge>
                   )}
                 </div>
-                <div className="text-4xl font-display font-bold text-white mb-2">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
                   {unreadCount}
                 </div>
-                <div className="text-white/90 font-medium mb-3">
+                <div className="text-white/90 font-medium text-sm">
                   Unread Messages
                 </div>
-                <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-white/60 group-hover:text-white transition-colors mt-9" />
+                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </div>
 
             {/* Active Projects */}
             <Link to="/requests?filter=active">
-              <Card className="stat-card group relative bg-gradient-to-br from-festival-yellow to-festival-amber border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-3 px-6 min-h-[140px] sm:min-h-[160px]">
-                <div className="flex items-center justify-between mb-4">
-                  <Clock className="w-12 h-12 text-black" />
-                  <Badge className="bg-black/20 text-black border-black/30">
+              <Card className="stat-card group relative bg-gradient-to-br from-festival-yellow to-festival-amber border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
+                <div className="flex items-center justify-between mb-2">
+                  <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
+                  <Badge className="bg-black/20 text-black border-black/30 text-xs">
                     In Progress
                   </Badge>
                 </div>
-                <div className="text-4xl font-display font-bold text-black mb-2">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-black mb-1">
                   {stats.activeProjects}
                 </div>
-                <div className="text-black/80 font-medium mb-3">
+                <div className="text-black/80 font-medium text-sm">
                   Active Projects
                 </div>
-                <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-black/60 group-hover:text-black transition-colors mt-9" />
+                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-black/60 group-hover:text-black transition-colors" />
               </Card>
             </Link>
 
             {/* Completed Projects */}
             <Link to="/requests?filter=completed">
-              <Card className="stat-card group relative bg-gradient-to-br from-green-400 to-green-600 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-3 px-6 min-h-[140px] sm:min-h-[160px]">
-                <div className="flex items-center justify-between mb-4">
-                  <CheckCircle className="w-12 h-12 text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30">
+              <Card className="stat-card group relative bg-gradient-to-br from-green-400 to-green-600 border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 sm:p-3 min-h-[100px] sm:min-h-[120px]">
+                <div className="flex items-center justify-between mb-2">
+                  <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                  <Badge className="bg-white/20 text-white border-white/30 text-xs">
                     Success!
                   </Badge>
                 </div>
-                <div className="text-4xl font-display font-bold text-white mb-2">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
                   {stats.completedProjects}
                 </div>
-                <div className="text-white/90 font-medium mb-3">
+                <div className="text-white/90 font-medium text-sm">
                   Completed Projects
                 </div>
-                <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-white/60 group-hover:text-white transition-colors mt-9" />
+                <ArrowRight className="absolute top-2 right-2 w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
               </Card>
             </Link>
           </div>
 
           {/* Quick Actions */}
-          <div
-            className="flex flex-col gap-6 mb-8 sm:mb-12"
-            style={{ marginTop: "-42px" }}
-          >
-            <div className="flex gap-5 max-md:flex-col">
-              {/* Left Column */}
-              <div className="flex flex-col w-1/2 max-md:w-full max-md:ml-0">
+          <div className="flex-1 flex flex-col gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 h-full">
+              {/* Left Column - Action Cards */}
+              <div className="flex flex-col gap-3 sm:gap-4">
                 <div
                   onClick={() => setShowProjectSelection(true)}
-                  className="flex flex-col h-45 mx-auto mb-7"
+                  className="flex-1"
                 >
-                  <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-3 px-8">
-                    <MessageCircle className="w-16 h-16 text-white mx-auto mb-4" />
-                    <h3 className="text-2xl font-display font-bold text-white mb-2">
+                  <Card className="group relative bg-gradient-to-br from-blue-500 to-purple-600 border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-4 sm:p-6 h-full min-h-[120px]">
+                    <MessageCircle className="w-12 h-12 sm:w-16 sm:h-16 text-white mx-auto mb-2 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-1 sm:mb-2">
                       Chat with Designer
                     </h3>
-                    <p className="text-white/80 font-medium">
+                    <p className="text-white/80 font-medium text-sm">
                       Choose project to chat about
                     </p>
                     {unreadCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white border-2 border-white animate-bounce">
+                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white border-2 border-white animate-bounce text-xs">
                         {unreadCount}
                       </Badge>
                     )}
                   </Card>
                 </div>
 
-                <Link to="/new-request" className="flex flex-col mx-auto mb-8">
-                  <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-3 px-8">
-                    <Plus className="w-16 h-16 text-white mx-auto mb-4" />
-                    <h3 className="text-2xl font-display font-bold text-white mb-2">
+                <Link to="/new-request" className="flex-1">
+                  <Card className="group bg-gradient-to-br from-festival-magenta to-festival-pink border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-4 sm:p-6 h-full min-h-[120px]">
+                    <Plus className="w-12 h-12 sm:w-16 sm:h-16 text-white mx-auto mb-2 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-1 sm:mb-2">
                       Start New Project
                     </h3>
-                    <p className="text-white/80 font-medium">
-                      create something amazing
+                    <p className="text-white/80 font-medium text-sm">
+                      Create something amazing
                     </p>
                   </Card>
                 </Link>
 
-                <Link to="/payments" className="flex flex-col mx-auto mb-14">
-                  <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-3 px-8">
-                    <CreditCard className="w-16 h-16 text-white mx-auto mb-4" />
-                    <h3 className="text-2xl font-display font-bold text-white mb-2">
+                <Link to="/payments" className="flex-1">
+                  <Card className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-300 cursor-pointer text-center flex flex-col p-4 sm:p-6 h-full min-h-[120px]">
+                    <CreditCard className="w-12 h-12 sm:w-16 sm:h-16 text-white mx-auto mb-2 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-1 sm:mb-2">
                       View Invoices
                     </h3>
-                    <p className="text-white/80 font-medium">
+                    <p className="text-white/80 font-medium text-sm">
                       Manage payments and billing
                     </p>
                     {stats.dueInvoices > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black border-2 border-white">
+                      <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black border-2 border-white text-xs">
                         {stats.dueInvoices}
                       </Badge>
                     )}
@@ -610,90 +607,84 @@ const DesignDashboard: React.FC = () => {
                 </Link>
               </div>
 
-              {/* Right Column */}
-              <div className="flex flex-col w-1/2 ml-5 max-md:w-full max-md:ml-0">
+              {/* Right Column - Projects */}
+              <div className="flex flex-col">
                 <div
                   ref={projectsRef}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col px-8 py-8 pb-64"
+                  className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col p-4 sm:p-6 h-full min-h-[400px]"
                 >
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-display font-bold text-black flex items-center gap-3">
-                      <Palette className="w-8 h-8 text-festival-orange" />
+                  <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-display font-bold text-black flex items-center gap-2">
+                      <Palette className="w-6 h-6 sm:w-8 sm:h-8 text-festival-orange" />
                       Recent Projects
                     </h2>
                     <Link to="/requests">
-                      <Button className="bg-festival-orange hover:bg-festival-coral border-2 border-black font-bold">
-                        View All Projects
-                        <ArrowRight className="w-4 h-4 ml-2" />
+                      <Button className="bg-festival-orange hover:bg-festival-coral border-2 border-black font-bold text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-2">
+                        View All
+                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
                       </Button>
                     </Link>
                   </div>
 
                   {requests.length > 0 ? (
-                    <div className="grid gap-4">
+                    <div className="grid gap-2 sm:gap-3 flex-1 overflow-y-auto">
                       {requests.slice(0, 3).map((request, index) => (
                         <Link
                           key={request.id}
                           to={`/requests/${request.id}`}
                           className="group"
                         >
-                          <Card className="border-2 border-black/20 hover:border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 p-6">
+                          <Card className="border-2 border-black/20 hover:border-black hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 p-3 sm:p-4">
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-festival-orange/20 rounded-full flex items-center justify-center border-2 border-festival-orange/30">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-festival-orange/20 rounded-full flex items-center justify-center border-2 border-festival-orange/30">
                                   {request.category === "logo" && (
-                                    <PaintBucket className="w-6 h-6 text-festival-orange" />
+                                    <PaintBucket className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
                                   )}
                                   {request.category === "web" && (
-                                    <Brush className="w-6 h-6 text-festival-orange" />
+                                    <Brush className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
                                   )}
                                   {request.category === "brand" && (
-                                    <Sparkles className="w-6 h-6 text-festival-orange" />
+                                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-festival-orange" />
                                   )}
                                 </div>
-                                <div>
-                                  <h3 className="text-lg font-bold text-black group-hover:text-festival-orange transition-colors">
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-sm sm:text-base font-bold text-black group-hover:text-festival-orange transition-colors truncate">
                                     {request.title}
                                   </h3>
-                                  <div className="flex items-center gap-3 mt-1">
+                                  <div className="flex items-center gap-2 mt-1">
                                     <Badge
-                                      className={`${getStatusColor(request.status)} text-white border-0`}
+                                      className={`${getStatusColor(request.status)} text-white border-0 text-xs`}
                                     >
                                       {request.status}
                                     </Badge>
                                     <Badge
-                                      className={`${getPriorityColor(request.priority)} border-0`}
+                                      className={`${getPriorityColor(request.priority)} border-0 text-xs`}
                                     >
-                                      {request.priority} priority
+                                      {request.priority}
                                     </Badge>
-                                    <span className="text-sm text-black/60">
-                                      {new Date(
-                                        request.created_at,
-                                      ).toLocaleDateString()}
-                                    </span>
                                   </div>
                                 </div>
                               </div>
-                              <ArrowRight className="w-5 h-5 text-black/40 group-hover:text-festival-orange transition-colors" />
+                              <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-festival-orange transition-colors flex-shrink-0" />
                             </div>
                           </Card>
                         </Link>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
-                      <Gift className="w-16 h-16 text-festival-orange/50 mx-auto mb-4" />
-                      <h3 className="text-xl font-bold text-black/60 mb-2">
+                    <div className="text-center py-6 sm:py-8 flex-1 flex flex-col justify-center">
+                      <Gift className="w-12 h-12 sm:w-16 sm:h-16 text-festival-orange/50 mx-auto mb-3" />
+                      <h3 className="text-lg sm:text-xl font-bold text-black/60 mb-2">
                         No projects yet
                       </h3>
-                      <p className="text-black/50 mb-6">
-                        Start your first design project and watch the magic
-                        happen!
+                      <p className="text-black/50 mb-4 text-sm sm:text-base">
+                        Start your first design project!
                       </p>
                       <Link to="/new-request">
-                        <Button className="bg-festival-orange hover:bg-festival-coral border-2 border-black font-bold">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Create Your First Project
+                        <Button className="bg-festival-orange hover:bg-festival-coral border-2 border-black font-bold text-sm sm:text-base px-3 sm:px-4 py-2">
+                          <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                          Create Project
                         </Button>
                       </Link>
                     </div>
