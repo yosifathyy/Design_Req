@@ -279,6 +279,16 @@ CREATE POLICY "Users can delete their chat files" ON storage.objects
           <Button onClick={checkBucketStatus} variant="outline" size="sm">
             Check Again
           </Button>
+          <Button
+            onClick={() => {
+              setBucketExists(null);
+              setTimeout(checkBucketStatus, 100);
+            }}
+            variant="outline"
+            size="sm"
+          >
+            Force Refresh
+          </Button>
           <span className="text-xs text-orange-600">
             Click "Check Again" after creating the bucket
           </span>
