@@ -71,9 +71,9 @@ export const invoicesApi = {
           notes,
           created_at
         ),
-        design_request:design_request_id(id, title, description),
-        client:user_id(id, name, email),
-        designer:designer_id(id, name, email)
+        design_request:design_requests(id, title, description),
+        client:users!user_id(id, name, email),
+        designer:users(id, name, email)
       `,
       )
       .order("created_at", { ascending: false });
@@ -83,7 +83,7 @@ export const invoicesApi = {
       throw error;
     }
 
-    return data as InvoiceWithDetails[];
+    return (data || []) as any;
   },
 
   // Get invoice by ID
@@ -106,9 +106,9 @@ export const invoicesApi = {
           notes,
           created_at
         ),
-        design_request:design_request_id(id, title, description),
-        client:user_id(id, name, email),
-        designer:designer_id(id, name, email)
+        design_request:design_requests(id, title, description),
+        client:users!user_id(id, name, email),
+        designer:users(id, name, email)
       `,
       )
       .eq("id", id)
@@ -119,7 +119,7 @@ export const invoicesApi = {
       throw error;
     }
 
-    return data as InvoiceWithDetails;
+    return data as any;
   },
 
   // Get invoices for current user
@@ -151,9 +151,9 @@ export const invoicesApi = {
           notes,
           created_at
         ),
-        design_request:design_request_id(id, title, description),
-        client:user_id(id, name, email),
-        designer:designer_id(id, name, email)
+        design_request:design_requests(id, title, description),
+        client:users!user_id(id, name, email),
+        designer:users(id, name, email)
       `,
       )
       .eq("user_id", user.id)
@@ -164,7 +164,7 @@ export const invoicesApi = {
       throw error;
     }
 
-    return data as InvoiceWithDetails[];
+    return (data || []) as any;
   },
 
   // Create new invoice

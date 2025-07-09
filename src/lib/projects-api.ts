@@ -21,7 +21,7 @@ export const projectsApi = {
       .select(
         `
         *,
-        designer:designer_id(id, name, email, avatar_url),
+        designer:users(id, name, email, avatar_url),
         tasks:project_tasks(id, title, status, priority),
         timeline:project_timeline(id, message, type, created_at)
       `,
@@ -43,9 +43,9 @@ export const projectsApi = {
       .select(
         `
         *,
-        designer:designer_id(id, name, email, avatar_url),
+        designer:users(id, name, email, avatar_url),
         tasks:project_tasks(*),
-        timeline:project_timeline(*, user:user_id(name, avatar_url))
+        timeline:project_timeline(*, created_user:users(name, avatar_url))
       `,
       )
       .eq("id", id)
@@ -63,7 +63,7 @@ export const projectsApi = {
   async create(project: ProjectInsert) {
     const { data, error } = await supabase
       .from("projects")
-      .insert(project)
+      .insert(project as any)
       .select()
       .single();
 
@@ -168,7 +168,7 @@ export const projectTasksApi = {
       .select(
         `
         *,
-        assigned_user:assigned_to(id, name, email, avatar_url)
+        assigned_user:users(id, name, email, avatar_url)
       `,
       )
       .eq("project_id", projectId)
@@ -251,7 +251,7 @@ export const projectTasksApi = {
 
 // Real-time subscriptions
 export const subscribeToProjects = (
-  callback: (projects: Project[]) => void,
+  callback: (projects: any[]) => void,
 ) => {
   const channel = supabase
     .channel("projects-changes")
