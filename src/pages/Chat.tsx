@@ -62,6 +62,24 @@ const Chat: React.FC = () => {
   // Load project details
   const [projectError, setProjectError] = useState<string | null>(null);
 
+  // Function to mark messages as read when chat is opened
+  const markChatAsRead = async (chatId: string) => {
+    if (!user || !chatId) return;
+
+    try {
+      // Update the user's last_read_at for this chat
+      await supabase
+        .from("chat_participants")
+        .update({ last_read_at: new Date().toISOString() })
+        .eq("chat_id", chatId)
+        .eq("user_id", user.id);
+
+      console.log("✅ Marked chat as read:", chatId);
+    } catch (error) {
+      console.error("Error marking chat as read:", error);
+    }
+  };
+
   useEffect(() => {
     const loadProjectDetails = async () => {
       if (!projectId) return;
