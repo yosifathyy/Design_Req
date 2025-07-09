@@ -123,7 +123,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!data) {
-        console.warn(`No user profile found for ID: ${userId}`);
+        console.warn(
+          `No user profile found for ID: ${userId}, attempting to create one...`,
+        );
+
+        // Attempt to auto-create user record
+        try {
+          const currentUser = session?.user;
+          if (currentUser) {
+            const userData = {
+              id: userId,
+              email: currentUser.email,
+              name:
+                currentUser.user_metadata?.name ||
+                currentUser.email?.split("@")[0] ||
+                "User",
+              role: currentUser.email === "admin@demo.com" ? "admin" : "user",
+              status: "active",
+              xp: 0,
+              level: 1,
+              avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.email}`,
+              created_at: new Date().toISOString(),
+              last_login: new Date().toISOString(),
+            };
+
+            console.log("Auto-creating user record:", userData);
+
+            const { data: newUser, error: createError } = await supabase
+              .from("users")
+              .insert([userData])
+              .select()
+              .single();
+
+            if (createError) {
+              console.error("Failed to auto-create user record:", createError);
+              setProfile(null);
+              return;
+            }
+
+            console.log("User record auto-created successfully:", newUser);
+            setProfile(newUser);
+            return;
+          }
+        } catch (autoCreateError: any) {
+          console.error("Auto-create user failed:", autoCreateError);
+        }
+
         setProfile(null);
         return;
       }
