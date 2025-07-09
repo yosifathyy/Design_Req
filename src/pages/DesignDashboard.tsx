@@ -7,10 +7,10 @@ import { useUnreadCount } from "@/hooks/useRealtimeChat";
 import {
   getUserProfile,
   getDesignRequests,
-  getInvoices,
   createUserProfileIfMissing,
   findUserProfileByEmail,
 } from "@/lib/api";
+import { simpleInvoicesApi, SimpleInvoice } from "@/lib/invoices-simple-api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -68,13 +68,7 @@ interface ProjectRequest {
   attachments?: string[];
 }
 
-interface Invoice {
-  id: string;
-  amount: number;
-  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
-  due_date: string;
-  created_at: string;
-}
+// Using SimpleInvoice from invoices-simple-api.ts
 
 interface UserProfile {
   id: string;
@@ -96,6 +90,9 @@ interface DashboardStats {
   totalEarnings: number;
   avgRating: number;
   dueInvoices: number;
+  totalInvoices: number;
+  paidInvoices: number;
+  pendingPayments: number;
   xpProgress: {
     current: number;
     target: number;
@@ -124,6 +121,9 @@ const DesignDashboard: React.FC = () => {
     totalEarnings: 0,
     avgRating: 4.8,
     dueInvoices: 0,
+    totalInvoices: 0,
+    paidInvoices: 0,
+    pendingPayments: 0,
     xpProgress: {
       current: 10,
       target: 1000,
@@ -190,18 +190,35 @@ const DesignDashboard: React.FC = () => {
         // Fetch design requests and invoices in parallel
         console.log("📡 Fetching design requests and invoices...");
         let requestsResponse = [];
-        let invoicesResponse = [];
+        let invoicesResponse: SimpleInvoice[] = [];
 
         try {
-          requestsResponse = await getDesignRequests(user.id);
-          console.log("✅ Design requests fetched:", requestsResponse.length);
+          // Get ALL design requests first
+          const allRequests = await getDesignRequests(user.id);
+
+          // Filter out invoices (they have category: "invoice")
+          requestsResponse = allRequests.filter(
+            (r) => r.category !== "invoice",
+          );
+          console.log(
+            "✅ Design requests fetched (excluding invoices):",
+            requestsResponse.length,
+          );
+          console.log(
+            "📊 Total requests before filtering:",
+            allRequests.length,
+          );
         } catch (requestsError) {
           console.error("❌ Error fetching design requests:", requestsError);
           // Continue with empty array
         }
 
         try {
-          invoicesResponse = await getInvoices(user.id);
+          // Get invoices using the proper API
+          const allInvoices = await simpleInvoicesApi.getAll();
+          invoicesResponse = allInvoices.filter(
+            (invoice) => invoice.clientId === user.id,
+          );
           console.log("✅ Invoices fetched:", invoicesResponse.length);
         } catch (invoicesError) {
           console.error("❌ Error fetching invoices:", invoicesError);
@@ -210,7 +227,7 @@ const DesignDashboard: React.FC = () => {
 
         setRequests(requestsResponse);
 
-        // Calculate stats
+        // Calculate stats (now properly separated)
         const totalRequests = requestsResponse.length;
         const activeProjects = requestsResponse.filter(
           (r) => r.status === "in_progress" || r.status === "in_review",
@@ -219,8 +236,19 @@ const DesignDashboard: React.FC = () => {
           (r) => r.status === "completed",
         ).length;
         const dueInvoices = invoicesResponse.filter(
-          (i) => i.status === "overdue",
+          (i) => i.status === "sent" && new Date(i.dueDate || "") < new Date(),
         ).length;
+        const totalInvoices = invoicesResponse.length;
+
+        const paidInvoices = invoicesResponse.filter(
+          (i) => i.status === "paid",
+        ).length;
+        const pendingPayments = invoicesResponse
+          .filter((i) => i.status === "sent")
+          .reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+        const totalEarnings = invoicesResponse
+          .filter((i) => i.status === "paid")
+          .reduce((sum, invoice) => sum + invoice.totalAmount, 0);
 
         setStats((prev) => ({
           ...prev,
@@ -228,6 +256,10 @@ const DesignDashboard: React.FC = () => {
           activeProjects,
           completedProjects,
           dueInvoices,
+          totalInvoices,
+          paidInvoices,
+          pendingPayments,
+          totalEarnings,
         }));
       } catch (error) {
         console.error("❌ Error fetching dashboard data:", {
