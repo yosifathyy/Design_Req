@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { mockAdminUsers, mockAdminProjects } from "@/lib/admin-data";
+import {
+  getAdminUsers,
+  getAdminProjects,
+  createChat,
+  sendMessage,
+} from "@/lib/api";
 import {
   ArrowLeft,
   MessageCircle,
@@ -14,6 +19,7 @@ import {
   Users,
   FileText,
   Search,
+  RefreshCw,
 } from "lucide-react";
 
 const CreateChat: React.FC = () => {
@@ -23,23 +29,49 @@ const CreateChat: React.FC = () => {
   const [initialMessage, setInitialMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Load users and projects
   useEffect(() => {
-    if (!containerRef.current) return;
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [usersData, projectsData] = await Promise.all([
+          getAdminUsers(),
+          getAdminProjects(),
+        ]);
+        setUsers(usersData);
+        setProjects(projectsData);
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
-  const availableUsers = mockAdminUsers.filter(
+  const availableUsers = users.filter(
     (user) =>
       user.role !== "super-admin" &&
-      (user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())),
+      (user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const handleUserToggle = (userId: string) => {
@@ -50,48 +82,142 @@ const CreateChat: React.FC = () => {
     );
   };
 
-  const handleCreateChat = () => {
+  const handleCreateChat = async () => {
+    // Enhanced validation
     if (selectedUsers.length === 0) {
       alert("Please select at least one participant");
       return;
     }
 
-    if (!chatTitle.trim()) {
-      alert("Please enter a chat title");
+    if (!selectedProject) {
+      alert("Please select a project for this chat");
       return;
     }
 
-    // Create chat logic
-    const chatData = {
-      title: chatTitle,
-      participants: selectedUsers,
-      projectId: selectedProject,
-      initialMessage,
-      createdAt: new Date().toISOString(),
-    };
+    // Validate that the selected project exists
+    const projectExists = projects.some((p) => p.id === selectedProject);
+    if (!projectExists) {
+      alert(
+        "Selected project not found. Please refresh the page and try again.",
+      );
+      return;
+    }
 
-    // Show success animation
-    const successEl = document.createElement("div");
-    successEl.className =
-      "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
-    successEl.innerHTML = `
-      <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-        <div class="text-6xl mb-4">💬</div>
-        <h3 class="text-2xl font-bold text-black mb-2">Chat Created!</h3>
-        <p class="text-black/70">New conversation started successfully</p>
-      </div>
-    `;
-    document.body.appendChild(successEl);
+    // Validate that all selected users exist
+    const invalidUsers = selectedUsers.filter(
+      (userId) => !users.some((u) => u.id === userId),
+    );
+    if (invalidUsers.length > 0) {
+      alert(
+        "Some selected users are no longer available. Please refresh and try again.",
+      );
+      return;
+    }
 
-    setTimeout(() => {
-      document.body.removeChild(successEl);
-      navigate("/admin/chat");
-    }, 2000);
+    try {
+      setCreating(true);
+
+      // Check network connectivity
+      if (!navigator.onLine) {
+        throw new Error("No internet connection. Please check your network.");
+      }
+
+      console.log("Creating chat with:", {
+        projectId: selectedProject,
+        participants: selectedUsers,
+        project: projects.find((p) => p.id === selectedProject),
+        users: selectedUsers.map((id) => users.find((u) => u.id === id)),
+      });
+
+      // Create chat with participants
+      const chat = await createChat(selectedProject, selectedUsers);
+
+      console.log("Chat created successfully:", chat);
+
+      // Send initial message if provided
+      if (initialMessage.trim() && chat) {
+        try {
+          await sendMessage(chat.id, "current-admin-id", initialMessage);
+          console.log("Initial message sent successfully");
+        } catch (messageError) {
+          console.warn("Failed to send initial message:", messageError);
+          // Don't fail the entire operation if just the message fails
+        }
+      }
+
+      // Show success animation
+      const successEl = document.createElement("div");
+      successEl.className =
+        "fixed inset-0 flex items-center justify-center z-50 bg-black/50";
+      successEl.innerHTML = `
+        <div class="bg-white border-4 border-black p-8 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+          <div class="text-6xl mb-4">💬</div>
+          <h3 class="text-2xl font-bold text-black mb-2">Chat Created!</h3>
+          <p class="text-black/70">New conversation started successfully</p>
+        </div>
+      `;
+      document.body.appendChild(successEl);
+
+      setTimeout(() => {
+        document.body.removeChild(successEl);
+        navigate(chat ? `/admin/chat/${chat.id}` : "/admin/chat");
+      }, 2000);
+    } catch (error: any) {
+      console.error("Failed to create chat - Full error object:", error);
+      console.error("Error type:", typeof error);
+      console.error("Error constructor:", error?.constructor?.name);
+      console.error("Error keys:", Object.keys(error || {}));
+
+      // Comprehensive error message extraction
+      let errorMessage = "Unknown error occurred";
+
+      try {
+        if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+
+          // Special handling for authentication errors
+          if (
+            errorMessage.includes("Authentication") ||
+            errorMessage.includes("session")
+          ) {
+            errorMessage +=
+              "\n\nTip: Try refreshing the page and logging in again.";
+          }
+        } else if (error?.message) {
+          errorMessage = error.message;
+        } else if (error?.error_description) {
+          errorMessage = error.error_description;
+        } else if (error?.details) {
+          errorMessage = error.details;
+        } else if (error?.hint) {
+          errorMessage = error.hint;
+        } else if (error?.code) {
+          errorMessage = `Database error (${error.code}): ${error.message || "Unknown error"}`;
+        } else if (error?.statusText) {
+          errorMessage = `HTTP error: ${error.statusText}`;
+        } else {
+          // Last resort: try to extract meaningful info
+          const errorStr = JSON.stringify(error, null, 2);
+          console.error("Error JSON:", errorStr);
+          errorMessage =
+            errorStr.length > 200
+              ? `Complex error occurred. Check console for details.`
+              : errorStr;
+        }
+      } catch (stringifyError) {
+        console.error("Error stringifying error:", stringifyError);
+        errorMessage = "Error occurred but could not be displayed";
+      }
+
+      alert(`Failed to create chat: ${errorMessage}`);
+    } finally {
+      setCreating(false);
+    }
   };
 
-  const selectedProjectData = mockAdminProjects.find(
-    (p) => p.id === selectedProject,
-  );
+  const selectedProjectData = projects.find((p) => p.id === selectedProject);
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -126,32 +252,42 @@ const CreateChat: React.FC = () => {
             <div className="p-6 space-y-4">
               <div>
                 <Label className="text-sm font-bold text-black">
-                  Chat Title *
+                  Related Project *
                 </Label>
-                <Input
-                  value={chatTitle}
-                  onChange={(e) => setChatTitle(e.target.value)}
-                  placeholder="Enter chat title..."
-                  className="border-4 border-black bg-festival-cream"
-                />
+                <select
+                  value={selectedProject}
+                  onChange={(e) => {
+                    setSelectedProject(e.target.value);
+                    // Auto-generate chat title based on project
+                    const project = projects.find(
+                      (p) => p.id === e.target.value,
+                    );
+                    if (project && !chatTitle) {
+                      setChatTitle(`Chat: ${project.title}`);
+                    }
+                  }}
+                  className="w-full p-3 border-4 border-black bg-festival-cream"
+                >
+                  <option value="">Select a project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.title} -{" "}
+                      {project.client?.name || "Unknown Client"}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
                 <Label className="text-sm font-bold text-black">
-                  Related Project (Optional)
+                  Chat Title
                 </Label>
-                <select
-                  value={selectedProject}
-                  onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full p-3 border-4 border-black bg-festival-cream"
-                >
-                  <option value="">No specific project</option>
-                  {mockAdminProjects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.title} - {project.clientName}
-                    </option>
-                  ))}
-                </select>
+                <Input
+                  value={chatTitle}
+                  onChange={(e) => setChatTitle(e.target.value)}
+                  placeholder="Chat title (auto-generated from project)..."
+                  className="border-4 border-black bg-festival-cream"
+                />
               </div>
 
               {selectedProjectData && (
@@ -160,8 +296,15 @@ const CreateChat: React.FC = () => {
                     {selectedProjectData.title}
                   </h4>
                   <div className="text-sm text-black/70">
-                    <p>Client: {selectedProjectData.clientName}</p>
+                    <p>
+                      Client:{" "}
+                      {selectedProjectData.client?.name || "Unknown Client"}
+                    </p>
                     <p>Status: {selectedProjectData.status}</p>
+                    <p>
+                      Designer:{" "}
+                      {selectedProjectData.designer?.name || "Unassigned"}
+                    </p>
                   </div>
                 </div>
               )}
@@ -209,40 +352,56 @@ const CreateChat: React.FC = () => {
               </div>
 
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {availableUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className={`p-3 border-2 border-black cursor-pointer transition-all duration-200 ${
-                      selectedUsers.includes(user.id)
-                        ? "bg-festival-orange"
-                        : "bg-festival-cream hover:bg-festival-yellow/50"
-                    }`}
-                    onClick={() => handleUserToggle(user.id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-black">
-                          {user.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-black">{user.name}</p>
-                        <p className="text-sm text-black/70">{user.email}</p>
-                        <p className="text-xs text-black/50 uppercase">
-                          {user.role}
-                        </p>
-                      </div>
-                      {selectedUsers.includes(user.id) && (
-                        <div className="w-6 h-6 bg-green-500 border-2 border-black rounded-full flex items-center justify-center">
-                          <span className="text-xs text-white">✓</span>
-                        </div>
-                      )}
-                    </div>
+                {loading ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-festival-orange" />
+                    <p className="text-sm text-black/70">Loading users...</p>
                   </div>
-                ))}
+                ) : availableUsers.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Users className="w-8 h-8 mx-auto mb-2 text-black/30" />
+                    <p className="text-sm text-black/70">
+                      {searchQuery
+                        ? "No users match your search"
+                        : "No users available"}
+                    </p>
+                  </div>
+                ) : (
+                  availableUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className={`p-3 border-2 border-black cursor-pointer transition-all duration-200 ${
+                        selectedUsers.includes(user.id)
+                          ? "bg-festival-orange"
+                          : "bg-festival-cream hover:bg-festival-yellow/50"
+                      }`}
+                      onClick={() => handleUserToggle(user.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
+                          <span className="text-sm font-bold text-black">
+                            {user.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-black">{user.name}</p>
+                          <p className="text-sm text-black/70">{user.email}</p>
+                          <p className="text-xs text-black/50 uppercase">
+                            {user.role}
+                          </p>
+                        </div>
+                        {selectedUsers.includes(user.id) && (
+                          <div className="w-6 h-6 bg-green-500 border-2 border-black rounded-full flex items-center justify-center">
+                            <span className="text-xs text-white">✓</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {selectedUsers.length > 0 && (
@@ -252,7 +411,7 @@ const CreateChat: React.FC = () => {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {selectedUsers.map((userId) => {
-                      const user = mockAdminUsers.find((u) => u.id === userId);
+                      const user = users.find((u) => u.id === userId);
                       return (
                         <span
                           key={userId}
@@ -271,12 +430,23 @@ const CreateChat: React.FC = () => {
           <div className="flex justify-center">
             <Button
               onClick={handleCreateChat}
-              disabled={selectedUsers.length === 0 || !chatTitle.trim()}
+              disabled={
+                selectedUsers.length === 0 || !selectedProject || creating
+              }
               className="text-xl font-display font-bold px-8 py-4 h-auto bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <MessageCircle className="w-6 h-6 mr-3" />
-              CREATE CHAT
-              <Send className="w-6 h-6 ml-3" />
+              {creating ? (
+                <>
+                  <RefreshCw className="w-6 h-6 mr-3 animate-spin" />
+                  CREATING...
+                </>
+              ) : (
+                <>
+                  <MessageCircle className="w-6 h-6 mr-3" />
+                  CREATE CHAT
+                  <Send className="w-6 h-6 ml-3" />
+                </>
+              )}
             </Button>
           </div>
         </div>

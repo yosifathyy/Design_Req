@@ -4,7 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
 import CartoonyCursor from "@/components/CartoonyCursor";
 import GSAPCursor from "@/components/GSAPCursor";
 import RetroCursor from "@/components/RetroCursor";
@@ -13,6 +14,35 @@ import GSAPLoader from "@/components/GSAPLoader";
 import GSAPScrollProgress from "@/components/GSAPScrollProgress";
 import RetroPreloader from "@/components/RetroPreloader";
 import { initializeGSAP } from "@/lib/gsap-animations";
+
+// Admin redirect component
+const AdminRedirectHandler = () => {
+  const { user, profile, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && user) {
+      const isAdmin =
+        user.email === "admin@demo.com" ||
+        profile?.role === "admin" ||
+        profile?.role === "super-admin" ||
+        user?.role === "admin" ||
+        user?.role === "super-admin";
+
+      if (
+        isAdmin &&
+        location.pathname === "/" &&
+        user.email === "admin@demo.com"
+      ) {
+        console.log("🔄 Admin user detected, redirecting to /admin...");
+        navigate("/admin", { replace: true });
+      }
+    }
+  }, [user, profile, loading, location.pathname, navigate]);
+
+  return null;
+};
 
 // Import main components eagerly to prevent loading screens
 import Index from "./pages/Index";
@@ -64,6 +94,11 @@ const InvoiceReports = lazy(() => import("./pages/admin/InvoiceReports"));
 const CreateChat = lazy(() => import("./pages/admin/CreateChat"));
 const CreateProject = lazy(() => import("./pages/admin/CreateProject"));
 const CreateUser = lazy(() => import("./pages/admin/CreateUser"));
+const EditProject = lazy(() => import("./pages/admin/EditProject"));
+const EditUser = lazy(() => import("./pages/admin/EditUser"));
+const ProjectDetail = lazy(() => import("./pages/admin/ProjectDetail"));
+const AdminDebugTest = lazy(() => import("./components/AdminDebugTest"));
+const AdminSetupHelper = lazy(() => import("./components/AdminSetupHelper"));
 const queryClient = new QueryClient();
 
 // Loading component for Suspense
@@ -90,6 +125,7 @@ const AppContent = () => {
 
   return (
     <>
+      <AdminRedirectHandler />
       {isLoading && <RetroPreloader onComplete={handleLoadComplete} />}
       {!isLoading && <GSAPScrollProgress />}
       <RetroCursor enabled={!isLoading} />
@@ -110,20 +146,26 @@ const AppContent = () => {
           <Route path="/downloads" element={<Downloads />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/requests/:id" element={<RequestDetail />} />
+          <Route path="/admin-debug" element={<AdminDebugTest />} />
+          <Route path="/admin-setup" element={<AdminSetupHelper />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
             <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/edit/:id" element={<EditUser />} />
             <Route path="teams" element={<TeamManagement />} />
             <Route path="permissions" element={<PermissionsManagement />} />
             <Route path="projects" element={<ProjectsList />} />
             <Route path="projects/create" element={<CreateProject />} />
+            <Route path="projects/:id" element={<ProjectDetail />} />
+            <Route path="projects/:id/edit" element={<EditProject />} />
             <Route path="projects/kanban" element={<ProjectKanban />} />
             <Route
               path="projects/assignments"
               element={<ProjectAssignments />}
             />
             <Route path="chat" element={<AdminChat />} />
+            <Route path="chat/:id" element={<AdminChat />} />
             <Route path="chat/create" element={<CreateChat />} />
             <Route path="invoices" element={<AdminInvoices />} />
             <Route path="invoices/create" element={<CreateInvoice />} />

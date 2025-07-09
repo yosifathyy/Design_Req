@@ -1,9 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mockSystemAlerts } from "@/lib/admin-data";
+import { getSystemAlerts, markAlertAsRead } from "@/lib/api";
 import {
   AlertTriangle,
   Info,
@@ -12,19 +12,38 @@ import {
   Bell,
   Trash2,
   Eye,
+  RefreshCw,
 } from "lucide-react";
 
 const SystemAlerts: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const loadAlerts = async () => {
+      try {
+        setLoading(true);
+        const alertsData = await getSystemAlerts();
+        setAlerts(alertsData);
+      } catch (error) {
+        console.error("Failed to load alerts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAlerts();
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || loading) return;
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
     );
-  }, []);
+  }, [loading]);
 
   const getAlertIcon = (type: string) => {
     switch (type) {
@@ -56,13 +75,35 @@ const SystemAlerts: React.FC = () => {
     }
   };
 
-  const criticalAlerts = mockSystemAlerts.filter(
-    (alert) => alert.type === "error" && !alert.isRead,
+  const criticalAlerts = alerts.filter(
+    (alert) => alert.type === "error" && !alert.is_read,
   );
-  const warningAlerts = mockSystemAlerts.filter(
-    (alert) => alert.type === "warning" && !alert.isRead,
+  const warningAlerts = alerts.filter(
+    (alert) => alert.type === "warning" && !alert.is_read,
   );
-  const unreadAlerts = mockSystemAlerts.filter((alert) => !alert.isRead);
+  const unreadAlerts = alerts.filter((alert) => !alert.is_read);
+
+  const handleMarkAsRead = async (alertId: string) => {
+    try {
+      await markAlertAsRead(alertId);
+      setAlerts(
+        alerts.map((alert) =>
+          alert.id === alertId ? { ...alert, is_read: true } : alert,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to mark alert as read:", error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await Promise.all(unreadAlerts.map((alert) => markAlertAsRead(alert.id)));
+      setAlerts(alerts.map((alert) => ({ ...alert, is_read: true })));
+    } catch (error) {
+      console.error("Failed to mark all alerts as read:", error);
+    }
+  };
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -77,28 +118,24 @@ const SystemAlerts: React.FC = () => {
         </div>
         <div className="flex gap-3">
           <Button
-            onClick={() => {
-              console.log("Marking all alerts as read");
-              // Add mark all read logic here
-            }}
+            onClick={() => window.location.reload()}
             variant="outline"
             className="border-4 border-black"
+            disabled={loading}
           >
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Mark All Read
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
+            Refresh
           </Button>
           <Button
-            onClick={() => {
-              if (confirm("Are you sure you want to clear all alerts?")) {
-                console.log("Clearing all alerts");
-                // Add clear all logic here
-              }
-            }}
+            onClick={handleMarkAllAsRead}
             variant="outline"
             className="border-4 border-black"
+            disabled={unreadAlerts.length === 0}
           >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Clear All
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Mark All Read ({unreadAlerts.length})
           </Button>
         </div>
       </div>
@@ -147,85 +184,14 @@ const SystemAlerts: React.FC = () => {
       </div>
 
       {/* Alerts List */}
-      <div className="space-y-4">
-        {mockSystemAlerts.map((alert) => (
-          <Card
-            key={alert.id}
-            className={`border-4 ${getAlertColor(alert.type)} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 ${
-              !alert.isRead ? "border-l-8" : ""
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex gap-4 flex-1">
-                <div className="flex-shrink-0 mt-1">
-                  {getAlertIcon(alert.type)}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-bold text-black">
-                      {alert.title}
-                    </h3>
-                    <Badge
-                      className={`${
-                        alert.type === "error"
-                          ? "bg-red-500"
-                          : alert.type === "warning"
-                            ? "bg-yellow-500"
-                            : alert.type === "success"
-                              ? "bg-green-500"
-                              : "bg-blue-500"
-                      } text-white border-2 border-black`}
-                    >
-                      {alert.type.toUpperCase()}
-                    </Badge>
-                    {!alert.isRead && (
-                      <Badge className="bg-festival-orange text-black border-2 border-black">
-                        NEW
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-black/70 mb-3">{alert.message}</p>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="text-black/60">
-                      Source: {alert.source}
-                    </span>
-                    <span className="text-black/60">
-                      {new Date(alert.timestamp).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                {alert.actionUrl && (
-                  <Button
-                    onClick={() => window.open(alert.actionUrl, "_blank")}
-                    variant="outline"
-                    size="sm"
-                    className="border-4 border-black"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View
-                  </Button>
-                )}
-                <Button
-                  onClick={() => {
-                    if (confirm("Delete this alert?")) {
-                      console.log("Deleting alert:", alert.id);
-                    }
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-4 border-black"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {mockSystemAlerts.length === 0 && (
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-festival-orange" />
+            <p className="text-lg font-medium text-black">Loading alerts...</p>
+          </div>
+        </div>
+      ) : alerts.length === 0 ? (
         <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white p-12 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-black mb-2">All Clear!</h3>
@@ -233,6 +199,83 @@ const SystemAlerts: React.FC = () => {
             No system alerts at the moment. Everything is running smoothly.
           </p>
         </Card>
+      ) : (
+        <div className="space-y-4">
+          {alerts.map((alert) => (
+            <Card
+              key={alert.id}
+              className={`border-4 ${getAlertColor(alert.type)} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 ${
+                !alert.isRead ? "border-l-8" : ""
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex gap-4 flex-1">
+                  <div className="flex-shrink-0 mt-1">
+                    {getAlertIcon(alert.type)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-bold text-black">
+                        {alert.title}
+                      </h3>
+                      <Badge
+                        className={`${
+                          alert.type === "error"
+                            ? "bg-red-500"
+                            : alert.type === "warning"
+                              ? "bg-yellow-500"
+                              : alert.type === "success"
+                                ? "bg-green-500"
+                                : "bg-blue-500"
+                        } text-white border-2 border-black`}
+                      >
+                        {alert.type.toUpperCase()}
+                      </Badge>
+                      {!alert.is_read && (
+                        <Badge className="bg-festival-orange text-black border-2 border-black">
+                          NEW
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-black/70 mb-3">{alert.message}</p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="text-black/60">
+                        Source: {alert.source}
+                      </span>
+                      <span className="text-black/60">
+                        {new Date(alert.created_at).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {alert.action_url && (
+                    <Button
+                      onClick={() => window.open(alert.action_url, "_blank")}
+                      variant="outline"
+                      size="sm"
+                      className="border-4 border-black"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
+                    </Button>
+                  )}
+                  {!alert.is_read && (
+                    <Button
+                      onClick={() => handleMarkAsRead(alert.id)}
+                      variant="outline"
+                      size="sm"
+                      className="border-4 border-black"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Mark Read
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );

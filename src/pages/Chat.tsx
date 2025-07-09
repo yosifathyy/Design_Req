@@ -1,266 +1,104 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { gsap } from "gsap";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  getChatByRequestId,
-  createChat,
-  getMessages,
-  sendMessage,
-  getDesignRequestById,
-} from "@/lib/api";
-import { supabase } from "@/lib/supabase";
-
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { mockChat, mockUser } from "@/lib/dashboard-data";
+import { useAuth } from "@/hooks/useAuth";
+import { useRealtimeChat } from "@/hooks/useRealtimeChat";
+import { getDesignRequestById } from "@/lib/api";
+import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
+import QuickConnectionTest from "@/components/QuickConnectionTest";
+import ChatConnectionFixer from "@/components/ChatConnectionFixer";
+import ChatErrorDebugger from "@/components/ChatErrorDebugger";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import UserSyncFix from "@/components/UserSyncFix";
 import {
-  Send,
-  Paperclip,
-  Smile,
-  ArrowLeft,
-  Circle,
-  FileText,
-  Image,
-  Video,
-  File,
-  Download,
   MessageCircle,
+  Send,
+  ArrowLeft,
+  Loader2,
+  Circle,
+  AlertCircle,
 } from "lucide-react";
 
 const Chat: React.FC = () => {
-  const [message, setMessage] = useState("");
-  const [chatId, setChatId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [projectDetails, setProjectDetails] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const containerRef = useRef<HTMLDivElement>(null);
+
   const messagesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Get request ID from URL query params
-  const requestId = new URLSearchParams(location.search).get("request");
+  // Get project ID from URL query params
+  const projectId = new URLSearchParams(location.search).get("request");
 
+  // Chat state
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [projectDetails, setProjectDetails] = useState<any>(null);
+  const [projectLoading, setProjectLoading] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
+
+  // Use the realtime chat hook
+  const {
+    messages,
+    loading: messagesLoading,
+    error,
+    sendMessage: sendChatMessage,
+  } = useRealtimeChat(projectId);
+
+  // Retry function for connection issues
+  const retryConnection = () => {
+    console.log("Retrying chat connection...");
+    setRetryKey((prev) => prev + 1);
+    // Force re-render of chat hook
+    window.location.reload();
+  };
+
+  // Load project details
   useEffect(() => {
-    const initializeChat = async () => {
-      if (!user || !requestId) return;
+    const loadProjectDetails = async () => {
+      if (!projectId) return;
 
       try {
-        setLoading(true);
-
-        // Get project details
-        const requestData = await getDesignRequestById(requestId);
+        setProjectLoading(true);
+        const requestData = await getDesignRequestById(projectId);
         setProjectDetails(requestData);
-
-        // Get or create chat
-        let chat = await getChatByRequestId(requestId);
-
-        if (!chat) {
-          // Create new chat with user and designer (if assigned)
-          const participants = [user.id];
-          if (requestData.designer_id) {
-            participants.push(requestData.designer_id);
-          }
-
-          chat = await createChat(requestId, participants);
-        }
-
-        setChatId(chat.id);
-
-        // Get messages
-        const chatMessages = await getMessages(chat.id);
-        setMessages(chatMessages);
       } catch (error: any) {
-        console.error("Error initializing chat:", error?.message || error);
-
-        // Show user-friendly error message
-        const errorMessage =
-          error?.message || "Failed to initialize chat functionality.";
-
-        setError(errorMessage);
-
-        // Check if this is a policy setup issue
-        const isPolicyError =
-          errorMessage.includes("database policies need to be set up") ||
-          errorMessage.includes("row-level security policy");
-
-        if (isPolicyError) {
-          // Don't show the temporary notification for policy errors,
-          // as we'll show the setup helper instead
-          return;
-        }
-
-        // Create error notification
-        const errorEl = document.createElement("div");
-        errorEl.className =
-          "fixed top-4 right-4 z-50 bg-red-50 border-2 border-red-500 p-4 rounded-lg shadow-lg max-w-md";
-        errorEl.innerHTML = `
-          <div class="flex items-start gap-3">
-            <div class="text-red-500 text-xl">💬</div>
-            <div>
-              <h4 class="font-bold text-red-800 mb-1">Chat Unavailable</h4>
-              <p class="text-red-700 text-sm">${errorMessage}</p>
-              <p class="text-red-600 text-xs mt-2">Please check that your database chat tables are set up.</p>
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(errorEl);
-
-        // Remove error after 5 seconds
-        setTimeout(() => {
-          errorEl.remove();
-        }, 5000);
+        console.error("Error loading project:", error);
       } finally {
-        setLoading(false);
+        setProjectLoading(false);
       }
     };
 
-    if (user && requestId) {
-      initializeChat();
+    if (projectId) {
+      loadProjectDetails();
     }
-  }, [user, requestId]);
+  }, [projectId]);
 
-  // Realtime subscription for new messages
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (!chatId || !user) return;
+    if (messages.length > 0 && messagesRef.current) {
+      const scrollElement = messagesRef.current;
+      const isScrolledToBottom =
+        scrollElement.scrollHeight - scrollElement.clientHeight <=
+        scrollElement.scrollTop + 100;
 
-    const messageSubscription = supabase
-      .channel(`messages-${chatId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `chat_id=eq.${chatId}`,
-        },
-        async (payload) => {
-          console.log("New message received:", payload);
-
-          // Add the new message to the UI
-          const newMessage = payload.new;
-
-          // Try to enrich with sender data
-          try {
-            const { data: sender } = await supabase
-              .from("users")
-              .select("id, name, email, avatar_url, role")
-              .eq("id", newMessage.sender_id)
-              .maybeSingle();
-
-            const enrichedMessage = {
-              ...newMessage,
-              sender: sender || {
-                id: newMessage.sender_id,
-                name: "Unknown User",
-                email: "",
-                avatar_url: null,
-                role: "user",
-              },
-            };
-
-            setMessages((prev) => {
-              // Check if message already exists to avoid duplicates
-              const messageExists = prev.some(
-                (msg) => msg.id === enrichedMessage.id,
-              );
-              if (messageExists) return prev;
-
-              return [...prev, enrichedMessage];
-            });
-
-            // Animate new message
-            setTimeout(() => {
-              const newMessageEl = messagesRef.current?.lastElementChild;
-              if (newMessageEl) {
-                gsap.fromTo(
-                  newMessageEl,
-                  { opacity: 0, x: 50, scale: 0.9 },
-                  {
-                    opacity: 1,
-                    x: 0,
-                    scale: 1,
-                    duration: 0.4,
-                    ease: "back.out(1.2)",
-                  },
-                );
-              }
-            }, 50);
-          } catch (error) {
-            console.error("Error enriching message:", error);
-            // Add basic message if enrichment fails
-            setMessages((prev) => {
-              const messageExists = prev.some(
-                (msg) => msg.id === newMessage.id,
-              );
-              if (messageExists) return prev;
-
-              return [
-                ...prev,
-                {
-                  ...newMessage,
-                  sender: {
-                    id: newMessage.sender_id,
-                    name: "Unknown User",
-                    email: "",
-                    avatar_url: null,
-                    role: "user",
-                  },
-                },
-              ];
-            });
-          }
-        },
-      )
-      .subscribe();
-
-    // Cleanup subscription on unmount
-    return () => {
-      messageSubscription.unsubscribe();
-    };
-  }, [chatId, user]);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    gsap.fromTo(
-      containerRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-    );
-
-    // Animate messages on load
-    if (messagesRef.current) {
-      const messageElements = messagesRef.current.children;
-      gsap.fromTo(
-        messageElements,
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.3,
-          stagger: 0.1,
-          ease: "power2.out",
-        },
-      );
+      // Only auto-scroll if user is already near the bottom
+      if (isScrolledToBottom) {
+        setTimeout(() => {
+          scrollElement.scrollTop = scrollElement.scrollHeight;
+        }, 50);
+      }
     }
-  }, []);
+  }, [messages.length]);
 
+  // Focus input on load
   useEffect(() => {
-    // Auto-scroll to bottom when new messages arrive
-    if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    if (inputRef.current && !messagesLoading) {
+      inputRef.current.focus();
     }
-  }, [messages]);
+  }, [messagesLoading]);
 
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString("en-US", {
@@ -269,75 +107,47 @@ const Chat: React.FC = () => {
     });
   };
 
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension || ""))
-      return <Image className="w-4 h-4" />;
-    if (["mp4", "avi", "mov", "webm"].includes(extension || ""))
-      return <Video className="w-4 h-4" />;
-    if (["pdf"].includes(extension || ""))
-      return <FileText className="w-4 h-4" />;
-    return <File className="w-4 h-4" />;
-  };
-
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || sending) return;
 
-    const newMessage = {
-      id: (messages.length + 1).toString(),
-      text: message,
-      senderId: mockUser.id,
-      senderName: mockUser.name,
-      senderType: "user" as const,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      setSending(true);
+      const success = await sendChatMessage(message);
 
-    // Add to UI immediately for better UX
-    setMessages((prev) => [...prev, newMessage]);
-    setMessage("");
-
-    // Send to backend
-    if (chatId && user) {
-      try {
-        await sendMessage(chatId, user.id, message.trim());
-      } catch (error) {
-        console.error("Error sending message:", error);
+      if (success) {
+        setMessage("");
+        // Force scroll to bottom after sending
+        setTimeout(() => {
+          if (messagesRef.current) {
+            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+          }
+        }, 50);
+      } else {
+        console.error("Failed to send message - check error state for details");
+        // The error details are already in the error state from useRealtimeChat
       }
-    }
-
-    // Animate new message
-    setTimeout(() => {
-      const newMessageEl = messagesRef.current?.lastElementChild;
-      if (newMessageEl) {
-        gsap.fromTo(
-          newMessageEl,
-          { opacity: 0, x: 50, scale: 0.9 },
-          {
-            opacity: 1,
-            x: 0,
-            scale: 1,
-            duration: 0.4,
-            ease: "back.out(1.2)",
-          },
-        );
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      // Extract detailed error information for debugging
+      if (error?.message) {
+        console.error("Error message:", error.message);
       }
-    }, 50);
-
-    // Only simulate designer response if we're in demo mode
-    if (process.env.NODE_ENV === "development" && projectDetails?.designer_id) {
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        const designerResponse = {
-          id: (messages.length + 2).toString(),
-          text: "Thanks for the feedback! I'll work on those changes right away. 👍",
-          senderId: projectDetails.designer_id,
-          senderName: "Designer",
-          senderType: "designer" as const,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, designerResponse]);
-      }, 2000);
+      if (error?.details) {
+        console.error("Error details:", error.details);
+      }
+      if (error?.hint) {
+        console.error("Error hint:", error.hint);
+      }
+      if (error?.code) {
+        console.error("Error code:", error.code);
+      }
+      // Log the full error object structure
+      console.error(
+        "Full error object:",
+        JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+      );
+    } finally {
+      setSending(false);
     }
   };
 
@@ -348,213 +158,193 @@ const Chat: React.FC = () => {
     }
   };
 
-  const handleFileAttach = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      console.log(
-        "Files selected:",
-        fileArray.map((f) => f.name),
-      );
-
-      // Create new message with files
-      const newMessage = {
-        id: (messages.length + 1).toString(),
-        text: `Sent ${fileArray.length} file(s): ${fileArray.map((f) => f.name).join(", ")}`,
-        senderId: mockUser.id,
-        senderName: mockUser.name,
-        senderType: "user" as const,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, newMessage]);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-festival-cream flex flex-col">
-      <div
-        ref={containerRef}
-        className="flex-1 max-w-4xl mx-auto w-full flex flex-col"
-      >
-        {/* Header */}
-        <div className="p-4 border-b-4 border-black bg-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={() => navigate("/design-dashboard")}
-                variant="outline"
-                className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
+    <div className="h-screen bg-festival-cream flex flex-col">
+      {/* Show connection fixer if there's a problem loading messages */}
+      {error && error.includes("Failed to fetch") && (
+        <div className="p-4">
+          <ChatConnectionFixer onRetry={retryConnection} />
+        </div>
+      )}
 
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-festival-orange border-4 border-black rounded-full flex items-center justify-center">
-                  <span className="text-lg font-bold">
-                    {projectDetails?.designer_id ? "D" : "?"}
+      {/* Show detailed diagnostics for other errors */}
+      {error && !error.includes("Failed to fetch") && (
+        <div className="p-4 space-y-4">
+          <ErrorDisplay error={error} title="Chat Message Error" />
+
+          {/* Show UserSyncFix for foreign key errors */}
+          {error.includes("foreign key") ||
+            (error.includes("not present in table") && <UserSyncFix />)}
+
+          <ChatErrorDebugger projectId={projectId} error={error} />
+          <QuickConnectionTest />
+          <SupabaseConnectionTest />
+        </div>
+      )}
+
+      {/* Header - Fixed at top */}
+      <div className="flex-shrink-0 p-4 border-b-4 border-black bg-white shadow-lg">
+        <div className="flex items-center justify-between max-w-4xl mx-auto">
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => navigate("/design-dashboard")}
+              variant="outline"
+              size="sm"
+              className="border-2 border-black hover:bg-festival-orange/20"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-black" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-black">
+                  {projectDetails?.title || "Project Chat"}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Circle className="w-2 h-2 fill-green-500 text-green-500" />
+                  <span className="text-xs text-black/70">
+                    {projectDetails?.designer?.name
+                      ? `Designer: ${projectDetails.designer.name}`
+                      : "Waiting for designer"}
                   </span>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-black">
-                    {projectDetails?.designer_id
-                      ? "Designer"
-                      : "Waiting for assignment"}
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <Circle className="w-3 h-3 fill-green-500 text-green-500" />
-                    <span className="text-sm text-black/70">
-                      {isTyping ? "Typing..." : "Online"}
-                    </span>
-                  </div>
-                </div>
               </div>
-            </div>
-
-            <div className="text-sm text-black/70">
-              Project: {projectDetails?.title || "Loading..."}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Messages Area */}
+      {/* Messages Area - Scrollable chat window */}
+      <div className="flex-1 flex flex-col min-h-0 max-w-4xl mx-auto w-full">
         <div
           ref={messagesRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4"
-          style={{ height: "calc(100vh - 200px)" }}
+          className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-white to-festival-cream/50"
+          style={{ scrollBehavior: "smooth" }}
         >
-          {loading ? (
+          {messagesLoading && messages.length === 0 ? (
             <div className="flex justify-center items-center h-full">
-              <div className="w-12 h-12 border-4 border-festival-orange border-t-transparent rounded-full animate-spin"></div>
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-festival-orange" />
+                <p className="text-sm text-black/70">Loading messages...</p>
+              </div>
+            </div>
+          ) : !projectId ? (
+            <div className="flex flex-col items-center justify-center h-full text-black/50">
+              <MessageCircle className="w-16 h-16 mb-4" />
+              <p className="text-lg font-medium">No Project Selected</p>
+              <p className="text-sm">
+                Please select a project to start chatting
+              </p>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-black/50">
-              <MessageCircle className="w-16 h-16 mb-4" />
-              <p className="text-lg font-medium">No messages yet</p>
-              <p className="text-sm">
-                Start the conversation by sending a message
-              </p>
+              <MessageCircle className="w-12 h-12 mb-3" />
+              <p className="text-base font-medium">No messages yet</p>
+              <p className="text-sm">Start the conversation!</p>
             </div>
           ) : (
-            messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.senderType === "user" ? "justify-end" : "justify-start"}`}
-              >
+            messages.map((msg, index) => {
+              const isFromMe = msg.sender_id === user?.id;
+              const isFirstInGroup =
+                index === 0 || messages[index - 1]?.sender_id !== msg.sender_id;
+
+              return (
                 <div
-                  className={`max-w-xs lg:max-w-md ${
-                    msg.senderType === "user"
-                      ? "bg-gradient-to-br from-festival-orange to-festival-coral"
-                      : "bg-gradient-to-br from-festival-cyan to-festival-yellow"
-                  } border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                  key={msg.id}
+                  className={`flex ${isFromMe ? "justify-end" : "justify-start"} ${
+                    isFirstInGroup ? "mt-4" : "mt-1"
+                  }`}
                 >
-                  <div className="font-medium text-black text-sm mb-1">
-                    {msg.senderName}
-                  </div>
-                  <div className="text-black font-medium">{msg.text}</div>
+                  <div
+                    className={`max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl flex ${isFromMe ? "flex-row-reverse" : "flex-row"} items-end gap-2`}
+                  >
+                    {/* Avatar for others */}
+                    {!isFromMe && isFirstInGroup && (
+                      <div className="w-8 h-8 bg-festival-pink border-2 border-black rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-bold text-black">
+                          {msg.sender?.name?.charAt(0)?.toUpperCase() || "?"}
+                        </span>
+                      </div>
+                    )}
+                    {!isFromMe && !isFirstInGroup && <div className="w-8" />}
 
-                  {msg.files && msg.files.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                      {msg.files.map((file) => (
-                        <div
-                          key={file.id}
-                          className="flex items-center gap-2 p-2 bg-white border-2 border-black rounded-none"
-                        >
-                          {getFileIcon(file.name)}
-                          <span className="text-sm font-medium text-black flex-1 truncate">
-                            {file.name}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 w-6 p-0 border-2 border-black"
-                          >
-                            <Download className="w-3 h-3" />
-                          </Button>
+                    {/* Message bubble */}
+                    <div
+                      className={`relative px-4 py-2 rounded-2xl shadow-lg ${
+                        isFromMe
+                          ? "bg-festival-orange border-2 border-black text-black rounded-br-md"
+                          : "bg-white border-2 border-black text-black rounded-bl-md"
+                      } ${isFirstInGroup ? "mt-0" : ""}`}
+                    >
+                      {/* Sender name for group chats */}
+                      {!isFromMe && isFirstInGroup && (
+                        <div className="text-xs font-semibold text-festival-magenta mb-1">
+                          {msg.sender?.name || "Unknown User"}
                         </div>
-                      ))}
+                      )}
+
+                      {/* Message text */}
+                      <div className="text-sm leading-relaxed break-words">
+                        {msg.text}
+                      </div>
+
+                      {/* Timestamp */}
+                      <div
+                        className={`text-xs mt-1 ${isFromMe ? "text-black/70" : "text-black/60"}`}
+                      >
+                        {formatTime(msg.created_at)}
+                      </div>
+
+                      {/* Message tail */}
+                      <div
+                        className={`absolute w-0 h-0 ${
+                          isFromMe
+                            ? "right-[-8px] bottom-2 border-l-[8px] border-l-festival-orange border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent"
+                            : "left-[-8px] bottom-2 border-r-[8px] border-r-white border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent"
+                        }`}
+                      />
                     </div>
-                  )}
-
-                  <div className="text-xs text-black/70 mt-2">
-                    {formatTime(msg.timestamp)}
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <div className="flex items-center gap-2">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-black rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></div>
-                    <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                  </div>
-                  <span className="text-sm text-black/70">Sarah is typing</span>
-                </div>
-              </div>
-            </div>
+              );
+            })
           )}
         </div>
 
-        {/* Input Area */}
-        <div className="p-4 border-t-4 border-black bg-white">
+        {/* Input Area - Fixed at bottom */}
+        <div className="flex-shrink-0 p-4 border-t-2 border-black bg-white">
           <div className="flex items-center gap-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-              accept="image/*,video/*,.pdf,.doc,.docx"
-            />
-
-            <Button
-              onClick={handleFileAttach}
-              variant="outline"
-              size="sm"
-              className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-            >
-              <Paperclip className="w-4 h-4" />
-            </Button>
-
-            <div className="flex-1 relative">
+            <div className="flex-1">
               <Input
                 ref={inputRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="h-12 border-4 border-black pr-12 bg-festival-cream text-lg font-medium"
+                placeholder="Type a message..."
+                disabled={sending || !projectId}
+                className="border-2 border-black bg-white h-11 text-black placeholder:text-black/60 rounded-full px-4 focus:ring-2 focus:ring-festival-orange focus:border-festival-orange"
               />
-              <Button
-                variant="outline"
-                size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 border-2 border-black"
-              >
-                <Smile className="w-4 h-4" />
-              </Button>
             </div>
-
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || !chatId || !user}
-              className="h-12 px-6 bg-gradient-to-r from-festival-magenta to-festival-pink hover:from-festival-pink hover:to-festival-magenta border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!message.trim() || sending || !projectId}
+              size="sm"
+              className={`h-11 w-11 rounded-full p-0 border-2 border-black shadow-lg transition-all ${
+                message.trim() && !sending
+                  ? "bg-festival-orange hover:bg-festival-coral hover:scale-110"
+                  : "bg-gray-300"
+              }`}
             >
-              <Send className="w-5 h-5" />
+              {sending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
             </Button>
-          </div>
-
-          <div className="text-xs text-black/60 mt-2 text-center">
-            Press Enter to send • Shift+Enter for new line
           </div>
         </div>
       </div>

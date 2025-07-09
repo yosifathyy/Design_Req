@@ -1,7 +1,27 @@
-import { supabase } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 // User related functions
 export const getUserProfile = async (userId: string) => {
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock user profile");
+    return {
+      id: userId,
+      email: "developer@example.com",
+      name: "Development User",
+      role: "user",
+      status: "active",
+      xp: 100,
+      level: 1,
+      created_at: new Date().toISOString(),
+      avatar_url: null,
+      bio: null,
+      skills: null,
+      hourly_rate: null,
+      last_login: null,
+    };
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
@@ -53,6 +73,26 @@ export const createUserProfileIfMissing = async (
   email: string,
   name?: string,
 ) => {
+  // If Supabase is not configured, return mock profile
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock user profile");
+    return {
+      id: userId,
+      email: email,
+      name: name || email.split("@")[0] || "User",
+      role: "user",
+      status: "active",
+      xp: 0,
+      level: 1,
+      bio: null,
+      skills: null,
+      hourly_rate: null,
+      created_at: new Date().toISOString(),
+      last_login: null,
+      avatar_url: null,
+    };
+  }
+
   try {
     // Check if profile already exists by ID
     const existingProfile = await getUserProfile(userId);
@@ -141,6 +181,12 @@ export const createUserProfileIfMissing = async (
 };
 
 export const findUserProfileByEmail = async (email: string) => {
+  // If Supabase is not configured, return null
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - cannot find user by email");
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
@@ -482,7 +528,48 @@ export const getAllChatsForAdmin = async () => {
 };
 
 export const createChat = async (requestId: string, participants: string[]) => {
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock chat");
+    return {
+      id: `chat_${Date.now()}`,
+      request_id: requestId,
+      created_at: new Date().toISOString(),
+    };
+  }
+
   try {
+    // Check authentication state first
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
+
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error("Authentication failed. Please log in again.");
+    }
+
+    if (!session) {
+      throw new Error("No active session. Please log in to create chats.");
+    }
+    // Validate that the project exists
+    const { data: project, error: projectError } = await supabase
+      .from("design_requests")
+      .select("id")
+      .eq("id", requestId)
+      .maybeSingle(); // Use maybeSingle() to handle no results gracefully
+
+    if (projectError) {
+      console.error("Project validation error:", projectError);
+      throw new Error(`Failed to validate project: ${projectError.message}`);
+    }
+
+    if (!project) {
+      throw new Error(`Project with ID ${requestId} does not exist.`);
+    }
+    console.log("Creating chat for request:", requestId);
+
     // First create the chat
     const { data: chat, error: chatError } = await supabase
       .from("chats")
@@ -490,18 +577,29 @@ export const createChat = async (requestId: string, participants: string[]) => {
       .select()
       .single();
 
+    console.log("Chat creation result:", { chat, chatError });
+
     if (chatError) {
+      console.error("Chat creation error:", chatError);
+
       if (chatError.message?.includes('relation "chats" does not exist')) {
         throw new Error(
-          "Chat functionality is not available. Please run the database setup script.",
+          "Chat functionality is not available. The chats table does not exist in the database.",
         );
       }
       if (chatError.message?.includes("row-level security policy")) {
         throw new Error(
-          "Permission denied: Cannot create chat. The database policies need to be set up. Please run the fix_chat_policies_simple.sql script.",
+          "Permission denied: Cannot create chat. Database security policies need to be configured.",
         );
       }
-      throw chatError;
+      if (chatError.code === "23505") {
+        throw new Error("A chat already exists for this project.");
+      }
+
+      // Extract meaningful error message
+      const errorMsg =
+        chatError.message || chatError.details || "Unknown database error";
+      throw new Error(`Database error: ${errorMsg}`);
     }
 
     // Then add participants
@@ -510,40 +608,106 @@ export const createChat = async (requestId: string, participants: string[]) => {
       user_id: userId,
     }));
 
+    console.log("Adding participants:", participantRecords);
+
     const { error: participantError } = await supabase
       .from("chat_participants")
       .insert(participantRecords);
 
+    console.log("Participants creation result:", { participantError });
+
     if (participantError) {
+      console.error("Participant creation error:", participantError);
+
       if (
         participantError.message?.includes(
           'relation "chat_participants" does not exist',
         )
       ) {
         throw new Error(
-          "Chat participants table does not exist. Please run the database setup script.",
+          "Chat participants table does not exist in the database.",
         );
       }
       if (participantError.message?.includes("row-level security policy")) {
         throw new Error(
-          "Cannot add participants to this chat. Please check your permissions.",
+          "Cannot add participants to this chat. Database security policies need configuration.",
         );
       }
-      throw participantError;
+
+      // Extract meaningful error message
+      const errorMsg =
+        participantError.message ||
+        participantError.details ||
+        "Unknown database error";
+      throw new Error(`Failed to add participants: ${errorMsg}`);
     }
 
     return chat;
   } catch (error: any) {
+    console.error("CreateChat final error:", error);
+
+    // Check network connectivity
+    if (!navigator.onLine) {
+      throw new Error(
+        "No internet connection. Please check your network and try again.",
+      );
+    }
+
+    // If it's already a properly formatted error, re-throw it
+    if (error instanceof Error && error.message.includes("Project with ID")) {
+      throw error;
+    }
+
+    if (error instanceof Error && error.message.includes("Authentication")) {
+      throw error;
+    }
+
+    // Handle Supabase-specific errors
+    if (error?.message?.includes("Failed to fetch")) {
+      throw new Error(
+        "Connection error: Unable to reach the database. This might be due to authentication issues or network problems. Try refreshing the page.",
+      );
+    }
+
+    if (error?.message?.includes("JWT") || error?.message?.includes("token")) {
+      throw new Error(
+        "Authentication error: Your session has expired. Please refresh the page and log in again.",
+      );
+    }
+
+    if (error?.message?.includes("multiple (or no) rows returned")) {
+      throw new Error(
+        "Data consistency error: Please refresh the page and try again.",
+      );
+    }
+
+    // Handle database errors
     if (
-      error.message?.includes("Failed to fetch") ||
       error.message?.includes("relation") ||
       error.message?.includes("does not exist")
     ) {
       throw new Error(
-        "Could not create chat. Database tables may not exist yet.",
+        "Database error: Required tables are not set up. Please contact your administrator.",
       );
     }
-    throw error;
+
+    // Handle permission errors
+    if (
+      error.message?.includes("row-level security") ||
+      error.message?.includes("permission")
+    ) {
+      throw new Error(
+        "Permission error: You don't have permission to create chats. Please contact your administrator.",
+      );
+    }
+
+    // Generic error handling
+    const errorMsg =
+      error.message ||
+      error.details ||
+      error.error_description ||
+      "Unknown error";
+    throw new Error(`Chat creation failed: ${errorMsg}`);
   }
 };
 
@@ -763,55 +927,443 @@ export const submitContactForm = async (formData: {
 
 // Admin functions
 export const getAdminUsers = async () => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .order("created_at", { ascending: false });
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock admin users");
+    return [
+      {
+        id: "admin-1",
+        name: "Development Admin",
+        email: "admin@example.com",
+        role: "admin",
+        status: "active",
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        avatar_url: null,
+        bio: "Development mode admin user",
+        skills: ["Admin", "Management"],
+        hourly_rate: null,
+        xp: 1000,
+        level: 5,
+      },
+      {
+        id: "user-1",
+        name: "Test User",
+        email: "user@example.com",
+        role: "user",
+        status: "active",
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        avatar_url: null,
+        bio: null,
+        skills: null,
+        hourly_rate: null,
+        xp: 100,
+        level: 1,
+      },
+    ];
+  }
 
-  if (error) throw error;
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      if (error.message?.includes('relation "users" does not exist')) {
+        console.warn("Users table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch users:", error.message);
+    return [];
+  }
 };
 
 export const getAdminProjects = async () => {
-  const { data, error } = await supabase
-    .from("design_requests")
-    .select(
-      `
-      *,
-      client:user_id(id, name, email),
-      designer:designer_id(id, name, email),
-      files(*)
-    `,
-    )
-    .order("created_at", { ascending: false });
+  // If Supabase is not configured, return mock data for development
+  if (!isSupabaseConfigured) {
+    console.warn("Supabase not configured - returning mock projects");
+    return [
+      {
+        id: "project-1",
+        title: "Logo Design for Tech Startup",
+        description: "Modern logo design for a technology startup",
+        category: "logo",
+        priority: "high",
+        status: "in-progress",
+        price: 299,
+        user_id: "user-1",
+        designer_id: "admin-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        client: {
+          id: "user-1",
+          name: "Test User",
+          email: "user@example.com",
+          avatar_url: null,
+        },
+        designer: {
+          id: "admin-1",
+          name: "Development Admin",
+          email: "admin@example.com",
+          avatar_url: null,
+        },
+        files: [],
+      },
+      {
+        id: "project-2",
+        title: "Website Redesign",
+        description: "Complete website redesign for e-commerce site",
+        category: "web",
+        priority: "medium",
+        status: "submitted",
+        price: 599,
+        user_id: "user-1",
+        designer_id: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        client: {
+          id: "user-1",
+          name: "Test User",
+          email: "user@example.com",
+          avatar_url: null,
+        },
+        designer: null,
+        files: [],
+      },
+    ];
+  }
 
-  if (error) throw error;
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .select(
+        `
+        *,
+        client:user_id(id, name, email, avatar_url),
+        designer:designer_id(id, name, email, avatar_url),
+        files(*)
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      if (
+        error.message?.includes('relation "design_requests" does not exist')
+      ) {
+        console.warn("Design requests table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch projects:", error.message);
+    return [];
+  }
+};
+
+export const getAdminInvoices = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("invoices")
+      .select(
+        `
+        *,
+        request:request_id(id, title, user_id)
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      if (error.message?.includes('relation "invoices" does not exist')) {
+        console.warn("Invoices table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch invoices:", error.message);
+    return [];
+  }
 };
 
 export const getSystemAlerts = async () => {
-  const { data, error } = await supabase
-    .from("system_alerts")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("system_alerts")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "system_alerts" does not exist')) {
+        console.warn("System alerts table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch system alerts:", error.message);
+    return [];
+  }
 };
 
 export const getAuditLogs = async () => {
-  const { data, error } = await supabase
-    .from("audit_logs")
-    .select(
-      `
-      *,
-      user:user_id(name)
-    `,
-    )
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("audit_logs")
+      .select(
+        `
+        *,
+        user:user_id(name)
+      `,
+      )
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message?.includes('relation "audit_logs" does not exist')) {
+        console.warn("Audit logs table does not exist yet");
+        return [];
+      }
+      throw error;
+    }
+    return data || [];
+  } catch (error: any) {
+    console.warn("Could not fetch audit logs:", error.message);
+    return [];
+  }
+};
+
+export const getAdminAnalytics = async () => {
+  try {
+    // Get basic counts and metrics from the database
+    const [usersResult, projectsResult, invoicesResult] =
+      await Promise.allSettled([
+        supabase.from("users").select("*"),
+        supabase.from("design_requests").select("*"),
+        supabase.from("invoices").select("*"),
+      ]);
+
+    // Extract data or fallback to empty arrays
+    const users =
+      usersResult.status === "fulfilled" ? usersResult.value.data || [] : [];
+    const projects =
+      projectsResult.status === "fulfilled"
+        ? projectsResult.value.data || []
+        : [];
+    const invoices =
+      invoicesResult.status === "fulfilled"
+        ? invoicesResult.value.data || []
+        : [];
+
+    // Calculate analytics metrics
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const recentProjects = projects.filter(
+      (p) => new Date(p.created_at) >= thirtyDaysAgo,
+    );
+    const completedProjects = projects.filter((p) => p.status === "completed");
+    const activeProjects = projects.filter((p) =>
+      ["submitted", "in-progress"].includes(p.status),
+    );
+    const paidInvoices = invoices.filter((i) => i.status === "paid");
+    const pendingInvoices = invoices.filter((i) => i.status === "pending");
+    const activeUsers = users.filter((u) => u.status === "active");
+    const designers = users.filter(
+      (u) => u.role === "designer" && u.status === "active",
+    );
+
+    // Calculate financial metrics
+    const totalRevenue = paidInvoices.reduce(
+      (sum, inv) => sum + (inv.amount || 0),
+      0,
+    );
+    const pendingRevenue = pendingInvoices.reduce(
+      (sum, inv) => sum + (inv.amount || 0),
+      0,
+    );
+    const averageInvoiceSize =
+      paidInvoices.length > 0 ? totalRevenue / paidInvoices.length : 0;
+
+    // Calculate average turnaround time (simplified)
+    const avgTurnaroundTime =
+      completedProjects.length > 0
+        ? completedProjects.reduce((sum, p) => {
+            const created = new Date(p.created_at);
+            const updated = new Date(p.updated_at);
+            return sum + (updated.getTime() - created.getTime());
+          }, 0) /
+          completedProjects.length /
+          (1000 * 60 * 60 * 24)
+        : 0; // Convert to days
+
+    return {
+      clientEngagement: {
+        activeSessions: activeUsers.length,
+        requestsPerWeek: Math.round(recentProjects.length / 4),
+        averageProjectValue:
+          projects.length > 0
+            ? projects.reduce((sum, p) => sum + (p.price || 0), 0) /
+              projects.length
+            : 0,
+        clientRetentionRate:
+          users.length > 0 ? activeUsers.length / users.length : 0,
+      },
+      designerProductivity: {
+        averageTurnaroundTime: Math.round(avgTurnaroundTime * 10) / 10,
+        completedRequestsThisMonth: recentProjects.filter(
+          (p) => p.status === "completed",
+        ).length,
+        utilizationRate:
+          designers.length > 0
+            ? activeProjects.length / designers.length / 10
+            : 0, // Rough estimate
+        customerSatisfaction: 4.5, // Could be calculated from ratings if available
+      },
+      financialMetrics: {
+        monthlyRecurringRevenue: Math.round(totalRevenue),
+        averageInvoiceSize: Math.round(averageInvoiceSize),
+        outstandingBalance: Math.round(pendingRevenue),
+        collectionRate:
+          invoices.length > 0 ? paidInvoices.length / invoices.length : 0,
+      },
+      systemHealth: {
+        uptime: 0.999, // Mock value - would need real monitoring
+        errorRate: 0.003, // Mock value - would need real monitoring
+        averageLoadTime: 1.2, // Mock value - would need real monitoring
+        activeUsers: activeUsers.length,
+      },
+    };
+  } catch (error: any) {
+    console.warn("Could not fetch analytics data:", error.message);
+    // Return fallback data
+    return {
+      clientEngagement: {
+        activeSessions: 0,
+        requestsPerWeek: 0,
+        averageProjectValue: 0,
+        clientRetentionRate: 0,
+      },
+      designerProductivity: {
+        averageTurnaroundTime: 0,
+        completedRequestsThisMonth: 0,
+        utilizationRate: 0,
+        customerSatisfaction: 0,
+      },
+      financialMetrics: {
+        monthlyRecurringRevenue: 0,
+        averageInvoiceSize: 0,
+        outstandingBalance: 0,
+        collectionRate: 0,
+      },
+      systemHealth: {
+        uptime: 0,
+        errorRate: 0,
+        averageLoadTime: 0,
+        activeUsers: 0,
+      },
+    };
+  }
+};
+
+export const assignProjectToDesigner = async (
+  projectId: string,
+  designerId: string,
+) => {
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .update({ designer_id: designerId, status: "in-progress" })
+      .eq("id", projectId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Log the assignment
+    await createAuditLog({
+      user_id: designerId,
+      action: "project.assigned",
+      resource: "design_request",
+      resource_id: projectId,
+      details: { projectId, designerId },
+      ip_address: "127.0.0.1", // Should get real IP
+      user_agent: navigator.userAgent,
+      severity: "low",
+    });
+
+    return data;
+  } catch (error: any) {
+    console.error("Failed to assign project:", error.message);
+    throw error;
+  }
+};
+
+export const updateProjectStatus = async (
+  projectId: string,
+  status: string,
+) => {
+  try {
+    const { data, error } = await supabase
+      .from("design_requests")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", projectId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    console.error("Failed to update project status:", error.message);
+    throw error;
+  }
+};
+
+export const createSystemAlert = async (alertData: {
+  type: "info" | "warning" | "error" | "success";
+  title: string;
+  message: string;
+  source: "system" | "payment" | "user" | "project";
+  action_url?: string;
+}) => {
+  try {
+    const { data, error } = await supabase
+      .from("system_alerts")
+      .insert([{ ...alertData, is_read: false }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    console.warn("Could not create system alert:", error.message);
+    return null;
+  }
+};
+
+export const markAlertAsRead = async (alertId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("system_alerts")
+      .update({ is_read: true })
+      .eq("id", alertId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error: any) {
+    console.warn("Could not mark alert as read:", error.message);
+    return null;
+  }
 };
 
 export const createAuditLog = async (logData: any) => {

@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { AdminSidebar } from "./AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mockAdminUsers, mockSystemAlerts } from "@/lib/admin-data";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Search,
   Bell,
@@ -15,6 +15,7 @@ import {
   Moon,
   Zap,
   Shield,
+  Loader2,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -25,13 +26,25 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentUser] = useState(mockAdminUsers[0]); // Simulate logged-in admin user
 
+  const { user, profile, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const layoutRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
-  const unreadAlerts = mockSystemAlerts.filter((alert) => !alert.isRead).length;
+  // Check if user is admin
+  const isAdmin =
+    user?.email === "admin@demo.com" ||
+    profile?.role === "admin" ||
+    profile?.role === "super-admin";
+
+  const currentUser = {
+    name: profile?.name || user?.email || "Admin User",
+    role: profile?.role || "admin",
+    lastLogin: profile?.last_login || new Date().toISOString(),
+  };
+
+  const unreadAlerts = 0; // Simplified for now
 
   useEffect(() => {
     if (!layoutRef.current || !headerRef.current) return;
@@ -52,18 +65,75 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     );
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Add logout animation
     gsap.to(layoutRef.current, {
       opacity: 0,
       scale: 0.95,
       duration: 0.3,
       ease: "power2.in",
-      onComplete: () => {
-        navigate("/login");
+      onComplete: async () => {
+        await signOut();
+        navigate("/");
       },
     });
   };
+
+  // Redirect non-admin users
+  useEffect(() => {
+    if (!authLoading && user && !isAdmin) {
+      console.log(
+        "❌ Non-admin user trying to access admin area, redirecting...",
+      );
+      navigate("/design-dashboard");
+    }
+  }, [authLoading, user, isAdmin, navigate]);
+
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-festival-cream">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
+          <p className="text-lg font-medium text-black">
+            Loading admin panel...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!user || !isAdmin) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-festival-cream">
+        <div className="text-center max-w-md p-8 bg-white border-4 border-red-500 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Shield className="w-16 h-16 mx-auto mb-4 text-red-500" />
+          <h2 className="text-2xl font-bold text-red-800 mb-2">
+            Access Denied
+          </h2>
+          <p className="text-red-600 mb-6">
+            Admin privileges required to access this area.
+          </p>
+          <div className="space-y-3">
+            <Button
+              onClick={() => navigate("/admin-setup")}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            >
+              Setup Admin Account
+            </Button>
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              className="w-full border-2 border-gray-300"
+            >
+              Go to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -134,75 +204,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
 
               {/* Notifications */}
-              <div className="relative">
-                <Button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  variant="outline"
-                  size="sm"
-                  className="relative border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-                >
-                  <Bell className="w-4 h-4" />
-                  {unreadAlerts > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-festival-orange text-black border-2 border-black w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs">
-                      {unreadAlerts}
-                    </Badge>
-                  )}
-                </Button>
-
-                {/* Notifications Dropdown */}
-                {showNotifications && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-50">
-                    <div className="p-4 border-b-2 border-black">
-                      <h3 className="font-bold text-black">System Alerts</h3>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {mockSystemAlerts.slice(0, 5).map((alert) => (
-                        <div
-                          key={alert.id}
-                          className={`p-3 border-b border-black/10 hover:bg-festival-cream cursor-pointer ${
-                            !alert.isRead ? "bg-festival-yellow/20" : ""
-                          }`}
-                        >
-                          <div className="flex items-start gap-2">
-                            <div
-                              className={`w-2 h-2 rounded-full mt-2 ${
-                                alert.type === "error"
-                                  ? "bg-red-500"
-                                  : alert.type === "warning"
-                                    ? "bg-yellow-500"
-                                    : alert.type === "success"
-                                      ? "bg-green-500"
-                                      : "bg-blue-500"
-                              }`}
-                            />
-                            <div className="flex-1">
-                              <h4 className="font-bold text-sm text-black">
-                                {alert.title}
-                              </h4>
-                              <p className="text-xs text-black/70">
-                                {alert.message}
-                              </p>
-                              <span className="text-xs text-black/50">
-                                {new Date(alert.timestamp).toLocaleTimeString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="p-3 border-t-2 border-black">
-                      <Button
-                        onClick={() => navigate("/admin/alerts")}
-                        variant="outline"
-                        size="sm"
-                        className="w-full border-2 border-black"
-                      >
-                        View All Alerts
-                      </Button>
-                    </div>
-                  </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="relative border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                onClick={() => navigate("/admin/alerts")}
+              >
+                <Bell className="w-4 h-4" />
+                {unreadAlerts > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-festival-orange text-black border-2 border-black w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs">
+                    {unreadAlerts}
+                  </Badge>
                 )}
-              </div>
+              </Button>
 
               {/* User Menu */}
               <div className="flex items-center gap-3 px-3 py-2 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -249,14 +263,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           {children || <Outlet />}
         </main>
       </div>
-
-      {/* Click outside to close notifications */}
-      {showNotifications && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowNotifications(false)}
-        />
-      )}
     </div>
   );
 };

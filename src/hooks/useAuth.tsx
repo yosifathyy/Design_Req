@@ -2,6 +2,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import {
+  runConnectionDiagnostics,
+  printDiagnostics,
+} from "@/utils/connectionDiagnostics";
 
 type AuthContextType = {
   session: Session | null;
@@ -93,7 +97,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching user profile:", error);
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          JSON.stringify(error);
+        console.error("Error fetching user profile:", errorMessage);
+
+        // Run diagnostics if it's a network error
+        if (
+          errorMessage.includes("Failed to fetch") ||
+          errorMessage.includes("Network")
+        ) {
+          console.log("Running connection diagnostics due to network error...");
+          runConnectionDiagnostics().then(printDiagnostics);
+        }
+
         setProfile(null);
         return;
       }
@@ -106,7 +125,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setProfile(data);
     } catch (error: any) {
-      console.error("Error fetching user profile:", error?.message || error);
+      const errorMessage =
+        error?.message ||
+        error?.details ||
+        error?.hint ||
+        (typeof error === "string"
+          ? error
+          : JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      console.error("Error fetching user profile:", errorMessage);
       setProfile(null);
     }
   };
@@ -233,7 +259,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             };
           }
         } catch (err: any) {
-          console.error("Error checking user profile:", err?.message || err);
+          const errorMessage =
+            err?.message ||
+            err?.details ||
+            err?.hint ||
+            (typeof err === "string"
+              ? err
+              : JSON.stringify(err, Object.getOwnPropertyNames(err)));
+          console.error("Error checking user profile:", errorMessage);
         }
       }
 
@@ -358,10 +391,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       if (profileError) {
-        console.error(
-          "Error creating user profile:",
-          profileError?.message || profileError,
-        );
+        const errorMessage =
+          profileError?.message ||
+          profileError?.details ||
+          profileError?.hint ||
+          (typeof profileError === "string"
+            ? profileError
+            : JSON.stringify(
+                profileError,
+                Object.getOwnPropertyNames(profileError),
+              ));
+        console.error("Error creating user profile:", errorMessage);
         setLoading(false);
         return {
           data: null,
@@ -406,7 +446,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         await supabase.auth.signOut();
       } catch (error: any) {
-        console.error("Error signing out:", error?.message || error);
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          (typeof error === "string"
+            ? error
+            : JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        console.error("Error signing out:", errorMessage);
       }
     }
 

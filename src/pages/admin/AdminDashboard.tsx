@@ -1,436 +1,538 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  mockAnalyticsData,
-  mockAdminProjects,
-  mockAdminInvoices,
-  mockSystemAlerts,
-  mockAdminUsers,
-} from "@/lib/admin-data";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
+import AdminDashboardFixer from "@/components/AdminDashboardFixer";
 import {
   Users,
   FolderKanban,
+  MessageSquare,
   CreditCard,
   TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Activity,
-  Zap,
   Shield,
   Eye,
   ArrowRight,
+  RefreshCw,
+  Loader2,
+  AlertTriangle,
 } from "lucide-react";
+
+interface DashboardStats {
+  totalUsers: number;
+  totalProjects: number;
+  totalChats: number;
+  totalMessages: number;
+  totalInvoices: number;
+  recentUsers: any[];
+  recentProjects: any[];
+  recentMessages: any[];
+}
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const metricsRef = useRef<HTMLDivElement>(null);
-  const chartsRef = useRef<HTMLDivElement>(null);
+  const { user, profile } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check if user is admin
+  const isAdmin =
+    user?.role === "admin" ||
+    user?.role === "super-admin" ||
+    profile?.role === "admin" ||
+    profile?.role === "super-admin" ||
+    user?.email === "admin@demo.com";
+
+  const loadDashboardData = async () => {
+    if (!user || !isAdmin) {
+      setError("Access denied. Admin privileges required.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log("🔄 Loading admin dashboard for:", user.email);
+
+      // Load all data in parallel
+      const [
+        usersResult,
+        projectsResult,
+        chatsResult,
+        messagesResult,
+        invoicesResult,
+      ] = await Promise.allSettled([
+        supabase
+          .from("users")
+          .select("*")
+          .order("created_at", { ascending: false }),
+
+        supabase
+          .from("design_requests")
+          .select(
+            `
+            *,
+            user:users!user_id(name, email),
+            designer:users!designer_id(name, email)
+          `,
+          )
+          .order("created_at", { ascending: false }),
+
+        supabase
+          .from("chats")
+          .select(
+            `
+            *,
+            request:design_requests!request_id(title)
+          `,
+          )
+          .order("created_at", { ascending: false }),
+
+        supabase
+          .from("messages")
+          .select(
+            `
+            *,
+            sender:users!sender_id(name, email)
+          `,
+          )
+          .order("created_at", { ascending: false })
+          .limit(20),
+
+        supabase
+          .from("invoices")
+          .select("*")
+          .order("created_at", { ascending: false }),
+      ]);
+
+      // Extract data from results
+      const users =
+        usersResult.status === "fulfilled" ? usersResult.value.data || [] : [];
+      const projects =
+        projectsResult.status === "fulfilled"
+          ? projectsResult.value.data || []
+          : [];
+      const chats =
+        chatsResult.status === "fulfilled" ? chatsResult.value.data || [] : [];
+      const messages =
+        messagesResult.status === "fulfilled"
+          ? messagesResult.value.data || []
+          : [];
+      const invoices =
+        invoicesResult.status === "fulfilled"
+          ? invoicesResult.value.data || []
+          : [];
+
+      // Log any errors
+      [
+        usersResult,
+        projectsResult,
+        chatsResult,
+        messagesResult,
+        invoicesResult,
+      ].forEach((result, index) => {
+        const names = ["users", "projects", "chats", "messages", "invoices"];
+        if (result.status === "rejected") {
+          console.error(`❌ ${names[index]} failed:`, result.reason);
+        } else {
+          console.log(
+            `✅ ${names[index]}:`,
+            result.value.data?.length || 0,
+            "items",
+          );
+        }
+      });
+
+      const dashboardStats: DashboardStats = {
+        totalUsers: users.length,
+        totalProjects: projects.length,
+        totalChats: chats.length,
+        totalMessages: messages.length,
+        totalInvoices: invoices.length,
+        recentUsers: users.slice(0, 5),
+        recentProjects: projects.slice(0, 5),
+        recentMessages: messages.slice(0, 10),
+      };
+
+      setStats(dashboardStats);
+      console.log("✅ Dashboard data loaded successfully:", dashboardStats);
+    } catch (err: any) {
+      console.error("❌ Failed to load dashboard:", err);
+      setError(err.message || "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!containerRef.current || !metricsRef.current || !chartsRef.current)
-      return;
-
-    const tl = gsap.timeline();
-
-    tl.fromTo(
-      containerRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-    );
-
-    const metricCards = metricsRef.current.children;
-    tl.fromTo(
-      metricCards,
-      { opacity: 0, y: 30, scale: 0.9 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: "back.out(1.2)",
-      },
-      "-=0.3",
-    );
-
-    const chartCards = chartsRef.current.children;
-    tl.fromTo(
-      chartCards,
-      { opacity: 0, x: 30 },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.4,
-        stagger: 0.1,
-        ease: "power2.out",
-      },
-      "-=0.2",
-    );
-  }, []);
-
-  const recentProjects = mockAdminProjects.slice(0, 5);
-  const pendingInvoices = mockAdminInvoices.filter(
-    (inv) => inv.status === "sent" || inv.status === "overdue",
-  );
-  const criticalAlerts = mockSystemAlerts.filter(
-    (alert) => !alert.isRead && alert.type === "error",
-  );
-  const activeDesigners = mockAdminUsers.filter(
-    (user) => user.role === "designer" && user.status === "active",
-  ).length;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "new":
-        return "bg-blue-500";
-      case "in-progress":
-        return "bg-yellow-500";
-      case "needs-feedback":
-        return "bg-orange-500";
-      case "completed":
-        return "bg-green-500";
-      default:
-        return "bg-gray-500";
+    if (user) {
+      loadDashboardData();
     }
-  };
+  }, [user, isAdmin]);
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "urgent":
-        return "from-red-500 to-red-600";
-      case "high":
-        return "from-festival-pink to-festival-magenta";
-      case "medium":
-        return "from-festival-orange to-festival-coral";
-      case "low":
-        return "from-festival-yellow to-festival-amber";
-      default:
-        return "from-gray-400 to-gray-500";
+  // Redirect non-admin users
+  useEffect(() => {
+    if (user && !isAdmin) {
+      console.log("❌ Non-admin user detected, redirecting...");
+      navigate("/design-dashboard");
     }
-  };
+  }, [user, isAdmin, navigate]);
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="border-4 border-red-500 bg-red-50 p-8 max-w-md">
+          <div className="text-center">
+            <Shield className="w-16 h-16 mx-auto mb-4 text-red-500" />
+            <h2 className="text-xl font-bold text-red-800 mb-2">
+              Access Denied
+            </h2>
+            <p className="text-red-600 mb-4">Admin privileges required.</p>
+            <Button
+              onClick={() => navigate("/design-dashboard")}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Go to Dashboard
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-black text-black">Admin Dashboard</h1>
+          <Badge className="bg-green-500 text-white">
+            Welcome {user.email}
+          </Badge>
+        </div>
+        <AdminDashboardFixer />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-festival-orange" />
+            <span className="text-lg">Loading admin dashboard...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-4xl font-black text-black">Admin Dashboard</h1>
+        <AdminDashboardFixer />
+        <Card className="border-4 border-red-500 bg-red-50 p-6">
+          <div className="text-center">
+            <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-red-500" />
+            <h2 className="text-xl font-bold text-red-800 mb-2">
+              Dashboard Error
+            </h2>
+            <p className="text-red-700 mb-4">{error}</p>
+            <Button
+              onClick={loadDashboardData}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-4xl font-black text-black">Admin Dashboard</h1>
+        <AdminDashboardFixer />
+      </div>
+    );
+  }
 
   return (
-    <div ref={containerRef} className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-display font-bold text-black mb-2">
-          ADMIN DASHBOARD
-        </h1>
-        <p className="text-xl text-black/70 font-medium">
-          Complete system overview and management center
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-black text-black">Admin Dashboard</h1>
+          <p className="text-xl text-black/70">
+            Welcome back, {user.email}! 👋
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Badge className="bg-green-500 text-white">ADMIN ACCESS</Badge>
+          <Button
+            onClick={loadDashboardData}
+            variant="outline"
+            size="sm"
+            className="border-2 border-black"
+          >
+            <RefreshCw className="w-4 h-4 mr-1" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
-      {/* Key Metrics */}
-      <div
-        ref={metricsRef}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-gradient-to-br from-festival-orange to-festival-coral p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-black rounded border-2 border-black">
-              <Users className="w-6 h-6 text-festival-orange" />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <Card className="border-4 border-black bg-gradient-to-br from-festival-orange to-festival-coral p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-black/70">Total Users</p>
+              <p className="text-3xl font-bold text-black">
+                {stats.totalUsers}
+              </p>
             </div>
-            <Badge className="bg-festival-black text-white border-2 border-black">
-              ACTIVE
-            </Badge>
+            <Users className="w-8 h-8 text-black" />
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-black/80 uppercase tracking-wide">
-              Total Users
-            </p>
-            <p className="text-3xl font-display font-bold text-black">
-              {mockAdminUsers.length}
-            </p>
-            <p className="text-sm text-black/70">
-              {activeDesigners} designers active
-            </p>
-          </div>
+          <Button
+            onClick={() => navigate("/admin/users")}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-full text-black hover:bg-black/10"
+          >
+            Manage Users <ArrowRight className="w-3 h-3 ml-1" />
+          </Button>
         </Card>
 
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-gradient-to-br from-festival-pink to-festival-magenta p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-black rounded border-2 border-black">
-              <FolderKanban className="w-6 h-6 text-festival-pink" />
+        <Card className="border-4 border-black bg-gradient-to-br from-festival-pink to-festival-magenta p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-black/70">Projects</p>
+              <p className="text-3xl font-bold text-black">
+                {stats.totalProjects}
+              </p>
             </div>
-            <Badge className="bg-festival-black text-white border-2 border-black">
-              PROJECTS
-            </Badge>
+            <FolderKanban className="w-8 h-8 text-black" />
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-black/80 uppercase tracking-wide">
-              Active Projects
-            </p>
-            <p className="text-3xl font-display font-bold text-black">
-              {mockAdminProjects.length}
-            </p>
-            <p className="text-sm text-black/70">
-              {
-                mockAdminProjects.filter((p) => p.status === "in-progress")
-                  .length
-              }{" "}
-              in progress
-            </p>
-          </div>
+          <Button
+            onClick={() => navigate("/admin/projects")}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-full text-black hover:bg-black/10"
+          >
+            View Projects <ArrowRight className="w-3 h-3 ml-1" />
+          </Button>
         </Card>
 
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-gradient-to-br from-festival-yellow to-festival-amber p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-black rounded border-2 border-black">
-              <CreditCard className="w-6 h-6 text-festival-yellow" />
+        <Card className="border-4 border-black bg-gradient-to-br from-festival-blue to-festival-purple p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-black/70">Chat Rooms</p>
+              <p className="text-3xl font-bold text-black">
+                {stats.totalChats}
+              </p>
             </div>
-            <Badge className="bg-festival-black text-white border-2 border-black">
-              REVENUE
-            </Badge>
+            <MessageSquare className="w-8 h-8 text-black" />
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-black/80 uppercase tracking-wide">
-              Monthly Revenue
-            </p>
-            <p className="text-3xl font-display font-bold text-black">
-              $
-              {mockAnalyticsData.financialMetrics.monthlyRecurringRevenue.toLocaleString()}
-            </p>
-            <p className="text-sm text-black/70">
-              ${mockAnalyticsData.financialMetrics.outstandingBalance} pending
-            </p>
-          </div>
+          <Button
+            onClick={() => navigate("/admin/chat")}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-full text-black hover:bg-black/10"
+          >
+            View Chats <ArrowRight className="w-3 h-3 ml-1" />
+          </Button>
         </Card>
 
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-gradient-to-br from-green-400 to-green-500 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-black rounded border-2 border-black">
-              <Activity className="w-6 h-6 text-green-400" />
+        <Card className="border-4 border-black bg-gradient-to-br from-festival-yellow to-festival-orange p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-black/70">Messages</p>
+              <p className="text-3xl font-bold text-black">
+                {stats.totalMessages}
+              </p>
             </div>
-            <Badge className="bg-festival-black text-white border-2 border-black">
-              UPTIME
-            </Badge>
+            <MessageSquare className="w-8 h-8 text-black" />
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-black/80 uppercase tracking-wide">
-              System Health
-            </p>
-            <p className="text-3xl font-display font-bold text-black">
-              {(mockAnalyticsData.systemHealth.uptime * 100).toFixed(2)}%
-            </p>
-            <p className="text-sm text-black/70">
-              {mockAnalyticsData.systemHealth.activeUsers} users online
-            </p>
+          <Button
+            onClick={() => navigate("/admin/chat")}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-full text-black hover:bg-black/10"
+          >
+            Monitor <ArrowRight className="w-3 h-3 ml-1" />
+          </Button>
+        </Card>
+
+        <Card className="border-4 border-black bg-gradient-to-br from-festival-green to-festival-teal p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-black/70">Invoices</p>
+              <p className="text-3xl font-bold text-black">
+                {stats.totalInvoices}
+              </p>
+            </div>
+            <CreditCard className="w-8 h-8 text-black" />
           </div>
+          <Button
+            onClick={() => navigate("/admin/invoices")}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-full text-black hover:bg-black/10"
+          >
+            View Invoices <ArrowRight className="w-3 h-3 ml-1" />
+          </Button>
         </Card>
       </div>
 
-      {/* Main Content Grid */}
-      <div ref={chartsRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Projects */}
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-          <div className="p-6 border-b-4 border-black">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-black">Recent Projects</h3>
-              <Button
-                onClick={() => navigate("/admin/projects")}
-                variant="outline"
-                size="sm"
-                className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                View All
-              </Button>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
-            {recentProjects.map((project) => (
-              <div
-                key={project.id}
-                className="flex items-center justify-between p-3 bg-festival-cream border-2 border-black"
-              >
-                <div className="flex-1">
-                  <h4 className="font-bold text-black text-sm mb-1">
-                    {project.title}
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      className={`${getStatusColor(project.status)} text-white border-2 border-black text-xs`}
-                    >
-                      {project.status.replace("-", " ").toUpperCase()}
-                    </Badge>
-                    <span className="text-xs text-black/60">
-                      {project.clientName}
-                    </span>
-                  </div>
-                </div>
-                <div
-                  className={`w-3 h-3 rounded-full bg-gradient-to-r ${getPriorityColor(project.priority)}`}
-                />
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* System Alerts */}
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-          <div className="p-6 border-b-4 border-black">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-black">System Alerts</h3>
-              <Button
-                onClick={() => navigate("/admin/alerts")}
-                variant="outline"
-                size="sm"
-                className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-              >
-                <AlertTriangle className="w-4 h-4 mr-2" />
-                Manage
-              </Button>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
-            {mockSystemAlerts.slice(0, 4).map((alert) => (
-              <div
-                key={alert.id}
-                className={`p-3 border-2 border-black ${
-                  alert.type === "error"
-                    ? "bg-red-50"
-                    : alert.type === "warning"
-                      ? "bg-yellow-50"
-                      : "bg-blue-50"
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  <div
-                    className={`w-2 h-2 rounded-full mt-2 ${
-                      alert.type === "error"
-                        ? "bg-red-500"
-                        : alert.type === "warning"
-                          ? "bg-yellow-500"
-                          : "bg-blue-500"
-                    }`}
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-bold text-sm text-black">
-                      {alert.title}
-                    </h4>
-                    <p className="text-xs text-black/70 line-clamp-2">
-                      {alert.message}
-                    </p>
-                    <span className="text-xs text-black/50">
-                      {new Date(alert.timestamp).toLocaleTimeString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Quick Actions */}
-        <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-          <div className="p-6 border-b-4 border-black">
-            <h3 className="text-xl font-bold text-black">Quick Actions</h3>
-          </div>
-          <div className="p-6 space-y-3">
-            <Button
-              onClick={() => navigate("/admin/projects/kanban")}
-              className="w-full justify-between bg-gradient-to-r from-festival-orange to-festival-coral hover:from-festival-coral hover:to-festival-orange border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-            >
-              <span className="flex items-center gap-2">
-                <FolderKanban className="w-4 h-4" />
-                Project Kanban
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-
-            <Button
-              onClick={() => navigate("/admin/invoices/create")}
-              className="w-full justify-between bg-gradient-to-r from-festival-pink to-festival-magenta hover:from-festival-magenta hover:to-festival-pink border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-            >
-              <span className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                Create Invoice
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-
+      {/* Recent Data */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Users */}
+        <Card className="border-4 border-black bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-black flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Recent Users
+            </h3>
             <Button
               onClick={() => navigate("/admin/users")}
-              className="w-full justify-between bg-gradient-to-r from-festival-yellow to-festival-amber hover:from-festival-amber hover:to-festival-yellow border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-            >
-              <span className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Manage Users
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-
-            <Button
-              onClick={() => navigate("/admin/analytics")}
-              className="w-full justify-between bg-gradient-to-r from-festival-cyan to-festival-blue hover:from-festival-blue hover:to-festival-cyan border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-            >
-              <span className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                View Analytics
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-
-            <Button
-              onClick={() => navigate("/admin/settings")}
               variant="outline"
-              className="w-full justify-between border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+              size="sm"
+              className="border-2 border-black"
             >
-              <span className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                System Settings
-              </span>
-              <ArrowRight className="w-4 h-4" />
+              View All
             </Button>
+          </div>
+          <div className="space-y-3">
+            {stats.recentUsers.length > 0 ? (
+              stats.recentUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between p-3 bg-festival-cream rounded border-2 border-black"
+                >
+                  <div>
+                    <p className="font-medium text-black">
+                      {user.name || user.email}
+                    </p>
+                    <p className="text-sm text-black/70">{user.email}</p>
+                  </div>
+                  <Badge
+                    className={
+                      user.role === "admin" ? "bg-red-500" : "bg-blue-500"
+                    }
+                  >
+                    {user.role}
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              <p className="text-black/50 text-center py-4">No users found</p>
+            )}
+          </div>
+        </Card>
+
+        {/* Recent Projects */}
+        <Card className="border-4 border-black bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-black flex items-center gap-2">
+              <FolderKanban className="w-5 h-5" />
+              Recent Projects
+            </h3>
+            <Button
+              onClick={() => navigate("/admin/projects")}
+              variant="outline"
+              size="sm"
+              className="border-2 border-black"
+            >
+              View All
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {stats.recentProjects.length > 0 ? (
+              stats.recentProjects.map((project) => (
+                <div
+                  key={project.id}
+                  className="flex items-center justify-between p-3 bg-festival-cream rounded border-2 border-black"
+                >
+                  <div>
+                    <p className="font-medium text-black">{project.title}</p>
+                    <p className="text-sm text-black/70">
+                      Client: {project.user?.name || project.user?.email}
+                    </p>
+                  </div>
+                  <Badge variant="outline">{project.status}</Badge>
+                </div>
+              ))
+            ) : (
+              <p className="text-black/50 text-center py-4">
+                No projects found
+              </p>
+            )}
           </div>
         </Card>
       </div>
 
-      {/* Performance Summary */}
-      <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-        <div className="p-6 border-b-4 border-black">
-          <h3 className="text-xl font-bold text-black">Performance Summary</h3>
+      {/* Recent Messages */}
+      <Card className="border-4 border-black bg-white p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold text-black flex items-center gap-2">
+            <MessageSquare className="w-5 h-5" />
+            Recent Messages ({stats.totalMessages} total)
+          </h3>
+          <Button
+            onClick={() => navigate("/admin/chat")}
+            variant="outline"
+            size="sm"
+            className="border-2 border-black"
+          >
+            Monitor All Chats
+          </Button>
         </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-display font-bold text-black mb-2">
-                {mockAnalyticsData.designerProductivity.averageTurnaroundTime}d
+        <div className="space-y-3">
+          {stats.recentMessages.length > 0 ? (
+            stats.recentMessages.map((message) => (
+              <div
+                key={message.id}
+                className="p-3 bg-festival-cream rounded border-2 border-black"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <p className="font-medium text-black">
+                      {message.sender?.name ||
+                        message.sender?.email ||
+                        "Unknown User"}
+                    </p>
+                    <p className="text-sm text-black/80 mt-1">
+                      {message.text?.substring(0, 100)}
+                      {message.text?.length > 100 ? "..." : ""}
+                    </p>
+                  </div>
+                  <p className="text-xs text-black/50 ml-2">
+                    {new Date(message.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <div className="text-sm text-black/70">Avg. Turnaround</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-display font-bold text-black mb-2">
-                {mockAnalyticsData.designerProductivity.customerSatisfaction}/5
-              </div>
-              <div className="text-sm text-black/70">Customer Rating</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-display font-bold text-black mb-2">
-                {(
-                  mockAnalyticsData.financialMetrics.collectionRate * 100
-                ).toFixed(0)}
-                %
-              </div>
-              <div className="text-sm text-black/70">Collection Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-display font-bold text-black mb-2">
-                {(mockAnalyticsData.systemHealth.errorRate * 100).toFixed(2)}%
-              </div>
-              <div className="text-sm text-black/70">Error Rate</div>
-            </div>
-          </div>
+            ))
+          ) : (
+            <p className="text-black/50 text-center py-8">No messages found</p>
+          )}
         </div>
       </Card>
+
+      {/* Admin Data Debug */}
+      <AdminDashboardFixer />
     </div>
   );
 };
