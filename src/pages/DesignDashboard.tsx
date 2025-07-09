@@ -78,6 +78,8 @@ const DesignDashboard: React.FC = () => {
   } | null>(null);
   const [showNotification, setShowNotification] = useState(false);
   const [lastUnreadCount, setLastUnreadCount] = useState(0);
+  const [showMessagesInbox, setShowMessagesInbox] = useState(false);
+  const [showProjectSelection, setShowProjectSelection] = useState(false);
 
   // Refs for animations
   const containerRef = useRef<HTMLDivElement>(null);
