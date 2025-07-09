@@ -1260,7 +1260,7 @@ export const useUnreadCount = () => {
           (payload) => {
             try {
               console.log(
-                "👁️ Chat participant updated (read status changed):",
+                "��️ Chat participant updated (read status changed):",
                 payload,
               );
               // When last_read_at is updated, reload the unread count
@@ -1311,7 +1311,13 @@ export const useUnreadCount = () => {
 
     return () => {
       console.log("Cleaning up unread count subscription");
-      supabase.removeChannel(channel);
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          console.warn("Error cleaning up unread count subscription:", error);
+        }
+      }
     };
   }, [user]);
 
