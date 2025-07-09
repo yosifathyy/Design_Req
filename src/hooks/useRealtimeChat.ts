@@ -534,49 +534,116 @@ export const useRealtimeChatRooms = () => {
 
     try {
       setLoading(true);
+      console.log("Loading chat rooms for user:", user.email, "role:", user.role);
 
-      // Get all projects with their latest messages
-      const { data: projects } = await supabase
+      // Check if user is admin
+      const isAdmin = user.role === 'admin' || user.role === 'super-admin' || user.email === 'admin@demo.com';
+
+      if (!isAdmin) {
+        console.log("User is not admin, returning empty chat rooms");
+        setChatRooms([]);
+        setLoading(false);
+        return;
+      }
+
+      console.log("User is admin, fetching all projects...");
+
+      // Get all projects (admin can see all)
+      const { data: projects, error: projectsError } = await supabase
         .from("design_requests")
-        .select(
-          `
+        .select(`
           id,
           title,
           user_id,
           designer_id,
           client:users!user_id(id, name, email),
           designer:users!designer_id(id, name, email)
-        `,
-        )
+        `)
         .order("updated_at", { ascending: false });
 
-      if (!projects) {
+      if (projectsError) {
+        console.error("Error fetching projects:", projectsError);
         setChatRooms([]);
+        setLoading(false);
         return;
       }
 
-      // Get latest message for each project
+      if (!projects || projects.length === 0) {
+        console.log("No projects found");
+        setChatRooms([]);
+        setLoading(false);
+        return;
+      }
+
+      console.log("Found projects:", projects.length);
+
+      // For each project, get the associated chat and latest message
       const chatRoomsData = await Promise.all(
         projects.map(async (project) => {
-          const { data: latestMessage } = await supabase
-            .from("messages")
-            .select(
-              `
-              *,
-              sender:users!sender_id(id, name, email, role)
-            `,
-            )
-            .eq("project_id", project.id)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .single();
+          try {
+            // First, find the chat for this project
+            const { data: chats } = await supabase
+              .from("chats")
+              .select("id")
+              .eq("request_id", project.id);
 
-          // Count unread messages (for the current user)
-          const { count: unreadCount } = await supabase
-            .from("messages")
-            .select("*", { count: "exact", head: true })
-            .eq("project_id", project.id)
-            .neq("sender_id", user.id)
+            let latestMessage = null;
+            let unreadCount = 0;
+
+            if (chats && chats.length > 0) {
+              const chatId = chats[0].id;
+
+              // Get latest message for this chat
+              const { data: messageData } = await supabase
+                .from("messages")
+                .select(`
+                  *,
+                  sender:users!sender_id(id, name, email, role)
+                `)
+                .eq("chat_id", chatId)
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .single();
+
+              latestMessage = messageData;
+
+              // Count total messages in this chat (admin sees all as "unread" for overview)
+              const { count } = await supabase
+                .from("messages")
+                .select("*", { count: "exact", head: true })
+                .eq("chat_id", chatId);
+
+              unreadCount = count || 0;
+            }
+
+            return {
+              project_id: project.id,
+              project_title: project.title || "Untitled Project",
+              client_id: project.user_id,
+              client_name: project.client?.name || "Unknown Client",
+              designer_id: project.designer_id,
+              designer_name: project.designer?.name || null,
+              last_message: latestMessage,
+              unread_count: unreadCount,
+            } as ChatRoom;
+          } catch (error) {
+            console.error("Error processing project:", project.id, error);
+            return {
+              project_id: project.id,
+              project_title: project.title || "Untitled Project",
+              client_id: project.user_id,
+              client_name: project.client?.name || "Unknown Client",
+              designer_id: project.designer_id,
+              designer_name: project.designer?.name || null,
+              last_message: null,
+              unread_count: 0,
+            } as ChatRoom;
+          }
+        })
+      );
+
+      console.log("Processed chat rooms:", chatRoomsData.length);
+      setChatRooms(chatRoomsData.filter(Boolean));
             .gt("created_at", user.last_seen || "1970-01-01");
 
           return {
