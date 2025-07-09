@@ -117,7 +117,7 @@ const EnhancedChat: React.FC = () => {
   const [projectError, setProjectError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadProjectDetails = async () => {
+    const loadProjectDetails = async (retryCount = 0) => {
       if (!projectId) return;
 
       try {
@@ -127,7 +127,29 @@ const EnhancedChat: React.FC = () => {
         setProjectDetails(requestData);
       } catch (error: any) {
         console.error("Error loading project:", error);
-        setProjectError(error.message || "Unknown error loading project");
+
+        // Retry on connection errors (up to 2 retries)
+        if (error.message?.includes("Failed to fetch") && retryCount < 2) {
+          console.log(`Retrying project load... (attempt ${retryCount + 1})`);
+          setTimeout(
+            () => loadProjectDetails(retryCount + 1),
+            1000 * (retryCount + 1),
+          );
+          return;
+        }
+
+        const errorMessage = error.message || "Unknown error loading project";
+        setProjectError(errorMessage);
+
+        // Show user-friendly error message
+        if (error.message?.includes("Failed to fetch")) {
+          toast({
+            title: "Connection Error",
+            description:
+              "Unable to load project details. Please check your internet connection.",
+            variant: "destructive",
+          });
+        }
       } finally {
         setProjectLoading(false);
       }
@@ -136,7 +158,7 @@ const EnhancedChat: React.FC = () => {
     if (projectId) {
       loadProjectDetails();
     }
-  }, [projectId]);
+  }, [projectId, toast]);
 
   // Focus input on load
   useEffect(() => {
