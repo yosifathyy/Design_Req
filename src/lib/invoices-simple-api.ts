@@ -123,21 +123,17 @@ export const simpleInvoicesApi = {
   // Get invoice by ID
   async getById(id: string): Promise<SimpleInvoice> {
     try {
+      console.log("🔍 Fetching invoice by ID:", id);
+
       const { data: request, error } = await supabase
         .from("design_requests")
-        .select(
-          `
-          *,
-          client:user_id(id, name, email),
-          designer:designer_id(id, name, email)
-        `,
-        )
+        .select("*")
         .eq("id", id)
         .eq("category", "invoice")
         .single();
 
       if (error) {
-        console.error("Error fetching invoice:", {
+        console.error("❌ Error fetching invoice:", {
           error,
           message: error.message,
           details: error.details,
@@ -145,9 +141,36 @@ export const simpleInvoicesApi = {
         throw new Error(`Failed to fetch invoice: ${error.message}`);
       }
 
-      return this.parseInvoiceFromRequest(request);
+      console.log("✅ Found invoice request:", request);
+
+      // Get user data separately
+      const userIds = [request.user_id, request.designer_id].filter(Boolean);
+      const { data: users } = await supabase
+        .from("users")
+        .select("id, name, email")
+        .in("id", userIds);
+
+      const userMap = new Map(users?.map((u) => [u.id, u]) || []);
+      const client = userMap.get(request.user_id);
+      const designer = userMap.get(request.designer_id);
+
+      return this.parseInvoiceFromRequest({
+        ...request,
+        client,
+        designer,
+      });
     } catch (error) {
-      console.error("Error in getById:", error);
+      console.error("❌ Error in getById:", error);
+
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch")
+      ) {
+        throw new Error(
+          "Network connection error. Please check your internet connection and try again.",
+        );
+      }
+
       throw error;
     }
   },
