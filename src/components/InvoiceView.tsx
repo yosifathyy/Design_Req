@@ -299,39 +299,32 @@ const InvoiceView: React.FC<InvoiceViewProps> = ({
       )}
 
       {/* Payment History */}
-      {invoice.payments && invoice.payments.length > 0 && (
+      {invoice.status === "paid" && invoice.paidAt && (
         <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
           <div className="p-6 border-b-4 border-black bg-gradient-to-r from-purple-400 to-purple-500">
             <h3 className="text-xl font-bold text-white">Payment History</h3>
           </div>
           <div className="p-6">
             <div className="space-y-3">
-              {invoice.payments.map((payment) => (
-                <div
-                  key={payment.id}
-                  className="flex items-center justify-between p-3 bg-festival-cream border border-black/20"
-                >
-                  <div>
-                    <p className="font-medium text-black">
-                      ${payment.amount.toFixed(2)} via {payment.payment_method}
+              <div className="flex items-center justify-between p-3 bg-festival-cream border border-black/20">
+                <div>
+                  <p className="font-medium text-black">
+                    ${invoice.totalAmount.toFixed(2)} via{" "}
+                    {invoice.paymentMethod || "PayPal"}
+                  </p>
+                  <p className="text-sm text-black/60">
+                    {formatDate(invoice.paidAt)}
+                  </p>
+                  {invoice.paypalOrderId && (
+                    <p className="text-xs text-black/50">
+                      Transaction ID: {invoice.paypalOrderId}
                     </p>
-                    <p className="text-sm text-black/60">
-                      {formatDate(payment.processed_at)}
-                    </p>
-                  </div>
-                  <Badge
-                    className={`${
-                      payment.status === "completed"
-                        ? "bg-green-500"
-                        : payment.status === "failed"
-                          ? "bg-red-500"
-                          : "bg-yellow-500"
-                    } text-white border border-black`}
-                  >
-                    {payment.status}
-                  </Badge>
+                  )}
                 </div>
-              ))}
+                <Badge className="bg-green-500 text-white border border-black">
+                  completed
+                </Badge>
+              </div>
             </div>
           </div>
         </Card>
