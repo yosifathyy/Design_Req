@@ -98,7 +98,59 @@ export const AdminSetupHelper: React.FC = () => {
     }
   };
 
-  const createSampleData = async () => {
+  const checkDatabase = async () => {
+    setLoading(true);
+    setStatus("Checking database tables...");
+
+    try {
+      const results = await checkAndCreateTables();
+      const missingTables = Object.entries(results).filter(
+        ([, result]: [string, any]) => !result.exists,
+      );
+
+      if (missingTables.length > 0) {
+        setStatus(
+          `❌ Missing tables: ${missingTables.map(([name]) => name).join(", ")}. Click "Setup Database" to get SQL commands.`,
+        );
+      } else {
+        setStatus("✅ All database tables exist!");
+      }
+    } catch (error: any) {
+      setStatus(`❌ Database check failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setupDatabase = async () => {
+    setLoading(true);
+    setStatus("Generating database setup SQL...");
+
+    try {
+      const result = await createMissingTables();
+
+      // Copy SQL to clipboard
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(result.sqlStatements);
+        setStatus(
+          "✅ Database setup SQL copied to clipboard! Paste it in your Supabase SQL Editor and run it.",
+        );
+      } else {
+        setStatus(
+          "⚠️ Please copy the SQL from the console and run it in your Supabase SQL Editor.",
+        );
+        console.log("=== COPY THIS SQL TO SUPABASE SQL EDITOR ===");
+        console.log(result.sqlStatements);
+        console.log("=== END SQL ===");
+      }
+    } catch (error: any) {
+      setStatus(`❌ Database setup failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createSampleDataUtil = async () => {
     if (!user) {
       setStatus("❌ Please login first");
       return;
@@ -108,159 +160,20 @@ export const AdminSetupHelper: React.FC = () => {
     setStatus("Creating sample data...");
 
     try {
-      // Create sample client user
-      const { data: clientData, error: clientError } = await supabase
-        .from("users")
-        .upsert(
-          [
-            {
-              id: "demo-client-user-id",
-              email: "client@demo.com",
-              name: "Demo Client",
-              role: "user",
-              status: "active",
-              xp: 50,
-              level: 2,
-              bio: "Demo client user for testing",
-              avatar_url:
-                "https://api.dicebear.com/7.x/avataaars/svg?seed=client",
-              created_at: new Date().toISOString(),
-            },
-          ],
-          {
-            onConflict: "email",
-          },
-        );
-
-      // Create sample designer user
-      const { data: designerData, error: designerError } = await supabase
-        .from("users")
-        .upsert(
-          [
-            {
-              id: "demo-designer-user-id",
-              email: "designer@demo.com",
-              name: "Demo Designer",
-              role: "designer",
-              status: "active",
-              xp: 200,
-              level: 8,
-              bio: "Demo designer user for testing",
-              skills: ["UI Design", "Branding", "Logo Design"],
-              hourly_rate: 75,
-              avatar_url:
-                "https://api.dicebear.com/7.x/avataaars/svg?seed=designer",
-              created_at: new Date().toISOString(),
-            },
-          ],
-          {
-            onConflict: "email",
-          },
-        );
-
-      // Create sample design request
-      const { data: requestData, error: requestError } = await supabase
-        .from("design_requests")
-        .upsert(
-          [
-            {
-              id: "demo-request-1",
-              title: "Logo Design for Startup",
-              description:
-                "We need a modern logo for our tech startup. Looking for something clean and professional.",
-              budget: 500,
-              deadline: new Date(
-                Date.now() + 7 * 24 * 60 * 60 * 1000,
-              ).toISOString(),
-              status: "in_progress",
-              user_id: "demo-client-user-id",
-              designer_id: "demo-designer-user-id",
-              created_at: new Date().toISOString(),
-            },
-          ],
-          {
-            onConflict: "id",
-          },
-        );
-
-      // Create sample chat
-      const { data: chatData, error: chatError } = await supabase
-        .from("chats")
-        .upsert(
-          [
-            {
-              id: "demo-chat-1",
-              request_id: "demo-request-1",
-              created_at: new Date().toISOString(),
-            },
-          ],
-          {
-            onConflict: "id",
-          },
-        );
-
-      // Create sample messages
-      const { data: messageData, error: messageError } = await supabase
-        .from("messages")
-        .upsert(
-          [
-            {
-              id: "demo-message-1",
-              chat_id: "demo-chat-1",
-              sender_id: "demo-client-user-id",
-              text: "Hi! I'm excited to work on this logo project. When can we start?",
-              created_at: new Date(
-                Date.now() - 2 * 60 * 60 * 1000,
-              ).toISOString(),
-            },
-            {
-              id: "demo-message-2",
-              chat_id: "demo-chat-1",
-              sender_id: "demo-designer-user-id",
-              text: "Hello! I'd love to help you with your logo. I have some initial ideas already. Let's schedule a call to discuss your vision.",
-              created_at: new Date(
-                Date.now() - 1 * 60 * 60 * 1000,
-              ).toISOString(),
-            },
-            {
-              id: "demo-message-3",
-              chat_id: "demo-chat-1",
-              sender_id: "demo-client-user-id",
-              text: "That sounds great! I'm available tomorrow afternoon. What time works for you?",
-              created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-            },
-          ],
-          {
-            onConflict: "id",
-          },
-        );
-
-      // Create sample invoice
-      const { data: invoiceData, error: invoiceError } = await supabase
-        .from("invoices")
-        .upsert(
-          [
-            {
-              id: "demo-invoice-1",
-              user_id: "demo-client-user-id",
-              designer_id: "demo-designer-user-id",
-              request_id: "demo-request-1",
-              amount: 500,
-              status: "pending",
-              due_date: new Date(
-                Date.now() + 14 * 24 * 60 * 60 * 1000,
-              ).toISOString(),
-              created_at: new Date().toISOString(),
-            },
-          ],
-          {
-            onConflict: "id",
-          },
-        );
-
-      setStatus(
-        "✅ Sample data created successfully! You can now explore the admin dashboard with real data.",
+      const results = await createSampleData(user.id);
+      const failed = Object.entries(results).filter(
+        ([, result]: [string, any]) => !result.success,
       );
+
+      if (failed.length > 0) {
+        setStatus(
+          `⚠️ Some data creation failed: ${failed.map(([name, result]: [string, any]) => `${name}: ${result.error}`).join(", ")}`,
+        );
+      } else {
+        setStatus(
+          "✅ Sample data created successfully! You can now explore the admin dashboard with real data.",
+        );
+      }
     } catch (error: any) {
       console.error("Error creating sample data:", error);
       setStatus(`❌ Error creating sample data: ${error.message}`);
