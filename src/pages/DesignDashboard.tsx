@@ -538,49 +538,30 @@ const DesignDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="flex flex-col w-6/12 ml-5 max-md:ml-0 max-md:w-full">
-                {/* Compact Stats Grid */}
+                {/* Enhanced Stats Grid */}
                 <div
                   ref={statsRef}
-                  className="grid grid-cols-2 lg:grid-cols-4 gap-2"
+                  className="grid grid-cols-2 lg:grid-cols-6 gap-2"
                   style={{ margin: "28px auto 8px" }}
                 >
-                  {/* Total Requests */}
+                  {/* Total Projects */}
                   <Link to="/requests" className="flex flex-col">
                     <Card className="stat-card group relative bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
                       <div className="flex items-center justify-between mb-1">
                         <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
-                          Total
+                          Projects
                         </Badge>
                       </div>
                       <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
                         {stats.totalRequests}
                       </div>
                       <div className="text-white/90 font-medium text-xs">
-                        Projects
+                        Total
                       </div>
                       <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
                     </Card>
                   </Link>
-
-                  {/* Unread Chats */}
-                  <div
-                    onClick={() => setShowMessagesInbox(true)}
-                    className="flex flex-col"
-                  >
-                    <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
-                      <div className="flex items-center justify-between mb-1">
-                        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
-                        {unreadCount}
-                      </div>
-                      <div className="text-white/90 font-medium text-xs">
-                        Messages
-                      </div>
-                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
-                    </Card>
-                  </div>
 
                   {/* Active Projects */}
                   <Link to="/requests?filter=active" className="flex flex-col">
@@ -600,6 +581,66 @@ const DesignDashboard: React.FC = () => {
                       <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-black/60 group-hover:text-black transition-colors" />
                     </Card>
                   </Link>
+
+                  {/* Total Earnings */}
+                  <Link to="/payments?filter=paid" className="flex flex-col">
+                    <Card className="stat-card group relative bg-gradient-to-br from-emerald-500 to-emerald-700 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Earned
+                        </Badge>
+                      </div>
+                      <div className="text-lg sm:text-xl font-display font-bold text-white leading-none mb-0.5">
+                        ${stats.totalEarnings.toFixed(0)}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        Total Paid
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </Link>
+
+                  {/* Pending Payments */}
+                  <Link to="/payments?filter=sent" className="flex flex-col">
+                    <Card className="stat-card group relative bg-gradient-to-br from-blue-500 to-blue-700 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Pending
+                        </Badge>
+                      </div>
+                      <div className="text-lg sm:text-xl font-display font-bold text-white leading-none mb-0.5">
+                        ${stats.pendingPayments.toFixed(0)}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        To Pay
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </Link>
+
+                  {/* Unread Chats */}
+                  <div
+                    onClick={() => setShowMessagesInbox(true)}
+                    className="flex flex-col"
+                  >
+                    <Card className="stat-card unread-chat-card group relative bg-gradient-to-br from-festival-pink to-festival-magenta border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 cursor-pointer p-2 min-h-[70px] sm:min-h-[80px] mx-auto">
+                      <div className="flex items-center justify-between mb-1">
+                        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] px-1 py-0.5">
+                          Unread
+                        </Badge>
+                      </div>
+                      <div className="text-xl sm:text-2xl font-display font-bold text-white leading-none mb-0.5">
+                        {unreadCount}
+                      </div>
+                      <div className="text-white/90 font-medium text-xs">
+                        Messages
+                      </div>
+                      <ArrowRight className="absolute top-1 right-1 w-3 h-3 text-white/60 group-hover:text-white transition-colors" />
+                    </Card>
+                  </div>
 
                   {/* Completed Projects */}
                   <Link
