@@ -90,7 +90,7 @@ export const useRealtimeChat = (projectId: string | null) => {
               .order("created_at", { ascending: true });
 
             if (!simpleError && simpleMessages) {
-              console.log("�� Simplified query worked:", simpleMessages);
+              console.log("✅ Simplified query worked:", simpleMessages);
               setMessages(simpleMessages || []);
               return;
             }
@@ -1070,14 +1070,6 @@ export const useUnreadCount = () => {
     };
 
     loadUnreadCount();
-
-    // Add event listener for manual refresh
-    const handleRefreshEvent = () => {
-      console.log("🔄 Manual refresh triggered for unread count");
-      loadUnreadCount();
-    };
-
-    window.addEventListener("refreshUnreadCount", handleRefreshEvent);
 
     // Set up real-time subscription for new messages
     const channel = supabase
