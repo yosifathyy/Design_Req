@@ -891,10 +891,10 @@ export const useUnreadCount = () => {
       try {
         console.log("🔄 Loading unread count for user:", user.id);
 
-        // Get all chats the user is involved in via chat_participants
+        // Get all chats the user is involved in via chat_participants with last_read_at
         const { data: userChats, error: chatsError } = await supabase
           .from("chat_participants")
-          .select("chat_id")
+          .select("chat_id, last_read_at")
           .eq("user_id", user.id);
 
         if (chatsError) {
