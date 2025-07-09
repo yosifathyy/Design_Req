@@ -70,8 +70,8 @@ const InvoicePayment: React.FC = () => {
         <h3 class="text-2xl font-bold text-black mb-2">Payment Successful!</h3>
         <p class="text-black/70 mb-4">Thank you for your payment. Your project will be delivered soon!</p>
         <div class="text-sm text-black/60">
-          <p>Invoice: ${updatedInvoice.invoice_number}</p>
-          <p>Amount: $${updatedInvoice.total_amount.toFixed(2)}</p>
+          <p>Invoice: ${updatedInvoice.invoiceNumber}</p>
+          <p>Amount: $${updatedInvoice.totalAmount.toFixed(2)}</p>
         </div>
       </div>
     `;
