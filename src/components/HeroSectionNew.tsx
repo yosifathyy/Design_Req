@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -7,6 +8,7 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useClickSound } from "@/hooks/use-click-sound";
+import { useLottieAnimation } from "@/hooks/use-lottie-animation";
 import Lottie from "lottie-react";
 import {
   Sparkles,
@@ -25,67 +27,137 @@ gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin);
 
 const HeroSectionNew: React.FC = () => {
   const heroRef = useRef<HTMLElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
+  const logoContainerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const shapesRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
   const { playClickSound, playHoverSound } = useClickSound();
+  const { lottieRef, isAnimationComplete } = useLottieAnimation();
+  
+  const [lottieData, setLottieData] = useState(null);
+  const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
+
+  // Fetch Lottie animation data
+  useEffect(() => {
+    const fetchLottieData = async () => {
+      try {
+        const response = await fetch('https://lottie.host/91daf55a-f518-429a-8ac1-469739297ad9/LIrHYs6h1V.json');
+        const data = await response.json();
+        setLottieData(data);
+      } catch (error) {
+        console.error('Failed to load Lottie animation:', error);
+      }
+    };
+
+    fetchLottieData();
+  }, []);
 
   useEffect(() => {
-    if (!heroRef.current) return;
+    if (!heroRef.current || !lottieData) return;
 
     const ctx = gsap.context(() => {
-      // Initial setup
-      gsap.set([logoRef.current, subtitleRef.current, ctaRef.current], {
+      // Initial setup - hide all elements except Lottie container
+      gsap.set([subtitleRef.current, ctaRef.current, statsRef.current], {
         opacity: 0,
-        y: 100,
-        scale: 0.8,
+        y: 50,
+        scale: 0.95,
       });
 
-      // Create entrance timeline
-      const tl = gsap.timeline({ delay: 0.3 });
-
-      // Animate background shapes
       gsap.set(".bg-shape", {
         scale: 0,
         rotation: "random(-45, 45)",
+        opacity: 0,
       });
 
-      tl.to(
-        ".bg-shape",
-        {
-          scale: 1,
-          rotation: "random(-10, 10)",
-          duration: 1,
-          stagger: 0.05,
-          ease: "back.out(1.7)",
-        },
-        0.2,
-      );
+      // Lottie container initial setup
+      gsap.set(logoContainerRef.current, {
+        opacity: 0,
+        y: -100,
+        scale: 0.8,
+        rotationX: 15,
+      });
 
-      // Logo entrance animation
-      tl.to(
-        logoRef.current,
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1.2,
-          ease: "back.out(1.7)",
-          filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
-        },
-        0.5,
-      );
+      // Master timeline that coordinates all animations
+      const masterTimeline = gsap.timeline({ 
+        delay: 0.5,
+        onComplete: () => setIsInitialLoadComplete(true)
+      });
 
-      // Logo scroll-out animation (bidirectional)
+      // Phase 1: Lottie slide-in animation (0s - 1s)
+      masterTimeline.to(logoContainerRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        rotationX: 0,
+        duration: 1,
+        ease: "back.out(1.4)",
+        filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+      });
+
+      // Phase 2: Background shapes animation (1.2s - 2s)
+      masterTimeline.to(".bg-shape", {
+        scale: 1,
+        opacity: 1,
+        rotation: "random(-10, 10)",
+        duration: 0.8,
+        stagger: 0.05,
+        ease: "back.out(1.4)",
+      }, 1.2);
+
+      // Phase 3: Subtitle animation (2s - 2.8s)
+      masterTimeline.to(subtitleRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        ease: "power3.out",
+      }, 2);
+
+      // Phase 4: CTA buttons animation (2.5s - 3.2s)
+      masterTimeline.to(ctaRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.7,
+        ease: "back.out(1.4)",
+      }, 2.5);
+
+      // Phase 5: Stats animation (3s - 3.8s)
+      masterTimeline.to(statsRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        ease: "power3.out",
+      }, 3);
+
+      // Continuous floating animations (after initial load)
+      gsap.delayedCall(4, () => {
+        gsap.to(".bg-shape", {
+          y: "random(-20, 20)",
+          x: "random(-15, 15)",
+          rotation: "random(-30, 30)",
+          duration: "random(4, 7)",
+          repeat: -1,
+          yoyo: true,
+          ease: "power1.inOut",
+          stagger: {
+            amount: 2,
+            from: "random",
+          },
+        });
+      });
+
+      // Scroll-triggered animations for Lottie
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: "top top",
         end: "bottom top",
         scrub: 1,
         animation: gsap.fromTo(
-          logoRef.current,
+          logoContainerRef.current,
           {
             y: 0,
             scale: 1,
@@ -93,17 +165,17 @@ const HeroSectionNew: React.FC = () => {
             rotation: 0,
           },
           {
-            y: -150,
-            scale: 0.7,
-            opacity: 0.4,
-            rotation: -5,
+            y: -120,
+            scale: 0.8,
+            opacity: 0.6,
+            rotation: -3,
             ease: "none",
           },
         ),
         onUpdate: (self) => {
-          // Ensure logo is visible when at the top
-          if (self.progress === 0) {
-            gsap.set(logoRef.current, {
+          // Ensure Lottie is visible when at the top
+          if (self.progress === 0 && isInitialLoadComplete) {
+            gsap.set(logoContainerRef.current, {
               y: 0,
               scale: 1,
               opacity: 1,
@@ -113,48 +185,7 @@ const HeroSectionNew: React.FC = () => {
         },
       });
 
-      // Subtitle animation
-      tl.to(
-        subtitleRef.current,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        1.5,
-      );
-
-      // CTA buttons animation
-      tl.to(
-        ctaRef.current,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "back.out(1.7)",
-        },
-        2,
-      );
-
-      // Continuous animations
-
-      // Background shapes floating
-      gsap.to(".bg-shape", {
-        y: "random(-30, 30)",
-        x: "random(-20, 20)",
-        rotation: "random(-45, 45)",
-        duration: "random(4, 8)",
-        repeat: -1,
-        yoyo: true,
-        ease: "power1.inOut",
-        stagger: {
-          amount: 3,
-          from: "random",
-        },
-      });
-
-      // Scroll-triggered animations
+      // Parallax effects for other elements
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: "top top",
@@ -163,22 +194,30 @@ const HeroSectionNew: React.FC = () => {
         onUpdate: (self) => {
           const progress = self.progress;
 
-          // Parallax effects
+          // Parallax for background shapes
           gsap.set(".parallax-slow", {
-            y: progress * 100,
-            rotation: progress * 20,
+            y: progress * 80,
+            rotation: progress * 15,
           });
 
           gsap.set(".parallax-fast", {
-            y: progress * 200,
-            rotation: progress * -30,
+            y: progress * 150,
+            rotation: progress * -25,
           });
 
-          // Title transformation
-          if (titleRef.current) {
-            gsap.set(titleRef.current, {
-              scale: Math.max(0.8, 1 - progress * 0.2),
-              y: progress * -50,
+          // Subtitle parallax
+          if (subtitleRef.current) {
+            gsap.set(subtitleRef.current, {
+              y: progress * -30,
+              opacity: Math.max(0.3, 1 - progress * 0.7),
+            });
+          }
+
+          // CTA buttons parallax
+          if (ctaRef.current) {
+            gsap.set(ctaRef.current, {
+              y: progress * -40,
+              opacity: Math.max(0.2, 1 - progress * 0.8),
             });
           }
         },
@@ -186,7 +225,12 @@ const HeroSectionNew: React.FC = () => {
     }, heroRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [lottieData, isInitialLoadComplete]);
+
+  const handleLottieComplete = () => {
+    console.log('Lottie animation completed');
+    // Animation sequence is now handled by the master timeline
+  };
 
   return (
     <section
@@ -239,42 +283,49 @@ const HeroSectionNew: React.FC = () => {
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
         style={{ zIndex: 10 }}
       >
-        {/* Main title */}
+        {/* Lottie Animation Logo */}
         <div
-          ref={(el) => {
-            logoRef.current = el;
-            titleRef.current = el;
-          }}
-          className="mb-24"
+          ref={logoContainerRef}
+          className="mb-16 sm:mb-20 md:mb-24"
           style={{
             perspective: "1000px",
           }}
         >
           <div
-            className="max-w-full h-auto mx-auto block"
+            className="max-w-full h-auto mx-auto block transform-gpu"
             style={{
-              maxHeight: "330px",
-              width: "330px",
+              maxHeight: "280px",
+              width: "280px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
             }}
           >
-            <Lottie
-              animationData={null}
-              loop={false}
-              autoplay={true}
-              style={{
-                width: "112%",
-                height: "100%",
-                marginTop: "-15px",
-              }}
-              onLoadedData={() =>
-                console.log("Lottie animation loaded successfully")
-              }
-              onError={(e) =>
-                console.error("Lottie animation failed to load:", e)
-              }
-            />
+            {lottieData ? (
+              <Lottie
+                lottieRef={lottieRef}
+                animationData={lottieData}
+                loop={false}
+                autoplay={true}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                onComplete={handleLottieComplete}
+                onLoadedData={() =>
+                  console.log("Lottie animation loaded successfully")
+                }
+                onError={(e) =>
+                  console.error("Lottie animation failed to load:", e)
+                }
+              />
+            ) : (
+              <div 
+                className="w-full h-full bg-festival-orange/20 rounded-full animate-pulse flex items-center justify-center"
+                style={{ width: "280px", height: "280px" }}
+              >
+                <Sparkles className="w-16 h-16 text-festival-orange" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -283,10 +334,8 @@ const HeroSectionNew: React.FC = () => {
           ref={subtitleRef}
           className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-black/80 leading-relaxed font-bold mb-6 sm:mb-8"
           style={{
-            marginTop: "-60px",
-            marginBottom: "-4px",
             maxWidth: "90%",
-            margin: "-60px auto -4px",
+            margin: "0 auto 1rem",
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
@@ -343,8 +392,7 @@ const HeroSectionNew: React.FC = () => {
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4"
-          style={{ marginTop: "9px" }}
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4 mb-8 sm:mb-12"
         >
           <motion.div
             whileHover={{
@@ -360,7 +408,6 @@ const HeroSectionNew: React.FC = () => {
               onClick={() => playClickSound()}
               onMouseEnter={() => playHoverSound()}
             >
-              {/* Animated background - moved behind content */}
               <div className="absolute inset-0 bg-gradient-to-r from-festival-pink to-festival-amber opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
               <motion.div
                 animate={{
@@ -428,8 +475,8 @@ const HeroSectionNew: React.FC = () => {
 
         {/* Floating stats */}
         <div
+          ref={statsRef}
           className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-4"
-          style={{ margin: "15px 0 43px" }}
         >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
@@ -439,9 +486,6 @@ const HeroSectionNew: React.FC = () => {
             <motion.div
               key={stat.label}
               className="bg-white border-2 sm:border-4 border-black rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-w-[80px] sm:min-w-[100px] lg:min-w-[120px] flex-1 max-w-[120px] sm:max-w-[140px]"
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.5 + i * 0.2, duration: 0.8 }}
               whileHover={{
                 scale: 1.05,
                 rotate: i % 2 === 0 ? 2 : -2,
@@ -455,7 +499,7 @@ const HeroSectionNew: React.FC = () => {
                 transition={{
                   duration: 3,
                   repeat: Infinity,
-                  delay: i * 0.5,
+                  delay: i * 0.5 + 4, // Start after initial animations
                   ease: "easeInOut",
                 }}
                 className="flex flex-col items-center"
