@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
@@ -5,6 +6,7 @@ import { AdminSidebar } from "./AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import {
   Search,
   Bell,
@@ -26,8 +28,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [signingOut, setSigningOut] = useState(false);
 
   const { user, profile, loading: authLoading, signOut } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const layoutRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -66,17 +70,51 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   }, []);
 
   const handleLogout = async () => {
-    // Add logout animation
-    gsap.to(layoutRef.current, {
-      opacity: 0,
-      scale: 0.95,
-      duration: 0.3,
-      ease: "power2.in",
-      onComplete: async () => {
-        await signOut();
-        navigate("/");
-      },
-    });
+    if (signingOut) return;
+
+    try {
+      setSigningOut(true);
+      
+      // Add logout animation
+      if (layoutRef.current) {
+        gsap.to(layoutRef.current, {
+          opacity: 0,
+          scale: 0.95,
+          duration: 0.3,
+          ease: "power2.in",
+        });
+      }
+
+      // Actually sign out the user
+      await signOut();
+      
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out of the admin panel",
+      });
+
+      // Navigate to home page
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      setSigningOut(false);
+      
+      toast({
+        title: "Sign out failed",
+        description: "There was an error signing you out. Please try again.",
+        variant: "destructive",
+      });
+
+      // Reset layout opacity if sign out failed
+      if (layoutRef.current) {
+        gsap.to(layoutRef.current, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+    }
   };
 
   // Redirect non-admin users
@@ -247,11 +285,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </div>
                 <Button
                   onClick={handleLogout}
+                  disabled={signingOut}
                   variant="outline"
                   size="sm"
                   className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
                 >
-                  <LogOut className="w-4 h-4" />
+                  {signingOut ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <LogOut className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </div>

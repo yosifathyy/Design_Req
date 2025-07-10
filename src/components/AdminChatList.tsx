@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -5,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { getAllChatsForAdmin } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
-import { MessageCircle, Clock, User, Circle, RefreshCw } from "lucide-react";
+import { MessageCircle, Clock, User, Circle, RefreshCw, ArrowRight, FileText } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Chat {
   id: string;
@@ -112,22 +114,49 @@ const AdminChatList: React.FC = () => {
     return date.toLocaleDateString();
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'text-green-600 bg-green-100';
+      case 'in-progress':
+      case 'active':
+        return 'text-blue-600 bg-blue-100';
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'cancelled':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
+    }
+  };
+
   if (!user || (user.role !== "admin" && user.role !== "super-admin")) {
     return null;
   }
 
   return (
-    <Card className="border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
-      <div className="flex items-center justify-between mb-4">
+    <Card className="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+      <div className="flex items-center justify-between p-6 border-b-4 border-black bg-gradient-to-r from-festival-orange to-festival-coral">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-festival-pink rounded-full flex items-center justify-center">
-            <MessageCircle className="w-4 h-4 text-white" />
+          <motion.div
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.5 }}
+            className="w-10 h-10 bg-white border-2 border-black rounded-full flex items-center justify-center"
+          >
+            <MessageCircle className="w-5 h-5 text-festival-orange" />
+          </motion.div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Client Communications</h3>
+            <p className="text-sm text-white/80">Manage all client conversations</p>
           </div>
-          <h3 className="text-xl font-bold text-black">Client Chats</h3>
           {unreadCount > 0 && (
-            <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-              {unreadCount}
-            </span>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white"
+            >
+              {unreadCount} new
+            </motion.div>
           )}
         </div>
 
@@ -136,93 +165,163 @@ const AdminChatList: React.FC = () => {
           disabled={loading}
           variant="outline"
           size="sm"
-          className="border-2 border-black"
+          className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-festival-orange"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+          Refresh
         </Button>
       </div>
 
-      {loading ? (
-        <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="h-16 bg-gray-200 animate-pulse rounded border-2 border-gray-300"
-            />
-          ))}
-        </div>
-      ) : chats.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p className="font-medium">No active chats yet</p>
-          <p className="text-sm">
-            Chats will appear here when clients start conversations
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3 max-h-96 overflow-y-auto">
-          {chats.map((chat) => (
-            <Link
-              key={chat.id}
-              to={`/chat?request=${chat.request_id}`}
-              className="block"
+      <div className="p-6">
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="h-20 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded-lg border-2 border-gray-300"
+              />
+            ))}
+          </div>
+        ) : chats.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-12 text-gray-500"
+          >
+            <MessageCircle className="w-16 h-16 mx-auto mb-4 opacity-30" />
+            <h4 className="font-bold text-lg mb-2">No Active Chats</h4>
+            <p className="text-sm mb-4">
+              Client conversations will appear here once they start chatting
+            </p>
+            <Button
+              onClick={() => window.location.href = "/admin/chat"}
+              className="bg-festival-orange hover:bg-festival-coral text-white"
             >
-              <div className="border-2 border-gray-300 rounded-lg p-4 hover:border-festival-pink hover:bg-festival-cream/20 transition-all duration-200 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0">
-                    {chat.request.user.avatar_url ? (
-                      <img
-                        src={chat.request.user.avatar_url}
-                        alt={chat.request.user.name}
-                        className="w-10 h-10 rounded-full border-2 border-black object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-white">
-                          {chat.request.user.name.charAt(0).toUpperCase()}
-                        </span>
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Go to Chat Hub
+            </Button>
+          </motion.div>
+        ) : (
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {chats.map((chat, index) => (
+              <motion.div
+                key={chat.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                className="group"
+              >
+                <Link
+                  to={`/admin/chat/${chat.request_id}`}
+                  className="block"
+                >
+                  <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-festival-orange hover:bg-festival-cream/30 transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] bg-white">
+                    <div className="flex items-start gap-4">
+                      {/* Client Avatar */}
+                      <div className="flex-shrink-0">
+                        {chat.request.user.avatar_url ? (
+                          <img
+                            src={chat.request.user.avatar_url}
+                            alt={chat.request.user.name}
+                            className="w-12 h-12 rounded-full border-2 border-black object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gradient-to-br from-festival-orange to-festival-coral border-2 border-black rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-white">
+                              {chat.request.user.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-bold text-black truncate">
-                        {chat.request.user.name}
-                      </h4>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <Clock className="w-3 h-3" />
-                        {formatRelativeTime(chat.last_message_at)}
+                      {/* Chat Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            <h4 className="font-bold text-black truncate text-lg">
+                              {chat.request.user.name}
+                            </h4>
+                            <span className={`text-xs font-medium px-2 py-1 rounded-full border ${getStatusColor(chat.request.status)}`}>
+                              {chat.request.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" />
+                            {formatRelativeTime(chat.last_message_at)}
+                          </div>
+                        </div>
+
+                        {/* Project Title */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <FileText className="w-4 h-4 text-festival-orange" />
+                          <p className="text-sm font-medium text-gray-700 truncate">
+                            {chat.request.title}
+                          </p>
+                        </div>
+
+                        {/* Last Message */}
+                        {chat.last_message ? (
+                          <p className="text-sm text-gray-600 truncate mb-2">
+                            <span className="font-medium">Latest: </span>
+                            {chat.last_message.content || chat.last_message.text || ""}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-400 italic mb-2">
+                            No messages yet - waiting for client
+                          </p>
+                        )}
+
+                        {/* Action Indicator */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <Circle className="w-2 h-2 fill-green-500 text-green-500" />
+                            <span className="text-xs text-green-600 font-medium">
+                              Ready to respond
+                            </span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-festival-orange transition-colors" />
+                        </div>
                       </div>
                     </div>
-
-                    <p className="text-sm text-gray-700 mb-1 font-medium">
-                      {chat.request.title}
-                    </p>
-
-                    {chat.last_message ? (
-                      <p className="text-sm text-gray-600 truncate">
-                        {chat.last_message.content || chat.last_message.text || ""}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-500 italic">
-                        No messages yet
-                      </p>
-                    )}
                   </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-                  <div className="flex-shrink-0 flex items-center gap-1">
-                    <Circle className="w-3 h-3 fill-green-500 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">
-                      {chat.request.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+        {/* Quick Actions */}
+        {chats.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 pt-4 border-t-2 border-gray-200"
+          >
+            <div className="flex gap-3">
+              <Button
+                onClick={() => window.location.href = "/admin/chat"}
+                className="flex-1 bg-festival-orange hover:bg-festival-coral text-white"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                View All Chats
+              </Button>
+              <Button
+                onClick={loadChats}
+                variant="outline"
+                className="border-2 border-festival-orange text-festival-orange hover:bg-festival-orange hover:text-white"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </Card>
   );
 };
