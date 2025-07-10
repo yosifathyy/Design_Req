@@ -231,11 +231,14 @@ const HeroSectionNew: React.FC = () => {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [lottieData, isInitialLoadComplete, showContent]);
+  }, [lottieData, showContent]); // Remove isInitialLoadComplete dependency
 
   const handleLottieComplete = () => {
     console.log('Lottie animation completed');
-    // Lottie stays visible, other animations continue based on master timeline
+    // Ensure Lottie container stays visible after animation
+    if (logoContainerRef.current) {
+      gsap.set(logoContainerRef.current, { opacity: 1 });
+    }
   };
 
   // Show preloader for first 2 seconds
