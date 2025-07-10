@@ -174,21 +174,18 @@ const HeroSectionNew: React.FC = () => {
             rotation: 0,
           },
           {
-            y: -80, // Reduced movement to keep it more visible
-            scale: 0.9, // Keep it larger
-            opacity: 0.8, // Keep it more visible
+            y: -80,
+            scale: 0.9,
+            opacity: 1, // Keep opacity at 1 instead of 0.8
             rotation: -2,
             ease: "none",
           },
         ),
         onUpdate: (self) => {
-          // Ensure Lottie stays visible when at the top
-          if (self.progress === 0 && isInitialLoadComplete) {
+          // Force Lottie to stay visible
+          if (logoContainerRef.current) {
             gsap.set(logoContainerRef.current, {
-              y: 0,
-              scale: 1,
-              opacity: 1,
-              rotation: 0,
+              opacity: 1, // Always keep visible
             });
           }
         },
