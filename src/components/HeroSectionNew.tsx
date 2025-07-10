@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
@@ -159,7 +160,7 @@ const HeroSectionNew: React.FC = () => {
         });
       });
 
-      // Scroll-triggered animations for Lottie - keep it visible
+      // Scroll-triggered animations for Lottie - FIXED to prevent disappearing
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: "top top",
@@ -174,18 +175,21 @@ const HeroSectionNew: React.FC = () => {
             rotation: 0,
           },
           {
-            y: -20,
-            scale: 0.9,
-            opacity: 1, // Keep opacity at 1 instead of 0.8
-            rotation: -2,
+            y: -10, // Reduced from -20 to -10 to keep it more visible
+            scale: 0.95, // Less dramatic scaling
+            opacity: 1, // ALWAYS keep visible
+            rotation: -1, // Less rotation
             ease: "none",
           },
         ),
         onUpdate: (self) => {
-          // Force Lottie to stay visible
+          // Force Lottie to stay visible during all scroll phases
           if (logoContainerRef.current) {
+            console.log('ScrollTrigger update - ensuring Lottie visibility');
             gsap.set(logoContainerRef.current, {
-              opacity: 1, // Always keep visible
+              opacity: 1, // Force visible
+              display: 'block', // Ensure display is not none
+              visibility: 'visible', // Ensure visibility is not hidden
             });
           }
         },
@@ -231,13 +235,18 @@ const HeroSectionNew: React.FC = () => {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [lottieData, showContent]); // Remove isInitialLoadComplete dependency
+  }, [lottieData, showContent]);
 
   const handleLottieComplete = () => {
-    console.log('Lottie animation completed');
-    // Ensure Lottie container stays visible after animation
+    console.log('Lottie animation completed - ensuring visibility');
+    // Ensure Lottie container stays visible after animation with defensive checks
     if (logoContainerRef.current) {
-      gsap.set(logoContainerRef.current, { opacity: 1 });
+      gsap.set(logoContainerRef.current, { 
+        opacity: 1,
+        display: 'block',
+        visibility: 'visible'
+      });
+      console.log('Lottie visibility forced after completion');
     }
   };
 
@@ -312,6 +321,8 @@ const HeroSectionNew: React.FC = () => {
           className="mb-8 sm:mb-10 md:mb-12 opacity-0"
           style={{
             perspective: "1000px",
+            position: "relative", // Ensure proper positioning
+            zIndex: 15, // Higher z-index to stay on top
           }}
         >
           <div
@@ -321,6 +332,7 @@ const HeroSectionNew: React.FC = () => {
               width: "322px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
+              position: "relative",
             }}
           >
             {lottieData ? (
@@ -332,6 +344,8 @@ const HeroSectionNew: React.FC = () => {
                 style={{
                   width: "100%",
                   height: "100%",
+                  position: "relative",
+                  zIndex: 20,
                 }}
                 onComplete={handleLottieComplete}
                 onLoadedData={() =>
