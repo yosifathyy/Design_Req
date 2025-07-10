@@ -281,58 +281,59 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black/80 leading-relaxed font-bold mb-8"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-black/80 leading-relaxed font-bold mb-6 sm:mb-8"
           style={{
-            marginTop: "-87px",
+            marginTop: "-60px",
             marginBottom: "-4px",
-            maxWidth: "727px",
-            margin: "-87px auto -4px",
+            maxWidth: "90%",
+            margin: "-60px auto -4px",
             position: "relative",
             zIndex: 1,
             fontFamily: "Righteous, display",
-            textShadow: "3px 3px 0px rgba(0,0,0,0.3)",
+            textShadow: "2px 2px 0px rgba(0,0,0,0.3)",
+            padding: "0 1rem",
           }}
         >
-          <span style={{ fontFamily: "Righteous, display", fontSize: "30px" }}>
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl" style={{ fontFamily: "Righteous, display" }}>
             Where{" "}
           </span>
           <span
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
             style={{
               color: "#21201f",
               fontFamily: "Righteous, display",
-              fontSize: "30px",
             }}
           >
             wild creativity
           </span>
           <span
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
             style={{
               fontFamily: "Righteous, display",
-              paddingLeft: "8px",
-              fontSize: "30px",
+              paddingLeft: "4px",
             }}
           >
             {" "}
             meets{" "}
           </span>
           <span
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
             style={{
               color: "#302f2d",
               fontFamily: "Righteous, display",
-              fontSize: "30px",
             }}
           >
             client desires
           </span>
-          <span style={{ fontFamily: "Righteous, display", fontSize: "30px" }}>
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl" style={{ fontFamily: "Righteous, display" }}>
             {" "}
             to create{" "}
           </span>
           <span
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl"
             style={{
               color: "#2d2b2a",
               fontFamily: "Righteous, display",
-              fontSize: "33px",
             }}
           >
             legendary designs!
@@ -342,7 +343,7 @@ const HeroSectionNew: React.FC = () => {
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full"
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4"
           style={{ marginTop: "9px" }}
         >
           <motion.div
@@ -355,7 +356,7 @@ const HeroSectionNew: React.FC = () => {
           >
             <Link
               to="/start-project"
-              className="group relative overflow-hidden bg-gradient-to-r from-festival-orange to-festival-pink text-white font-black px-12 py-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 text-xl uppercase tracking-wide inline-flex items-center gap-4"
+              className="group relative overflow-hidden bg-gradient-to-r from-festival-orange to-festival-pink text-white font-black px-6 sm:px-8 lg:px-12 py-4 sm:py-5 lg:py-6 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 text-base sm:text-lg lg:text-xl uppercase tracking-wide inline-flex items-center gap-2 sm:gap-3 lg:gap-4 w-full sm:w-auto justify-center"
               onClick={() => playClickSound()}
               onMouseEnter={() => playHoverSound()}
             >
@@ -373,7 +374,7 @@ const HeroSectionNew: React.FC = () => {
                 }}
                 className="relative z-10"
               >
-                <Rocket className="w-6 h-6" />
+                <Rocket className="w-5 h-5 sm:w-6 sm:h-6" />
               </motion.div>
               <span className="relative z-10">Start Creating</span>
               <motion.div
@@ -385,7 +386,7 @@ const HeroSectionNew: React.FC = () => {
                 }}
                 className="relative z-10"
               >
-                <ArrowRight className="w-6 h-6" />
+                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </motion.div>
             </Link>
           </motion.div>
@@ -400,7 +401,7 @@ const HeroSectionNew: React.FC = () => {
           >
             <Button
               variant="outline"
-              className="border-4 border-black text-black hover:bg-festival-yellow hover:text-black font-black px-12 py-6 rounded-2xl transition-all duration-300 text-xl uppercase tracking-wide bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]"
+              className="border-2 sm:border-4 border-black text-black hover:bg-festival-yellow hover:text-black font-black px-6 sm:px-8 lg:px-12 py-4 sm:py-5 lg:py-6 rounded-xl sm:rounded-2xl transition-all duration-300 text-base sm:text-lg lg:text-xl uppercase tracking-wide bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] w-full sm:w-auto justify-center inline-flex items-center gap-2 sm:gap-3"
               onClick={() =>
                 document.getElementById("portfolio")?.scrollIntoView({
                   behavior: "smooth",
@@ -418,17 +419,17 @@ const HeroSectionNew: React.FC = () => {
                   ease: "easeInOut",
                 }}
               >
-                <Play className="w-6 h-6 mr-3" />
+                <Play className="w-5 h-5 sm:w-6 sm:h-6" />
               </motion.div>
-              See Magic
+              <span>See Magic</span>
             </Button>
           </motion.div>
         </div>
 
         {/* Floating stats */}
         <div
-          className="flex flex-wrap justify-center items-center gap-4 md:gap-8 w-full"
-          style={{ margin: "10px 0 43px" }}
+          className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-4"
+          style={{ margin: "15px 0 43px" }}
         >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
@@ -437,14 +438,14 @@ const HeroSectionNew: React.FC = () => {
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
-              className="bg-white border-4 border-black rounded-2xl p-4 md:p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-w-[100px] md:min-w-[120px]"
+              className="bg-white border-2 sm:border-4 border-black rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-w-[80px] sm:min-w-[100px] lg:min-w-[120px] flex-1 max-w-[120px] sm:max-w-[140px]"
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.5 + i * 0.2, duration: 0.8 }}
               whileHover={{
                 scale: 1.05,
                 rotate: i % 2 === 0 ? 2 : -2,
-                boxShadow: "12px 12px 0px 0px rgba(0,0,0,1)",
+                boxShadow: "8px 8px 0px 0px rgba(0,0,0,1)",
               }}
             >
               <motion.div
@@ -459,11 +460,11 @@ const HeroSectionNew: React.FC = () => {
                 }}
                 className="flex flex-col items-center"
               >
-                <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-festival-orange mb-2" />
-                <div className="text-xl md:text-2xl font-black text-black">
+                <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-festival-orange mb-1 sm:mb-2" />
+                <div className="text-lg sm:text-xl lg:text-2xl font-black text-black">
                   {stat.value}
                 </div>
-                <div className="text-xs md:text-sm font-bold text-black/70">
+                <div className="text-xs sm:text-sm font-bold text-black/70 text-center">
                   {stat.label}
                 </div>
               </motion.div>

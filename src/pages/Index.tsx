@@ -275,25 +275,25 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
             id="services"
             className="px-4 sm:px-6 py-12 sm:py-16 lg:py-20 bg-festival-cream relative mb-[78px] flex flex-col justify-center items-center"
           >
-            <div className="max-w-7xl mx-auto">
-              <GSAPBounceIn delay={0.1} className="text-center mb-12 sm:mb-16">
-                <GSAPFloating amplitude={20} duration={4}>
-                  <div className="inline-block mb-4 sm:mb-6">
-                    <Wand2 className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
-                  </div>
-                </GSAPFloating>
-                <GSAPRevealText
-                  text="Our Creative Magic ✨"
-                  className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-4 sm:mb-6 tracking-tight"
-                  delay={0.2}
-                />
-                <GSAPFadeIn delay={0.4}>
-                  <p className="text-lg sm:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-0 font-medium">
-                    Professional design solutions that'll make your competitors
-                    absolutely jealous! 🔥
-                  </p>
-                </GSAPFadeIn>
-              </GSAPBounceIn>
+          <div className="max-w-7xl mx-auto">
+            <GSAPBounceIn delay={0.1} className="text-center mb-8 sm:mb-12 lg:mb-16">
+              <GSAPFloating amplitude={20} duration={4}>
+                <div className="inline-block mb-3 sm:mb-4 lg:mb-6">
+                  <Wand2 className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-festival-orange mx-auto" />
+                </div>
+              </GSAPFloating>
+              <GSAPRevealText
+                text="Our Creative Magic ✨"
+                className="font-sans font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-festival-black mb-3 sm:mb-4 lg:mb-6 tracking-tight px-2"
+                delay={0.2}
+              />
+              <GSAPFadeIn delay={0.4}>
+                <p className="text-base sm:text-lg md:text-xl text-festival-black/80 max-w-2xl mx-auto px-4 sm:px-6 font-medium">
+                  Professional design solutions that'll make your competitors
+                  absolutely jealous! 🔥
+                </p>
+              </GSAPFadeIn>
+            </GSAPBounceIn>
 
               <GSAPSlideIn direction="up" delay={0.5} className="mt-8 mb-12">
                 <div></div>
@@ -303,29 +303,29 @@ const Index = ({ isLoadingComplete = true }: IndexProps) => {
                 <BentoGrid>
                   {/* Photoshop Design Card */}
                   <StaggerChild>
-                    <BentoCard
-                      size="md"
-                      delay={0.2}
-                      className="h-full bg-festival-orange border-2 border-festival-black"
-                    >
-                      <div className="p-4 sm:p-5 lg:p-6 h-full flex flex-col">
-                        <motion.div
-                          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white border-2 border-festival-black rounded-xl lg:rounded-2xl flex items-center justify-center mb-3 sm:mb-4"
-                          whileHover={{
-                            rotate: 360,
-                            scale: 1.1,
-                            transition: { duration: 0.6 },
-                          }}
-                        >
-                          <Palette className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-festival-black" />
-                        </motion.div>
-                        <h3 className="font-black text-lg sm:text-xl text-white mb-2 sm:mb-3 tracking-tight">
-                          Photoshop Request&nbsp;
-                        </h3>
-                        <p className="text-white/90 text-sm sm:text-base font-medium">
-                          Mind-blowing photo editing, compositing, and digital
-                          art that'll absolutely destroy the competition!
-                        </p>
+                  <BentoCard
+                    size="md"
+                    delay={0.2}
+                    className="h-full bg-festival-orange border-2 border-festival-black"
+                  >
+                    <div className="p-3 sm:p-4 md:p-5 lg:p-6 h-full flex flex-col">
+                      <motion.div
+                        className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white border-2 border-festival-black rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mb-2 sm:mb-3 md:mb-4"
+                        whileHover={{
+                          rotate: 360,
+                          scale: 1.1,
+                          transition: { duration: 0.6 },
+                        }}
+                      >
+                        <Palette className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-festival-black" />
+                      </motion.div>
+                      <h3 className="font-black text-base sm:text-lg md:text-xl text-white mb-2 sm:mb-3 tracking-tight">
+                        Photoshop Request&nbsp;
+                      </h3>
+                      <p className="text-white/90 text-xs sm:text-sm md:text-base font-medium mb-3">
+                        Mind-blowing photo editing, compositing, and digital
+                        art that'll absolutely destroy the competition!
+                      </p>
                         <div className="space-y-2 mb-4 flex-1">
                           {[
                             "Photo Retouching",

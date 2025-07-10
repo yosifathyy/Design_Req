@@ -216,27 +216,27 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* Header */}
         <header
           ref={headerRef}
-          className="bg-white border-b-4 border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] p-4"
+          className="bg-white border-b-4 border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-4"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             {/* Search */}
-            <div className="flex-1 max-w-md relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-5 h-5" />
+            <div className="flex-1 max-w-sm sm:max-w-md relative">
+              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-4 h-4 sm:w-5 sm:h-5" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search users, projects, invoices..."
-                className="w-full pl-12 pr-4 py-2 border-4 border-black bg-festival-cream text-black placeholder-black/50 font-medium focus:outline-none focus:ring-2 focus:ring-festival-orange"
+                placeholder="Search..."
+                className="w-full pl-8 sm:pl-12 pr-2 sm:pr-4 py-1.5 sm:py-2 border-2 sm:border-4 border-black bg-festival-cream text-black placeholder-black/50 font-medium focus:outline-none focus:ring-2 focus:ring-festival-orange text-sm sm:text-base"
               />
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
               {/* System Status */}
-              <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-green-100 border-2 border-black rounded">
+              <div className="hidden lg:flex items-center gap-2 px-2 sm:px-3 py-1 bg-green-100 border-2 border-black rounded text-xs sm:text-sm">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm font-bold text-black">
+                <span className="font-bold text-black">
                   All Systems Operational
                 </span>
               </div>
@@ -245,28 +245,28 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="relative border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                className="relative border-2 sm:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
                 onClick={() => navigate("/admin/alerts")}
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-3 h-3 sm:w-4 sm:h-4" />
                 {unreadAlerts > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-festival-orange text-black border-2 border-black w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs">
+                  <Badge className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-festival-orange text-black border-1 sm:border-2 border-black w-4 h-4 sm:w-6 sm:h-6 rounded-full p-0 flex items-center justify-center text-xs">
                     {unreadAlerts}
                   </Badge>
                 )}
               </Button>
 
               {/* User Menu */}
-              <div className="flex items-center gap-3 px-3 py-2 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <div className="w-8 h-8 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
-                  <span className="text-sm font-bold text-black">
+              <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 px-1 sm:px-2 lg:px-3 py-1 sm:py-2 bg-white border-2 sm:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-festival-orange border-1 sm:border-2 border-black rounded-full flex items-center justify-center">
+                  <span className="text-xs sm:text-sm font-bold text-black">
                     {currentUser.name
                       .split(" ")
                       .map((n) => n[0])
                       .join("")}
                   </span>
                 </div>
-                <div className="hidden md:block">
+                <div className="hidden lg:block">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-black text-sm">
                       {currentUser.name}
@@ -288,12 +288,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   disabled={signingOut}
                   variant="outline"
                   size="sm"
-                  className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+                  className="border-1 sm:border-2 border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 p-1 sm:p-2"
                 >
                   {signingOut ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
                   ) : (
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
                   )}
                 </Button>
               </div>
@@ -302,7 +302,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </header>
 
         {/* Main Content Area */}
-        <main className="admin-content flex-1 overflow-auto p-6">
+        <main className="admin-content flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
           {children || <Outlet />}
         </main>
       </div>

@@ -248,30 +248,30 @@ const Chat: React.FC = () => {
       )}
 
       {/* Header - Fixed at top */}
-      <div className="flex-shrink-0 p-6 border-b-4 border-black bg-gradient-to-r from-festival-pink to-festival-magenta shadow-lg">
+      <div className="flex-shrink-0 p-3 sm:p-4 lg:p-6 border-b-2 sm:border-b-4 border-black bg-gradient-to-r from-festival-pink to-festival-magenta shadow-lg">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 w-full">
             <Button
               onClick={() => navigate("/design-dashboard")}
               variant="outline"
               size="sm"
-              className="border-2 border-white bg-white/20 text-white hover:bg-white hover:text-black transition-all"
+              className="border-1 sm:border-2 border-white bg-white/20 text-white hover:bg-white hover:text-black transition-all p-2 sm:px-3 sm:py-2"
             >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-0 sm:mr-1" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
 
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-lg">
-                <MessageCircle className="w-6 h-6 text-festival-magenta" />
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white border-1 sm:border-2 border-black rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-festival-magenta" />
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-sm sm:text-lg lg:text-xl font-bold text-white truncate">
                   💬 {projectDetails?.title || "Project Chat"}
                 </h2>
-                <div className="flex items-center gap-2">
-                  <Circle className="w-2 h-2 fill-green-400 text-green-400" />
-                  <span className="text-sm text-white/90">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <Circle className="w-1.5 h-1.5 sm:w-2 sm:h-2 fill-green-400 text-green-400 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm text-white/90 truncate">
                     {projectDetails?.designer?.name
                       ? `🎨 Designer: ${projectDetails.designer.name}`
                       : "⏳ Waiting for designer"}
@@ -287,7 +287,7 @@ const Chat: React.FC = () => {
       <div className="flex-1 flex flex-col min-h-0 max-w-4xl mx-auto w-full">
         <div
           ref={messagesRef}
-          className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-white to-festival-cream/50"
+          className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4 space-y-2 sm:space-y-3 bg-gradient-to-b from-white to-festival-cream/50"
           style={{ scrollBehavior: "smooth" }}
         >
           {messagesLoading && messages.length === 0 ? (
@@ -325,24 +325,24 @@ const Chat: React.FC = () => {
                   }`}
                 >
                   <div
-                    className={`max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl flex ${isFromMe ? "flex-row-reverse" : "flex-row"} items-end gap-2`}
+                    className={`max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg flex ${isFromMe ? "flex-row-reverse" : "flex-row"} items-end gap-1 sm:gap-2`}
                   >
                     {/* Avatar for others */}
                     {!isFromMe && isFirstInGroup && (
-                      <div className="w-8 h-8 bg-festival-pink border-2 border-black rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-festival-pink border-1 sm:border-2 border-black rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-xs font-bold text-black">
                           {msg.sender?.name?.charAt(0)?.toUpperCase() || "?"}
                         </span>
                       </div>
                     )}
-                    {!isFromMe && !isFirstInGroup && <div className="w-8" />}
+                    {!isFromMe && !isFirstInGroup && <div className="w-6 sm:w-8" />}
 
                     {/* Message bubble */}
                     <div
-                      className={`relative px-4 py-2 rounded-2xl shadow-lg ${
+                      className={`relative px-3 sm:px-4 py-2 rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg ${
                         isFromMe
-                          ? "bg-festival-orange border-2 border-black text-black rounded-br-md"
-                          : "bg-white border-2 border-black text-black rounded-bl-md"
+                          ? "bg-festival-orange border-1 sm:border-2 border-black text-black rounded-br-md"
+                          : "bg-white border-1 sm:border-2 border-black text-black rounded-bl-md"
                       } ${isFirstInGroup ? "mt-0" : ""}`}
                     >
                       {/* Sender name for group chats */}
@@ -381,8 +381,8 @@ const Chat: React.FC = () => {
         </div>
 
         {/* Input Area - Fixed at bottom */}
-        <div className="flex-shrink-0 p-4 border-t-2 border-black bg-white">
-          <div className="flex items-center gap-3">
+        <div className="flex-shrink-0 p-2 sm:p-3 lg:p-4 border-t-1 sm:border-t-2 border-black bg-white">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex-1">
               <Input
                 ref={inputRef}
@@ -391,23 +391,23 @@ const Chat: React.FC = () => {
                 onKeyPress={handleKeyPress}
                 placeholder="Type a message..."
                 disabled={sending || !projectId}
-                className="border-2 border-black bg-white h-11 text-black placeholder:text-black/60 rounded-full px-4 focus:ring-2 focus:ring-festival-orange focus:border-festival-orange"
+                className="border-1 sm:border-2 border-black bg-white h-9 sm:h-10 lg:h-11 text-black placeholder:text-black/60 rounded-full px-3 sm:px-4 focus:ring-2 focus:ring-festival-orange focus:border-festival-orange text-sm sm:text-base"
               />
             </div>
             <Button
               onClick={handleSendMessage}
               disabled={!message.trim() || sending || !projectId}
               size="sm"
-              className={`h-11 w-11 rounded-full p-0 border-2 border-black shadow-lg transition-all ${
+              className={`h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 rounded-full p-0 border-1 sm:border-2 border-black shadow-md sm:shadow-lg transition-all ${
                 message.trim() && !sending
                   ? "bg-festival-orange hover:bg-festival-coral hover:scale-110"
                   : "bg-gray-300"
               }`}
             >
               {sending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
               ) : (
-                <Send className="w-4 h-4" />
+                <Send className="w-3 h-3 sm:w-4 sm:h-4" />
               )}
             </Button>
           </div>
