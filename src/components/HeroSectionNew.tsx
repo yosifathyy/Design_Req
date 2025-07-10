@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
@@ -34,12 +33,11 @@ const HeroSectionNew: React.FC = () => {
   const shapesRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const { playClickSound, playHoverSound } = useClickSound();
-  const { lottieRef } = useLottieAnimation();
+  const { lottieRef, isAnimationComplete, isLottieVisible } = useLottieAnimation();
   
   const [lottieData, setLottieData] = useState(null);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const [lottieLoaded, setLottieLoaded] = useState(false);
 
   // Fetch Lottie animation data
   useEffect(() => {
@@ -66,10 +64,10 @@ const HeroSectionNew: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!heroRef.current || !showContent) return;
+    if (!heroRef.current || !lottieData || !showContent) return;
 
     const ctx = gsap.context(() => {
-      // Initial setup - only hide content elements, NOT the Lottie
+      // Initial setup - hide all elements to prevent flash
       gsap.set([subtitleRef.current, ctaRef.current, statsRef.current], {
         opacity: 0,
         y: 50,
@@ -82,21 +80,32 @@ const HeroSectionNew: React.FC = () => {
         opacity: 0,
       });
 
-      // Lottie container - start visible and positioned
+      // Lottie container initial setup - start hidden to prevent flash
       gsap.set(logoContainerRef.current, {
-        opacity: 1, // Start visible
-        y: 0,
-        scale: 1,
-        rotationX: 0,
+        opacity: 0,
+        y: -100,
+        scale: 0.8,
+        rotationX: 15,
       });
 
-      // Simplified timeline - no complex Lottie animations
+      // Master timeline that coordinates all animations
       const masterTimeline = gsap.timeline({ 
-        delay: 0.5,
+        delay: 0.3,
         onComplete: () => setIsInitialLoadComplete(true)
       });
 
-      // Phase 1: Background shapes animation (0.5s - 1.3s)
+      // Phase 1: Lottie slide-in animation (0s - 1s)
+      masterTimeline.to(logoContainerRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        rotationX: 0,
+        duration: 1,
+        ease: "back.out(1.4)",
+        filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
+      });
+
+      // Phase 2: Background shapes animation (1.8s - 2.6s) - after Lottie completes
       masterTimeline.to(".bg-shape", {
         scale: 1,
         opacity: 1,
@@ -104,37 +113,37 @@ const HeroSectionNew: React.FC = () => {
         duration: 0.8,
         stagger: 0.05,
         ease: "back.out(1.4)",
-      }, 0.5);
+      }, 1.8);
 
-      // Phase 2: Subtitle animation (1s - 1.8s)
+      // Phase 3: Subtitle animation (2.4s - 3.2s)
       masterTimeline.to(subtitleRef.current, {
         opacity: 1,
         y: 0,
         scale: 1,
         duration: 0.8,
         ease: "power3.out",
-      }, 1);
+      }, 2.4);
 
-      // Phase 3: CTA buttons animation (1.4s - 2.1s)
+      // Phase 4: CTA buttons animation (2.8s - 3.5s)
       masterTimeline.to(ctaRef.current, {
         opacity: 1,
         y: 0,
         scale: 1,
         duration: 0.7,
         ease: "back.out(1.4)",
-      }, 1.4);
+      }, 2.8);
 
-      // Phase 4: Stats animation (1.8s - 2.6s)
+      // Phase 5: Stats animation (3.2s - 4s)
       masterTimeline.to(statsRef.current, {
         opacity: 1,
         y: 0,
         scale: 1,
         duration: 0.8,
         ease: "power3.out",
-      }, 1.8);
+      }, 3.2);
 
       // Continuous floating animations (after initial load)
-      gsap.delayedCall(3, () => {
+      gsap.delayedCall(4.5, () => {
         gsap.to(".bg-shape", {
           y: "random(-20, 20)",
           x: "random(-15, 15)",
@@ -150,7 +159,7 @@ const HeroSectionNew: React.FC = () => {
         });
       });
 
-      // Simplified scroll-triggered animations - minimal Lottie movement
+      // Scroll-triggered animations for Lottie - keep it visible
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: "top top",
@@ -161,15 +170,25 @@ const HeroSectionNew: React.FC = () => {
           {
             y: 0,
             scale: 1,
+            opacity: 1,
             rotation: 0,
           },
           {
-            y: -5, // Minimal movement
-            scale: 0.98, // Subtle scaling
-            rotation: 0, // No rotation
+            y: -20,
+            scale: 0.9,
+            opacity: 1, // Keep opacity at 1 instead of 0.8
+            rotation: -2,
             ease: "none",
           },
         ),
+        onUpdate: (self) => {
+          // Force Lottie to stay visible
+          if (logoContainerRef.current) {
+            gsap.set(logoContainerRef.current, {
+              opacity: 1, // Always keep visible
+            });
+          }
+        },
       });
 
       // Parallax effects for other elements
@@ -212,16 +231,14 @@ const HeroSectionNew: React.FC = () => {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [showContent]);
+  }, [lottieData, showContent]); // Remove isInitialLoadComplete dependency
 
   const handleLottieComplete = () => {
     console.log('Lottie animation completed');
-    setLottieLoaded(true);
-  };
-
-  const handleLottieLoaded = () => {
-    console.log('Lottie data loaded successfully');
-    setLottieLoaded(true);
+    // Ensure Lottie container stays visible after animation
+    if (logoContainerRef.current) {
+      gsap.set(logoContainerRef.current, { opacity: 1 });
+    }
   };
 
   // Show preloader for first 2 seconds
@@ -289,26 +306,21 @@ const HeroSectionNew: React.FC = () => {
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
         style={{ zIndex: 10 }}
       >
-        {/* Lottie Animation Logo - Always visible */}
+        {/* Lottie Animation Logo */}
         <div
           ref={logoContainerRef}
-          className="mb-6 sm:mb-8 md:mb-10" // Reduced bottom margin
+          className="mb-8 sm:mb-10 md:mb-12 opacity-0"
           style={{
             perspective: "1000px",
-            position: "relative",
-            zIndex: 15,
-            opacity: 1, // Always visible
-            display: "block", // Always displayed
           }}
         >
           <div
             className="max-w-full h-auto mx-auto block transform-gpu"
             style={{
-              maxHeight: "280px", // Reduced size
-              width: "280px", // Reduced size
+              maxHeight: "322px",
+              width: "322px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
-              position: "relative",
             }}
           >
             {lottieData ? (
@@ -320,11 +332,11 @@ const HeroSectionNew: React.FC = () => {
                 style={{
                   width: "100%",
                   height: "100%",
-                  position: "relative",
-                  zIndex: 20,
                 }}
                 onComplete={handleLottieComplete}
-                onLoadedData={handleLottieLoaded}
+                onLoadedData={() =>
+                  console.log("Lottie animation loaded successfully")
+                }
                 onError={(e) =>
                   console.error("Lottie animation failed to load:", e)
                 }
@@ -332,7 +344,7 @@ const HeroSectionNew: React.FC = () => {
             ) : (
               <div 
                 className="w-full h-full bg-festival-orange/20 rounded-full animate-pulse flex items-center justify-center"
-                style={{ width: "280px", height: "280px" }}
+                style={{ width: "322px", height: "322px" }}
               >
                 <Sparkles className="w-16 h-16 text-festival-orange" />
               </div>
@@ -510,7 +522,7 @@ const HeroSectionNew: React.FC = () => {
                 transition={{
                   duration: 3,
                   repeat: Infinity,
-                  delay: i * 0.5 + 3,
+                  delay: i * 0.5 + 4.5, // Start after initial animations
                   ease: "easeInOut",
                 }}
                 className="flex flex-col items-center"
