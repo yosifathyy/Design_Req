@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export const setupInvoiceDatabase = async (): Promise<{ success: boolean; error?: string }> => {
@@ -43,6 +42,26 @@ export const setupInvoiceDatabase = async (): Promise<{ success: boolean; error?
 
   } catch (error: any) {
     console.error("Invoice database setup failed:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const setupInvoiceSystem = async (): Promise<{ success: boolean; error?: string }> => {
+  try {
+    console.log("🔄 Setting up invoice system...");
+
+    // Verify all invoice-related tables exist and are accessible
+    const result = await setupInvoiceDatabase();
+    
+    if (!result.success) {
+      return result;
+    }
+
+    console.log("✅ Invoice system setup completed");
+    return { success: true };
+
+  } catch (error: any) {
+    console.error("Invoice system setup failed:", error);
     return { success: false, error: error.message };
   }
 };
