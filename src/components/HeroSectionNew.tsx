@@ -67,7 +67,7 @@ const HeroSectionNew: React.FC = () => {
     if (!heroRef.current || !lottieData || !showContent) return;
 
     const ctx = gsap.context(() => {
-      // Initial setup - hide all elements except Lottie container
+      // Initial setup - hide all elements to prevent flash
       gsap.set([subtitleRef.current, ctaRef.current, statsRef.current], {
         opacity: 0,
         y: 50,
@@ -80,7 +80,7 @@ const HeroSectionNew: React.FC = () => {
         opacity: 0,
       });
 
-      // Lottie container initial setup
+      // Lottie container initial setup - start hidden to prevent flash
       gsap.set(logoContainerRef.current, {
         opacity: 0,
         y: -100,
@@ -309,11 +309,9 @@ const HeroSectionNew: React.FC = () => {
         {/* Lottie Animation Logo */}
         <div
           ref={logoContainerRef}
-          className="mb-16 sm:mb-20 md:mb-24"
+          className="mb-16 sm:mb-20 md:mb-24 opacity-0"
           style={{
             perspective: "1000px",
-            opacity: isLottieVisible ? 1 : 0,
-            transition: "opacity 0.3s ease-in-out",
           }}
         >
           <div
@@ -357,7 +355,7 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-black/80 leading-relaxed font-bold mb-6 sm:mb-8"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-black/80 leading-relaxed font-bold mb-6 sm:mb-8 opacity-0"
           style={{
             maxWidth: "90%",
             margin: "0 auto 1rem",
@@ -417,7 +415,7 @@ const HeroSectionNew: React.FC = () => {
         {/* CTA Buttons */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4 mb-8 sm:mb-12"
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4 mb-8 sm:mb-12 opacity-0"
         >
           <motion.div
             whileHover={{
@@ -501,7 +499,7 @@ const HeroSectionNew: React.FC = () => {
         {/* Floating stats */}
         <div
           ref={statsRef}
-          className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-4"
+          className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-4 opacity-0"
         >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
