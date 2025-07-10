@@ -39,11 +39,11 @@ const HeroSectionNew: React.FC = () => {
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
-  // Fetch Lottie animation data
+  // Fetch Lottie animation data with new URL
   useEffect(() => {
     const fetchLottieData = async () => {
       try {
-        const response = await fetch('https://lottie.host/91daf55a-f518-429a-8ac1-469739297ad9/LIrHYs6h1V.json');
+        const response = await fetch('https://lottie.host/a10225fd-cd21-4531-9052-259c3b998138/9JcsgZvkYQ.json');
         const data = await response.json();
         setLottieData(data);
         
@@ -159,39 +159,7 @@ const HeroSectionNew: React.FC = () => {
         });
       });
 
-      // Scroll-triggered animations for Lottie - keep it visible
-      ScrollTrigger.create({
-        trigger: heroRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 1,
-        animation: gsap.fromTo(
-          logoContainerRef.current,
-          {
-            y: 0,
-            scale: 1,
-            opacity: 1,
-            rotation: 0,
-          },
-          {
-            y: -20,
-            scale: 0.9,
-            opacity: 1, // Keep opacity at 1 instead of 0.8
-            rotation: -2,
-            ease: "none",
-          },
-        ),
-        onUpdate: (self) => {
-          // Force Lottie to stay visible
-          if (logoContainerRef.current) {
-            gsap.set(logoContainerRef.current, {
-              opacity: 1, // Always keep visible
-            });
-          }
-        },
-      });
-
-      // Parallax effects for other elements
+      // DRAMATIC SCROLL-OUT ANIMATIONS
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: "top top",
@@ -199,46 +167,108 @@ const HeroSectionNew: React.FC = () => {
         scrub: 1,
         onUpdate: (self) => {
           const progress = self.progress;
+          
+          // Enhanced Lottie parallax with dramatic effects
+          if (logoContainerRef.current) {
+            gsap.set(logoContainerRef.current, {
+              y: progress * -120,
+              scale: Math.max(0.3, 1 - progress * 0.7),
+              opacity: Math.max(0, 1 - progress * 1.2),
+              rotation: progress * -45,
+              rotationY: progress * 30,
+              filter: `blur(${progress * 8}px) brightness(${1 - progress * 0.5})`,
+              willChange: "transform, opacity, filter",
+            });
+          }
 
-          // Parallax for background shapes
+          // Subtitle dramatic slide-up and fade
+          if (subtitleRef.current) {
+            gsap.set(subtitleRef.current, {
+              y: progress * -80,
+              opacity: Math.max(0, 1 - progress * 1.5),
+              scale: Math.max(0.5, 1 - progress * 0.5),
+              rotationX: progress * 15,
+              filter: `blur(${progress * 4}px)`,
+            });
+          }
+
+          // CTA buttons slide out in opposite directions
+          if (ctaRef.current) {
+            const buttons = ctaRef.current.children;
+            if (buttons.length >= 2) {
+              // First button slides left
+              gsap.set(buttons[0], {
+                x: progress * -200,
+                y: progress * -60,
+                opacity: Math.max(0, 1 - progress * 1.3),
+                rotation: progress * -20,
+                scale: Math.max(0.4, 1 - progress * 0.6),
+              });
+              
+              // Second button slides right
+              gsap.set(buttons[1], {
+                x: progress * 200,
+                y: progress * -40,
+                opacity: Math.max(0, 1 - progress * 1.3),
+                rotation: progress * 20,
+                scale: Math.max(0.4, 1 - progress * 0.6),
+              });
+            }
+          }
+
+          // Stats cards individual rotation and dispersion
+          if (statsRef.current) {
+            const cards = statsRef.current.children;
+            Array.from(cards).forEach((card, index) => {
+              const direction = index % 2 === 0 ? -1 : 1;
+              gsap.set(card, {
+                x: progress * direction * (100 + index * 30),
+                y: progress * -50 * (index + 1),
+                rotation: progress * direction * (30 + index * 10),
+                scale: Math.max(0.3, 1 - progress * 0.8),
+                opacity: Math.max(0, 1 - progress * 1.4),
+              });
+            });
+          }
+
+          // Background shapes explosion effect
+          gsap.set(".bg-shape", {
+            scale: Math.max(0.2, 1 - progress * 0.8),
+            opacity: Math.max(0, 1 - progress * 2),
+            rotation: (shape, index) => {
+              const baseRotation = index * 30;
+              return baseRotation + progress * (360 + index * 45);
+            },
+            x: (shape, index) => {
+              const direction = index % 2 === 0 ? -1 : 1;
+              return progress * direction * (150 + index * 20);
+            },
+            y: (shape, index) => {
+              return progress * -(100 + index * 15);
+            },
+          });
+
+          // Parallax effects for different speed layers
           gsap.set(".parallax-slow", {
-            y: progress * 80,
-            rotation: progress * 15,
+            y: progress * 120,
+            rotation: progress * 20,
+            opacity: Math.max(0.2, 1 - progress * 0.8),
           });
 
           gsap.set(".parallax-fast", {
-            y: progress * 150,
-            rotation: progress * -25,
+            y: progress * 200,
+            rotation: progress * -35,
+            opacity: Math.max(0.1, 1 - progress * 1.2),
           });
-
-          // Subtitle parallax
-          if (subtitleRef.current) {
-            gsap.set(subtitleRef.current, {
-              y: progress * -30,
-              opacity: Math.max(0.3, 1 - progress * 0.7),
-            });
-          }
-
-          // CTA buttons parallax
-          if (ctaRef.current) {
-            gsap.set(ctaRef.current, {
-              y: progress * -40,
-              opacity: Math.max(0.2, 1 - progress * 0.8),
-            });
-          }
         },
       });
     }, heroRef);
 
     return () => ctx.revert();
-  }, [lottieData, showContent]); // Remove isInitialLoadComplete dependency
+  }, [lottieData, showContent]);
 
   const handleLottieComplete = () => {
     console.log('Lottie animation completed');
-    // Ensure Lottie container stays visible after animation
-    if (logoContainerRef.current) {
-      gsap.set(logoContainerRef.current, { opacity: 1 });
-    }
   };
 
   // Show preloader for first 2 seconds
@@ -284,6 +314,7 @@ const HeroSectionNew: React.FC = () => {
             style={{
               left: `${10 + Math.random() * 80}%`,
               top: `${5 + Math.random() * 90}%`,
+              willChange: "transform, opacity",
             }}
           />
         ))}
@@ -306,19 +337,20 @@ const HeroSectionNew: React.FC = () => {
         className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center w-full flex flex-col items-center justify-center"
         style={{ zIndex: 10 }}
       >
-        {/* Lottie Animation Logo */}
+        {/* Lottie Animation Logo - INCREASED SIZE */}
         <div
           ref={logoContainerRef}
-          className="mb-8 sm:mb-10 md:mb-12 opacity-0"
+          className="mb-4 sm:mb-6 md:mb-8 opacity-0"
           style={{
             perspective: "1000px",
+            willChange: "transform, opacity, filter",
           }}
         >
           <div
             className="max-w-full h-auto mx-auto block transform-gpu"
             style={{
-              maxHeight: "322px",
-              width: "322px",
+              maxHeight: "380px",
+              width: "380px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
             }}
@@ -344,7 +376,7 @@ const HeroSectionNew: React.FC = () => {
             ) : (
               <div 
                 className="w-full h-full bg-festival-orange/20 rounded-full animate-pulse flex items-center justify-center"
-                style={{ width: "322px", height: "322px" }}
+                style={{ width: "380px", height: "380px" }}
               >
                 <Sparkles className="w-16 h-16 text-festival-orange" />
               </div>
@@ -355,7 +387,7 @@ const HeroSectionNew: React.FC = () => {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-black/80 leading-relaxed font-bold mb-6 sm:mb-8 opacity-0"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-black/80 leading-relaxed font-bold mb-4 sm:mb-6 opacity-0"
           style={{
             maxWidth: "90%",
             margin: "0 auto 1rem",
@@ -364,6 +396,7 @@ const HeroSectionNew: React.FC = () => {
             fontFamily: "Righteous, display",
             textShadow: "2px 2px 0px rgba(0,0,0,0.3)",
             padding: "0 1rem",
+            willChange: "transform, opacity, filter",
           }}
         >
           <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl" style={{ fontFamily: "Righteous, display" }}>
@@ -412,10 +445,11 @@ const HeroSectionNew: React.FC = () => {
           </span>
         </p>
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons - REDUCED MARGINS */}
         <div
           ref={ctaRef}
-          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4 mb-8 sm:mb-12 opacity-0"
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full px-4 mb-6 sm:mb-8 opacity-0"
+          style={{ willChange: "transform, opacity" }}
         >
           <motion.div
             whileHover={{
@@ -500,6 +534,7 @@ const HeroSectionNew: React.FC = () => {
         <div
           ref={statsRef}
           className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-4 opacity-0"
+          style={{ willChange: "transform, opacity" }}
         >
           {[
             { label: "Happy Clients", value: "500+", icon: Heart },
@@ -514,6 +549,7 @@ const HeroSectionNew: React.FC = () => {
                 rotate: i % 2 === 0 ? 2 : -2,
                 boxShadow: "8px 8px 0px 0px rgba(0,0,0,1)",
               }}
+              style={{ willChange: "transform, opacity" }}
             >
               <motion.div
                 animate={{
@@ -522,7 +558,7 @@ const HeroSectionNew: React.FC = () => {
                 transition={{
                   duration: 3,
                   repeat: Infinity,
-                  delay: i * 0.5 + 4.5, // Start after initial animations
+                  delay: i * 0.5 + 4.5,
                   ease: "easeInOut",
                 }}
                 className="flex flex-col items-center"
