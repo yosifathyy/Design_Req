@@ -174,7 +174,7 @@ const HeroSectionNew: React.FC = () => {
             rotation: 0,
           },
           {
-            y: -80,
+            y: -20,
             scale: 0.9,
             opacity: 1, // Keep opacity at 1 instead of 0.8
             rotation: -2,
@@ -309,7 +309,7 @@ const HeroSectionNew: React.FC = () => {
         {/* Lottie Animation Logo */}
         <div
           ref={logoContainerRef}
-          className="mb-16 sm:mb-20 md:mb-24 opacity-0"
+          className="mb-8 sm:mb-10 md:mb-12 opacity-0"
           style={{
             perspective: "1000px",
           }}
@@ -317,8 +317,8 @@ const HeroSectionNew: React.FC = () => {
           <div
             className="max-w-full h-auto mx-auto block transform-gpu"
             style={{
-              maxHeight: "280px",
-              width: "280px",
+              maxHeight: "322px",
+              width: "322px",
               filter: "drop-shadow(8px 8px 0px rgba(0,0,0,0.1))",
               display: "block",
             }}
@@ -344,7 +344,7 @@ const HeroSectionNew: React.FC = () => {
             ) : (
               <div 
                 className="w-full h-full bg-festival-orange/20 rounded-full animate-pulse flex items-center justify-center"
-                style={{ width: "280px", height: "280px" }}
+                style={{ width: "322px", height: "322px" }}
               >
                 <Sparkles className="w-16 h-16 text-festival-orange" />
               </div>
