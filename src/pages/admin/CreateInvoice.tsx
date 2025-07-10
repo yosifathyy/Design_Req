@@ -72,7 +72,7 @@ const CreateInvoice: React.FC = () => {
       try {
         setLoading(true);
 
-        // Load design requests (projects) with client info
+        // Load design requests (projects) with client info - exclude invoices
         const { data: designRequests, error: projectsError } = await supabase
           .from("design_requests")
           .select(
@@ -81,7 +81,7 @@ const CreateInvoice: React.FC = () => {
             client:user_id(id, name, email)
           `,
           )
-          .neq("category", "invoice") // Exclude existing invoices
+          .or("category.is.null,category.neq.invoice") // Exclude invoices completely
           .order("created_at", { ascending: false });
 
         if (projectsError) {

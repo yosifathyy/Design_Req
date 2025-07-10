@@ -70,13 +70,19 @@ const AdminChat: React.FC = () => {
     }
   }, [projectId]);
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages and when chat is selected
   useEffect(() => {
-    if (messagesRef.current) {
+    if (messagesRef.current && selectedProjectId) {
       const scrollElement = messagesRef.current;
-      scrollElement.scrollTop = scrollElement.scrollHeight;
+      const scrollToBottom = () => {
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      };
+      
+      // Small delay to ensure messages are rendered
+      const timeoutId = setTimeout(scrollToBottom, 100);
+      return () => clearTimeout(timeoutId);
     }
-  }, [messages]);
+  }, [messages, selectedProjectId]);
 
   // Focus input when chat is selected
   useEffect(() => {
@@ -457,9 +463,10 @@ const AdminChat: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden max-w-6xl mx-auto w-full">
         {/* Chat List */}
-        <div className="w-80 flex-shrink-0 border-r-4 border-black bg-white">
-          <div className="p-4 border-b-4 border-black">
+        <div className="w-80 flex-shrink-0 border-r-4 border-black bg-gradient-to-b from-white to-festival-cream/30">
+          <div className="p-4 border-b-4 border-black bg-gradient-to-r from-festival-orange to-festival-coral">
             <h3 className="font-bold text-black">Active Conversations</h3>
+            <p className="text-xs text-black/70 mt-1">Click to view project chats</p>
           </div>
           <div className="h-full overflow-y-auto p-4 space-y-2">
             {roomsLoading ? (
@@ -487,10 +494,10 @@ const AdminChat: React.FC = () => {
                       replace: true,
                     });
                   }}
-                  className={`p-3 border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-colors rounded-lg ${
+                  className={`p-4 border-2 border-black cursor-pointer hover:bg-festival-orange/20 transition-all duration-200 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 ${
                     selectedProjectId === chat.project_id
-                      ? "bg-festival-orange/30"
-                      : "bg-festival-cream"
+                      ? "bg-gradient-to-r from-festival-orange to-festival-coral text-white border-festival-orange"
+                      : "bg-white hover:bg-festival-cream"
                   }`}
                 >
                   <div className="flex items-start justify-between mb-2">
@@ -529,16 +536,16 @@ const AdminChat: React.FC = () => {
         </div>
 
         {/* Chat Interface */}
-        <div className="flex-1 flex flex-col bg-gradient-to-b from-white to-festival-cream/50">
-          <div className="flex-shrink-0 p-4 border-b-4 border-black bg-white">
-            <h3 className="font-bold text-black">
+        <div className="flex-1 flex flex-col bg-gradient-to-b from-white via-festival-cream/20 to-festival-cream/50">
+          <div className="flex-shrink-0 p-6 border-b-4 border-black bg-gradient-to-r from-festival-pink to-festival-magenta">
+            <h3 className="font-bold text-white text-xl">
               {selectedProjectId
-                ? "Project Chat"
-                : "Select a conversation to start chatting"}
+                ? "💬 Project Chat"
+                : "👋 Select a conversation to start chatting"}
             </h3>
             {selectedProjectId && (
-              <p className="text-sm text-black/70">
-                Project: {selectedProjectId}
+              <p className="text-sm text-white/90 mt-1">
+                🎯 Project ID: {selectedProjectId}
               </p>
             )}
           </div>

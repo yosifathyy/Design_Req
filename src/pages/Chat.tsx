@@ -248,33 +248,33 @@ const Chat: React.FC = () => {
       )}
 
       {/* Header - Fixed at top */}
-      <div className="flex-shrink-0 p-4 border-b-4 border-black bg-white shadow-lg">
+      <div className="flex-shrink-0 p-6 border-b-4 border-black bg-gradient-to-r from-festival-pink to-festival-magenta shadow-lg">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate("/design-dashboard")}
               variant="outline"
               size="sm"
-              className="border-2 border-black hover:bg-festival-orange/20"
+              className="border-2 border-white bg-white/20 text-white hover:bg-white hover:text-black transition-all"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back
             </Button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-festival-orange border-2 border-black rounded-full flex items-center justify-center">
-                <MessageCircle className="w-5 h-5 text-black" />
+              <div className="w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-lg">
+                <MessageCircle className="w-6 h-6 text-festival-magenta" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-black">
-                  {projectDetails?.title || "Project Chat"}
+                <h2 className="text-xl font-bold text-white">
+                  💬 {projectDetails?.title || "Project Chat"}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-                  <span className="text-xs text-black/70">
+                  <Circle className="w-2 h-2 fill-green-400 text-green-400" />
+                  <span className="text-sm text-white/90">
                     {projectDetails?.designer?.name
-                      ? `Designer: ${projectDetails.designer.name}`
-                      : "Waiting for designer"}
+                      ? `🎨 Designer: ${projectDetails.designer.name}`
+                      : "⏳ Waiting for designer"}
                   </span>
                 </div>
               </div>

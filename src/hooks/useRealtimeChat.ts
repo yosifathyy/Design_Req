@@ -767,7 +767,7 @@ export const useRealtimeChatRooms = () => {
 
       console.log("User is admin, fetching all projects...");
 
-      // Get all projects (admin can see all)
+      // Get all projects (admin can see all) - exclude invoices
       const { data: projects, error: projectsError } = await supabase
         .from("design_requests")
         .select(
@@ -776,10 +776,12 @@ export const useRealtimeChatRooms = () => {
           title,
           user_id,
           designer_id,
+          category,
           client:users!user_id(id, name, email),
           designer:users!designer_id(id, name, email)
         `,
         )
+        .or("category.is.null,category.neq.invoice")
         .order("updated_at", { ascending: false });
 
       if (projectsError) {
