@@ -1144,6 +1144,7 @@ export const getAdminProjects = async () => {
         files(*)
       `,
       )
+      .or("category.is.null,category.neq.invoice")
       .order("created_at", { ascending: false });
 
     if (error) {

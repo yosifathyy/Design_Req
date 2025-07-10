@@ -58,6 +58,7 @@ export const kanbanApi = {
           designer:designer_id(id, name, email)
         `,
         )
+        .or("category.is.null,category.neq.invoice")
         .order("created_at", { ascending: false });
 
       if (error) {
