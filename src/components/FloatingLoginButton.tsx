@@ -22,6 +22,7 @@ import {
   LogIn,
   UserCircle,
   LogOut,
+  Chrome,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,7 @@ const FloatingLoginButton = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pulseRef = useRef<HTMLDivElement>(null);
 
-  const { signIn, signUp, signOut, loading: isLoading, user } = useAuth();
+  const { signIn, signUp, signOut, signInWithGoogle, loading: isLoading, user } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -354,6 +355,27 @@ const FloatingLoginButton = () => {
                     <p className="text-red-700 text-sm">{errors.submit}</p>
                   </div>
                 )}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      const { error } = await signInWithGoogle();
+                      if (error) {
+                        setErrors({ submit: error.message });
+                      } else {
+                        setIsModalOpen(false);
+                      }
+                    } catch (error: any) {
+                      setErrors({ submit: "Google sign-in failed. Please try again." });
+                    }
+                  }}
+                  className="w-full border-4 border-festival-black bg-white hover:bg-festival-cream text-lg font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
+                >
+                  <Chrome className="w-5 h-5 mr-3" />
+                  Sign in with Google
+                </Button>
 
                 <Button
                   type="submit"

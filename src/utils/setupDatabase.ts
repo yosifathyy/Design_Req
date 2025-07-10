@@ -1,288 +1,161 @@
-import { supabase } from "@/lib/supabase";
 
-export const checkAndCreateTables = async () => {
-  const results: any = {};
+import { supabase } from "@/integrations/supabase/client";
 
+export const setupDemoData = async (): Promise<{ success: boolean; error?: string }> => {
   try {
-    // Check if tables exist by trying to query them
-    const tableChecks = [
+    console.log("🔄 Setting up demo data...");
+
+    // Create demo users first
+    const demoUsers = [
       {
-        name: "users",
-        query: () => supabase.from("users").select("count").limit(1),
-      },
-      {
-        name: "design_requests",
-        query: () => supabase.from("design_requests").select("count").limit(1),
-      },
-      {
-        name: "chats",
-        query: () => supabase.from("chats").select("count").limit(1),
-      },
-      {
-        name: "messages",
-        query: () => supabase.from("messages").select("count").limit(1),
-      },
-      {
-        name: "invoices",
-        query: () => supabase.from("invoices").select("count").limit(1),
-      },
-    ];
-
-    for (const table of tableChecks) {
-      try {
-        const { data, error } = await table.query();
-        results[table.name] = {
-          exists: !error,
-          accessible: !!data,
-          error: error?.message,
-        };
-      } catch (err: any) {
-        results[table.name] = {
-          exists: false,
-          accessible: false,
-          error: err.message,
-        };
-      }
-    }
-
-    return results;
-  } catch (error: any) {
-    throw new Error(`Database check failed: ${error.message}`);
-  }
-};
-
-export const createMissingTables = async () => {
-  try {
-    // This function would create tables, but we can't execute DDL from the client
-    // Instead, return SQL statements that need to be run manually
-    const sqlStatements = `
--- Users table
-CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  name TEXT,
-  role TEXT DEFAULT 'user',
-  status TEXT DEFAULT 'active',
-  xp INTEGER DEFAULT 0,
-  level INTEGER DEFAULT 1,
-  bio TEXT,
-  skills TEXT[],
-  hourly_rate DECIMAL,
-  avatar_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  last_login TIMESTAMP WITH TIME ZONE
-);
-
--- Design requests table
-CREATE TABLE IF NOT EXISTS design_requests (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  description TEXT,
-  budget DECIMAL,
-  deadline TIMESTAMP WITH TIME ZONE,
-  status TEXT DEFAULT 'pending',
-  user_id UUID REFERENCES users(id),
-  designer_id UUID REFERENCES users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Chats table
-CREATE TABLE IF NOT EXISTS chats (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  request_id UUID REFERENCES design_requests(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Messages table
-CREATE TABLE IF NOT EXISTS messages (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  chat_id UUID REFERENCES chats(id),
-  sender_id UUID REFERENCES users(id),
-  text TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Invoices table
-CREATE TABLE IF NOT EXISTS invoices (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id),
-  designer_id UUID REFERENCES users(id),
-  request_id UUID REFERENCES design_requests(id),
-  amount DECIMAL NOT NULL,
-  status TEXT DEFAULT 'pending',
-  due_date TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Disable RLS for admin access (temporarily)
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE design_requests DISABLE ROW LEVEL SECURITY;
-ALTER TABLE chats DISABLE ROW LEVEL SECURITY;
-ALTER TABLE messages DISABLE ROW LEVEL SECURITY;
-ALTER TABLE invoices DISABLE ROW LEVEL SECURITY;
-`;
-
-    return {
-      success: false,
-      sqlStatements,
-      message:
-        "Tables cannot be created from the client. Please run the provided SQL in your Supabase SQL Editor.",
-    };
-  } catch (error: any) {
-    throw new Error(`Table creation failed: ${error.message}`);
-  }
-};
-
-export const disableRLS = async () => {
-  try {
-    // Again, this needs to be done in Supabase dashboard
-    const sqlStatements = `
--- Disable Row Level Security for all tables
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE design_requests DISABLE ROW LEVEL SECURITY; 
-ALTER TABLE chats DISABLE ROW LEVEL SECURITY;
-ALTER TABLE messages DISABLE ROW LEVEL SECURITY;
-ALTER TABLE invoices DISABLE ROW LEVEL SECURITY;
-`;
-
-    return {
-      success: false,
-      sqlStatements,
-      message:
-        "RLS policies cannot be disabled from the client. Please run the provided SQL in your Supabase SQL Editor.",
-    };
-  } catch (error: any) {
-    throw new Error(`RLS disable failed: ${error.message}`);
-  }
-};
-
-export const createSampleData = async (userId: string) => {
-  try {
-    const results: any = {};
-
-    // Create sample users
-    const sampleUsers = [
-      {
-        id: "demo-client-user-id",
-        email: "client@demo.com",
-        name: "Demo Client",
-        role: "user",
+        id: "demo-admin-123",
+        email: "admin@demo.com",
+        name: "Admin User",
+        role: "admin",
         status: "active",
-        xp: 50,
-        level: 2,
-        bio: "Demo client user for testing",
-        avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=client",
-        created_at: new Date().toISOString(),
+        xp: 1000,
+        level: 5,
+        avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin@demo.com"
       },
       {
-        id: "demo-designer-user-id",
-        email: "designer@demo.com",
-        name: "Demo Designer",
+        id: "demo-designer-456",
+        email: "designer@demo.com", 
+        name: "Jane Designer",
         role: "designer",
         status: "active",
-        xp: 200,
-        level: 8,
-        bio: "Demo designer user for testing",
-        skills: ["UI Design", "Branding", "Logo Design"],
-        hourly_rate: 75,
-        avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=designer",
-        created_at: new Date().toISOString(),
+        xp: 750,
+        level: 4,
+        avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=designer@demo.com"
       },
+      {
+        id: "demo-user-789",
+        email: "user@demo.com",
+        name: "John Client",
+        role: "user", 
+        status: "active",
+        xp: 250,
+        level: 2,
+        avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=user@demo.com"
+      }
     ];
 
-    const { data: usersData, error: usersError } = await supabase
-      .from("users")
-      .upsert(sampleUsers, { onConflict: "email" });
+    // Insert demo users
+    const { error: usersError } = await supabase
+      .from('users')
+      .upsert(demoUsers, { onConflict: 'email' });
 
-    results.users = { success: !usersError, error: usersError?.message };
+    if (usersError) {
+      console.error("Failed to create demo users:", usersError);
+      return { success: false, error: usersError.message };
+    }
 
-    // Create sample design request
-    const sampleRequest = {
-      id: "demo-request-1",
-      title: "Logo Design for Startup",
-      description:
-        "We need a modern logo for our tech startup. Looking for something clean and professional.",
-      budget: 500,
-      deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: "in_progress",
-      user_id: "demo-client-user-id",
-      designer_id: "demo-designer-user-id",
-      created_at: new Date().toISOString(),
-    };
+    // Create demo design requests
+    const demoRequests = [
+      {
+        id: "demo-request-1",
+        title: "Website Redesign",
+        description: "Complete redesign of company website with modern UI/UX",
+        category: "web-design",
+        price: 2500,
+        status: "in-progress",
+        priority: "high",
+        user_id: "demo-user-789",
+        designer_id: "demo-designer-456"
+      },
+      {
+        id: "demo-request-2", 
+        title: "Logo Design",
+        description: "New logo for startup company",
+        category: "branding",
+        price: 800,
+        status: "completed",
+        priority: "medium",
+        user_id: "demo-user-789",
+        designer_id: "demo-designer-456"
+      }
+    ];
 
-    const { data: requestData, error: requestError } = await supabase
-      .from("design_requests")
-      .upsert([sampleRequest], { onConflict: "id" });
+    const { error: requestsError } = await supabase
+      .from('design_requests')
+      .upsert(demoRequests, { onConflict: 'id' });
 
-    results.requests = { success: !requestError, error: requestError?.message };
+    if (requestsError) {
+      console.error("Failed to create demo requests:", requestsError);
+      return { success: false, error: requestsError.message };
+    }
 
-    // Create sample chat
-    const sampleChat = {
-      id: "demo-chat-1",
-      request_id: "demo-request-1",
-      created_at: new Date().toISOString(),
-    };
+    // Create demo chats
+    const demoChats = [
+      {
+        id: "demo-chat-1",
+        request_id: "demo-request-1"
+      }
+    ];
 
-    const { data: chatData, error: chatError } = await supabase
-      .from("chats")
-      .upsert([sampleChat], { onConflict: "id" });
+    const { error: chatsError } = await supabase
+      .from('chats')
+      .upsert(demoChats, { onConflict: 'id' });
 
-    results.chats = { success: !chatError, error: chatError?.message };
+    if (chatsError) {
+      console.error("Failed to create demo chats:", chatsError);
+      return { success: false, error: chatsError.message };
+    }
 
-    // Create sample messages
-    const sampleMessages = [
+    // Create demo messages  
+    const demoMessages = [
       {
         id: "demo-message-1",
         chat_id: "demo-chat-1",
-        sender_id: "demo-client-user-id",
-        text: "Hi! I'm excited to work on this logo project. When can we start?",
-        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        sender_id: "demo-user-789",
+        text: "Hi! I'm excited to start working on the website redesign.",
+        content: "Hi! I'm excited to start working on the website redesign."
       },
       {
-        id: "demo-message-2",
+        id: "demo-message-2", 
         chat_id: "demo-chat-1",
-        sender_id: "demo-designer-user-id",
-        text: "Hello! I'd love to help you with your logo. I have some initial ideas already. Let's schedule a call to discuss your vision.",
-        created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "demo-message-3",
-        chat_id: "demo-chat-1",
-        sender_id: "demo-client-user-id",
-        text: "That sounds great! I'm available tomorrow afternoon. What time works for you?",
-        created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      },
+        sender_id: "demo-designer-456",
+        text: "Great! I'll start with some initial concepts and share them with you soon.",
+        content: "Great! I'll start with some initial concepts and share them with you soon."
+      }
     ];
 
-    const { data: messagesData, error: messagesError } = await supabase
-      .from("messages")
-      .upsert(sampleMessages, { onConflict: "id" });
+    const { error: messagesError } = await supabase
+      .from('messages')
+      .upsert(demoMessages, { onConflict: 'id' });
 
-    results.messages = {
-      success: !messagesError,
-      error: messagesError?.message,
-    };
+    if (messagesError) {
+      console.error("Failed to create demo messages:", messagesError);
+      return { success: false, error: messagesError.message };
+    }
 
-    // Create sample invoice
-    const sampleInvoice = {
-      id: "demo-invoice-1",
-      user_id: "demo-client-user-id",
-      designer_id: "demo-designer-user-id",
-      request_id: "demo-request-1",
-      amount: 500,
-      status: "pending",
-      due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-      created_at: new Date().toISOString(),
-    };
+    // Create demo invoices
+    const demoInvoices = [
+      {
+        id: "demo-invoice-1",
+        request_id: "demo-request-2",
+        invoice_number: "INV-001",
+        title: "Logo Design Services",
+        description: "Logo design project completion",
+        amount: 800,
+        status: "paid",
+        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ];
 
-    const { data: invoiceData, error: invoiceError } = await supabase
-      .from("invoices")
-      .upsert([sampleInvoice], { onConflict: "id" });
+    const { error: invoicesError } = await supabase
+      .from('invoices')
+      .upsert(demoInvoices, { onConflict: 'id' });
 
-    results.invoices = { success: !invoiceError, error: invoiceError?.message };
+    if (invoicesError) {
+      console.error("Failed to create demo invoices:", invoicesError);
+      return { success: false, error: invoicesError.message };
+    }
 
-    return results;
+    console.log("✅ Demo data setup completed successfully");
+    return { success: true };
+
   } catch (error: any) {
-    throw new Error(`Sample data creation failed: ${error.message}`);
+    console.error("Demo data setup failed:", error);
+    return { success: false, error: error.message };
   }
 };

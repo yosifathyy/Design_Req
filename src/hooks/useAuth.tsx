@@ -28,6 +28,10 @@ type AuthContextType = {
     data: Session | null;
   }>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<{
+    error: Error | null;
+    data: any | null;
+  }>;
   updateProfile: (updates: any) => Promise<{
     error: Error | null;
     data: any | null;
@@ -375,6 +379,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        setLoading(false);
+        return { data: null, error };
+      }
+
+      // Don't set loading to false here as the redirect will handle it
+      return { data: data, error: null };
+    } catch (error: any) {
+      setLoading(false);
+      if (error.message?.includes("Failed to fetch")) {
+        return {
+          data: null,
+          error: new Error(
+            "Unable to connect to authentication service. Please check your internet connection.",
+          ),
+        };
+      }
+      return { data: null, error };
+    }
+  };
+
   const signUp = async (email: string, password: string, name: string) => {
     setLoading(true);
 
@@ -600,6 +636,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
+    signInWithGoogle,
     updateProfile,
   };
 

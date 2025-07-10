@@ -47,7 +47,7 @@ const Login: React.FC = () => {
   const loginButtonRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  const { signIn, signUp, loading: isLoading } = useAuth();
+  const { signIn, signUp, signInWithGoogle, loading: isLoading } = useAuth();
 
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
@@ -259,7 +259,7 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     // Add click animation
     gsap.to(event?.currentTarget, {
       scale: 0.95,
@@ -267,6 +267,18 @@ const Login: React.FC = () => {
       yoyo: true,
       repeat: 1,
     });
+
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        console.error("Google sign-in error:", error);
+        setErrorMessage(error.message || "Google sign-in failed. Please try again.");
+      }
+      // If successful, the redirect will handle the rest
+    } catch (error: any) {
+      console.error("Google sign-in error:", error);
+      setErrorMessage("Google sign-in failed. Please try again.");
+    }
   };
 
   const toggleMode = () => {
