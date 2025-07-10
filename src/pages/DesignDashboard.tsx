@@ -21,6 +21,7 @@ import IDMismatchNotice from "@/components/IDMismatchNotice";
 import NewMessageNotification from "@/components/NewMessageNotification";
 import MessagesInbox from "@/components/MessagesInbox";
 import ProjectChatSelection from "@/components/ProjectChatSelection";
+import FloatingLogoutButton from "@/components/FloatingLogoutButton";
 import {
   FileText,
   MessageCircle,
@@ -840,6 +841,9 @@ const DesignDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Floating Logout Button */}
+        <FloatingLogoutButton />
       </div>
 
       {/* Messages Inbox Modal */}
