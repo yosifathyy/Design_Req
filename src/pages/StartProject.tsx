@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useClickSound } from "@/hooks/use-click-sound";
 import Navigation from "@/components/Navigation";
@@ -33,13 +32,13 @@ const StartProject = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { playClickSound } = useClickSound();
   const { user, loading: authLoading } = useAuth();
-  const { 
-    submitProject, 
-    loading: submissionLoading, 
-    showSuccessAnimation, 
-    handleSuccessComplete 
+  const {
+    submitProject,
+    loading: submissionLoading,
+    showSuccessAnimation,
+    handleSuccessComplete,
   } = useProjectSubmission();
-  
+
   const [formData, setFormData] = useState({
     projectName: "",
     description: "",
@@ -63,75 +62,87 @@ const StartProject = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('Submit button clicked');
-    console.log('User authenticated:', !!user);
-    console.log('Auth loading:', authLoading);
+    console.log("Submit button clicked");
+    console.log("User authenticated:", !!user);
+    console.log("Auth loading:", authLoading);
 
     // Check if auth is still loading
     if (authLoading) {
-      console.log('Authentication still loading, please wait...');
+      console.log("Authentication still loading, please wait...");
       toast.error("Please wait while we verify your authentication...");
       return;
     }
 
     // Check if user is authenticated
     if (!user) {
-      console.log('User not authenticated, showing auth modal');
+      console.log("User not authenticated, showing auth modal");
       setShowAuthModal(true);
       return;
     }
 
     // Validate form data
     if (!projectType || !formData.projectName || !formData.description) {
-      console.log('Form validation failed');
+      console.log("Form validation failed");
       toast.error("Please fill in all required fields");
       return;
     }
 
     if (!formData.timeline || !formData.budget) {
-      console.log('Timeline/budget validation failed');
+      console.log("Timeline/budget validation failed");
       toast.error("Please select timeline and budget preferences");
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      console.log('Starting project submission...');
-      await submitProject({
-        projectType,
-        projectName: formData.projectName,
-        description: formData.description,
-        style: formData.style,
-        timeline: formData.timeline,
-        budget: formData.budget,
-        files: formData.files,
-      }, user.id);
-      
-      console.log('Project submitted successfully');
+      console.log("Starting project submission...");
+      await submitProject(
+        {
+          projectType,
+          projectName: formData.projectName,
+          description: formData.description,
+          style: formData.style,
+          timeline: formData.timeline,
+          budget: formData.budget,
+          files: formData.files,
+        },
+        user.id,
+      );
+
+      console.log("Project submitted successfully");
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error("Submission error:", error);
       setIsSubmitting(false);
     }
   };
 
   const handleAuthSuccess = () => {
-    console.log('Authentication successful, closing modal');
+    console.log("Authentication successful, closing modal");
     setShowAuthModal(false);
     // Small delay to ensure auth state is updated
     setTimeout(() => {
-      console.log('Retrying submission after authentication');
+      console.log("Retrying submission after authentication");
       handleSubmit();
     }, 500);
   };
 
   const isStepValid = (stepNum: number) => {
     switch (stepNum) {
-      case 1: return !!projectType;
-      case 2: return !!(formData.projectName && formData.description && formData.style);
-      case 3: return !!(formData.timeline && formData.budget);
-      case 4: return true; // Files are optional
-      default: return false;
+      case 1:
+        return !!projectType;
+      case 2:
+        return !!(
+          formData.projectName &&
+          formData.description &&
+          formData.style
+        );
+      case 3:
+        return !!(formData.timeline && formData.budget);
+      case 4:
+        return true; // Files are optional
+      default:
+        return false;
     }
   };
 
@@ -148,17 +159,11 @@ const StartProject = () => {
         );
       case 2:
         return (
-          <ProjectDetailsStep
-            formData={formData}
-            setFormData={setFormData}
-          />
+          <ProjectDetailsStep formData={formData} setFormData={setFormData} />
         );
       case 3:
         return (
-          <TimelineBudgetStep
-            formData={formData}
-            setFormData={setFormData}
-          />
+          <TimelineBudgetStep formData={formData} setFormData={setFormData} />
         );
       case 4:
         return (
@@ -178,12 +183,12 @@ const StartProject = () => {
     <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden">
       {/* Email confirmation reminder */}
       <EmailConfirmationReminder />
-      
+
       {/* Success animation */}
       <SuccessAnimation
         isVisible={showSuccessAnimation}
         title="Project Submitted Successfully!"
-        description="Your project has been created and you've earned 10 XP! You'll be redirected to your dashboard where you can chat with our team."
+        description="Your project has been created and you've earned 10 XP! You'll be connected to our team chat where you can discuss your project details."
         onComplete={handleSuccessComplete}
       />
 
@@ -232,8 +237,11 @@ const StartProject = () => {
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-retro-purple mx-auto mb-4"></div>
                     <p className="text-lg font-medium text-retro-purple">
-                      {authLoading ? "Verifying authentication..." : 
-                       submissionLoading || isSubmitting ? "Submitting your project..." : "Loading..."}
+                      {authLoading
+                        ? "Verifying authentication..."
+                        : submissionLoading || isSubmitting
+                          ? "Submitting your project..."
+                          : "Loading..."}
                     </p>
                   </div>
                 </div>
