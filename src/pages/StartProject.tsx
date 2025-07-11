@@ -135,7 +135,7 @@ const StartProject = () => {
     setTimeout(() => {
       console.log("Retrying submission after authentication");
       handleSubmit();
-    }, 1000); // Slightly longer delay to ensure auth state is properly updated
+    }, 500);
   };
 
   const isStepValid = (stepNum: number) => {
