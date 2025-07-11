@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -22,17 +21,17 @@ export const HelpSection = () => {
             >
               <Wand2 className="w-10 h-10 md:w-12 md:h-12 text-retro-teal mx-auto mb-4" />
             </motion.div>
-            <h3 className="font-bold text-xl md:text-2xl text-retro-purple mb-3">
+            <h3
+              className="font-bold text-xl md:text-2xl mb-3"
+              style={{ color: "rgba(46, 20, 187, 1)" }}
+            >
               Need Help Getting Started? 🤝
             </h3>
             <p className="text-retro-purple/80 mb-6 text-base md:text-lg">
-              Our team of design wizards is here to help you create the
-              perfect project brief!
+              Our team of design wizards is here to help you create the perfect
+              project brief!
             </p>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 asChild
                 variant="outline"
