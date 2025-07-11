@@ -111,6 +111,55 @@ export const useProjectSubmission = () => {
       console.log("Starting project submission for user:", userId);
       console.log("Form data:", formData);
 
+      // Ensure user exists in users table before creating design request
+      const { data: existingUser, error: userCheckError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", userId)
+        .single();
+
+      if (userCheckError || !existingUser) {
+        console.log("User not found in database, creating user profile...");
+
+        // Get user details from auth
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser();
+
+        if (!authUser) {
+          throw new Error("User not authenticated");
+        }
+
+        // Create user profile
+        const { error: createUserError } = await supabase.from("users").insert({
+          id: userId,
+          email: authUser.email,
+          name:
+            authUser.user_metadata?.name ||
+            authUser.email?.split("@")[0] ||
+            "User",
+          role: authUser.email === "admin@demo.com" ? "admin" : "user",
+          status: "active",
+          xp: 0,
+          level: 1,
+          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${authUser.email}`,
+          created_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+        });
+
+        if (
+          createUserError &&
+          !createUserError.message?.includes("duplicate key")
+        ) {
+          console.error("Failed to create user profile:", createUserError);
+          throw new Error(
+            `Failed to create user profile: ${createUserError.message}`,
+          );
+        }
+
+        console.log("User profile created successfully");
+      }
+
       // Create the design request
       const { data: request, error: requestError } = await supabase
         .from("design_requests")
