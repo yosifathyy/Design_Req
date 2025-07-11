@@ -303,68 +303,18 @@ const HeroSectionNew: React.FC = () => {
   if (!showContent) {
     return (
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
-        <div className="text-center">
-          <div className="w-24 h-24 mx-auto">
-            <Lottie
-              animationData={{
-                v: "5.7.4",
-                fr: 30,
-                ip: 0,
-                op: 90,
-                w: 400,
-                h: 400,
-                nm: "Loading",
-                ddd: 0,
-                assets: [],
-                layers: [
-                  {
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "Shape Layer 1",
-                    sr: 1,
-                    ks: {
-                      o: { a: 0, k: 100 },
-                      r: {
-                        a: 1,
-                        k: [
-                          {
-                            i: { x: [0.833], y: [0.833] },
-                            o: { x: [0.167], y: [0.167] },
-                            t: 0,
-                            s: [0],
-                          },
-                          { t: 90, s: [360] },
-                        ],
-                      },
-                      p: { a: 0, k: [200, 200, 0] },
-                      a: { a: 0, k: [0, 0, 0] },
-                      s: { a: 0, k: [100, 100, 100] },
-                    },
-                    ao: 0,
-                    shapes: [
-                      {
-                        ty: "el",
-                        p: { a: 0, k: [0, 0] },
-                        s: { a: 0, k: [100, 100] },
-                      },
-                      {
-                        ty: "fl",
-                        c: { a: 0, k: [1, 0.46, 0.2, 1] },
-                        o: { a: 0, k: 100 },
-                      },
-                    ],
-                    ip: 0,
-                    op: 90,
-                    st: 0,
-                    bm: 0,
-                  },
-                ],
-              }}
-              style={{ width: "100%", height: "100%" }}
-              loop
-              autoplay
-            />
+        <div className="flex items-center justify-center">
+          <div className="w-32 h-32">
+            {loadingLottieData ? (
+              <Lottie
+                animationData={loadingLottieData}
+                style={{ width: "100%", height: "100%" }}
+                loop
+                autoplay
+              />
+            ) : (
+              <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+            )}
           </div>
         </div>
       </section>
