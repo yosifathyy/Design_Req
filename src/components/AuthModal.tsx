@@ -87,6 +87,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           data: {
             name: signupData.name,
           },
+          emailRedirectTo: undefined, // Skip email confirmation
         },
       });
 
