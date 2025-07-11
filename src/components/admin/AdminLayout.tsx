@@ -1,21 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
+import Lottie from "lottie-react";
 import { AdminSidebar } from "./AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import {
-  User,
-  Settings,
-  LogOut,
-  Zap,
-  Shield,
-  Loader2,
-  Home,
-} from "lucide-react";
+import { User, Settings, LogOut, Zap, Shield, Home } from "lucide-react";
 
 interface AdminLayoutProps {
   children?: React.ReactNode;
@@ -126,7 +119,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-festival-cream via-festival-orange/20 to-festival-pink/20">
         <div className="text-center bg-white p-8 border-8 border-black shadow-[12px_12px_0px_0px_#000]">
-          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
+          <div className="w-24 h-24 mx-auto mb-4">
+            <Lottie
+              animationData={null}
+              style={{ width: "100%", height: "100%" }}
+              loop
+              autoplay
+              src="https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json"
+            />
+          </div>
           <h2 className="text-2xl font-black text-black mb-2">LOADING ADMIN</h2>
           <p className="text-lg font-bold text-gray-700">
             Neubrutalism Admin Panel
