@@ -52,6 +52,32 @@ const Login: React.FC = () => {
     user,
     profile,
   } = useAuth();
+
+  // Handle redirect when user/profile loads after authentication
+  useEffect(() => {
+    if (user && !isLoading) {
+      // Check if user is admin based on email or profile role
+      const isAdmin =
+        user.email === "admin@demo.com" ||
+        user.role === "admin" ||
+        user.role === "super-admin" ||
+        profile?.role === "admin" ||
+        profile?.role === "super-admin";
+
+      // Redirect based on role
+      if (isAdmin) {
+        console.log(
+          "🚀 Admin user detected, redirecting to admin dashboard...",
+        );
+        navigate("/admin");
+      } else {
+        console.log(
+          "👤 Regular user detected, redirecting to design dashboard...",
+        );
+        navigate("/design-dashboard");
+      }
+    }
+  }, [user, profile, isLoading, navigate]);
   useEffect(() => {
     if (!containerRef.current || !formRef.current || !titleRef.current) return;
 
