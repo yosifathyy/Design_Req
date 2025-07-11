@@ -16,6 +16,10 @@ interface FormData {
   projectName: string;
   description: string;
   style: string;
+  timeline: string;
+  budget: string;
+  budgetAmount: number[];
+  files: File[];
 }
 
 interface ProjectDetailsStepProps {

@@ -7,9 +7,13 @@ import { BounceIn } from "@/components/AnimatedElements";
 import { Clock, DollarSign } from "lucide-react";
 
 interface FormData {
+  projectName: string;
+  description: string;
+  style: string;
   timeline: string;
   budget: string;
   budgetAmount: number[];
+  files: File[];
 }
 
 interface TimelineBudgetStepProps {
