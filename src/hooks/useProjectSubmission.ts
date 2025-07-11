@@ -102,10 +102,10 @@ export const useProjectSubmission = () => {
         await uploadFiles(formData.files, request.id, userId);
       }
 
-      // Award XP to user
+      // Award XP to user - Fixed the .raw issue
       const { error: xpError } = await supabase
         .from('users')
-        .update({ xp: supabase.raw('xp + 10') })
+        .update({ xp: 10 }) // Use direct value instead of supabase.raw
         .eq('id', userId);
 
       if (xpError) console.error('XP update error:', xpError);
