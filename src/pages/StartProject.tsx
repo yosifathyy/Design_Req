@@ -198,8 +198,8 @@ const StartProject = () => {
       {/* Success animation */}
       <SuccessAnimation
         isVisible={showSuccessAnimation}
-        title="Project Submitted Successfully!"
-        description="Your project has been created and you've earned 10 XP! You'll be connected to our team chat where you can discuss your project details."
+        title="All Set! Project Submitted Successfully!"
+        description="Your account was created, project submitted, and you've earned 10 XP! You'll be automatically connected to our team chat where you can discuss your project details."
         onComplete={handleSuccessComplete}
       />
 
