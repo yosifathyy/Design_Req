@@ -259,14 +259,24 @@ const StartProject = () => {
 
       <div
         className="px-4 md:px-6 py-8 md:py-12 relative z-10"
-        style={{ backgroundColor: "rgba(255, 204, 19, 1)" }}
+        style={{
+          backgroundColor: "rgba(255, 204, 19, 1)",
+          backgroundImage:
+            "url(https://cdn.builder.io/api/v1/image/assets%2F357bad6e9926439d91bc81f6a54d6d24%2F2182a208b5b74bc48c901c0259928821)",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
       >
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <BounceIn className="text-center mb-8 md:mb-12">
             <motion.h1
-              className="font-heading text-3xl md:text-4xl lg:text-5xl mb-4"
-              style={{ color: "rgba(102, 68, 146, 1)" }}
+              className="font-heading text-3xl md:text-4xl lg:text-5xl"
+              style={{
+                color: "rgba(102, 68, 146, 1)",
+                margin: "23px 0 16px",
+              }}
               animate={{
                 y: [0, -5, 0],
                 scale: [1, 1.02, 1],
