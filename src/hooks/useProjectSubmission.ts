@@ -112,6 +112,7 @@ export const useProjectSubmission = () => {
       console.log("Form data:", formData);
 
       // Ensure user exists in users table before creating design request
+      console.log("Checking if user exists in database for ID:", userId);
       const { data: existingUser, error: userCheckError } = await supabase
         .from("users")
         .select("id")
@@ -120,6 +121,7 @@ export const useProjectSubmission = () => {
 
       if (userCheckError || !existingUser) {
         console.log("User not found in database, creating user profile...");
+        console.log("User check error:", userCheckError);
 
         // Get user details from auth
         const {
