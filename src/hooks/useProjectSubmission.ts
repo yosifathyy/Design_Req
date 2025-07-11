@@ -89,7 +89,14 @@ export const useProjectSubmission = () => {
         uploaded_by: userId,
       });
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        const errorMessage =
+          dbError?.message ||
+          dbError?.details ||
+          dbError?.hint ||
+          JSON.stringify(dbError, Object.getOwnPropertyNames(dbError));
+        throw new Error(`Database error saving file metadata: ${errorMessage}`);
+      }
 
       return publicUrl;
     });
