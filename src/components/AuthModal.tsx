@@ -98,7 +98,29 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
 
       console.log("Signup response:", data);
 
-      // For seamless experience, proceed directly even without session
+      // For seamless experience, ensure user is logged in
+      if (data.user && !data.session) {
+        console.log(
+          "User created but no session, attempting automatic sign in...",
+        );
+        try {
+          const { data: signInData, error: signInError } =
+            await supabase.auth.signInWithPassword({
+              email: signupData.email,
+              password: signupData.password,
+            });
+
+          if (signInError) {
+            console.error("Auto sign-in failed:", signInError);
+            // Continue with profile creation anyway
+          } else {
+            console.log("Auto sign-in successful:", signInData);
+          }
+        } catch (autoSignInError) {
+          console.error("Auto sign-in error:", autoSignInError);
+          // Continue with profile creation anyway
+        }
+      }
 
       // Create user profile
       if (data.user) {
