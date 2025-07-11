@@ -62,10 +62,16 @@ export const ProjectTypeStep = ({
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-heading text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2
+          className="font-heading text-2xl md:text-3xl mb-3 text-center"
+          style={{ color: "rgb(62, 48, 80)" }}
+        >
           What type of design magic do you need? 🎨
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4 font-label">
+        <p
+          className="text-center mb-6 md:mb-8 px-4 font-label"
+          style={{ color: "rgba(62, 48, 80, 0.8)" }}
+        >
           Choose the service that best fits your project needs
         </p>
       </BounceIn>
@@ -87,11 +93,17 @@ export const ProjectTypeStep = ({
             className="cursor-pointer"
           >
             <TiltCard
-              className={`transition-all duration-300 border-3 hover:shadow-xl ${
-                projectType === type.id
-                  ? "border-retro-purple bg-retro-purple/10 shadow-2xl"
-                  : "border-retro-purple/30 hover:border-retro-purple/60"
+              className={`transition-all duration-300 border-2 hover:shadow-xl rounded-xl ${
+                projectType === type.id ? "shadow-lg" : "hover:shadow-md"
               }`}
+              style={{
+                borderColor:
+                  projectType === type.id
+                    ? "rgb(62, 48, 80)"
+                    : "rgba(62, 48, 80, 0.3)",
+                backgroundColor:
+                  projectType === type.id ? "rgba(62, 48, 80, 0.1)" : "white",
+              }}
             >
               <Card className="border-0 bg-transparent">
                 <CardContent className="p-4 md:p-6 text-center">
@@ -105,10 +117,16 @@ export const ProjectTypeStep = ({
                   >
                     <type.icon className="w-8 h-8 md:w-10 md:h-10 text-white" />
                   </motion.div>
-                  <h3 className="font-label font-bold text-lg md:text-xl text-retro-purple mb-2">
+                  <h3
+                    className="font-label font-bold text-lg md:text-xl mb-2"
+                    style={{ color: "rgb(62, 48, 80)" }}
+                  >
                     {type.title}
                   </h3>
-                  <p className="text-sm text-retro-purple/70 font-body">
+                  <p
+                    className="text-sm font-body"
+                    style={{ color: "rgba(62, 48, 80, 0.7)" }}
+                  >
                     {type.description}
                   </p>
                   {projectType === type.id && (
