@@ -9,7 +9,7 @@ import {
 } from "@/components/AnimatedElements";
 import { Zap } from "lucide-react";
 import { motion } from "framer-motion";
-import { AuthModal } from "@/components/AuthModal";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useProjectSubmission } from "@/hooks/useProjectSubmission";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProjectTypeStep } from "@/components/start-project/ProjectTypeStep";
 import { ProjectDetailsStep } from "@/components/start-project/ProjectDetailsStep";
 import { TimelineBudgetStep } from "@/components/start-project/TimelineBudgetStep";
-import { FileUploadStep } from "@/components/start-project/FileUploadStep";
+import { AuthStep } from "@/components/start-project/AuthStep";
 import { ProgressBar } from "@/components/start-project/ProgressBar";
 import { NavigationButtons } from "@/components/start-project/NavigationButtons";
 import { HelpSection } from "@/components/start-project/HelpSection";
@@ -29,7 +29,7 @@ import { HelpSection } from "@/components/start-project/HelpSection";
 const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
-  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authCompleted, setAuthCompleted] = useState(false);
   const { playClickSound } = useClickSound();
@@ -64,37 +64,18 @@ const StartProject = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("Submit button clicked");
-    console.log("User authenticated:", !!user);
-    console.log("Auth loading:", authLoading);
-
-    // Check if auth is still loading
-    if (authLoading) {
-      console.log("Authentication still loading, please wait...");
-      toast.error("Please wait while we verify your authentication...");
+    // For step 4 (auth step), do nothing - auth step handles submission
+    if (step === 4) {
       return;
     }
 
-    // Check current session directly from Supabase for most up-to-date auth state
-    const currentSession = await supabase.auth.getSession();
-    const currentUser = currentSession.data.session?.user;
+    // For other steps, this should not be called
+    console.log("Submit called on non-auth step");
+  };
 
-    // If auth was completed, skip auth check and proceed with submission
-    if (authCompleted) {
-      console.log("Auth completed, proceeding with submission...");
-    } else {
-      // Check if user is authenticated (either from context or current session)
-      if (!user && !currentUser) {
-        console.log("User not authenticated, showing auth modal");
-        setShowAuthModal(true);
-        return;
-      }
-
-      // If we have a current session but user context isn't updated yet, proceed with submission
-      if (!user && currentUser) {
-        console.log("Found current session, proceeding with submission...");
-      }
-    }
+  const handleAuthSuccess = async () => {
+    console.log("Authentication successful, submitting project...");
+    setAuthCompleted(true);
 
     // Validate form data
     if (!projectType || !formData.projectName || !formData.description) {
@@ -109,8 +90,11 @@ const StartProject = () => {
       return;
     }
 
-    // Ensure we have a user ID for submission
+    // Get current session
+    const currentSession = await supabase.auth.getSession();
+    const currentUser = currentSession.data.session?.user;
     const userId = user?.id || currentUser?.id;
+
     if (!userId) {
       console.log("No user ID available, cannot submit");
       toast.error("Authentication error. Please try again.");
@@ -146,21 +130,6 @@ const StartProject = () => {
       console.error("Submission error:", errorMessage);
       setIsSubmitting(false);
     }
-  };
-
-  const handleAuthSuccess = async () => {
-    console.log("Authentication successful, closing modal");
-    setShowAuthModal(false);
-    setAuthCompleted(true);
-
-    // Show immediate feedback that submission is continuing
-    toast.success("Welcome! Submitting your project...");
-
-    // Wait for auth state to be fully updated
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Retrying submission after authentication");
-    handleSubmit();
   };
 
   const isStepValid = (stepNum: number) => {
@@ -207,9 +176,9 @@ const StartProject = () => {
         );
       case 4:
         return (
-          <FileUploadStep
-            files={formData.files}
-            onFilesChange={handleFileUpload}
+          <AuthStep
+            onAuthSuccess={handleAuthSuccess}
+            loading={submissionLoading || isSubmitting}
           />
         );
       default:
@@ -304,12 +273,6 @@ const StartProject = () => {
           <HelpSection />
         </div>
       </div>
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onSuccess={handleAuthSuccess}
-      />
     </div>
   );
 };
