@@ -16,6 +16,7 @@ interface FormData {
   projectName: string;
   description: string;
   style: string;
+  customStyle?: string;
   timeline: string;
   budget: string;
   budgetAmount: number[];
@@ -115,17 +116,25 @@ export const ProjectDetailsStep = ({
           transition={{ delay: 0.3 }}
         >
           <Label className="text-retro-purple font-bold text-base md:text-lg mb-3 block">
-            Style Preference 🎨 <span className="text-red-500">*</span>
+            Style Preference 🎨{" "}
+            <span className="text-gray-400">(Optional)</span>
           </Label>
           <Select
             value={formData.style}
-            onValueChange={(value) =>
-              setFormData({ ...formData, style: value })
-            }
-            required
+            onValueChange={(value) => {
+              if (value === "other") {
+                setFormData({ ...formData, style: value, customStyle: "" });
+              } else {
+                setFormData({
+                  ...formData,
+                  style: value,
+                  customStyle: undefined,
+                });
+              }
+            }}
           >
             <SelectTrigger className="border-3 border-retro-purple/30 rounded-2xl py-3 text-base md:text-lg">
-              <SelectValue placeholder="Choose your vibe!" />
+              <SelectValue placeholder="Choose your vibe or skip this step!" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="modern">Modern & Clean 🏢</SelectItem>
@@ -136,8 +145,31 @@ export const ProjectDetailsStep = ({
               </SelectItem>
               <SelectItem value="artistic">Artistic & Creative 🎭</SelectItem>
               <SelectItem value="minimalist">Minimalist 🕳️</SelectItem>
+              <SelectItem value="other">Other (specify below) ✍️</SelectItem>
             </SelectContent>
           </Select>
+          {formData.style === "other" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mt-3"
+            >
+              <Input
+                placeholder="Describe your preferred style..."
+                value={formData.customStyle || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, customStyle: e.target.value })
+                }
+                className="border-3 border-retro-purple/30 focus:border-retro-purple rounded-2xl py-3 text-base md:text-lg"
+                maxLength={100}
+              />
+              <div className="text-right text-sm text-retro-purple/60 mt-1">
+                {(formData.customStyle || "").length}/100
+              </div>
+            </motion.div>
+          )}
         </motion.div>
 
         <motion.div
