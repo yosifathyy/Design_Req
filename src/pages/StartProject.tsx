@@ -135,7 +135,7 @@ const StartProject = () => {
     }
   };
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = async () => {
     console.log("Authentication successful, closing modal");
     setShowAuthModal(false);
     setAuthCompleted(true);
@@ -143,11 +143,11 @@ const StartProject = () => {
     // Show immediate feedback that submission is continuing
     toast.success("Welcome! Submitting your project...");
 
-    // Small delay to ensure auth state is updated
-    setTimeout(() => {
-      console.log("Retrying submission after authentication");
-      handleSubmit();
-    }, 800); // Slightly longer delay to ensure auth state propagates
+    // Wait for auth state to be fully updated
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Retrying submission after authentication");
+    handleSubmit();
   };
 
   const isStepValid = (stepNum: number) => {
