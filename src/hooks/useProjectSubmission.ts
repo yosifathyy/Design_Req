@@ -190,5 +190,6 @@ export const useProjectSubmission = () => {
     loading,
     showSuccessAnimation,
     handleSuccessComplete,
+    submittedRequestId,
   };
 };
