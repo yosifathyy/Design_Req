@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { BounceIn, TiltCard } from "@/components/AnimatedElements";
@@ -63,10 +62,10 @@ export const ProjectTypeStep = ({
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-display text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2 className="font-heading text-2xl md:text-3xl text-retro-purple mb-3 text-center">
           What type of design magic do you need? 🎨
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4">
+        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4 font-label">
           Choose the service that best fits your project needs
         </p>
       </BounceIn>
@@ -106,10 +105,10 @@ export const ProjectTypeStep = ({
                   >
                     <type.icon className="w-8 h-8 md:w-10 md:h-10 text-white" />
                   </motion.div>
-                  <h3 className="font-bold text-lg md:text-xl text-retro-purple mb-2">
+                  <h3 className="font-label font-bold text-lg md:text-xl text-retro-purple mb-2">
                     {type.title}
                   </h3>
-                  <p className="text-sm text-retro-purple/70">
+                  <p className="text-sm text-retro-purple/70 font-body">
                     {type.description}
                   </p>
                   {projectType === type.id && (
