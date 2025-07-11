@@ -111,8 +111,15 @@ const StartProject = () => {
       );
 
       console.log("Project submitted successfully");
-    } catch (error) {
-      console.error("Submission error:", error);
+    } catch (error: any) {
+      const errorMessage =
+        error?.message ||
+        error?.details ||
+        error?.hint ||
+        (typeof error === "string"
+          ? error
+          : JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      console.error("Submission error:", errorMessage);
       setIsSubmitting(false);
     }
   };
