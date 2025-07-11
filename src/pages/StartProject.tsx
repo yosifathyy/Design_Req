@@ -290,8 +290,12 @@ const StartProject = () => {
               Start Your Design Project
             </motion.h1>
             <p
-              className="text-lg md:text-xl max-w-2xl mx-auto px-4 font-label"
-              style={{ color: "rgba(62, 48, 80, 0.8)" }}
+              className="text-lg md:text-xl mx-auto px-4"
+              style={{
+                color: "rgba(62, 48, 80, 0.8)",
+                maxWidth: "876px",
+                font: "600 20px/28px Aboreto, display",
+              }}
             >
               Tell us about your project and get matched with amazing designers!
               ✨
