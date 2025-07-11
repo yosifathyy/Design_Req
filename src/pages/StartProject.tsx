@@ -251,7 +251,7 @@ const StartProject = () => {
                       {authLoading
                         ? "Verifying authentication..."
                         : submissionLoading || isSubmitting
-                          ? "Submitting your project..."
+                          ? "Submitting your project automatically..."
                           : "Loading..."}
                     </p>
                   </div>
