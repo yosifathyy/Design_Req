@@ -65,7 +65,14 @@ export const useProjectSubmission = () => {
         .from("files")
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        const errorMessage =
+          uploadError?.message ||
+          uploadError?.details ||
+          uploadError?.hint ||
+          JSON.stringify(uploadError, Object.getOwnPropertyNames(uploadError));
+        throw new Error(`File upload failed: ${errorMessage}`);
+      }
 
       // Get public URL
       const {
