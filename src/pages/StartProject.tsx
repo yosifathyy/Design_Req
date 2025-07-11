@@ -57,7 +57,16 @@ const StartProject = () => {
   };
 
   const nextStep = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 4) {
+      setStep(step + 1);
+      // Auto-scroll to top of the form container
+      setTimeout(() => {
+        const formContainer = document.querySelector(".max-w-4xl");
+        if (formContainer) {
+          formContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    }
   };
 
   const prevStep = () => {
