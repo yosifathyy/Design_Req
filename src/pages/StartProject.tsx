@@ -254,6 +254,12 @@ const StartProject = () => {
                           ? "Submitting your project automatically..."
                           : "Loading..."}
                     </p>
+                    {(submissionLoading || isSubmitting) && (
+                      <p className="text-sm text-retro-purple/70 mt-2">
+                        Please wait while we process your project details and
+                        set up your account...
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
