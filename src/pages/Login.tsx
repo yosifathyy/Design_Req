@@ -299,14 +299,39 @@ const Login: React.FC = () => {
       repeat: 1,
     });
     try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        console.error("Google sign-in error:", error);
+      const authResult = await signInWithGoogle();
+      if (authResult.error) {
+        console.error("Google sign-in error:", authResult.error);
         setErrorMessage(
-          error.message || "Google sign-in failed. Please try again.",
+          authResult.error.message ||
+            "Google sign-in failed. Please try again.",
         );
+        return;
       }
-      // If successful, the redirect will handle the rest
+
+      // Role-based redirect logic for Google sign-in
+      if (authResult.data?.user) {
+        const userEmail = authResult.data.user.email;
+
+        // Check if user is admin
+        const isAdmin =
+          userEmail === "admin@demo.com" ||
+          authResult.data.user.role === "admin" ||
+          authResult.data.user.role === "super-admin";
+
+        // Redirect based on role
+        if (isAdmin) {
+          console.log(
+            "🚀 Admin user detected, redirecting to admin dashboard...",
+          );
+          navigate("/admin");
+        } else {
+          console.log(
+            "👤 Regular user detected, redirecting to design dashboard...",
+          );
+          navigate("/design-dashboard");
+        }
+      }
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       setErrorMessage("Google sign-in failed. Please try again.");
