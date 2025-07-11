@@ -79,16 +79,21 @@ const StartProject = () => {
     const currentSession = await supabase.auth.getSession();
     const currentUser = currentSession.data.session?.user;
 
-    // Check if user is authenticated (either from context or current session)
-    if (!user && !currentUser && !authCompleted) {
-      console.log("User not authenticated, showing auth modal");
-      setShowAuthModal(true);
-      return;
-    }
+    // If auth was completed, skip auth check and proceed with submission
+    if (authCompleted) {
+      console.log("Auth completed, proceeding with submission...");
+    } else {
+      // Check if user is authenticated (either from context or current session)
+      if (!user && !currentUser) {
+        console.log("User not authenticated, showing auth modal");
+        setShowAuthModal(true);
+        return;
+      }
 
-    // If we have a current session but user context isn't updated yet, proceed with submission
-    if (!user && currentUser) {
-      console.log("Found current session, proceeding with submission...");
+      // If we have a current session but user context isn't updated yet, proceed with submission
+      if (!user && currentUser) {
+        console.log("Found current session, proceeding with submission...");
+      }
     }
 
     // Validate form data
