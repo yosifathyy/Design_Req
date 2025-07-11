@@ -291,14 +291,20 @@ const StartProject = () => {
           {/* Progress Bar */}
           <ProgressBar step={step} totalSteps={4} />
 
-          {/* Step Content */}
-          <div
+                    {/* Step Content */}
+          <motion.div
             className="relative rounded-2xl overflow-hidden border-2 transition-all duration-300"
             style={{
               backgroundColor: "rgb(243, 235, 211)",
               borderColor: "rgb(62, 48, 80)",
               boxShadow: "8px 8px 1px 3px rgba(32, 26, 40, 1)",
             }}
+            whileHover={{
+              scale: 1.01,
+              boxShadow: "12px 12px 1px 3px rgba(32, 26, 40, 1)",
+              rotate: [0, 0.5, -0.5, 0]
+            }}
+            transition={{ duration: 0.3 }}
           >
             <div
               className="p-6 md:p-8 relative z-10"
