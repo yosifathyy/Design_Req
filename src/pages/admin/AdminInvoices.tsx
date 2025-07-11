@@ -221,10 +221,7 @@ const AdminInvoices: React.FC = () => {
     <div ref={containerRef} className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-display font-bold text-black mb-2">
-            INVOICE MANAGEMENT
-          </h1>
-          <p className="text-xl text-black/70 font-medium">
+          <p className="text-lg text-black/70 font-bold">
             Create, track, and manage client invoices with PayPal integration
           </p>
         </div>
