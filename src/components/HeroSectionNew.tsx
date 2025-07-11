@@ -33,8 +33,9 @@ const HeroSectionNew: React.FC = () => {
   const shapesRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const { playClickSound, playHoverSound } = useClickSound();
-  const { lottieRef, isAnimationComplete, isLottieVisible } = useLottieAnimation();
-  
+  const { lottieRef, isAnimationComplete, isLottieVisible } =
+    useLottieAnimation();
+
   const [lottieData, setLottieData] = useState(null);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [showContent, setShowContent] = useState(false);
@@ -43,16 +44,18 @@ const HeroSectionNew: React.FC = () => {
   useEffect(() => {
     const fetchLottieData = async () => {
       try {
-        const response = await fetch('https://lottie.host/a10225fd-cd21-4531-9052-259c3b998138/9JcsgZvkYQ.json');
+        const response = await fetch(
+          "https://lottie.host/a10225fd-cd21-4531-9052-259c3b998138/9JcsgZvkYQ.json",
+        );
         const data = await response.json();
         setLottieData(data);
-        
+
         // Start the 2-second preloader buffer
         setTimeout(() => {
           setShowContent(true);
         }, 2000);
       } catch (error) {
-        console.error('Failed to load Lottie animation:', error);
+        console.error("Failed to load Lottie animation:", error);
         // Still show content after delay even if Lottie fails
         setTimeout(() => {
           setShowContent(true);
@@ -89,9 +92,9 @@ const HeroSectionNew: React.FC = () => {
       });
 
       // Master timeline that coordinates all animations
-      const masterTimeline = gsap.timeline({ 
+      const masterTimeline = gsap.timeline({
         delay: 0.3,
-        onComplete: () => setIsInitialLoadComplete(true)
+        onComplete: () => setIsInitialLoadComplete(true),
       });
 
       // Phase 1: Lottie slide-in animation (0s - 1s)
@@ -106,41 +109,57 @@ const HeroSectionNew: React.FC = () => {
       });
 
       // Phase 2: Background shapes animation (1.8s - 2.6s) - after Lottie completes
-      masterTimeline.to(".bg-shape", {
-        scale: 1,
-        opacity: 1,
-        rotation: "random(-10, 10)",
-        duration: 0.8,
-        stagger: 0.05,
-        ease: "back.out(1.4)",
-      }, 1.8);
+      masterTimeline.to(
+        ".bg-shape",
+        {
+          scale: 1,
+          opacity: 1,
+          rotation: "random(-10, 10)",
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "back.out(1.4)",
+        },
+        1.8,
+      );
 
       // Phase 3: Subtitle animation (2.4s - 3.2s)
-      masterTimeline.to(subtitleRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        ease: "power3.out",
-      }, 2.4);
+      masterTimeline.to(
+        subtitleRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        2.4,
+      );
 
       // Phase 4: CTA buttons animation (2.8s - 3.5s)
-      masterTimeline.to(ctaRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.7,
-        ease: "back.out(1.4)",
-      }, 2.8);
+      masterTimeline.to(
+        ctaRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.7,
+          ease: "back.out(1.4)",
+        },
+        2.8,
+      );
 
       // Phase 5: Stats animation (3.2s - 4s)
-      masterTimeline.to(statsRef.current, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        ease: "power3.out",
-      }, 3.2);
+      masterTimeline.to(
+        statsRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        3.2,
+      );
 
       // Continuous floating animations (after initial load)
       gsap.delayedCall(4.5, () => {
@@ -167,7 +186,7 @@ const HeroSectionNew: React.FC = () => {
         scrub: 1,
         onUpdate: (self) => {
           const progress = self.progress;
-          
+
           // Enhanced Lottie parallax with dramatic effects
           if (logoContainerRef.current) {
             gsap.set(logoContainerRef.current, {
@@ -204,7 +223,7 @@ const HeroSectionNew: React.FC = () => {
                 rotation: progress * -20,
                 scale: Math.max(0.4, 1 - progress * 0.6),
               });
-              
+
               // Second button slides right
               gsap.set(buttons[1], {
                 x: progress * 200,
@@ -268,7 +287,7 @@ const HeroSectionNew: React.FC = () => {
   }, [lottieData, showContent]);
 
   const handleLottieComplete = () => {
-    console.log('Lottie animation completed');
+    console.log("Lottie animation completed");
   };
 
   // Show preloader for first 2 seconds
@@ -276,7 +295,15 @@ const HeroSectionNew: React.FC = () => {
     return (
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-20 h-20 mx-auto mb-4">
+            <Lottie
+              animationData={null}
+              style={{ width: "100%", height: "100%" }}
+              loop
+              autoplay
+              src="https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json"
+            />
+          </div>
           <p className="text-lg font-medium text-black">
             Loading amazing content...
           </p>
@@ -374,7 +401,7 @@ const HeroSectionNew: React.FC = () => {
                 }
               />
             ) : (
-              <div 
+              <div
                 className="w-full h-full bg-festival-orange/20 rounded-full animate-pulse flex items-center justify-center"
                 style={{ width: "380px", height: "380px" }}
               >
@@ -399,7 +426,10 @@ const HeroSectionNew: React.FC = () => {
             willChange: "transform, opacity, filter",
           }}
         >
-          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl" style={{ fontFamily: "Righteous, display" }}>
+          <span
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+            style={{ fontFamily: "Righteous, display" }}
+          >
             Where{" "}
           </span>
           <span
@@ -430,7 +460,10 @@ const HeroSectionNew: React.FC = () => {
           >
             client desires
           </span>
-          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl" style={{ fontFamily: "Righteous, display" }}>
+          <span
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+            style={{ fontFamily: "Righteous, display" }}
+          >
             {" "}
             to create{" "}
           </span>
