@@ -295,18 +295,68 @@ const HeroSectionNew: React.FC = () => {
     return (
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
         <div className="text-center">
-          <div className="w-20 h-20 mx-auto mb-4">
+          <div className="w-24 h-24 mx-auto">
             <Lottie
-              animationData={null}
+              animationData={{
+                v: "5.7.4",
+                fr: 30,
+                ip: 0,
+                op: 90,
+                w: 400,
+                h: 400,
+                nm: "Loading",
+                ddd: 0,
+                assets: [],
+                layers: [
+                  {
+                    ddd: 0,
+                    ind: 1,
+                    ty: 4,
+                    nm: "Shape Layer 1",
+                    sr: 1,
+                    ks: {
+                      o: { a: 0, k: 100 },
+                      r: {
+                        a: 1,
+                        k: [
+                          {
+                            i: { x: [0.833], y: [0.833] },
+                            o: { x: [0.167], y: [0.167] },
+                            t: 0,
+                            s: [0],
+                          },
+                          { t: 90, s: [360] },
+                        ],
+                      },
+                      p: { a: 0, k: [200, 200, 0] },
+                      a: { a: 0, k: [0, 0, 0] },
+                      s: { a: 0, k: [100, 100, 100] },
+                    },
+                    ao: 0,
+                    shapes: [
+                      {
+                        ty: "el",
+                        p: { a: 0, k: [0, 0] },
+                        s: { a: 0, k: [100, 100] },
+                      },
+                      {
+                        ty: "fl",
+                        c: { a: 0, k: [1, 0.46, 0.2, 1] },
+                        o: { a: 0, k: 100 },
+                      },
+                    ],
+                    ip: 0,
+                    op: 90,
+                    st: 0,
+                    bm: 0,
+                  },
+                ],
+              }}
               style={{ width: "100%", height: "100%" }}
               loop
               autoplay
-              src="https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json"
             />
           </div>
-          <p className="text-lg font-medium text-black">
-            Loading amazing content...
-          </p>
         </div>
       </section>
     );
