@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { gsap } from "gsap";
@@ -77,7 +76,7 @@ const AdminChat: React.FC = () => {
       const scrollToBottom = () => {
         scrollElement.scrollTop = scrollElement.scrollHeight;
       };
-      
+
       // Small delay to ensure messages are rendered
       const timeoutId = setTimeout(scrollToBottom, 100);
       return () => clearTimeout(timeoutId);
@@ -141,8 +140,7 @@ const AdminChat: React.FC = () => {
             return;
           }
 
-          const errorMessage =
-            uploadError.message || "Failed to upload file";
+          const errorMessage = uploadError.message || "Failed to upload file";
           toast({
             title: "Upload failed",
             description: `${errorMessage}. Please try again.`,
@@ -225,7 +223,8 @@ const AdminChat: React.FC = () => {
 
   // Enhanced message rendering with images and files
   const renderMessage = (msg: any, index: number) => {
-    const isFromAdmin = msg.sender?.role === "admin" || msg.sender?.role === "super-admin";
+    const isFromAdmin =
+      msg.sender?.role === "admin" || msg.sender?.role === "super-admin";
     const isFirstInGroup =
       index === 0 || messages[index - 1]?.sender_id !== msg.sender_id;
 
@@ -372,7 +371,10 @@ const AdminChat: React.FC = () => {
   );
 
   return (
-    <div ref={containerRef} className="h-screen bg-festival-cream flex flex-col">
+    <div
+      ref={containerRef}
+      className="bg-white flex flex-col min-h-[80vh] border-4 border-black shadow-[8px_8px_0px_0px_#000]"
+    >
       {/* Storage Setup Helper */}
       <AnimatePresence>
         {showStorageSetup && (
@@ -398,75 +400,67 @@ const AdminChat: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <motion.div
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="flex-shrink-0 p-4 border-b-4 border-black bg-white shadow-lg"
-      >
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
+      {/* Chat Controls */}
+      <div className="p-4 border-b-4 border-black bg-festival-cream">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             {selectedProjectId && (
               <Button
                 onClick={() => navigate("/admin/chat")}
                 variant="outline"
+                size="sm"
                 className="border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 All Chats
               </Button>
             )}
-            <div>
-              <h1 className="text-4xl font-display font-bold text-black mb-2">
-                {selectedProjectId ? `PROJECT CHAT` : "ADMIN CHAT HUB"}
-              </h1>
-              <p className="text-xl text-black/70 font-medium">
-                {selectedProjectId
-                  ? `Managing project: ${selectedProjectId}`
-                  : "Unified communication center for all client projects"}
-              </p>
-            </div>
+            <h2 className="text-xl font-black text-black">
+              {selectedProjectId ? `PROJECT CHAT` : "CHAT MANAGEMENT"}
+            </h2>
           </div>
           <Button
             onClick={() => navigate("/admin/chat/create")}
-            className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black"
+            className="bg-gradient-to-r from-festival-magenta to-festival-pink border-4 border-black shadow-[4px_4px_0px_0px_#000] font-black"
           >
             <MessageCircle className="w-4 h-4 mr-2" />
-            New Chat
+            NEW CHAT
           </Button>
         </div>
 
-        <div className="flex gap-4 mt-4 max-w-6xl mx-auto">
+        <div className="flex gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-5 h-5" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search conversations..."
-              className="pl-12 h-12 border-4 border-black bg-white"
+              className="pl-12 h-12 border-4 border-black bg-white font-bold"
             />
           </div>
           <Button
             onClick={refreshChatRooms}
             variant="outline"
-            className="border-4 border-black"
+            className="border-4 border-black shadow-[4px_4px_0px_0px_#000] font-black"
             disabled={roomsLoading}
           >
             <RefreshCw
               className={`w-4 h-4 mr-2 ${roomsLoading ? "animate-spin" : ""}`}
             />
-            Refresh
+            REFRESH
           </Button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden max-w-6xl mx-auto w-full">
+      <div className="flex-1 flex overflow-hidden w-full">
         {/* Chat List */}
         <div className="w-80 flex-shrink-0 border-r-4 border-black bg-gradient-to-b from-white to-festival-cream/30">
           <div className="p-4 border-b-4 border-black bg-gradient-to-r from-festival-orange to-festival-coral">
             <h3 className="font-bold text-black">Active Conversations</h3>
-            <p className="text-xs text-black/70 mt-1">Click to view project chats</p>
+            <p className="text-xs text-black/70 mt-1">
+              Click to view project chats
+            </p>
           </div>
           <div className="h-full overflow-y-auto p-4 space-y-2">
             {roomsLoading ? (
@@ -524,7 +518,9 @@ const AdminChat: React.FC = () => {
                       <Clock className="w-3 h-3" />
                       <span>
                         {new Date(
-                          typeof chat.last_message === 'string' ? chat.last_message : new Date().toISOString(),
+                          typeof chat.last_message === "string"
+                            ? chat.last_message
+                            : new Date().toISOString(),
                         ).toLocaleDateString()}
                       </span>
                     </div>
@@ -549,7 +545,7 @@ const AdminChat: React.FC = () => {
               </p>
             )}
           </div>
-          
+
           {/* Messages Area */}
           <div
             ref={messagesRef}
@@ -584,7 +580,9 @@ const AdminChat: React.FC = () => {
               </div>
             ) : (
               <AnimatePresence initial={false}>
-                {messages.map((message, index) => renderMessage(message, index))}
+                {messages.map((message, index) =>
+                  renderMessage(message, index),
+                )}
               </AnimatePresence>
             )}
           </div>
@@ -650,7 +648,9 @@ const AdminChat: React.FC = () => {
               ref={fileInputRef}
               type="file"
               multiple
-              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+              onChange={(e) =>
+                e.target.files && handleFileUpload(e.target.files)
+              }
               className="hidden"
               accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar"
             />

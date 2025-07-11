@@ -1,24 +1,14 @@
-
 import React, { useState, useEffect, useRef } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
+import Lottie from "lottie-react";
 import { AdminSidebar } from "./AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Search,
-  Bell,
-  User,
-  Settings,
-  LogOut,
-  Sun,
-  Moon,
-  Zap,
-  Shield,
-  Loader2,
-} from "lucide-react";
+import { User, Settings, LogOut, Zap, Shield, Home } from "lucide-react";
 
 interface AdminLayoutProps {
   children?: React.ReactNode;
@@ -26,55 +16,44 @@ interface AdminLayoutProps {
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [signingOut, setSigningOut] = useState(false);
 
   const { user, profile, loading: authLoading, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const layoutRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
 
   // Check if user is admin
   const isAdmin =
     user?.email === "admin@demo.com" ||
+    user?.role === "admin" ||
+    user?.role === "super-admin" ||
     profile?.role === "admin" ||
     profile?.role === "super-admin";
 
   const currentUser = {
-    name: profile?.name || user?.email || "Admin User",
-    role: profile?.role || "admin",
+    name: profile?.name || user?.email?.split("@")[0] || "Admin User",
+    role: profile?.role || user?.role || "admin",
     lastLogin: profile?.last_login || new Date().toISOString(),
   };
 
-  const unreadAlerts = 0; // Simplified for now
-
   useEffect(() => {
-    if (!layoutRef.current || !headerRef.current) return;
+    if (!layoutRef.current) return;
 
-    const tl = gsap.timeline();
-
-    tl.fromTo(
-      headerRef.current,
-      { y: -20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" },
-    );
-
-    tl.fromTo(
+    gsap.fromTo(
       layoutRef.current.querySelector(".admin-content"),
       { y: 20, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" },
-      "-=0.2",
     );
-  }, []);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     if (signingOut) return;
 
     try {
       setSigningOut(true);
-      
+
       // Add logout animation
       if (layoutRef.current) {
         gsap.to(layoutRef.current, {
@@ -87,7 +66,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
       // Actually sign out the user
       await signOut();
-      
+
       toast({
         title: "Signed out successfully",
         description: "You have been logged out of the admin panel",
@@ -98,7 +77,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     } catch (error) {
       console.error("Error signing out:", error);
       setSigningOut(false);
-      
+
       toast({
         title: "Sign out failed",
         description: "There was an error signing you out. Please try again.",
@@ -117,6 +96,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     }
   };
 
+  // Auto-redirect to admin dashboard for admin users on login
+  useEffect(() => {
+    if (!authLoading && user && isAdmin && location.pathname === "/") {
+      console.log("🚀 Admin user detected, redirecting to admin dashboard...");
+      navigate("/admin");
+    }
+  }, [authLoading, user, isAdmin, navigate, location.pathname]);
+
   // Redirect non-admin users
   useEffect(() => {
     if (!authLoading && user && !isAdmin) {
@@ -130,11 +117,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   // Show loading while auth is loading
   if (authLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-festival-cream">
-        <div className="text-center">
-          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
-          <p className="text-lg font-medium text-black">
-            Loading admin panel...
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-festival-cream via-festival-orange/20 to-festival-pink/20">
+        <div className="text-center bg-white p-8 border-8 border-black shadow-[12px_12px_0px_0px_#000]">
+          <div className="w-24 h-24 mx-auto mb-4">
+            <Lottie
+              animationData={null}
+              style={{ width: "100%", height: "100%" }}
+              loop
+              autoplay
+              src="https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json"
+            />
+          </div>
+          <h2 className="text-2xl font-black text-black mb-2">LOADING ADMIN</h2>
+          <p className="text-lg font-bold text-gray-700">
+            Neubrutalism Admin Panel
           </p>
         </div>
       </div>
@@ -144,28 +140,22 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   // Show access denied if not admin
   if (!user || !isAdmin) {
     return (
-      <div className="h-screen flex items-center justify-center bg-festival-cream">
-        <div className="text-center max-w-md p-8 bg-white border-4 border-red-500 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <Shield className="w-16 h-16 mx-auto mb-4 text-red-500" />
-          <h2 className="text-2xl font-bold text-red-800 mb-2">
-            Access Denied
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-red-400 via-pink-500 to-purple-500">
+        <div className="text-center max-w-md p-8 bg-white border-8 border-black shadow-[16px_16px_0px_0px_#000]">
+          <Shield className="w-20 h-20 mx-auto mb-6 text-red-500" />
+          <h2 className="text-3xl font-black text-black mb-4">
+            ACCESS DENIED!
           </h2>
-          <p className="text-red-600 mb-6">
-            Admin privileges required to access this area.
+          <p className="text-lg font-bold text-gray-700 mb-6">
+            ADMIN ONLY ZONE
           </p>
           <div className="space-y-3">
             <Button
-              onClick={() => navigate("/admin-setup")}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-            >
-              Setup Admin Account
-            </Button>
-            <Button
               onClick={() => navigate("/")}
-              variant="outline"
-              className="w-full border-2 border-gray-300"
+              className="w-full bg-red-500 hover:bg-red-600 text-white border-4 border-black shadow-[4px_4px_0px_0px_#000] text-lg font-black py-3"
             >
-              Go to Home
+              <Home className="w-5 h-5 mr-2" />
+              GO HOME
             </Button>
           </div>
         </div>
@@ -202,107 +192,25 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div
       ref={layoutRef}
-      className="h-screen bg-festival-cream flex overflow-hidden"
+      className="h-screen bg-gradient-to-br from-festival-cream via-festival-orange/10 to-festival-pink/10 flex overflow-hidden"
     >
-      {/* Sidebar */}
-      <AdminSidebar
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        userRole={currentUser.role}
-      />
+      {/* Fixed Sidebar */}
+      <div className="fixed left-0 top-0 h-full z-40">
+        <AdminSidebar
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          userRole={currentUser.role}
+        />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header
-          ref={headerRef}
-          className="bg-white border-b-4 border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-4"
-        >
-          <div className="flex items-center justify-between gap-2">
-            {/* Search */}
-            <div className="flex-1 max-w-sm sm:max-w-md relative">
-              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-black/50 w-4 h-4 sm:w-5 sm:h-5" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-full pl-8 sm:pl-12 pr-2 sm:pr-4 py-1.5 sm:py-2 border-2 sm:border-4 border-black bg-festival-cream text-black placeholder-black/50 font-medium focus:outline-none focus:ring-2 focus:ring-festival-orange text-sm sm:text-base"
-              />
-            </div>
-
-            {/* Right Section */}
-            <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
-              {/* System Status */}
-              <div className="hidden lg:flex items-center gap-2 px-2 sm:px-3 py-1 bg-green-100 border-2 border-black rounded text-xs sm:text-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="font-bold text-black">
-                  All Systems Operational
-                </span>
-              </div>
-
-              {/* Notifications */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="relative border-2 sm:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
-                onClick={() => navigate("/admin/alerts")}
-              >
-                <Bell className="w-3 h-3 sm:w-4 sm:h-4" />
-                {unreadAlerts > 0 && (
-                  <Badge className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-festival-orange text-black border-1 sm:border-2 border-black w-4 h-4 sm:w-6 sm:h-6 rounded-full p-0 flex items-center justify-center text-xs">
-                    {unreadAlerts}
-                  </Badge>
-                )}
-              </Button>
-
-              {/* User Menu */}
-              <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 px-1 sm:px-2 lg:px-3 py-1 sm:py-2 bg-white border-2 sm:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-festival-orange border-1 sm:border-2 border-black rounded-full flex items-center justify-center">
-                  <span className="text-xs sm:text-sm font-bold text-black">
-                    {currentUser.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </span>
-                </div>
-                <div className="hidden lg:block">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-black text-sm">
-                      {currentUser.name}
-                    </span>
-                    <Badge
-                      className={`${getRoleColor(currentUser.role)} text-white border-2 border-black text-xs flex items-center gap-1`}
-                    >
-                      {getRoleIcon(currentUser.role)}
-                      {currentUser.role.replace("-", " ").toUpperCase()}
-                    </Badge>
-                  </div>
-                  <div className="text-xs text-black/60">
-                    Last login:{" "}
-                    {new Date(currentUser.lastLogin).toLocaleDateString()}
-                  </div>
-                </div>
-                <Button
-                  onClick={handleLogout}
-                  disabled={signingOut}
-                  variant="outline"
-                  size="sm"
-                  className="border-1 sm:border-2 border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 p-1 sm:p-2"
-                >
-                  {signingOut ? (
-                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                  ) : (
-                    <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
-
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          sidebarCollapsed ? "ml-20" : "ml-72"
+        }`}
+      >
         {/* Main Content Area */}
-        <main className="admin-content flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
+        <main className="admin-content flex-1 overflow-auto p-6">
           {children || <Outlet />}
         </main>
       </div>
