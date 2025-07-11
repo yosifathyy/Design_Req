@@ -39,10 +39,10 @@ export const ProjectDetailsStep = ({
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-display text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2 className="font-heading text-2xl md:text-3xl text-retro-purple mb-3 text-center">
           Tell us about your amazing project! 🚀
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4">
+        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4 font-label">
           The more details you share, the better we can match you with the
           perfect designer
         </p>
@@ -56,7 +56,7 @@ export const ProjectDetailsStep = ({
         >
           <Label
             htmlFor="projectName"
-            className="text-retro-purple font-bold text-base md:text-lg mb-3 block"
+            className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block"
           >
             Project Name ✨ <span className="text-red-500">*</span>
           </Label>
@@ -86,7 +86,7 @@ export const ProjectDetailsStep = ({
         >
           <Label
             htmlFor="description"
-            className="text-retro-purple font-bold text-base md:text-lg mb-3 block"
+            className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block"
           >
             Project Description 📝 <span className="text-red-500">*</span>
           </Label>
@@ -115,7 +115,7 @@ export const ProjectDetailsStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Label className="text-retro-purple font-bold text-base md:text-lg mb-3 block">
+          <Label className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block">
             Style Preference 🎨{" "}
             <span className="text-gray-400">(Optional)</span>
           </Label>
@@ -177,10 +177,10 @@ export const ProjectDetailsStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Label className="text-retro-purple font-bold text-base md:text-lg mb-3 block">
+          <Label className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block">
             Reference Files & Inspiration 📁✨
           </Label>
-          <p className="text-retro-purple/70 text-sm md:text-base mb-4">
+          <p className="text-retro-purple/70 text-sm md:text-base mb-4 font-body">
             Upload any reference materials, existing designs, or inspiration
             files to help us understand your vision better! (Optional)
           </p>
