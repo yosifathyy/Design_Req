@@ -96,22 +96,28 @@ const App = () => (
             <Route path="/admin/projects" element={<ProjectsList />} />
 
             {/* Communication */}
-            <Route path="/admin/chat" element={<AdminChat />} />
             <Route path="/admin/chat/create" element={<CreateChat />} />
+            <Route path="/admin/chat" element={<AdminChat />} />
 
             {/* Financial Management */}
-            <Route path="/admin/invoices" element={<AdminInvoices />} />
             <Route path="/admin/invoices/create" element={<CreateInvoice />} />
-            <Route path="/admin/invoices/:id" element={<InvoiceDetail />} />
             <Route
               path="/admin/invoices/reports"
               element={<InvoiceReports />}
             />
+            <Route path="/admin/invoices/:id" element={<InvoiceDetail />} />
+            <Route path="/admin/invoices" element={<AdminInvoices />} />
 
             {/* Content & Settings */}
+            <Route path="/admin/audit-logs" element={<AuditLogs />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
+            <Route path="/admin/alerts" element={<SystemAlerts />} />
             <Route path="/admin/content" element={<AdminContent />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="/admin/audit-logs" element={<AuditLogs />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+            {/* General admin route - must be last */}
+            <Route path="/admin" element={<AdminDashboard />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
