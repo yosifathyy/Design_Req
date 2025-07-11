@@ -160,6 +160,10 @@ export const useProjectSubmission = () => {
         }
 
         console.log("User profile created successfully");
+      } else {
+        console.log(
+          "User already exists in database, proceeding with request creation",
+        );
       }
 
       // Create the design request
