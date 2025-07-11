@@ -160,9 +160,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
         }
       }
 
-      toast.success(
-        "Account created and logged in! Submitting your project... 🎉",
-      );
+      toast.success("Account created successfully! 🎉");
       onSuccess();
     } catch (error: any) {
       console.error("Signup failed:", error);
