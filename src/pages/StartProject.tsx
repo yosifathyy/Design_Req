@@ -202,6 +202,34 @@ const StartProject = () => {
           "linear-gradient(to right bottom, rgb(243, 235, 211), rgba(231, 226, 218, 0.2), rgba(255, 206, 10, 0.3))",
       }}
     >
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="grid grid-cols-12 gap-4 h-full w-full p-4">
+          {Array.from({ length: 60 }, (_, i) => (
+            <motion.div
+              key={i}
+              className="bg-purple-600/30 rounded-lg"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{
+                opacity: [0.1, 0.3, 0.1],
+                scale: [0.8, 1, 0.8],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 3 + (i % 5),
+                repeat: Infinity,
+                delay: i * 0.1,
+                ease: "easeInOut",
+              }}
+              style={{
+                height: `${20 + (i % 3) * 10}px`,
+                background: `rgba(${102 + (i % 50)}, ${68 + (i % 30)}, ${146 + (i % 40)}, 0.${2 + (i % 3)})`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Email confirmation reminder */}
       <EmailConfirmationReminder />
 
