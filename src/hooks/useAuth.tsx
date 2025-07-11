@@ -175,6 +175,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .single();
 
             if (createError) {
+              // Check if this is a duplicate key error
+              if (
+                createError.code === "23505" ||
+                createError.message?.includes("duplicate key")
+              ) {
+                console.log(
+                  "User record already exists, attempting to fetch existing record...",
+                );
+                try {
+                  // Try to fetch the existing user by ID first
+                  const { data: existingById, error: fetchByIdError } =
+                    await supabase
+                      .from("users")
+                      .select("*")
+                      .eq("id", userId)
+                      .single();
+
+                  if (existingById && !fetchByIdError) {
+                    console.log("Found existing user by ID:", existingById);
+                    setProfile(existingById);
+                    return;
+                  }
+
+                  // If not found by ID, try by email
+                  const { data: existingByEmail, error: fetchByEmailError } =
+                    await supabase
+                      .from("users")
+                      .select("*")
+                      .eq("email", currentUser.email)
+                      .single();
+
+                  if (existingByEmail && !fetchByEmailError) {
+                    console.log(
+                      "Found existing user by email:",
+                      existingByEmail,
+                    );
+                    setProfile(existingByEmail);
+                    return;
+                  }
+                } catch (fetchError) {
+                  console.error("Error fetching existing user:", fetchError);
+                }
+              }
+
               const errorDetails = {
                 message: createError.message,
                 details: createError.details,
@@ -182,14 +226,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 code: createError.code,
               };
               console.error("Failed to auto-create user record:", errorDetails);
-              console.error(
-                "Full error object:",
-                JSON.stringify(
-                  createError,
-                  Object.getOwnPropertyNames(createError),
-                  2,
-                ),
-              );
               setProfile(null);
               return;
             }
@@ -370,13 +406,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     setLoading(true);
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/`
-        }
+          redirectTo: `${window.location.origin}/`,
+        },
       });
 
       if (error) {
