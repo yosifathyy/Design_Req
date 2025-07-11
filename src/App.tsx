@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +8,7 @@ import { EmailConfirmationReminder } from "@/components/EmailConfirmationReminde
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import DesignDashboard from "./pages/DesignDashboard";
 import StartProject from "./pages/StartProject";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
