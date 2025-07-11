@@ -37,18 +37,27 @@ const HeroSectionNew: React.FC = () => {
     useLottieAnimation();
 
   const [lottieData, setLottieData] = useState(null);
+  const [loadingLottieData, setLoadingLottieData] = useState(null);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
-  // Fetch Lottie animation data with new URL
+  // Fetch both Lottie animation data
   useEffect(() => {
     const fetchLottieData = async () => {
       try {
-        const response = await fetch(
+        // Fetch main animation
+        const mainResponse = await fetch(
           "https://lottie.host/a10225fd-cd21-4531-9052-259c3b998138/9JcsgZvkYQ.json",
         );
-        const data = await response.json();
-        setLottieData(data);
+        const mainData = await mainResponse.json();
+        setLottieData(mainData);
+
+        // Fetch loading animation
+        const loadingResponse = await fetch(
+          "https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json",
+        );
+        const loadingData = await loadingResponse.json();
+        setLoadingLottieData(loadingData);
 
         // Start the 2-second preloader buffer
         setTimeout(() => {
