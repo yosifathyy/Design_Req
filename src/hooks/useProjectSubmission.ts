@@ -173,11 +173,15 @@ export const useProjectSubmission = () => {
 
   const handleSuccessComplete = () => {
     setShowSuccessAnimation(false);
-    toast.success("🎉 You earned 10 XP!");
+    toast.success("🎉 You earned 10 XP! Ready to chat with our team!");
 
-    // Navigate to dashboard after animation
+    // Navigate directly to chat with the project context for seamless experience
     setTimeout(() => {
-      navigate("/dashboard");
+      if (submittedRequestId) {
+        navigate(`/chat?request=${submittedRequestId}`);
+      } else {
+        navigate("/dashboard");
+      }
     }, 500);
   };
 
