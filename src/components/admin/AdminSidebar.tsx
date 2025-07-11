@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
 import { mockSystemAlerts } from "@/lib/admin-data";
 import {
   LayoutDashboard,
@@ -34,6 +35,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   userRole,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [expandedSections, setExpandedSections] = useState<string[]>([
     "projects",
     "users",
@@ -283,11 +286,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       {/* Footer */}
       <div className="p-4 border-t-4 border-black bg-festival-cream">
         <Button
+          onClick={async () => {
+            try {
+              await signOut();
+              console.log("📝 Admin logged out successfully");
+              navigate("/");
+            } catch (error) {
+              console.error("Logout error:", error);
+            }
+          }}
           variant="outline"
-          className="w-full border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1"
+          className="w-full border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 font-black"
         >
           <LogOut className="w-4 h-4 mr-2" />
-          {!isCollapsed && "Logout"}
+          {!isCollapsed && "LOGOUT"}
         </Button>
       </div>
     </div>
