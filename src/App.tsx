@@ -42,6 +42,10 @@ const App = () => (
             <Route path="/requests/:id" element={<RequestDetail />} />
             <Route path="/new-request" element={<NewRequest />} />
             <Route path="/downloads" element={<Downloads />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/payments" element={<Payments />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
