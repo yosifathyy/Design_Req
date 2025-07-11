@@ -469,11 +469,11 @@ export const uploadFile = async (file: File, path: string) => {
     const filePath = `${path}/${fileName}`;
 
     const { data, error } = await supabase.storage
-      .from("files")
+      .from("chat-files")
       .upload(filePath, file);
 
     if (error) {
-      if (error.message?.includes('bucket "files" does not exist')) {
+      if (error.message?.includes('bucket "chat-files" does not exist')) {
         throw new Error(
           "File storage bucket does not exist. Please run the database setup script.",
         );
@@ -484,7 +484,7 @@ export const uploadFile = async (file: File, path: string) => {
     // Get public URL
     const {
       data: { publicUrl },
-    } = supabase.storage.from("files").getPublicUrl(filePath);
+    } = supabase.storage.from("chat-files").getPublicUrl(filePath);
 
     return { path: filePath, url: publicUrl };
   } catch (error: any) {
