@@ -153,6 +153,9 @@ export const useProjectSubmission = () => {
 
       console.log("Project submission completed successfully");
 
+      // Store request ID for navigation
+      setSubmittedRequestId(request.id);
+
       // Show success animation
       setShowSuccessAnimation(true);
 
