@@ -15,6 +15,7 @@ import { useProjectSubmission } from "@/hooks/useProjectSubmission";
 import { toast } from "sonner";
 import { EmailConfirmationReminder } from "@/components/EmailConfirmationReminder";
 import { SuccessAnimation } from "@/components/SuccessAnimation";
+import { supabase } from "@/integrations/supabase/client";
 
 // Import existing step components
 import { ProjectTypeStep } from "@/components/start-project/ProjectTypeStep";
