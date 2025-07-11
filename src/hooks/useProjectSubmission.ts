@@ -187,6 +187,17 @@ export const useProjectSubmission = () => {
             Object.getOwnPropertyNames(requestError),
           );
         console.error("Request creation error:", errorMessage);
+
+        // Handle specific foreign key constraint violation
+        if (
+          requestError.message?.includes("foreign key constraint") ||
+          requestError.message?.includes("user_id_fkey")
+        ) {
+          throw new Error(
+            "User authentication error. Please try logging out and back in.",
+          );
+        }
+
         throw new Error(`Failed to create design request: ${errorMessage}`);
       }
 
