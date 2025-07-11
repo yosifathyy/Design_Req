@@ -141,10 +141,16 @@ export const TimelineBudgetStep = ({
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-heading text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2
+          className="font-heading text-2xl md:text-3xl mb-3 text-center"
+          style={{ color: "rgb(62, 48, 80)" }}
+        >
           Timeline & Budget Magic! ⏰💰
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4 font-label">
+        <p
+          className="text-center mb-6 md:mb-8 px-4 font-label"
+          style={{ color: "rgba(62, 48, 80, 0.8)" }}
+        >
           Help us understand your project constraints so we can work our magic
           perfectly
         </p>
@@ -156,7 +162,10 @@ export const TimelineBudgetStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Label className="text-retro-purple font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
+          <Label
+            className="font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             <Clock className="w-5 h-5 md:w-6 md:h-6 mr-2" />
             When do you need this completed? 🏃‍♂️
           </Label>
@@ -170,11 +179,21 @@ export const TimelineBudgetStep = ({
             {timelineOptions.map((option, index) => (
               <motion.div
                 key={option.value}
-                className={`flex items-center space-x-3 p-4 md:p-6 border-3 rounded-2xl transition-all duration-300 hover:shadow-lg cursor-pointer ${
+                className={`flex items-center space-x-3 p-4 md:p-6 border-2 rounded-2xl transition-all duration-300 hover:shadow-lg cursor-pointer ${
                   formData.timeline === option.value
-                    ? "border-retro-purple bg-retro-purple/10 shadow-lg"
-                    : "border-retro-purple/30 hover:border-retro-purple/60"
+                    ? "shadow-lg"
+                    : "hover:shadow-md"
                 }`}
+                style={{
+                  borderColor:
+                    formData.timeline === option.value
+                      ? "rgb(62, 48, 80)"
+                      : "rgba(62, 48, 80, 0.3)",
+                  backgroundColor:
+                    formData.timeline === option.value
+                      ? "rgba(62, 48, 80, 0.1)"
+                      : "white",
+                }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, y: 20 }}
@@ -185,10 +204,16 @@ export const TimelineBudgetStep = ({
                 <RadioGroupItem value={option.value} id={option.value} />
                 <div className="text-2xl md:text-3xl">{option.emoji}</div>
                 <div className="flex-1">
-                  <div className="font-label font-bold text-retro-purple text-base md:text-lg">
+                  <div
+                    className="font-label font-bold text-base md:text-lg"
+                    style={{ color: "rgb(62, 48, 80)" }}
+                  >
                     {option.title}
                   </div>
-                  <div className="text-sm md:text-base text-retro-purple/70 font-body">
+                  <div
+                    className="text-sm md:text-base font-body"
+                    style={{ color: "rgba(62, 48, 80, 0.7)" }}
+                  >
                     {option.description}
                   </div>
                 </div>
@@ -202,7 +227,10 @@ export const TimelineBudgetStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Label className="text-retro-purple font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
+          <Label
+            className="font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             <DollarSign className="w-5 h-5 md:w-6 md:h-6 mr-2" />
             What's your budget range? 💸
           </Label>
@@ -260,10 +288,16 @@ export const TimelineBudgetStep = ({
                 <RadioGroupItem value={option.value} id={option.value} />
                 <div className="text-2xl md:text-3xl">{option.emoji}</div>
                 <div className="flex-1">
-                  <div className="font-label font-bold text-retro-purple text-base md:text-lg">
+                  <div
+                    className="font-label font-bold text-base md:text-lg"
+                    style={{ color: "rgb(62, 48, 80)" }}
+                  >
                     {option.title}
                   </div>
-                  <div className="text-sm md:text-base text-retro-purple/70 font-body">
+                  <div
+                    className="text-sm md:text-base font-body"
+                    style={{ color: "rgba(62, 48, 80, 0.7)" }}
+                  >
                     {option.description}
                   </div>
                 </div>
