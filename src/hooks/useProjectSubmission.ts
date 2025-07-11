@@ -118,7 +118,9 @@ export const useProjectSubmission = () => {
           user_id: userId,
           category: formData.projectType,
           title: formData.projectName,
-          description: formData.description,
+          description: formData.style
+            ? `${formData.description}\n\nStyle Preferences: ${formData.style}`
+            : formData.description,
           priority: mapTimelineToPriority(formData.timeline),
           price: mapBudgetToPrice(formData.budget),
           status: "submitted",
