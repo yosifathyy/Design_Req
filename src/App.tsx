@@ -72,16 +72,12 @@ const App = () => (
             <Route path="/services" element={<Services />} />
             <Route path="/payments" element={<Payments />} />
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route path="/admin/alerts" element={<SystemAlerts />} />
+            {/* Admin Routes - More specific routes first */}
 
             {/* User & Team Management */}
-            <Route path="/admin/users" element={<UsersManagement />} />
             <Route path="/admin/users/create" element={<CreateUser />} />
             <Route path="/admin/users/:id/edit" element={<EditUser />} />
+            <Route path="/admin/users" element={<UsersManagement />} />
             <Route path="/admin/team" element={<TeamManagement />} />
             <Route
               path="/admin/permissions"
@@ -89,15 +85,15 @@ const App = () => (
             />
 
             {/* Project Management */}
-            <Route path="/admin/projects" element={<ProjectsList />} />
             <Route path="/admin/projects/create" element={<CreateProject />} />
-            <Route path="/admin/projects/:id" element={<ProjectDetail />} />
-            <Route path="/admin/projects/:id/edit" element={<EditProject />} />
             <Route path="/admin/projects/kanban" element={<ProjectKanban />} />
             <Route
               path="/admin/projects/assignments"
               element={<ProjectAssignments />}
             />
+            <Route path="/admin/projects/:id/edit" element={<EditProject />} />
+            <Route path="/admin/projects/:id" element={<ProjectDetail />} />
+            <Route path="/admin/projects" element={<ProjectsList />} />
 
             {/* Communication */}
             <Route path="/admin/chat" element={<AdminChat />} />
