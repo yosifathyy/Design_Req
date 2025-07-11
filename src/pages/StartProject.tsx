@@ -137,11 +137,7 @@ const StartProject = () => {
       case 1:
         return !!projectType;
       case 2:
-        return !!(
-          formData.projectName &&
-          formData.description &&
-          formData.style
-        );
+        return !!(formData.projectName && formData.description);
       case 3:
         return !!(formData.timeline && formData.budget);
       case 4:
