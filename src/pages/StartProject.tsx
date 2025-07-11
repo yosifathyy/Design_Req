@@ -30,6 +30,7 @@ const StartProject = () => {
   const [projectType, setProjectType] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authCompleted, setAuthCompleted] = useState(false);
   const { playClickSound } = useClickSound();
   const { user, loading: authLoading } = useAuth();
   const {
