@@ -361,24 +361,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .insert([userData]);
 
             if (createError) {
-              const errorDetails = {
-                message: createError.message,
-                details: createError.details,
-                hint: createError.hint,
-                code: createError.code,
-              };
-              console.error(
-                "Failed to create user record during login:",
-                errorDetails,
-              );
-              console.error(
-                "Full login create error:",
-                JSON.stringify(
-                  createError,
-                  Object.getOwnPropertyNames(createError),
-                  2,
-                ),
-              );
+              // Check if this is a duplicate key error (user already exists)
+              if (
+                createError.code === "23505" ||
+                createError.message?.includes("duplicate key")
+              ) {
+                console.log(
+                  "User record already exists during login, continuing...",
+                );
+              } else {
+                const errorDetails = {
+                  message: createError.message,
+                  details: createError.details,
+                  hint: createError.hint,
+                  code: createError.code,
+                };
+                console.error(
+                  "Failed to create user record during login:",
+                  errorDetails,
+                );
+              }
             } else {
               console.log("User record created successfully during login");
             }
