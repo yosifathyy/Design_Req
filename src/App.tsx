@@ -97,6 +97,7 @@ const App = () => (
 
             {/* Communication */}
             <Route path="/admin/chat/create" element={<CreateChat />} />
+            <Route path="/admin/chat/:id" element={<AdminChat />} />
             <Route path="/admin/chat" element={<AdminChat />} />
 
             {/* Financial Management */}
