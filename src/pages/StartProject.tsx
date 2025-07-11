@@ -75,9 +75,18 @@ const StartProject = () => {
     }
 
     // Check if user is authenticated
-    if (!user) {
+    if (!user && !authCompleted) {
       console.log("User not authenticated, showing auth modal");
       setShowAuthModal(true);
+      return;
+    }
+
+    // If user is still not authenticated but auth was completed, wait a bit more
+    if (!user && authCompleted) {
+      console.log("Auth completed but user state not updated yet, retrying...");
+      setTimeout(() => {
+        handleSubmit();
+      }, 500);
       return;
     }
 
