@@ -12,6 +12,10 @@ import DesignDashboard from "./pages/DesignDashboard";
 import StartProject from "./pages/StartProject";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
+import Requests from "./pages/Requests";
+import RequestDetail from "./pages/RequestDetail";
+import NewRequest from "./pages/NewRequest";
+import Downloads from "./pages/Downloads";
 
 const queryClient = new QueryClient();
 
