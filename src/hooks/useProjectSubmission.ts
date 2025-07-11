@@ -114,8 +114,16 @@ export const useProjectSubmission = () => {
         .single();
 
       if (requestError) {
-        console.error("Request creation error:", requestError);
-        throw requestError;
+        const errorMessage =
+          requestError?.message ||
+          requestError?.details ||
+          requestError?.hint ||
+          JSON.stringify(
+            requestError,
+            Object.getOwnPropertyNames(requestError),
+          );
+        console.error("Request creation error:", errorMessage);
+        throw new Error(`Failed to create design request: ${errorMessage}`);
       }
 
       console.log("Design request created successfully:", request);
@@ -145,7 +153,12 @@ export const useProjectSubmission = () => {
           .eq("id", userId);
 
         if (xpError) {
-          console.error("XP update error:", xpError);
+          const xpErrorMessage =
+            xpError?.message ||
+            xpError?.details ||
+            xpError?.hint ||
+            JSON.stringify(xpError, Object.getOwnPropertyNames(xpError));
+          console.error("XP update error:", xpErrorMessage);
         } else {
           console.log("XP updated successfully. New XP:", newXP);
         }
@@ -161,11 +174,16 @@ export const useProjectSubmission = () => {
 
       return request;
     } catch (error: any) {
-      console.error("Project submission error:", error);
       const errorMessage =
-        error.message || error.details || "Failed to submit project";
+        error?.message ||
+        error?.details ||
+        error?.hint ||
+        (typeof error === "string"
+          ? error
+          : JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      console.error("Project submission error:", errorMessage);
       toast.error(`Submission failed: ${errorMessage}`);
-      throw error;
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
