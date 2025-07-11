@@ -34,6 +34,10 @@ const App = () => (
             <Route path="/design-dashboard" element={<DesignDashboard />} />
             <Route path="/start-project" element={<StartProject />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/requests" element={<Requests />} />
+            <Route path="/requests/:id" element={<RequestDetail />} />
+            <Route path="/new-request" element={<NewRequest />} />
+            <Route path="/downloads" element={<Downloads />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
