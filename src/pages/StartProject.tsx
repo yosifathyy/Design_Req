@@ -291,7 +291,7 @@ const StartProject = () => {
           {/* Progress Bar */}
           <ProgressBar step={step} totalSteps={4} />
 
-                    {/* Step Content */}
+          {/* Step Content */}
           <motion.div
             className="relative rounded-2xl overflow-hidden border-2 transition-all duration-300"
             style={{
@@ -302,7 +302,7 @@ const StartProject = () => {
             whileHover={{
               scale: 1.01,
               boxShadow: "12px 12px 1px 3px rgba(32, 26, 40, 1)",
-              rotate: [0, 0.5, -0.5, 0]
+              rotate: [0, 0.5, -0.5, 0],
             }}
             transition={{ duration: 0.3 }}
           >
@@ -343,7 +343,7 @@ const StartProject = () => {
                 onSubmit={handleSubmit}
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Help Section */}
           <HelpSection />
