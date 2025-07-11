@@ -70,24 +70,6 @@ export const ProgressBar = ({ step, totalSteps }: ProgressBarProps) => {
               >
                 {stepInfo.label}
               </span>
-
-              {/* Connection Line */}
-              {index < stepData.length - 1 && (
-                <div
-                  className="absolute top-6 md:top-7 left-1/2 w-full h-0.5 bg-gray-200 -z-10 hidden md:block"
-                  style={{
-                    transform: "translateX(50%)",
-                    width: "calc(100vw / 4 - 3.5rem)",
-                  }}
-                >
-                  <motion.div
-                    className={`h-full ${isCompleted ? "bg-gradient-to-r from-green-400 to-green-500" : "bg-gray-200"}`}
-                    initial={{ width: "0%" }}
-                    animate={{ width: isCompleted ? "100%" : "0%" }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                  />
-                </div>
-              )}
             </div>
           );
         })}
