@@ -127,11 +127,15 @@ const StartProject = () => {
   const handleAuthSuccess = () => {
     console.log("Authentication successful, closing modal");
     setShowAuthModal(false);
+
+    // Show immediate feedback that submission is continuing
+    toast.success("Account ready! Submitting your project automatically...");
+
     // Small delay to ensure auth state is updated
     setTimeout(() => {
       console.log("Retrying submission after authentication");
       handleSubmit();
-    }, 500);
+    }, 1000); // Slightly longer delay to ensure auth state is properly updated
   };
 
   const isStepValid = (stepNum: number) => {
