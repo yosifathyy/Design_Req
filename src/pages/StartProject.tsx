@@ -109,6 +109,14 @@ const StartProject = () => {
       return;
     }
 
+    // Ensure we have a user ID for submission
+    const userId = user?.id || currentUser?.id;
+    if (!userId) {
+      console.log("No user ID available, cannot submit");
+      toast.error("Authentication error. Please try again.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
