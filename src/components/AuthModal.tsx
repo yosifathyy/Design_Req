@@ -98,14 +98,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
 
       console.log("Signup response:", data);
 
-      // Check if email confirmation is required
-      if (data.user && !data.session) {
-        toast.success(
-          "Account created! Please check your email and click the confirmation link to complete registration.",
-        );
-        onSuccess();
-        return;
-      }
+      // For seamless experience, proceed directly even without session
 
       // Create user profile
       if (data.user) {
