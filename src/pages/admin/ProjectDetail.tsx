@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { Card } from "@/components/ui/card";
