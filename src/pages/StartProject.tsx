@@ -214,9 +214,18 @@ const StartProject = () => {
       />
 
       {/* Floating background elements */}
-      <FloatingElement className="absolute top-20 left-10 w-20 h-20 bg-retro-pink/20 rounded-full blur-xl" />
-      <FloatingElement className="absolute top-40 right-20 w-16 h-16 bg-retro-teal/30 rounded-full blur-lg" />
-      <FloatingElement className="absolute bottom-20 left-1/4 w-12 h-12 bg-retro-orange/20 rounded-full blur-md" />
+      <FloatingElement
+        className="absolute top-20 left-10 w-20 h-20 rounded-full blur-xl"
+        style={{ backgroundColor: "rgba(250, 204, 21, 0.2)" }}
+      />
+      <FloatingElement
+        className="absolute top-40 right-20 w-16 h-16 rounded-full blur-lg"
+        style={{ backgroundColor: "rgba(244, 114, 182, 0.3)" }}
+      />
+      <FloatingElement
+        className="absolute bottom-20 left-1/4 w-12 h-12 rounded-full blur-md"
+        style={{ backgroundColor: "rgba(34, 211, 238, 0.2)" }}
+      />
 
       <Navigation />
 
