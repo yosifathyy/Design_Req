@@ -59,16 +59,16 @@ const HeroSectionNew: React.FC = () => {
         const loadingData = await loadingResponse.json();
         setLoadingLottieData(loadingData);
 
-        // Start the 2-second preloader buffer
+        // Start the 3-second preloader buffer
         setTimeout(() => {
           setShowContent(true);
-        }, 2000);
+        }, 3000);
       } catch (error) {
         console.error("Failed to load Lottie animation:", error);
         // Still show content after delay even if Lottie fails
         setTimeout(() => {
           setShowContent(true);
-        }, 2000);
+        }, 3000);
       }
     };
 
@@ -299,21 +299,19 @@ const HeroSectionNew: React.FC = () => {
     console.log("Lottie animation completed");
   };
 
-  // Show preloader for first 2 seconds
+  // Show preloader for first 3 seconds
   if (!showContent) {
     return (
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-festival-cream via-festival-beige to-festival-cream">
         <div className="flex items-center justify-center">
-          <div className="w-32 h-32">
-            {loadingLottieData ? (
+          <div className="w-96 h-96">
+            {loadingLottieData && (
               <Lottie
                 animationData={loadingLottieData}
                 style={{ width: "100%", height: "100%" }}
                 loop
                 autoplay
               />
-            ) : (
-              <div className="w-16 h-16 border-4 border-festival-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
             )}
           </div>
         </div>
