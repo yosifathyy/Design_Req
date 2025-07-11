@@ -209,23 +209,12 @@ const StartProject = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <BounceIn className="text-center mb-8 md:mb-12">
-            <motion.div
-              className="inline-flex items-center space-x-2 bg-retro-purple/10 px-4 py-2 rounded-full mb-4 md:mb-6"
-              whileHover={{ scale: 1.05, rotate: 2 }}
-            >
-              <WiggleIcon>
-                <Zap className="w-4 h-4 text-retro-purple" />
-              </WiggleIcon>
-              <span className="text-sm font-medium text-retro-purple">
-                AI-Powered Brief Generator
-              </span>
-            </motion.div>
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-retro-purple mb-4">
+            <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl text-retro-purple mb-4">
               Start Your Design Project
             </h1>
-            <p className="text-lg md:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4">
-              Our intelligent system will help you create the perfect project
-              brief for our expert designers! ✨
+            <p className="text-lg md:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 font-label">
+              Tell us about your project and get matched with amazing designers!
+              ✨
             </p>
           </BounceIn>
 
