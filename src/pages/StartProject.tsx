@@ -243,11 +243,14 @@ const StartProject = () => {
           <ProgressBar step={step} totalSteps={4} />
 
           {/* Step Content */}
-          <div className="relative bg-white border-4 border-retro-purple shadow-[8px_8px_0px_0px_hsl(var(--retro-purple))] rounded-2xl overflow-hidden transform rotate-0 hover:shadow-[12px_12px_0px_0px_hsl(var(--retro-purple))] transition-all duration-300">
-            {/* Neubrutalist corner accent */}
-            <div className="absolute top-0 right-0 w-16 h-16 bg-retro-orange border-l-4 border-b-4 border-retro-purple"></div>
-            <div className="absolute top-4 right-4 w-4 h-4 bg-retro-pink rounded-full"></div>
-
+          <div
+            className="relative rounded-2xl overflow-hidden shadow-lg border-2 transition-all duration-300"
+            style={{
+              backgroundColor: "rgb(243, 235, 211)",
+              borderColor: "rgb(62, 48, 80)",
+              boxShadow: "0 10px 25px rgba(62, 48, 80, 0.1)",
+            }}
+          >
             <div className="p-6 md:p-8 relative z-10">
               {renderStep()}
 
