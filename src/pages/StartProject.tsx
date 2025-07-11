@@ -199,7 +199,11 @@ const StartProject = () => {
         );
       case 3:
         return (
-          <TimelineBudgetStep formData={formData} setFormData={setFormData} />
+          <TimelineBudgetStep
+            formData={formData}
+            setFormData={setFormData}
+            projectType={projectType}
+          />
         );
       case 4:
         return (
