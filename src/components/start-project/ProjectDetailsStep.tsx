@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BounceIn } from "@/components/AnimatedElements";
+import { FileUploadZone } from "@/components/FileUploadZone";
 
 interface FormData {
   projectName: string;
@@ -27,7 +27,10 @@ interface ProjectDetailsStepProps {
   setFormData: (data: FormData) => void;
 }
 
-export const ProjectDetailsStep = ({ formData, setFormData }: ProjectDetailsStepProps) => {
+export const ProjectDetailsStep = ({
+  formData,
+  setFormData,
+}: ProjectDetailsStepProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
@@ -39,8 +42,8 @@ export const ProjectDetailsStep = ({ formData, setFormData }: ProjectDetailsStep
           Tell us about your amazing project! 🚀
         </h2>
         <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4">
-          The more details you share, the better we can match you
-          with the perfect designer
+          The more details you share, the better we can match you with the
+          perfect designer
         </p>
       </BounceIn>
 
@@ -125,26 +128,47 @@ export const ProjectDetailsStep = ({ formData, setFormData }: ProjectDetailsStep
               <SelectValue placeholder="Choose your vibe!" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="modern">
-                Modern & Clean 🏢
-              </SelectItem>
-              <SelectItem value="retro">
-                Retro & Vintage 📼
-              </SelectItem>
-              <SelectItem value="playful">
-                Playful & Fun 🎈
-              </SelectItem>
+              <SelectItem value="modern">Modern & Clean 🏢</SelectItem>
+              <SelectItem value="retro">Retro & Vintage 📼</SelectItem>
+              <SelectItem value="playful">Playful & Fun 🎈</SelectItem>
               <SelectItem value="professional">
                 Professional & Corporate 💼
               </SelectItem>
-              <SelectItem value="artistic">
-                Artistic & Creative 🎭
-              </SelectItem>
-              <SelectItem value="minimalist">
-                Minimalist 🕳️
-              </SelectItem>
+              <SelectItem value="artistic">Artistic & Creative 🎭</SelectItem>
+              <SelectItem value="minimalist">Minimalist 🕳️</SelectItem>
             </SelectContent>
           </Select>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Label className="text-retro-purple font-bold text-base md:text-lg mb-3 block">
+            Reference Files & Inspiration 📁✨
+          </Label>
+          <p className="text-retro-purple/70 text-sm md:text-base mb-4">
+            Upload any reference materials, existing designs, or inspiration
+            files to help us understand your vision better! (Optional)
+          </p>
+          <FileUploadZone
+            files={formData.files}
+            onFilesChange={(files) => setFormData({ ...formData, files })}
+            maxFiles={10}
+            maxSizeMB={10}
+            acceptedTypes={[
+              "image/*",
+              ".pdf",
+              ".doc",
+              ".docx",
+              ".txt",
+              ".psd",
+              ".ai",
+              ".sketch",
+              ".fig",
+            ]}
+          />
         </motion.div>
       </div>
     </motion.div>
