@@ -98,7 +98,8 @@ export const ProjectDetailsStep = ({
         >
           <Label
             htmlFor="description"
-            className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block"
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
           >
             Project Description 📝 <span className="text-red-500">*</span>
           </Label>
@@ -127,7 +128,10 @@ export const ProjectDetailsStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Label className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block">
+          <Label
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             Style Preference 🎨{" "}
             <span className="text-gray-400">(Optional)</span>
           </Label>
@@ -189,10 +193,16 @@ export const ProjectDetailsStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Label className="text-retro-purple font-label font-bold text-base md:text-lg mb-3 block">
+          <Label
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             Reference Files & Inspiration 📁✨
           </Label>
-          <p className="text-retro-purple/70 text-sm md:text-base mb-4 font-body">
+          <p
+            className="text-sm md:text-base mb-4 font-body"
+            style={{ color: "rgba(62, 48, 80, 0.7)" }}
+          >
             Upload any reference materials, existing designs, or inspiration
             files to help us understand your vision better! (Optional)
           </p>
