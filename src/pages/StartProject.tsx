@@ -45,6 +45,7 @@ const StartProject = () => {
     projectName: "",
     description: "",
     style: "",
+    customStyle: "",
     timeline: "",
     budget: "",
     budgetAmount: [500],
