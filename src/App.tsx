@@ -16,6 +16,10 @@ import Requests from "./pages/Requests";
 import RequestDetail from "./pages/RequestDetail";
 import NewRequest from "./pages/NewRequest";
 import Downloads from "./pages/Downloads";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Services from "./pages/Services";
+import Payments from "./pages/Payments";
 
 const queryClient = new QueryClient();
 
