@@ -63,11 +63,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
       console.error("Login failed:", error);
 
       // Handle specific error cases
-      if (error.message?.includes("Email not confirmed")) {
-        toast.error(
-          "Please check your email and click the confirmation link before signing in.",
-        );
-      } else if (error.message?.includes("Invalid login credentials")) {
+      if (error.message?.includes("Invalid login credentials")) {
         toast.error("Invalid email or password. Please try again.");
       } else {
         toast.error(error.message || "Login failed. Please try again.");
