@@ -16,6 +16,7 @@ interface ProjectFormData {
 
 export const useProjectSubmission = () => {
   const [loading, setLoading] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const navigate = useNavigate();
 
   const mapTimelineToPriority = (timeline: string): string => {
@@ -137,13 +138,10 @@ export const useProjectSubmission = () => {
       }
 
       console.log('Project submission completed successfully');
-      toast.success("🎉 Project submitted successfully! You earned 10 XP!");
       
-      // Navigate to dashboard after a short delay to ensure toast is visible
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
-
+      // Show success animation
+      setShowSuccessAnimation(true);
+      
       return request;
     } catch (error: any) {
       console.error('Project submission error:', error);
@@ -155,8 +153,20 @@ export const useProjectSubmission = () => {
     }
   };
 
+  const handleSuccessComplete = () => {
+    setShowSuccessAnimation(false);
+    toast.success("🎉 You earned 10 XP!");
+    
+    // Navigate to dashboard after animation
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 500);
+  };
+
   return {
     submitProject,
     loading,
+    showSuccessAnimation,
+    handleSuccessComplete,
   };
 };

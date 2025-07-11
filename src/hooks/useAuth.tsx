@@ -245,17 +245,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       );
 
-      // Handle email not confirmed error
-      if (authError?.message === "Email not confirmed") {
-        setLoading(false);
-        return {
-          data: null,
-          error: new Error(
-            "Please check your email and click the confirmation link before signing in.",
-          ),
-        };
-      }
-
       // Special handling for demo credentials - if auth fails but user exists in users table
       if (
         authError &&

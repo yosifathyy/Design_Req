@@ -14,8 +14,10 @@ import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useProjectSubmission } from "@/hooks/useProjectSubmission";
 import { toast } from "sonner";
+import { EmailConfirmationReminder } from "@/components/EmailConfirmationReminder";
+import { SuccessAnimation } from "@/components/SuccessAnimation";
 
-// Import new components
+// Import existing step components
 import { ProjectTypeStep } from "@/components/start-project/ProjectTypeStep";
 import { ProjectDetailsStep } from "@/components/start-project/ProjectDetailsStep";
 import { TimelineBudgetStep } from "@/components/start-project/TimelineBudgetStep";
@@ -31,7 +33,12 @@ const StartProject = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { playClickSound } = useClickSound();
   const { user, loading: authLoading } = useAuth();
-  const { submitProject, loading: submissionLoading } = useProjectSubmission();
+  const { 
+    submitProject, 
+    loading: submissionLoading, 
+    showSuccessAnimation, 
+    handleSuccessComplete 
+  } = useProjectSubmission();
   
   const [formData, setFormData] = useState({
     projectName: "",
@@ -169,6 +176,17 @@ const StartProject = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden">
+      {/* Email confirmation reminder */}
+      <EmailConfirmationReminder />
+      
+      {/* Success animation */}
+      <SuccessAnimation
+        isVisible={showSuccessAnimation}
+        title="Project Submitted Successfully!"
+        description="Your project has been created and you've earned 10 XP! You'll be redirected to your dashboard where you can chat with our team."
+        onComplete={handleSuccessComplete}
+      />
+
       {/* Floating background elements */}
       <FloatingElement className="absolute top-20 left-10 w-20 h-20 bg-retro-pink/20 rounded-full blur-xl" />
       <FloatingElement className="absolute top-40 right-20 w-16 h-16 bg-retro-teal/30 rounded-full blur-lg" />
