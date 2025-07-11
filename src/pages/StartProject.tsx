@@ -229,13 +229,16 @@ const StartProject = () => {
 
       <Navigation />
 
-      <div className="px-4 md:px-6 py-8 md:py-12 relative z-10">
+      <div
+        className="px-4 md:px-6 py-8 md:py-12 relative z-10"
+        style={{ backgroundColor: "rgba(255, 204, 19, 1)" }}
+      >
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <BounceIn className="text-center mb-8 md:mb-12">
             <h1
               className="font-heading text-3xl md:text-4xl lg:text-5xl mb-4"
-              style={{ color: "rgb(62, 48, 80)" }}
+              style={{ color: "rgba(102, 68, 146, 1)" }}
             >
               Start Your Design Project
             </h1>
@@ -253,14 +256,21 @@ const StartProject = () => {
 
           {/* Step Content */}
           <div
-            className="relative rounded-2xl overflow-hidden shadow-lg border-2 transition-all duration-300"
+            className="relative rounded-2xl overflow-hidden border-2 transition-all duration-300"
             style={{
               backgroundColor: "rgb(243, 235, 211)",
               borderColor: "rgb(62, 48, 80)",
-              boxShadow: "0 10px 25px rgba(62, 48, 80, 0.1)",
+              boxShadow: "8px 8px 1px 3px rgba(32, 26, 40, 1)",
             }}
           >
-            <div className="p-6 md:p-8 relative z-10">
+            <div
+              className="p-6 md:p-8 relative z-10"
+              style={{
+                backgroundColor: "rgba(255, 246, 213, 1)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+              }}
+            >
               {renderStep()}
 
               {/* Loading Overlay */}
