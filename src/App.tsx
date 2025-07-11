@@ -71,6 +71,52 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/services" element={<Services />} />
             <Route path="/payments" element={<Payments />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
+            <Route path="/admin/alerts" element={<SystemAlerts />} />
+
+            {/* User & Team Management */}
+            <Route path="/admin/users" element={<UsersManagement />} />
+            <Route path="/admin/users/create" element={<CreateUser />} />
+            <Route path="/admin/users/:id/edit" element={<EditUser />} />
+            <Route path="/admin/team" element={<TeamManagement />} />
+            <Route
+              path="/admin/permissions"
+              element={<PermissionsManagement />}
+            />
+
+            {/* Project Management */}
+            <Route path="/admin/projects" element={<ProjectsList />} />
+            <Route path="/admin/projects/create" element={<CreateProject />} />
+            <Route path="/admin/projects/:id" element={<ProjectDetail />} />
+            <Route path="/admin/projects/:id/edit" element={<EditProject />} />
+            <Route path="/admin/projects/kanban" element={<ProjectKanban />} />
+            <Route
+              path="/admin/projects/assignments"
+              element={<ProjectAssignments />}
+            />
+
+            {/* Communication */}
+            <Route path="/admin/chat" element={<AdminChat />} />
+            <Route path="/admin/chat/create" element={<CreateChat />} />
+
+            {/* Financial Management */}
+            <Route path="/admin/invoices" element={<AdminInvoices />} />
+            <Route path="/admin/invoices/create" element={<CreateInvoice />} />
+            <Route path="/admin/invoices/:id" element={<InvoiceDetail />} />
+            <Route
+              path="/admin/invoices/reports"
+              element={<InvoiceReports />}
+            />
+
+            {/* Content & Settings */}
+            <Route path="/admin/content" element={<AdminContent />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/audit-logs" element={<AuditLogs />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
