@@ -181,9 +181,9 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           if (loginTab) {
             loginTab.click();
             // Pre-fill the email
-            setLoginData({ ...loginData, email: signupData.email });
+            setLoginData({ email: signupData.email, password: "" });
           }
-        }, 1000);
+        }, 1500);
       } else if (error.message?.includes("Password")) {
         toast.error("Password must be at least 6 characters long.");
       } else {
