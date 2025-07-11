@@ -141,10 +141,10 @@ export const TimelineBudgetStep = ({
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-display text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2 className="font-heading text-2xl md:text-3xl text-retro-purple mb-3 text-center">
           Timeline & Budget Magic! ⏰💰
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4">
+        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4 font-label">
           Help us understand your project constraints so we can work our magic
           perfectly
         </p>
@@ -156,7 +156,7 @@ export const TimelineBudgetStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Label className="text-retro-purple font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
+          <Label className="text-retro-purple font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
             <Clock className="w-5 h-5 md:w-6 md:h-6 mr-2" />
             When do you need this completed? 🏃‍♂️
           </Label>
@@ -185,10 +185,10 @@ export const TimelineBudgetStep = ({
                 <RadioGroupItem value={option.value} id={option.value} />
                 <div className="text-2xl md:text-3xl">{option.emoji}</div>
                 <div className="flex-1">
-                  <div className="font-bold text-retro-purple text-base md:text-lg">
+                  <div className="font-label font-bold text-retro-purple text-base md:text-lg">
                     {option.title}
                   </div>
-                  <div className="text-sm md:text-base text-retro-purple/70">
+                  <div className="text-sm md:text-base text-retro-purple/70 font-body">
                     {option.description}
                   </div>
                 </div>
@@ -202,7 +202,7 @@ export const TimelineBudgetStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Label className="text-retro-purple font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
+          <Label className="text-retro-purple font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
             <DollarSign className="w-5 h-5 md:w-6 md:h-6 mr-2" />
             What's your budget range? 💸
           </Label>
@@ -210,10 +210,10 @@ export const TimelineBudgetStep = ({
           {/* Dynamic Budget Slider */}
           <div className="mb-6 p-4 md:p-6 border-3 border-retro-purple/30 rounded-2xl bg-retro-purple/5">
             <div className="mb-4">
-              <Label className="text-retro-purple font-medium text-base md:text-lg">
+              <Label className="text-retro-purple font-label font-medium text-base md:text-lg">
                 Custom Budget: ${formData.budgetAmount[0]}
               </Label>
-              <p className="text-sm text-retro-purple/60 mt-1">
+              <p className="text-sm text-retro-purple/60 mt-1 font-body">
                 {projectType === "photoshop" &&
                   "Photoshop requests: $10 - $300"}
                 {(projectType === "3d" || projectType === "design") &&
@@ -260,10 +260,10 @@ export const TimelineBudgetStep = ({
                 <RadioGroupItem value={option.value} id={option.value} />
                 <div className="text-2xl md:text-3xl">{option.emoji}</div>
                 <div className="flex-1">
-                  <div className="font-bold text-retro-purple text-base md:text-lg">
+                  <div className="font-label font-bold text-retro-purple text-base md:text-lg">
                     {option.title}
                   </div>
-                  <div className="text-sm md:text-base text-retro-purple/70">
+                  <div className="text-sm md:text-base text-retro-purple/70 font-body">
                     {option.description}
                   </div>
                 </div>
