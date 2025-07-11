@@ -25,8 +25,8 @@ const stepData = [
 export const ProgressBar = ({ step, totalSteps }: ProgressBarProps) => {
   return (
     <FadeInUp delay={0.2} className="mb-8 md:mb-12">
-      {/* Retro Folder Tabs */}
-      <div className="flex items-end justify-center gap-1 mb-6">
+      {/* Clean Step Indicators */}
+      <div className="flex items-center justify-between mb-6 px-4">
         {stepData.map((stepInfo, index) => {
           const stepNum = index + 1;
           const isActive = step === stepNum;
@@ -35,62 +35,68 @@ export const ProgressBar = ({ step, totalSteps }: ProgressBarProps) => {
           const IconComponent = stepInfo.icon;
 
           return (
-            <motion.div
-              key={stepNum}
-              className={`relative px-4 py-3 min-w-[120px] text-center transition-all duration-300 ${
-                isActive
-                  ? `bg-white border-3 border-retro-purple shadow-[4px_4px_0px_0px_hsl(var(--retro-purple))] z-10 -mb-1`
-                  : isCompleted
-                    ? `bg-retro-purple text-white border-3 border-retro-purple shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]`
-                    : isAccessible
-                      ? `bg-retro-purple/10 border-3 border-retro-purple/30 text-retro-purple/60`
-                      : `bg-gray-100 border-3 border-gray-300 text-gray-400`
-              }`}
-              style={{
-                clipPath: isActive
-                  ? "polygon(10px 0%, calc(100% - 10px) 0%, 100% 100%, 0% 100%)"
-                  : "polygon(15px 0%, calc(100% - 15px) 0%, calc(100% - 5px) 100%, 5px 100%)",
-              }}
-              whileHover={isAccessible ? { scale: 1.02, y: -2 } : {}}
-              animate={isActive ? { y: -4 } : { y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <div
-                  className={`p-1.5 rounded-lg ${isActive ? `bg-gradient-to-r ${stepInfo.color}` : ""} ${isActive ? "text-white" : ""}`}
-                >
-                  {isCompleted ? (
-                    <CheckCircle className="w-4 h-4" />
-                  ) : (
-                    <IconComponent className="w-4 h-4" />
-                  )}
-                </div>
-                <span
-                  className={`text-xs font-label font-medium ${isActive ? "text-retro-purple" : isCompleted ? "text-white" : ""}`}
-                >
-                  {stepInfo.label}
-                </span>
-              </div>
+            <div key={stepNum} className="flex flex-col items-center">
+              <motion.div
+                className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
+                  isActive
+                    ? `bg-gradient-to-r ${stepInfo.color} text-white shadow-lg scale-110`
+                    : isCompleted
+                      ? `bg-gradient-to-r ${stepInfo.color} text-white`
+                      : isAccessible
+                        ? `bg-gray-100 text-gray-400 border-2 border-gray-300`
+                        : `bg-gray-50 text-gray-300`
+                }`}
+                whileHover={
+                  isAccessible ? { scale: isActive ? 1.15 : 1.05 } : {}
+                }
+                animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {isCompleted ? (
+                  <CheckCircle className="w-5 h-5 md:w-6 md:h-6" />
+                ) : (
+                  <IconComponent className="w-5 h-5 md:w-6 md:h-6" />
+                )}
+              </motion.div>
 
-              {/* Tab shadow effect */}
-              {isActive && (
+              <span
+                className={`text-xs md:text-sm font-label font-medium text-center transition-colors duration-300 ${
+                  isActive
+                    ? "text-gray-800"
+                    : isCompleted
+                      ? "text-gray-600"
+                      : "text-gray-400"
+                }`}
+              >
+                {stepInfo.label}
+              </span>
+
+              {/* Connection Line */}
+              {index < stepData.length - 1 && (
                 <div
-                  className="absolute inset-0 -z-10 bg-retro-purple/20 transform translate-x-1 translate-y-1 rounded-t-lg"
+                  className="absolute top-6 md:top-7 left-1/2 w-full h-0.5 bg-gray-200 -z-10 hidden md:block"
                   style={{
-                    clipPath:
-                      "polygon(10px 0%, calc(100% - 10px) 0%, 100% 100%, 0% 100%)",
+                    transform: "translateX(50%)",
+                    width: "calc(100vw / 4 - 3.5rem)",
                   }}
-                />
+                >
+                  <motion.div
+                    className={`h-full ${isCompleted ? "bg-gradient-to-r from-green-400 to-green-500" : "bg-gray-200"}`}
+                    initial={{ width: "0%" }}
+                    animate={{ width: isCompleted ? "100%" : "0%" }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  />
+                </div>
               )}
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
-      {/* Progress Bar */}
-      <div className="w-full bg-retro-purple/20 rounded-full h-3 overflow-hidden border-3 border-retro-purple/30 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1)]">
+      {/* Simplified Progress Bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
         <motion.div
-          className="bg-gradient-to-r from-retro-purple to-retro-teal h-3 rounded-full shadow-[inset_0px_1px_2px_rgba(255,255,255,0.3)]"
+          className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
           initial={{ width: "0%" }}
           animate={{ width: `${(step / totalSteps) * 100}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}
