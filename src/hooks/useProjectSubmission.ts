@@ -119,7 +119,6 @@ export const useProjectSubmission = () => {
           category: formData.projectType,
           title: formData.projectName,
           description: formData.description,
-          style: formData.style,
           priority: mapTimelineToPriority(formData.timeline),
           price: mapBudgetToPrice(formData.budget),
           status: "submitted",
