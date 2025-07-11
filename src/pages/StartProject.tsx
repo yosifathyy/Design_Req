@@ -56,14 +56,14 @@ const StartProject = () => {
     setFormData({ ...formData, files });
   };
 
-    const nextStep = () => {
+  const nextStep = () => {
     if (step < 4) {
       setStep(step + 1);
       // Auto-scroll to top of the form container
       setTimeout(() => {
-        const formContainer = document.querySelector('.max-w-4xl');
+        const formContainer = document.querySelector(".max-w-4xl");
         if (formContainer) {
-          formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          formContainer.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 100);
     }
@@ -217,19 +217,20 @@ const StartProject = () => {
       <div className="px-4 md:px-6 py-8 md:py-12 relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-                    <BounceIn className="text-center mb-8 md:mb-12">
+          <BounceIn className="text-center mb-8 md:mb-12">
             <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl text-retro-purple mb-4">
               Start Your Design Project
             </h1>
             <p className="text-lg md:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4 font-label">
-              Tell us about your project and get matched with amazing designers! ✨
+              Tell us about your project and get matched with amazing designers!
+              ✨
             </p>
           </BounceIn>
 
           {/* Progress Bar */}
           <ProgressBar step={step} totalSteps={4} />
 
-                    {/* Step Content */}
+          {/* Step Content */}
           <div className="relative bg-white border-4 border-retro-purple shadow-[8px_8px_0px_0px_hsl(var(--retro-purple))] rounded-2xl overflow-hidden transform rotate-0 hover:shadow-[12px_12px_0px_0px_hsl(var(--retro-purple))] transition-all duration-300">
             {/* Neubrutalist corner accent */}
             <div className="absolute top-0 right-0 w-16 h-16 bg-retro-orange border-l-4 border-b-4 border-retro-purple"></div>
@@ -265,7 +266,7 @@ const StartProject = () => {
                 onSubmit={handleSubmit}
               />
             </div>
-          </TiltCard>
+          </div>
 
           {/* Help Section */}
           <HelpSection />
