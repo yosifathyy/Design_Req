@@ -77,7 +77,7 @@ export const useProjectSubmission = () => {
       // Get public URL
       const {
         data: { publicUrl },
-      } = supabase.storage.from("files").getPublicUrl(fileName);
+      } = supabase.storage.from("chat-files").getPublicUrl(fileName);
 
       // Save file metadata to database
       const { error: dbError } = await supabase.from("files").insert({
