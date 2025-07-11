@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,6 @@ import {
   Award,
   Clock,
   CheckCircle,
-  Loader2,
 } from "lucide-react";
 
 interface AnalyticsData {
@@ -332,7 +332,15 @@ const AdminAnalytics: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-festival-orange" />
+          <div className="w-16 h-16 mx-auto mb-4">
+            <Lottie
+              animationData={null}
+              style={{ width: "100%", height: "100%" }}
+              loop
+              autoplay
+              src="https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json"
+            />
+          </div>
           <p className="text-lg font-black text-black">LOADING ANALYTICS...</p>
         </div>
       </div>
