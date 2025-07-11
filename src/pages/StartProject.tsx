@@ -195,7 +195,13 @@ const StartProject = () => {
   const isLoading = submissionLoading || isSubmitting || authLoading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden">
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(to right bottom, rgb(243, 235, 211), rgba(231, 226, 218, 0.2), rgba(255, 206, 10, 0.3))",
+      }}
+    >
       {/* Email confirmation reminder */}
       <EmailConfirmationReminder />
 
