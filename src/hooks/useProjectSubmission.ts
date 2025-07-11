@@ -206,7 +206,9 @@ export const useProjectSubmission = () => {
 
   const handleSuccessComplete = () => {
     setShowSuccessAnimation(false);
-    toast.success("🎉 You earned 10 XP! Ready to chat with our team!");
+    toast.success(
+      "🎉 Everything is ready! Project submitted, account created, and 10 XP earned!",
+    );
 
     // Navigate directly to chat with the project context for seamless experience
     setTimeout(() => {
