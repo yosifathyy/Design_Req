@@ -74,20 +74,20 @@ const StartProject = () => {
       return;
     }
 
-    // Check if user is authenticated
-    if (!user && !authCompleted) {
+    // Check current session directly from Supabase for most up-to-date auth state
+    const currentSession = await supabase.auth.getSession();
+    const currentUser = currentSession.data.session?.user;
+
+    // Check if user is authenticated (either from context or current session)
+    if (!user && !currentUser && !authCompleted) {
       console.log("User not authenticated, showing auth modal");
       setShowAuthModal(true);
       return;
     }
 
-    // If user is still not authenticated but auth was completed, wait a bit more
-    if (!user && authCompleted) {
-      console.log("Auth completed but user state not updated yet, retrying...");
-      setTimeout(() => {
-        handleSubmit();
-      }, 500);
-      return;
+    // If we have a current session but user context isn't updated yet, proceed with submission
+    if (!user && currentUser) {
+      console.log("Found current session, proceeding with submission...");
     }
 
     // Validate form data
