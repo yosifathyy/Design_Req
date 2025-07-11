@@ -138,6 +138,17 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
         toast.error(
           "An account with this email already exists. Please try signing in instead.",
         );
+        // Auto-switch to login tab for better UX
+        setTimeout(() => {
+          const loginTab = document.querySelector(
+            '[data-value="login"]',
+          ) as HTMLElement;
+          if (loginTab) {
+            loginTab.click();
+            // Pre-fill the email
+            setLoginData({ ...loginData, email: signupData.email });
+          }
+        }, 1000);
       } else if (error.message?.includes("Password")) {
         toast.error("Password must be at least 6 characters long.");
       } else {
