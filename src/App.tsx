@@ -21,6 +21,31 @@ import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import Payments from "./pages/Payments";
 
+// Admin imports
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminChat from "./pages/admin/AdminChat";
+import AdminContent from "./pages/admin/AdminContent";
+import AdminInvoices from "./pages/admin/AdminInvoices";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AuditLogs from "./pages/admin/AuditLogs";
+import CreateChat from "./pages/admin/CreateChat";
+import CreateInvoice from "./pages/admin/CreateInvoice";
+import CreateProject from "./pages/admin/CreateProject";
+import CreateUser from "./pages/admin/CreateUser";
+import EditProject from "./pages/admin/EditProject";
+import EditUser from "./pages/admin/EditUser";
+import InvoiceDetail from "./pages/admin/InvoiceDetail";
+import InvoiceReports from "./pages/admin/InvoiceReports";
+import PermissionsManagement from "./pages/admin/PermissionsManagement";
+import ProjectAssignments from "./pages/admin/ProjectAssignments";
+import ProjectDetail from "./pages/admin/ProjectDetail";
+import ProjectKanban from "./pages/admin/ProjectKanban";
+import ProjectsList from "./pages/admin/ProjectsList";
+import SystemAlerts from "./pages/admin/SystemAlerts";
+import TeamManagement from "./pages/admin/TeamManagement";
+import UsersManagement from "./pages/admin/UsersManagement";
+
 const queryClient = new QueryClient();
 
 const App = () => (
