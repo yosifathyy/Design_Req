@@ -60,9 +60,9 @@ export const useProjectSubmission = () => {
       const fileExt = file.name.split(".").pop();
       const fileName = `${requestId}/${Date.now()}.${fileExt}`;
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (using chat-files bucket which has working policies)
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("files")
+        .from("chat-files")
         .upload(fileName, file);
 
       if (uploadError) {
