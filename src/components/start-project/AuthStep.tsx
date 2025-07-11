@@ -199,14 +199,20 @@ export const AuthStep = ({
         <div className="text-center mb-6 md:mb-8">
           <div className="inline-flex items-center space-x-2 bg-retro-purple/10 px-4 py-2 rounded-full mb-4">
             <Shield className="w-5 h-5 text-retro-purple" />
-            <span className="text-sm font-heading text-retro-purple">
+            <span
+              className="text-sm font-heading"
+              style={{ color: "rgb(62, 48, 80)" }}
+            >
               Secure & Fast
             </span>
           </div>
-          <h2 className="font-heading text-3xl md:text-4xl text-retro-purple mb-3">
+          <h2
+            className="font-heading text-3xl md:text-4xl mb-3"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             Almost There! 🚀
           </h2>
-          <p className="text-retro-purple/80 px-4">
+          <p className="px-4" style={{ color: "rgba(62, 48, 80, 0.8)" }}>
             Sign in to submit your project and get matched with amazing
             designers
           </p>
@@ -240,12 +246,16 @@ export const AuthStep = ({
                 <div className="space-y-2">
                   <Label
                     htmlFor="login-email"
-                    className="font-label font-medium text-retro-purple"
+                    className="font-label font-medium"
+                    style={{ color: "rgb(62, 48, 80)" }}
                   >
                     Email Address
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-retro-purple/60" />
+                    <Mail
+                      className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+                      style={{ color: "rgba(62, 48, 80, 0.6)" }}
+                    />
                     <Input
                       id="login-email"
                       type="email"
@@ -254,7 +264,12 @@ export const AuthStep = ({
                       onChange={(e) =>
                         setLoginData({ ...loginData, email: e.target.value })
                       }
-                      className="pl-12 py-3 border-3 border-retro-purple/30 focus:border-retro-purple rounded-2xl font-body"
+                      className="pl-12 py-3 border-2 rounded-2xl font-body focus:outline-none focus:ring-2"
+                      style={{
+                        borderColor: "rgba(62, 48, 80, 0.3)",
+                        backgroundColor: "white",
+                        color: "rgb(62, 48, 80)",
+                      }}
                       required
                       disabled={isFormDisabled}
                     />
@@ -264,12 +279,16 @@ export const AuthStep = ({
                 <div className="space-y-2">
                   <Label
                     htmlFor="login-password"
-                    className="font-label font-medium text-retro-purple"
+                    className="font-label font-medium"
+                    style={{ color: "rgb(62, 48, 80)" }}
                   >
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-retro-purple/60" />
+                    <Lock
+                      className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+                      style={{ color: "rgba(62, 48, 80, 0.6)" }}
+                    />
                     <Input
                       id="login-password"
                       type={showPassword ? "text" : "password"}
@@ -324,12 +343,16 @@ export const AuthStep = ({
                 <div className="space-y-2">
                   <Label
                     htmlFor="signup-name"
-                    className="font-label font-medium text-retro-purple"
+                    className="font-label font-medium"
+                    style={{ color: "rgb(62, 48, 80)" }}
                   >
                     Full Name
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-retro-purple/60" />
+                    <User
+                      className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+                      style={{ color: "rgba(62, 48, 80, 0.6)" }}
+                    />
                     <Input
                       id="signup-name"
                       type="text"
@@ -338,7 +361,12 @@ export const AuthStep = ({
                       onChange={(e) =>
                         setSignupData({ ...signupData, name: e.target.value })
                       }
-                      className="pl-12 py-3 border-3 border-retro-purple/30 focus:border-retro-purple rounded-2xl font-body"
+                      className="pl-12 py-3 border-2 rounded-2xl font-body focus:outline-none focus:ring-2"
+                      style={{
+                        borderColor: "rgba(62, 48, 80, 0.3)",
+                        backgroundColor: "white",
+                        color: "rgb(62, 48, 80)",
+                      }}
                       required
                       disabled={isFormDisabled}
                     />
@@ -348,12 +376,16 @@ export const AuthStep = ({
                 <div className="space-y-2">
                   <Label
                     htmlFor="signup-email"
-                    className="font-label font-medium text-retro-purple"
+                    className="font-label font-medium"
+                    style={{ color: "rgb(62, 48, 80)" }}
                   >
                     Email Address
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-retro-purple/60" />
+                    <Mail
+                      className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+                      style={{ color: "rgba(62, 48, 80, 0.6)" }}
+                    />
                     <Input
                       id="signup-email"
                       type="email"
@@ -362,7 +394,12 @@ export const AuthStep = ({
                       onChange={(e) =>
                         setSignupData({ ...signupData, email: e.target.value })
                       }
-                      className="pl-12 py-3 border-3 border-retro-purple/30 focus:border-retro-purple rounded-2xl font-body"
+                      className="pl-12 py-3 border-2 rounded-2xl font-body focus:outline-none focus:ring-2"
+                      style={{
+                        borderColor: "rgba(62, 48, 80, 0.3)",
+                        backgroundColor: "white",
+                        color: "rgb(62, 48, 80)",
+                      }}
                       required
                       disabled={isFormDisabled}
                     />
@@ -372,12 +409,16 @@ export const AuthStep = ({
                 <div className="space-y-2">
                   <Label
                     htmlFor="signup-password"
-                    className="font-label font-medium text-retro-purple"
+                    className="font-label font-medium"
+                    style={{ color: "rgb(62, 48, 80)" }}
                   >
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-retro-purple/60" />
+                    <Lock
+                      className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+                      style={{ color: "rgba(62, 48, 80, 0.6)" }}
+                    />
                     <Input
                       id="signup-password"
                       type={showPassword ? "text" : "password"}
