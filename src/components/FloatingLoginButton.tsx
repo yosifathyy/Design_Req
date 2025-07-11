@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import {
   Dialog,
@@ -41,7 +41,53 @@ const FloatingLoginButton = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pulseRef = useRef<HTMLDivElement>(null);
 
-  const { signIn, signUp, signOut, signInWithGoogle, loading: isLoading, user } = useAuth();
+  const {
+    signIn,
+    signUp,
+    signOut,
+    signInWithGoogle,
+    loading: isLoading,
+    user,
+    profile,
+  } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle redirect when user/profile loads after authentication
+  useEffect(() => {
+    if (user && !isLoading) {
+      // Check if user is admin based on email or profile role
+      const isAdmin =
+        user.email === "admin@demo.com" ||
+        user.role === "admin" ||
+        user.role === "super-admin" ||
+        profile?.role === "admin" ||
+        profile?.role === "super-admin";
+
+      // Only redirect if modal was just closed (user was signing in)
+      if (!isModalOpen && (formData.email || formData.password)) {
+        // Redirect based on role
+        if (isAdmin) {
+          console.log(
+            "🚀 Admin user detected, redirecting to admin dashboard...",
+          );
+          navigate("/admin");
+        } else {
+          console.log(
+            "👤 Regular user detected, redirecting to design dashboard...",
+          );
+          navigate("/design-dashboard");
+        }
+      }
+    }
+  }, [
+    user,
+    profile,
+    isLoading,
+    navigate,
+    isModalOpen,
+    formData.email,
+    formData.password,
+  ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,14 +133,49 @@ const FloatingLoginButton = () => {
     if (!validateForm()) return;
 
     try {
+      let authResult;
       if (isLogin) {
-        await signIn(formData.email, formData.password);
+        authResult = await signIn(formData.email, formData.password);
       } else {
-        await signUp(formData.email, formData.password, formData.name);
+        authResult = await signUp(
+          formData.email,
+          formData.password,
+          formData.name,
+        );
       }
+
+      if (authResult.error) {
+        setErrors({ submit: authResult.error.message || "An error occurred" });
+        return;
+      }
+
       setIsModalOpen(false);
       // Reset form
       setFormData({ email: "", password: "", confirmPassword: "", name: "" });
+
+      // Role-based redirect logic
+      if (authResult.data?.user) {
+        const userEmail = authResult.data.user.email;
+
+        // Check if user is admin
+        const isAdmin =
+          userEmail === "admin@demo.com" ||
+          authResult.data.user.role === "admin" ||
+          authResult.data.user.role === "super-admin";
+
+        // Redirect based on role
+        if (isAdmin) {
+          console.log(
+            "🚀 Admin user detected, redirecting to admin dashboard...",
+          );
+          navigate("/admin");
+        } else {
+          console.log(
+            "👤 Regular user detected, redirecting to design dashboard...",
+          );
+          navigate("/design-dashboard");
+        }
+      }
     } catch (error: any) {
       setErrors({ submit: error.message || "An error occurred" });
     }
@@ -361,14 +442,41 @@ const FloatingLoginButton = () => {
                   variant="outline"
                   onClick={async () => {
                     try {
-                      const { error } = await signInWithGoogle();
-                      if (error) {
-                        setErrors({ submit: error.message });
-                      } else {
-                        setIsModalOpen(false);
+                      const authResult = await signInWithGoogle();
+                      if (authResult.error) {
+                        setErrors({ submit: authResult.error.message });
+                        return;
+                      }
+
+                      setIsModalOpen(false);
+
+                      // Role-based redirect logic for Google sign-in
+                      if (authResult.data?.user) {
+                        const userEmail = authResult.data.user.email;
+
+                        // Check if user is admin
+                        const isAdmin =
+                          userEmail === "admin@demo.com" ||
+                          authResult.data.user.role === "admin" ||
+                          authResult.data.user.role === "super-admin";
+
+                        // Redirect based on role
+                        if (isAdmin) {
+                          console.log(
+                            "🚀 Admin user detected, redirecting to admin dashboard...",
+                          );
+                          navigate("/admin");
+                        } else {
+                          console.log(
+                            "👤 Regular user detected, redirecting to design dashboard...",
+                          );
+                          navigate("/design-dashboard");
+                        }
                       }
                     } catch (error: any) {
-                      setErrors({ submit: "Google sign-in failed. Please try again." });
+                      setErrors({
+                        submit: "Google sign-in failed. Please try again.",
+                      });
                     }
                   }}
                   className="w-full border-4 border-festival-black bg-white hover:bg-festival-cream text-lg font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all duration-200"
