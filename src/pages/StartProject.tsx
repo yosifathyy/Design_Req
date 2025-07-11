@@ -28,9 +28,10 @@ const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { playClickSound } = useClickSound();
-  const { user } = useAuth();
-  const { submitProject, loading } = useProjectSubmission();
+  const { user, loading: authLoading } = useAuth();
+  const { submitProject, loading: submissionLoading } = useProjectSubmission();
   
   const [formData, setFormData] = useState({
     projectName: "",
@@ -55,17 +56,41 @@ const StartProject = () => {
   };
 
   const handleSubmit = async () => {
+    console.log('Submit button clicked');
+    console.log('User authenticated:', !!user);
+    console.log('Auth loading:', authLoading);
+
+    // Check if auth is still loading
+    if (authLoading) {
+      console.log('Authentication still loading, please wait...');
+      toast.error("Please wait while we verify your authentication...");
+      return;
+    }
+
+    // Check if user is authenticated
     if (!user) {
+      console.log('User not authenticated, showing auth modal');
       setShowAuthModal(true);
       return;
     }
 
+    // Validate form data
     if (!projectType || !formData.projectName || !formData.description) {
+      console.log('Form validation failed');
       toast.error("Please fill in all required fields");
       return;
     }
 
+    if (!formData.timeline || !formData.budget) {
+      console.log('Timeline/budget validation failed');
+      toast.error("Please select timeline and budget preferences");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
     try {
+      console.log('Starting project submission...');
       await submitProject({
         projectType,
         projectName: formData.projectName,
@@ -75,15 +100,20 @@ const StartProject = () => {
         budget: formData.budget,
         files: formData.files,
       }, user.id);
+      
+      console.log('Project submitted successfully');
     } catch (error) {
       console.error('Submission error:', error);
+      setIsSubmitting(false);
     }
   };
 
   const handleAuthSuccess = () => {
+    console.log('Authentication successful, closing modal');
     setShowAuthModal(false);
-    // Retry submission after authentication
+    // Small delay to ensure auth state is updated
     setTimeout(() => {
+      console.log('Retrying submission after authentication');
       handleSubmit();
     }, 500);
   };
@@ -135,6 +165,8 @@ const StartProject = () => {
     }
   };
 
+  const isLoading = submissionLoading || isSubmitting || authLoading;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden">
       {/* Floating background elements */}
@@ -176,11 +208,24 @@ const StartProject = () => {
             <div className="p-6 md:p-8">
               {renderStep()}
 
+              {/* Loading Overlay */}
+              {isLoading && (
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-3xl">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-retro-purple mx-auto mb-4"></div>
+                    <p className="text-lg font-medium text-retro-purple">
+                      {authLoading ? "Verifying authentication..." : 
+                       submissionLoading || isSubmitting ? "Submitting your project..." : "Loading..."}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Navigation Buttons */}
               <NavigationButtons
                 step={step}
                 totalSteps={4}
-                loading={loading}
+                loading={isLoading}
                 isStepValid={isStepValid}
                 onPrevious={prevStep}
                 onNext={nextStep}

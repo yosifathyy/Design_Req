@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,22 +21,39 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({ name: "", email: "", password: "" });
 
+  // Reset form data when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setLoginData({ email: "", password: "" });
+      setSignupData({ name: "", email: "", password: "" });
+      setLoading(false);
+      setShowPassword(false);
+    }
+  }, [isOpen]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('Attempting login for:', loginData.email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
         password: loginData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
 
+      console.log('Login successful:', data);
       toast.success("Welcome back! 🎉");
       onSuccess();
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Login failed:', error);
+      toast.error(error.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,6 +64,8 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
     setLoading(true);
 
     try {
+      console.log('Attempting signup for:', signupData.email);
+      
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
@@ -57,10 +76,16 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Signup error:', error);
+        throw error;
+      }
+
+      console.log('Signup response:', data);
 
       // Create user profile
       if (data.user) {
+        console.log('Creating user profile...');
         const { error: profileError } = await supabase
           .from('users')
           .insert([
@@ -71,13 +96,19 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
             },
           ]);
 
-        if (profileError) console.error('Profile creation error:', profileError);
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          // Don't throw here as the auth user was created successfully
+        } else {
+          console.log('User profile created successfully');
+        }
       }
 
       toast.success("Account created successfully! 🎉");
       onSuccess();
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Signup failed:', error);
+      toast.error(error.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -112,6 +143,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                     className="pl-10"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -128,11 +160,13 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                     className="pl-10 pr-10"
                     required
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600"
+                    disabled={loading}
                   >
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
@@ -140,7 +174,14 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
           </TabsContent>
@@ -159,6 +200,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                     className="pl-10"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -175,6 +217,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                     className="pl-10"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -192,11 +235,13 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     className="pl-10 pr-10"
                     required
                     minLength={6}
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600"
+                    disabled={loading}
                   >
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
@@ -204,7 +249,14 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Creating account..." : "Create Account"}
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Creating account...
+                  </div>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </form>
           </TabsContent>

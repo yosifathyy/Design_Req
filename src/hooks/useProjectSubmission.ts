@@ -79,6 +79,9 @@ export const useProjectSubmission = () => {
     setLoading(true);
 
     try {
+      console.log('Starting project submission for user:', userId);
+      console.log('Form data:', formData);
+
       // Create the design request
       const { data: request, error: requestError } = await supabase
         .from('design_requests')
@@ -95,28 +98,57 @@ export const useProjectSubmission = () => {
         .select()
         .single();
 
-      if (requestError) throw requestError;
+      if (requestError) {
+        console.error('Request creation error:', requestError);
+        throw requestError;
+      }
+
+      console.log('Design request created successfully:', request);
 
       // Upload files if any
       if (formData.files.length > 0) {
+        console.log('Uploading files...');
         await uploadFiles(formData.files, request.id, userId);
+        console.log('Files uploaded successfully');
       }
 
-      // Award XP to user - Fixed the .raw issue
-      const { error: xpError } = await supabase
+      // Award XP to user - Get current XP first, then increment
+      console.log('Updating user XP...');
+      const { data: currentUser, error: fetchError } = await supabase
         .from('users')
-        .update({ xp: 10 }) // Use direct value instead of supabase.raw
-        .eq('id', userId);
+        .select('xp')
+        .eq('id', userId)
+        .single();
 
-      if (xpError) console.error('XP update error:', xpError);
+      if (fetchError) {
+        console.error('Error fetching current user XP:', fetchError);
+      } else {
+        const newXP = (currentUser?.xp || 0) + 10;
+        const { error: xpError } = await supabase
+          .from('users')
+          .update({ xp: newXP })
+          .eq('id', userId);
 
+        if (xpError) {
+          console.error('XP update error:', xpError);
+        } else {
+          console.log('XP updated successfully. New XP:', newXP);
+        }
+      }
+
+      console.log('Project submission completed successfully');
       toast.success("🎉 Project submitted successfully! You earned 10 XP!");
-      navigate('/dashboard');
+      
+      // Navigate to dashboard after a short delay to ensure toast is visible
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
 
       return request;
     } catch (error: any) {
       console.error('Project submission error:', error);
-      toast.error(error.message || "Failed to submit project");
+      const errorMessage = error.message || error.details || "Failed to submit project";
+      toast.error(`Submission failed: ${errorMessage}`);
       throw error;
     } finally {
       setLoading(false);
