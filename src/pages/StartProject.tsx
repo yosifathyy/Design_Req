@@ -129,7 +129,7 @@ const StartProject = () => {
     setShowAuthModal(false);
 
     // Show immediate feedback that submission is continuing
-    toast.success("Account ready! Submitting your project automatically...");
+    toast.success("Welcome! Submitting your project...");
 
     // Small delay to ensure auth state is updated
     setTimeout(() => {
