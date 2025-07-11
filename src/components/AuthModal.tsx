@@ -121,7 +121,18 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
               Object.getOwnPropertyNames(profileError),
             );
           console.error("Profile creation error:", errorMessage);
-          toast.error(`Profile setup incomplete: ${errorMessage}`);
+
+          // If it's a duplicate user, that's actually fine since auth user was created
+          if (
+            profileError.message?.includes("duplicate key") ||
+            profileError.message?.includes("users_email_key")
+          ) {
+            console.log(
+              "User profile already exists, continuing with auth success",
+            );
+          } else {
+            toast.error(`Profile setup incomplete: ${errorMessage}`);
+          }
           // Don't throw here as the auth user was created successfully
         } else {
           console.log("User profile created successfully");
