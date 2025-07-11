@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import Lottie from "lottie-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,6 @@ import {
   TrendingUp,
   Clock,
   AlertTriangle,
-  Loader2,
 } from "lucide-react";
 
 const AdminInvoices: React.FC = () => {
@@ -208,10 +208,18 @@ const AdminInvoices: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[50vh] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-festival-orange" />
-          <p className="text-lg font-medium text-black">Loading invoices...</p>
+          <div className="w-20 h-20 mx-auto mb-4">
+            <Lottie
+              animationData={null}
+              style={{ width: "100%", height: "100%" }}
+              loop
+              autoplay
+              src="https://lottie.host/fccfcd96-8f23-49b8-a071-f22ce1205e7b/5R6Z7g0o0E.json"
+            />
+          </div>
+          <p className="text-lg font-black text-black">LOADING INVOICES...</p>
         </div>
       </div>
     );
