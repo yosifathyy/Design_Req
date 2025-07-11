@@ -131,7 +131,7 @@ const StartProject = () => {
           budget: formData.budget,
           files: formData.files,
         },
-        (user?.id || currentUser?.id)!,
+        userId,
       );
 
       console.log("Project submitted successfully");
