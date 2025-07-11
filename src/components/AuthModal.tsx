@@ -1,6 +1,10 @@
-
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +23,11 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signupData, setSignupData] = useState({ name: "", email: "", password: "" });
+  const [signupData, setSignupData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   // Reset form data when modal opens/closes
   useEffect(() => {
@@ -36,24 +44,34 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
     setLoading(true);
 
     try {
-      console.log('Attempting login for:', loginData.email);
-      
+      console.log("Attempting login for:", loginData.email);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
         password: loginData.password,
       });
 
       if (error) {
-        console.error('Login error:', error);
+        console.error("Login error:", error);
         throw error;
       }
 
-      console.log('Login successful:', data);
+      console.log("Login successful:", data);
       toast.success("Welcome back! 🎉");
       onSuccess();
     } catch (error: any) {
-      console.error('Login failed:', error);
-      toast.error(error.message || "Login failed. Please try again.");
+      console.error("Login failed:", error);
+
+      // Handle specific error cases
+      if (error.message?.includes("Email not confirmed")) {
+        toast.error(
+          "Please check your email and click the confirmation link before signing in.",
+        );
+      } else if (error.message?.includes("Invalid login credentials")) {
+        toast.error("Invalid email or password. Please try again.");
+      } else {
+        toast.error(error.message || "Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -64,8 +82,8 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
     setLoading(true);
 
     try {
-      console.log('Attempting signup for:', signupData.email);
-      
+      console.log("Attempting signup for:", signupData.email);
+
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
@@ -77,38 +95,60 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
       });
 
       if (error) {
-        console.error('Signup error:', error);
+        console.error("Signup error:", error);
         throw error;
       }
 
-      console.log('Signup response:', data);
+      console.log("Signup response:", data);
 
       // Create user profile
       if (data.user) {
-        console.log('Creating user profile...');
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id,
-              email: signupData.email,
-              name: signupData.name,
-            },
-          ]);
+        console.log("Creating user profile...");
+        const { error: profileError } = await supabase.from("users").insert([
+          {
+            id: data.user.id,
+            email: signupData.email,
+            name: signupData.name,
+          },
+        ]);
 
         if (profileError) {
-          console.error('Profile creation error:', profileError);
+          const errorMessage =
+            profileError?.message ||
+            profileError?.details ||
+            profileError?.hint ||
+            JSON.stringify(
+              profileError,
+              Object.getOwnPropertyNames(profileError),
+            );
+          console.error("Profile creation error:", errorMessage);
+          toast.error(`Profile setup incomplete: ${errorMessage}`);
           // Don't throw here as the auth user was created successfully
         } else {
-          console.log('User profile created successfully');
+          console.log("User profile created successfully");
         }
       }
 
       toast.success("Account created successfully! 🎉");
       onSuccess();
     } catch (error: any) {
-      console.error('Signup failed:', error);
-      toast.error(error.message || "Signup failed. Please try again.");
+      console.error("Signup failed:", error);
+
+      // Handle specific signup error cases
+      if (error.message?.includes("User already registered")) {
+        toast.error(
+          "An account with this email already exists. Please try signing in instead.",
+        );
+      } else if (error.message?.includes("Password")) {
+        toast.error("Password must be at least 6 characters long.");
+      } else {
+        const errorMessage =
+          error?.message ||
+          error?.details ||
+          error?.hint ||
+          JSON.stringify(error, Object.getOwnPropertyNames(error));
+        toast.error(errorMessage || "Signup failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -140,7 +180,9 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     type="email"
                     placeholder="your@email.com"
                     value={loginData.email}
-                    onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, email: e.target.value })
+                    }
                     className="pl-10"
                     required
                     disabled={loading}
@@ -157,7 +199,9 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={loginData.password}
-                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, password: e.target.value })
+                    }
                     className="pl-10 pr-10"
                     required
                     disabled={loading}
@@ -197,7 +241,9 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     type="text"
                     placeholder="Your full name"
                     value={signupData.name}
-                    onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                    onChange={(e) =>
+                      setSignupData({ ...signupData, name: e.target.value })
+                    }
                     className="pl-10"
                     required
                     disabled={loading}
@@ -214,7 +260,9 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     type="email"
                     placeholder="your@email.com"
                     value={signupData.email}
-                    onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                    onChange={(e) =>
+                      setSignupData({ ...signupData, email: e.target.value })
+                    }
                     className="pl-10"
                     required
                     disabled={loading}
@@ -231,7 +279,9 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     value={signupData.password}
-                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                    onChange={(e) =>
+                      setSignupData({ ...signupData, password: e.target.value })
+                    }
                     className="pl-10 pr-10"
                     required
                     minLength={6}
