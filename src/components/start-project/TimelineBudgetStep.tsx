@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -19,6 +18,7 @@ interface FormData {
 interface TimelineBudgetStepProps {
   formData: FormData;
   setFormData: (data: FormData) => void;
+  projectType: string;
 }
 
 const timelineOptions = [
@@ -48,34 +48,92 @@ const timelineOptions = [
   },
 ];
 
-const budgetOptions = [
-  {
-    value: "50-150",
-    title: "$50 - $150 💫",
-    description: "Perfect for basic magic",
-    emoji: "✨",
-  },
-  {
-    value: "150-300",
-    title: "$150 - $300 🌟",
-    description: "Standard wizardry level",
-    emoji: "🎯",
-  },
-  {
-    value: "300-500",
-    title: "$300 - $500 🔥",
-    description: "Premium spell casting",
-    emoji: "💎",
-  },
-  {
-    value: "500+",
-    title: "$500+ 🚀",
-    description: "Master-level sorcery",
-    emoji: "👑",
-  },
-];
+// Define budget configuration for each project type
+const budgetConfig = {
+  photoshop: { min: 10, max: 300 },
+  "3d": { min: 20, max: 1000 },
+  design: { min: 20, max: 1000 }, // Graphic requests same as 3D
+  website: { min: 50, max: 2000 },
+};
 
-export const TimelineBudgetStep = ({ formData, setFormData }: TimelineBudgetStepProps) => {
+// Generate 6 dynamic budget ranges based on min-max values
+const generateBudgetOptions = (min: number, max: number) => {
+  const range = max - min;
+  const increment = range / 6;
+  const emojis = ["✨", "🎯", "💫", "🔥", "💎", "👑"];
+  const descriptions = [
+    "Basic magic",
+    "Standard level",
+    "Enhanced quality",
+    "Premium work",
+    "Elite craftsmanship",
+    "Master-level sorcery",
+  ];
+
+  const options = [];
+  for (let i = 0; i < 6; i++) {
+    const rangeMin = Math.round(min + increment * i);
+    const rangeMax = i === 5 ? max : Math.round(min + increment * (i + 1));
+
+    options.push({
+      value: i === 5 ? `${rangeMin}+` : `${rangeMin}-${rangeMax}`,
+      title:
+        i === 5
+          ? `$${rangeMin}+ ${emojis[i]}`
+          : `$${rangeMin} - $${rangeMax} ${emojis[i]}`,
+      description: descriptions[i],
+      emoji: emojis[i],
+      min: rangeMin,
+      max: rangeMax,
+    });
+  }
+  return options;
+};
+
+// Helper function to get budget range for a given amount
+const getBudgetRangeForAmount = (amount: number, options: any[]) => {
+  for (const option of options) {
+    if (amount >= option.min && (option.max === null || amount <= option.max)) {
+      return option.value;
+    }
+  }
+  return options[options.length - 1].value; // Default to highest range
+};
+
+export const TimelineBudgetStep = ({
+  formData,
+  setFormData,
+  projectType,
+}: TimelineBudgetStepProps) => {
+  // Get budget configuration for current project type
+  const currentBudgetConfig =
+    budgetConfig[projectType as keyof typeof budgetConfig] ||
+    budgetConfig.website;
+  const budgetOptions = generateBudgetOptions(
+    currentBudgetConfig.min,
+    currentBudgetConfig.max,
+  );
+
+  // Handle timeline option clicks
+  const handleTimelineOptionClick = (value: string) => {
+    setFormData({ ...formData, timeline: value });
+  };
+
+  // Handle budget option clicks
+  const handleBudgetOptionClick = (value: string) => {
+    setFormData({ ...formData, budget: value });
+  };
+
+  // Handle slider changes with automatic range selection
+  const handleSliderChange = (value: number[]) => {
+    const newAmount = value[0];
+    const matchingRange = getBudgetRangeForAmount(newAmount, budgetOptions);
+    setFormData({
+      ...formData,
+      budgetAmount: value,
+      budget: matchingRange,
+    });
+  };
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
@@ -83,12 +141,18 @@ export const TimelineBudgetStep = ({ formData, setFormData }: TimelineBudgetStep
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-display text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2
+          className="font-heading text-2xl md:text-3xl mb-3 text-center"
+          style={{ color: "rgb(62, 48, 80)" }}
+        >
           Timeline & Budget Magic! ⏰💰
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4">
-          Help us understand your project constraints so we can work
-          our magic perfectly
+        <p
+          className="text-center mb-6 md:mb-8 px-4 font-label"
+          style={{ color: "rgba(62, 48, 80, 0.8)" }}
+        >
+          Help us understand your project constraints so we can work our magic
+          perfectly
         </p>
       </BounceIn>
 
@@ -98,7 +162,10 @@ export const TimelineBudgetStep = ({ formData, setFormData }: TimelineBudgetStep
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Label className="text-retro-purple font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
+          <Label
+            className="font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             <Clock className="w-5 h-5 md:w-6 md:h-6 mr-2" />
             When do you need this completed? 🏃‍♂️
           </Label>
@@ -112,29 +179,44 @@ export const TimelineBudgetStep = ({ formData, setFormData }: TimelineBudgetStep
             {timelineOptions.map((option, index) => (
               <motion.div
                 key={option.value}
-                className="flex items-center space-x-3 p-4 md:p-6 border-3 border-retro-purple/30 rounded-2xl hover:border-retro-purple/60 transition-all duration-300 hover:shadow-lg cursor-pointer"
+                className={`flex items-center space-x-3 p-4 md:p-6 border-2 rounded-2xl transition-all duration-300 hover:shadow-lg cursor-pointer ${
+                  formData.timeline === option.value
+                    ? "shadow-lg"
+                    : "hover:shadow-md"
+                }`}
+                style={{
+                  borderColor:
+                    formData.timeline === option.value
+                      ? "rgb(62, 48, 80)"
+                      : "rgba(62, 48, 80, 0.3)",
+                  backgroundColor:
+                    formData.timeline === option.value
+                      ? "rgba(62, 48, 80, 0.1)"
+                      : "white",
+                }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                onClick={() => handleTimelineOptionClick(option.value)}
               >
-                <RadioGroupItem
-                  value={option.value}
-                  id={option.value}
-                />
+                <RadioGroupItem value={option.value} id={option.value} />
                 <div className="text-2xl md:text-3xl">{option.emoji}</div>
-                <Label
-                  htmlFor={option.value}
-                  className="flex-1 cursor-pointer"
-                >
-                  <div className="font-bold text-retro-purple text-base md:text-lg">
+                <div className="flex-1">
+                  <div
+                    className="font-label font-bold text-base md:text-lg"
+                    style={{ color: "rgb(62, 48, 80)" }}
+                  >
                     {option.title}
                   </div>
-                  <div className="text-sm md:text-base text-retro-purple/70">
+                  <div
+                    className="text-sm md:text-base font-body"
+                    style={{ color: "rgba(62, 48, 80, 0.7)" }}
+                  >
                     {option.description}
                   </div>
-                </Label>
+                </div>
               </motion.div>
             ))}
           </RadioGroup>
@@ -145,29 +227,39 @@ export const TimelineBudgetStep = ({ formData, setFormData }: TimelineBudgetStep
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Label className="text-retro-purple font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center">
+          <Label
+            className="font-label font-bold text-lg md:text-xl mb-4 md:mb-6 block flex items-center"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             <DollarSign className="w-5 h-5 md:w-6 md:h-6 mr-2" />
             What's your budget range? 💸
           </Label>
-          
-          {/* Budget Slider */}
+
+          {/* Dynamic Budget Slider */}
           <div className="mb-6 p-4 md:p-6 border-3 border-retro-purple/30 rounded-2xl bg-retro-purple/5">
             <div className="mb-4">
-              <Label className="text-retro-purple font-medium text-base md:text-lg">
+              <Label className="text-retro-purple font-label font-medium text-base md:text-lg">
                 Custom Budget: ${formData.budgetAmount[0]}
               </Label>
+              <p className="text-sm text-retro-purple/60 mt-1 font-body">
+                {projectType === "photoshop" &&
+                  "Photoshop requests: $10 - $300"}
+                {(projectType === "3d" || projectType === "design") &&
+                  "3D & Graphic requests: $20 - $1000"}
+                {projectType === "website" && "Website requests: $50 - $2000"}
+              </p>
             </div>
             <Slider
               value={formData.budgetAmount}
-              onValueChange={(value) => setFormData({ ...formData, budgetAmount: value })}
-              max={2000}
-              min={50}
-              step={25}
+              onValueChange={handleSliderChange}
+              max={currentBudgetConfig.max}
+              min={currentBudgetConfig.min}
+              step={10}
               className="w-full mb-2"
             />
             <div className="flex justify-between text-sm text-retro-purple/60">
-              <span>$50</span>
-              <span>$2000+</span>
+              <span>${currentBudgetConfig.min}</span>
+              <span>${currentBudgetConfig.max}+</span>
             </div>
           </div>
 
@@ -181,29 +273,34 @@ export const TimelineBudgetStep = ({ formData, setFormData }: TimelineBudgetStep
             {budgetOptions.map((option, index) => (
               <motion.div
                 key={option.value}
-                className="flex items-center space-x-3 p-4 md:p-6 border-3 border-retro-purple/30 rounded-2xl hover:border-retro-purple/60 transition-all duration-300 hover:shadow-lg cursor-pointer"
+                className={`flex items-center space-x-3 p-4 md:p-6 border-3 rounded-2xl transition-all duration-300 hover:shadow-lg cursor-pointer ${
+                  formData.budget === option.value
+                    ? "border-retro-purple bg-retro-purple/10 shadow-lg"
+                    : "border-retro-purple/30 hover:border-retro-purple/60"
+                }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                onClick={() => handleBudgetOptionClick(option.value)}
               >
-                <RadioGroupItem
-                  value={option.value}
-                  id={option.value}
-                />
+                <RadioGroupItem value={option.value} id={option.value} />
                 <div className="text-2xl md:text-3xl">{option.emoji}</div>
-                <Label
-                  htmlFor={option.value}
-                  className="flex-1 cursor-pointer"
-                >
-                  <div className="font-bold text-retro-purple text-base md:text-lg">
+                <div className="flex-1">
+                  <div
+                    className="font-label font-bold text-base md:text-lg"
+                    style={{ color: "rgb(62, 48, 80)" }}
+                  >
                     {option.title}
                   </div>
-                  <div className="text-sm md:text-base text-retro-purple/70">
+                  <div
+                    className="text-sm md:text-base font-body"
+                    style={{ color: "rgba(62, 48, 80, 0.7)" }}
+                  >
                     {option.description}
                   </div>
-                </Label>
+                </div>
               </motion.div>
             ))}
           </RadioGroup>

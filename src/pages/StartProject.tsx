@@ -9,7 +9,7 @@ import {
 } from "@/components/AnimatedElements";
 import { Zap } from "lucide-react";
 import { motion } from "framer-motion";
-import { AuthModal } from "@/components/AuthModal";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useProjectSubmission } from "@/hooks/useProjectSubmission";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProjectTypeStep } from "@/components/start-project/ProjectTypeStep";
 import { ProjectDetailsStep } from "@/components/start-project/ProjectDetailsStep";
 import { TimelineBudgetStep } from "@/components/start-project/TimelineBudgetStep";
-import { FileUploadStep } from "@/components/start-project/FileUploadStep";
+import { AuthStep } from "@/components/start-project/AuthStep";
 import { ProgressBar } from "@/components/start-project/ProgressBar";
 import { NavigationButtons } from "@/components/start-project/NavigationButtons";
 import { HelpSection } from "@/components/start-project/HelpSection";
@@ -29,7 +29,7 @@ import { HelpSection } from "@/components/start-project/HelpSection";
 const StartProject = () => {
   const [step, setStep] = useState(1);
   const [projectType, setProjectType] = useState("");
-  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authCompleted, setAuthCompleted] = useState(false);
   const { playClickSound } = useClickSound();
@@ -45,6 +45,7 @@ const StartProject = () => {
     projectName: "",
     description: "",
     style: "",
+    customStyle: "",
     timeline: "",
     budget: "",
     budgetAmount: [500],
@@ -56,7 +57,16 @@ const StartProject = () => {
   };
 
   const nextStep = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 4) {
+      setStep(step + 1);
+      // Auto-scroll to top of the form container
+      setTimeout(() => {
+        const formContainer = document.querySelector(".max-w-4xl");
+        if (formContainer) {
+          formContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    }
   };
 
   const prevStep = () => {
@@ -64,37 +74,18 @@ const StartProject = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("Submit button clicked");
-    console.log("User authenticated:", !!user);
-    console.log("Auth loading:", authLoading);
-
-    // Check if auth is still loading
-    if (authLoading) {
-      console.log("Authentication still loading, please wait...");
-      toast.error("Please wait while we verify your authentication...");
+    // For step 4 (auth step), do nothing - auth step handles submission
+    if (step === 4) {
       return;
     }
 
-    // Check current session directly from Supabase for most up-to-date auth state
-    const currentSession = await supabase.auth.getSession();
-    const currentUser = currentSession.data.session?.user;
+    // For other steps, this should not be called
+    console.log("Submit called on non-auth step");
+  };
 
-    // If auth was completed, skip auth check and proceed with submission
-    if (authCompleted) {
-      console.log("Auth completed, proceeding with submission...");
-    } else {
-      // Check if user is authenticated (either from context or current session)
-      if (!user && !currentUser) {
-        console.log("User not authenticated, showing auth modal");
-        setShowAuthModal(true);
-        return;
-      }
-
-      // If we have a current session but user context isn't updated yet, proceed with submission
-      if (!user && currentUser) {
-        console.log("Found current session, proceeding with submission...");
-      }
-    }
+  const handleAuthSuccess = async () => {
+    console.log("Authentication successful, submitting project...");
+    setAuthCompleted(true);
 
     // Validate form data
     if (!projectType || !formData.projectName || !formData.description) {
@@ -109,8 +100,11 @@ const StartProject = () => {
       return;
     }
 
-    // Ensure we have a user ID for submission
+    // Get current session
+    const currentSession = await supabase.auth.getSession();
+    const currentUser = currentSession.data.session?.user;
     const userId = user?.id || currentUser?.id;
+
     if (!userId) {
       console.log("No user ID available, cannot submit");
       toast.error("Authentication error. Please try again.");
@@ -148,31 +142,12 @@ const StartProject = () => {
     }
   };
 
-  const handleAuthSuccess = async () => {
-    console.log("Authentication successful, closing modal");
-    setShowAuthModal(false);
-    setAuthCompleted(true);
-
-    // Show immediate feedback that submission is continuing
-    toast.success("Welcome! Submitting your project...");
-
-    // Wait for auth state to be fully updated
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Retrying submission after authentication");
-    handleSubmit();
-  };
-
   const isStepValid = (stepNum: number) => {
     switch (stepNum) {
       case 1:
         return !!projectType;
       case 2:
-        return !!(
-          formData.projectName &&
-          formData.description &&
-          formData.style
-        );
+        return !!(formData.projectName && formData.description);
       case 3:
         return !!(formData.timeline && formData.budget);
       case 4:
@@ -199,13 +174,17 @@ const StartProject = () => {
         );
       case 3:
         return (
-          <TimelineBudgetStep formData={formData} setFormData={setFormData} />
+          <TimelineBudgetStep
+            formData={formData}
+            setFormData={setFormData}
+            projectType={projectType}
+          />
         );
       case 4:
         return (
-          <FileUploadStep
-            files={formData.files}
-            onFilesChange={handleFileUpload}
+          <AuthStep
+            onAuthSuccess={handleAuthSuccess}
+            loading={submissionLoading || isSubmitting}
           />
         );
       default:
@@ -216,7 +195,41 @@ const StartProject = () => {
   const isLoading = submissionLoading || isSubmitting || authLoading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-retro-cream via-retro-lavender/20 to-retro-mint/30 relative overflow-hidden">
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(to right bottom, rgb(243, 235, 211), rgba(231, 226, 218, 0.2), rgba(255, 206, 10, 0.3))",
+      }}
+    >
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="grid grid-cols-12 gap-4 h-full w-full p-4">
+          {Array.from({ length: 60 }, (_, i) => (
+            <motion.div
+              key={i}
+              className="bg-purple-600/30 rounded-lg"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{
+                opacity: [0.1, 0.3, 0.1],
+                scale: [0.8, 1, 0.8],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 3 + (i % 5),
+                repeat: Infinity,
+                delay: i * 0.1,
+                ease: "easeInOut",
+              }}
+              style={{
+                height: `${20 + (i % 3) * 10}px`,
+                background: `rgba(${102 + (i % 50)}, ${68 + (i % 30)}, ${146 + (i % 40)}, 0.${2 + (i % 3)})`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Email confirmation reminder */}
       <EmailConfirmationReminder />
 
@@ -229,33 +242,63 @@ const StartProject = () => {
       />
 
       {/* Floating background elements */}
-      <FloatingElement className="absolute top-20 left-10 w-20 h-20 bg-retro-pink/20 rounded-full blur-xl" />
-      <FloatingElement className="absolute top-40 right-20 w-16 h-16 bg-retro-teal/30 rounded-full blur-lg" />
-      <FloatingElement className="absolute bottom-20 left-1/4 w-12 h-12 bg-retro-orange/20 rounded-full blur-md" />
+      <FloatingElement
+        className="absolute top-20 left-10 w-20 h-20 rounded-full blur-xl"
+        style={{ backgroundColor: "rgba(250, 204, 21, 0.2)" }}
+      />
+      <FloatingElement
+        className="absolute top-40 right-20 w-16 h-16 rounded-full blur-lg"
+        style={{ backgroundColor: "rgba(244, 114, 182, 0.3)" }}
+      />
+      <FloatingElement
+        className="absolute bottom-20 left-1/4 w-12 h-12 rounded-full blur-md"
+        style={{ backgroundColor: "rgba(34, 211, 238, 0.2)" }}
+      />
 
       <Navigation />
 
-      <div className="px-4 md:px-6 py-8 md:py-12 relative z-10">
+      <div
+        className="px-4 md:px-6 py-8 md:py-12 relative z-10"
+        style={{
+          backgroundColor: "rgba(255, 204, 19, 1)",
+          backgroundImage:
+            "url(https://cdn.builder.io/api/v1/image/assets%2F357bad6e9926439d91bc81f6a54d6d24%2F2182a208b5b74bc48c901c0259928821)",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
+      >
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <BounceIn className="text-center mb-8 md:mb-12">
-            <motion.div
-              className="inline-flex items-center space-x-2 bg-retro-purple/10 px-4 py-2 rounded-full mb-4 md:mb-6"
-              whileHover={{ scale: 1.05, rotate: 2 }}
+            <motion.h1
+              className="font-heading text-3xl md:text-4xl lg:text-5xl"
+              style={{
+                color: "rgba(102, 68, 146, 1)",
+                margin: "23px 0 16px",
+              }}
+              animate={{
+                y: [0, -5, 0],
+                scale: [1, 1.02, 1],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
             >
-              <WiggleIcon>
-                <Zap className="w-4 h-4 text-retro-purple" />
-              </WiggleIcon>
-              <span className="text-sm font-medium text-retro-purple">
-                AI-Powered Brief Generator
-              </span>
-            </motion.div>
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-retro-purple mb-4">
               Start Your Design Project
-            </h1>
-            <p className="text-lg md:text-xl text-retro-purple/80 max-w-2xl mx-auto px-4">
-              Our intelligent system will help you create the perfect project
-              brief for our expert designers! ✨
+            </motion.h1>
+            <p
+              className="text-lg md:text-xl mx-auto px-4"
+              style={{
+                color: "rgba(62, 48, 80, 0.8)",
+                maxWidth: "876px",
+                font: "600 20px/28px Aboreto, display",
+              }}
+            >
+              Tell us about your project and get matched with amazing designers!
+              ✨
             </p>
           </BounceIn>
 
@@ -263,8 +306,28 @@ const StartProject = () => {
           <ProgressBar step={step} totalSteps={4} />
 
           {/* Step Content */}
-          <TiltCard className="border-3 border-retro-purple/30 bg-white/60 backdrop-blur-sm shadow-2xl rounded-3xl overflow-hidden">
-            <div className="p-6 md:p-8">
+          <motion.div
+            className="relative rounded-2xl overflow-hidden border-2 transition-all duration-300"
+            style={{
+              backgroundColor: "rgb(243, 235, 211)",
+              borderColor: "rgb(62, 48, 80)",
+              boxShadow: "8px 8px 1px 3px rgba(32, 26, 40, 1)",
+            }}
+            whileHover={{
+              scale: 1.01,
+              boxShadow: "12px 12px 1px 3px rgba(32, 26, 40, 1)",
+              rotate: [0, 0.5, -0.5, 0],
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <div
+              className="p-6 md:p-8 relative z-10"
+              style={{
+                backgroundColor: "rgba(255, 246, 213, 1)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+              }}
+            >
               {renderStep()}
 
               {/* Loading Overlay */}
@@ -294,18 +357,12 @@ const StartProject = () => {
                 onSubmit={handleSubmit}
               />
             </div>
-          </TiltCard>
+          </motion.div>
 
           {/* Help Section */}
           <HelpSection />
         </div>
       </div>
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onSuccess={handleAuthSuccess}
-      />
     </div>
   );
 };

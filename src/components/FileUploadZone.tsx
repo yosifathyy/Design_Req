@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { Upload, FileText, X, Image as ImageIcon, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,56 +11,59 @@ interface FileUploadZoneProps {
   acceptedTypes?: string[];
 }
 
-export const FileUploadZone = ({ 
-  files, 
-  onFilesChange, 
+export const FileUploadZone = ({
+  files,
+  onFilesChange,
   maxFiles = 10,
   maxSizeMB = 10,
-  acceptedTypes = ['image/*', '.pdf', '.doc', '.docx', '.txt']
+  acceptedTypes = ["image/*", ".pdf", ".doc", ".docx", ".txt"],
 }: FileUploadZoneProps) => {
   const [dragActive, setDragActive] = useState(false);
 
-  const handleFiles = useCallback((newFiles: FileList | null) => {
-    if (!newFiles) return;
+  const handleFiles = useCallback(
+    (newFiles: FileList | null) => {
+      if (!newFiles) return;
 
-    const validFiles: File[] = [];
-    const errors: string[] = [];
+      const validFiles: File[] = [];
+      const errors: string[] = [];
 
-    Array.from(newFiles).forEach((file) => {
-      // Check file size
-      if (file.size > maxSizeMB * 1024 * 1024) {
-        errors.push(`${file.name} is too large (max ${maxSizeMB}MB)`);
-        return;
-      }
-
-      // Check file type
-      const isValidType = acceptedTypes.some(type => {
-        if (type.includes('*')) {
-          return file.type.startsWith(type.replace('*', ''));
+      Array.from(newFiles).forEach((file) => {
+        // Check file size
+        if (file.size > maxSizeMB * 1024 * 1024) {
+          errors.push(`${file.name} is too large (max ${maxSizeMB}MB)`);
+          return;
         }
-        return file.name.toLowerCase().endsWith(type.toLowerCase());
+
+        // Check file type
+        const isValidType = acceptedTypes.some((type) => {
+          if (type.includes("*")) {
+            return file.type.startsWith(type.replace("*", ""));
+          }
+          return file.name.toLowerCase().endsWith(type.toLowerCase());
+        });
+
+        if (!isValidType) {
+          errors.push(`${file.name} is not a supported file type`);
+          return;
+        }
+
+        validFiles.push(file);
       });
 
-      if (!isValidType) {
-        errors.push(`${file.name} is not a supported file type`);
+      if (errors.length > 0) {
+        alert(errors.join("\n"));
+      }
+
+      const totalFiles = [...files, ...validFiles];
+      if (totalFiles.length > maxFiles) {
+        alert(`Maximum ${maxFiles} files allowed`);
         return;
       }
 
-      validFiles.push(file);
-    });
-
-    if (errors.length > 0) {
-      alert(errors.join('\n'));
-    }
-
-    const totalFiles = [...files, ...validFiles];
-    if (totalFiles.length > maxFiles) {
-      alert(`Maximum ${maxFiles} files allowed`);
-      return;
-    }
-
-    onFilesChange(totalFiles);
-  }, [files, onFilesChange, maxFiles, maxSizeMB, acceptedTypes]);
+      onFilesChange(totalFiles);
+    },
+    [files, onFilesChange, maxFiles, maxSizeMB, acceptedTypes],
+  );
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -73,12 +75,15 @@ export const FileUploadZone = ({
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    handleFiles(e.dataTransfer.files);
-  }, [handleFiles]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      handleFiles(e.dataTransfer.files);
+    },
+    [handleFiles],
+  );
 
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
@@ -86,15 +91,15 @@ export const FileUploadZone = ({
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const getFileIcon = (file: File) => {
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith("image/")) {
       return <ImageIcon className="w-5 h-5" />;
     }
     return <File className="w-5 h-5" />;
@@ -105,9 +110,9 @@ export const FileUploadZone = ({
       {/* Upload Zone */}
       <motion.div
         className={`border-3 border-dashed rounded-2xl p-8 text-center transition-all duration-300 cursor-pointer ${
-          dragActive 
-            ? 'border-retro-purple bg-retro-purple/10 scale-105' 
-            : 'border-retro-purple/30 hover:border-retro-purple/60 hover:bg-retro-purple/5'
+          dragActive
+            ? "border-retro-purple bg-retro-purple/10 scale-105"
+            : "border-retro-purple/30 hover:border-retro-purple/60 hover:bg-retro-purple/5"
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -127,28 +132,32 @@ export const FileUploadZone = ({
             ease: "easeInOut",
           }}
         >
-          <Upload className={`w-12 h-12 mx-auto mb-4 transition-colors ${
-            dragActive ? 'text-retro-purple' : 'text-retro-purple/60'
-          }`} />
+          <Upload
+            className={`w-12 h-12 mx-auto mb-4 transition-colors ${
+              dragActive ? "text-black" : "text-black/60"
+            }`}
+          />
         </motion.div>
-        
-        <h3 className="font-bold text-xl text-retro-purple mb-2">
-          {dragActive ? 'Drop files here! 🎯' : 'Drop files here or click to upload! 📁'}
+
+        <h3 className="font-bold text-xl text-black mb-2">
+          {dragActive
+            ? "Drop files here! 🎯"
+            : "Drop files here or click to upload! 📁"}
         </h3>
-        
-        <p className="text-retro-purple/70 mb-4">
+
+        <p className="text-black/70 mb-4">
           Support for images, PDFs, documents (max {maxSizeMB}MB each)
         </p>
-        
+
         <input
           type="file"
           multiple
           onChange={(e) => handleFiles(e.target.files)}
           className="hidden"
           id="fileUpload"
-          accept={acceptedTypes.join(',')}
+          accept={acceptedTypes.join(",")}
         />
-        
+
         <Button
           asChild
           className="bg-gradient-to-r from-retro-orange to-retro-peach text-white font-bold px-6 py-2 rounded-xl hover:shadow-lg transition-all"
@@ -158,8 +167,8 @@ export const FileUploadZone = ({
             Choose Files
           </label>
         </Button>
-        
-        <div className="mt-4 text-sm text-retro-purple/60">
+
+        <div className="mt-4 text-sm text-black/60">
           {files.length}/{maxFiles} files selected
         </div>
       </motion.div>
@@ -173,11 +182,11 @@ export const FileUploadZone = ({
             exit={{ opacity: 0, y: -20 }}
             className="space-y-3"
           >
-            <h4 className="font-bold text-lg text-retro-purple flex items-center">
+            <h4 className="font-bold text-lg text-black flex items-center">
               <FileText className="w-5 h-5 mr-2" />
               Uploaded Files ({files.length})
             </h4>
-            
+
             <div className="grid gap-3">
               {files.map((file, index) => (
                 <motion.div
@@ -189,9 +198,7 @@ export const FileUploadZone = ({
                   className="flex items-center justify-between p-4 bg-white/60 backdrop-blur-sm rounded-xl border-2 border-retro-purple/20 hover:shadow-md transition-all duration-300 group"
                 >
                   <div className="flex items-center space-x-3 flex-1 min-w-0">
-                    <div className="text-retro-purple">
-                      {getFileIcon(file)}
-                    </div>
+                    <div className="text-retro-purple">{getFileIcon(file)}</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-retro-purple truncate">
                         {file.name}
@@ -201,7 +208,7 @@ export const FileUploadZone = ({
                       </p>
                     </div>
                   </div>
-                  
+
                   <Button
                     variant="ghost"
                     size="sm"

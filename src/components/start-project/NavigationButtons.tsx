@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Rocket, CheckCircle } from "lucide-react";
@@ -46,7 +45,7 @@ export const NavigationButtons = ({
         </Button>
       </motion.div>
 
-      {step < totalSteps ? (
+      {step < totalSteps && (
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -59,24 +58,6 @@ export const NavigationButtons = ({
           >
             Next Step
             <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </motion.div>
-      ) : (
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-full md:w-auto"
-        >
-          <Button 
-            onClick={onSubmit}
-            disabled={loading || !isStepValid(step)}
-            className="w-full md:w-auto bg-gradient-to-r from-retro-purple to-retro-teal text-white font-bold px-10 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 text-lg animate-pulse-glow"
-          >
-            <WiggleIcon>
-              <Rocket className="w-5 h-5 mr-2" />
-            </WiggleIcon>
-            {loading ? "Submitting..." : "Submit Project Magic!"}
-            <CheckCircle className="w-5 h-5 ml-2" />
           </Button>
         </motion.div>
       )}

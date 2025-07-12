@@ -20,6 +20,8 @@ export default {
     extend: {
       fontFamily: {
         display: ["Fredoka One", "cursive"],
+        heading: ["Wendy One", "cursive"],
+        label: ["Clash Display", "sans-serif"],
         sans: ["Space Grotesk", "Inter", "system-ui", "sans-serif"],
         body: ["Inter", "system-ui", "sans-serif"],
       },

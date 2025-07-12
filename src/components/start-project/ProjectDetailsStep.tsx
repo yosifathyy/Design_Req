@@ -16,6 +16,7 @@ interface FormData {
   projectName: string;
   description: string;
   style: string;
+  customStyle?: string;
   timeline: string;
   budget: string;
   budgetAmount: number[];
@@ -38,10 +39,16 @@ export const ProjectDetailsStep = ({
       transition={{ duration: 0.5 }}
     >
       <BounceIn>
-        <h2 className="font-display text-2xl md:text-3xl text-retro-purple mb-3 text-center">
+        <h2
+          className="font-heading text-2xl md:text-3xl mb-3 text-center"
+          style={{ color: "rgb(62, 48, 80)" }}
+        >
           Tell us about your amazing project! 🚀
         </h2>
-        <p className="text-retro-purple/80 text-center mb-6 md:mb-8 px-4">
+        <p
+          className="text-center mb-6 md:mb-8 px-4 font-label"
+          style={{ color: "rgba(62, 48, 80, 0.8)" }}
+        >
           The more details you share, the better we can match you with the
           perfect designer
         </p>
@@ -55,7 +62,8 @@ export const ProjectDetailsStep = ({
         >
           <Label
             htmlFor="projectName"
-            className="text-retro-purple font-bold text-base md:text-lg mb-3 block"
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
           >
             Project Name ✨ <span className="text-red-500">*</span>
           </Label>
@@ -69,7 +77,12 @@ export const ProjectDetailsStep = ({
                 projectName: e.target.value,
               })
             }
-            className="border-3 border-retro-purple/30 focus:border-retro-purple rounded-2xl py-3 text-base md:text-lg"
+            className="border-2 rounded-2xl py-3 text-base md:text-lg focus:outline-none focus:ring-2"
+            style={{
+              borderColor: "rgba(62, 48, 80, 0.3)",
+              backgroundColor: "white",
+              color: "rgb(62, 48, 80)",
+            }}
             maxLength={100}
             required
           />
@@ -85,7 +98,8 @@ export const ProjectDetailsStep = ({
         >
           <Label
             htmlFor="description"
-            className="text-retro-purple font-bold text-base md:text-lg mb-3 block"
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
           >
             Project Description 📝 <span className="text-red-500">*</span>
           </Label>
@@ -114,18 +128,29 @@ export const ProjectDetailsStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Label className="text-retro-purple font-bold text-base md:text-lg mb-3 block">
-            Style Preference 🎨 <span className="text-red-500">*</span>
+          <Label
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
+            Style Preference 🎨{" "}
+            <span className="text-gray-400">(Optional)</span>
           </Label>
           <Select
             value={formData.style}
-            onValueChange={(value) =>
-              setFormData({ ...formData, style: value })
-            }
-            required
+            onValueChange={(value) => {
+              if (value === "other") {
+                setFormData({ ...formData, style: value, customStyle: "" });
+              } else {
+                setFormData({
+                  ...formData,
+                  style: value,
+                  customStyle: undefined,
+                });
+              }
+            }}
           >
             <SelectTrigger className="border-3 border-retro-purple/30 rounded-2xl py-3 text-base md:text-lg">
-              <SelectValue placeholder="Choose your vibe!" />
+              <SelectValue placeholder="Choose your vibe or skip this step!" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="modern">Modern & Clean 🏢</SelectItem>
@@ -136,8 +161,31 @@ export const ProjectDetailsStep = ({
               </SelectItem>
               <SelectItem value="artistic">Artistic & Creative 🎭</SelectItem>
               <SelectItem value="minimalist">Minimalist 🕳️</SelectItem>
+              <SelectItem value="other">Other (specify below) ✍️</SelectItem>
             </SelectContent>
           </Select>
+          {formData.style === "other" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mt-3"
+            >
+              <Input
+                placeholder="Describe your preferred style..."
+                value={formData.customStyle || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, customStyle: e.target.value })
+                }
+                className="border-3 border-retro-purple/30 focus:border-retro-purple rounded-2xl py-3 text-base md:text-lg"
+                maxLength={100}
+              />
+              <div className="text-right text-sm text-retro-purple/60 mt-1">
+                {(formData.customStyle || "").length}/100
+              </div>
+            </motion.div>
+          )}
         </motion.div>
 
         <motion.div
@@ -145,10 +193,16 @@ export const ProjectDetailsStep = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Label className="text-retro-purple font-bold text-base md:text-lg mb-3 block">
+          <Label
+            className="font-label font-bold text-base md:text-lg mb-3 block"
+            style={{ color: "rgb(62, 48, 80)" }}
+          >
             Reference Files & Inspiration 📁✨
           </Label>
-          <p className="text-retro-purple/70 text-sm md:text-base mb-4">
+          <p
+            className="text-sm md:text-base mb-4 font-body"
+            style={{ color: "rgba(62, 48, 80, 0.7)" }}
+          >
             Upload any reference materials, existing designs, or inspiration
             files to help us understand your vision better! (Optional)
           </p>
